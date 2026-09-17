@@ -92,3 +92,27 @@ VARIABLE-OPERAND `/`/`%` PAIRS IN BOTH ORDERS AND EXECUTES THEM ON PDP-6, KA10,
 KI10, AND KS10.  `SIDIV-IDIV-PAIR-CSE-V3.SH` COVERS CONSTANT-DIVISOR AND THE
 HISTORICAL ARRAY-INDEX SHAPES, INCLUDING VARIABLE-DIVISOR INDEXING.  EACH
 REQUIRES A SINGLE SHARED IDIV FOR THE RELEVANT FUNCTION AND EXECUTES THE RESULT.
+
+## GCC -Os callee-save PUSH/POP regression
+
+On PDP-6 and KA10, GCC has no doubleword MOVE for saving a pair of
+callee-saved ACs.  A pure callee-save frame containing two or three words is
+therefore smaller when emitted as one PUSH per saved AC and one reverse-order
+POP per restored AC.  The old sequence allocated the whole frame first and
+used MOVE/MOVEM pairs, costing two extra stack-adjust instructions.
+
+The backend uses the compact form only when optimizing for size, only when the
+frame contains no locals, outgoing arguments, or pretend arguments, and only
+when MOVE_MAX is one word.  One-word frames retain their existing PUSH/POP
+behavior at other optimization levels.  KI10 and later targets retain their
+DMOVE-based save/restore sequences.
+
+`tests/compat/test-gcc-callee-save-pushpop-v41.sh` checks two- and three-AC
+save frames on PDP-6 and KA10.  It requires the `-Os` output to use matching
+PUSH/POP sequences, forbids a separate stack adjustment, requires the `-Os`
+function to contain fewer instructions than its `-O1` counterpart, and runs
+the generated `-Os` program on both simulators.
+
+The 2026-09-17 validation also ran the complete GCC base/`-Os` matrix slices
+for PDP-6 and KA10: each selected 402 cells, with 344 semantic passes, 58
+compile-only code-generation passes, and zero failures.
