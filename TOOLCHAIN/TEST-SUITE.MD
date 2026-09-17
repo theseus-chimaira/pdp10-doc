@@ -93,6 +93,33 @@ KI10, AND KS10.  `SIDIV-IDIV-PAIR-CSE-V3.SH` COVERS CONSTANT-DIVISOR AND THE
 HISTORICAL ARRAY-INDEX SHAPES, INCLUDING VARIABLE-DIVISOR INDEXING.  EACH
 REQUIRES A SINGLE SHARED IDIV FOR THE RELEVANT FUNCTION AND EXECUTES THE RESULT.
 
+## GCC scalar move order regression
+
+`tests/compat/test-gcc-scalar-move-order-v39.sh` protects a PDP-10 backend
+correctness case where two adjacent, independent SImode moves must not be
+reordered as though they were the halves of an overlapping DImode move.  The
+unsafe peephole could transform:
+
+```asm
+MOVE 2,1
+MOVE 3,1
+```
+
+into:
+
+```asm
+MOVE 3,2
+MOVE 2,1
+```
+
+after a call returning its scalar result in AC1.  The first instruction then
+reads stale AC2 and changes program semantics.  Overlapping DImode register
+pairs are instead ordered by `pdp10_output_movdi()`, while the move mode and
+pair relationship are still known.
+
+The regression checks both `-O2` and `-Os`; verification also checked PDP-6,
+KA10, KI10, and KS10 code generation.
+
 ## GCC -Os callee-save PUSH/POP regression
 
 On PDP-6 and KA10, GCC has no doubleword MOVE for saving a pair of
@@ -116,3 +143,7 @@ the generated `-Os` program on both simulators.
 The 2026-09-17 validation also ran the complete GCC base/`-Os` matrix slices
 for PDP-6 and KA10: each selected 402 cells, with 344 semantic passes, 58
 compile-only code-generation passes, and zero failures.
+
+The combined 2026-09-17 PDP-6/base verification for GCC `-O2` and `-Os`
+selected 648 cells: 532 execution passes, 116 compile-only passes, and zero
+failures.
