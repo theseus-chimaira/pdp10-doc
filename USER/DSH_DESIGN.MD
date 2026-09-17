@@ -38,6 +38,14 @@ of the design.
 
 Implementation work should consult these sources in this order.
 
+
+### 2.0 Immediate build prerequisite
+
+Before new DSH feature implementation, convert the existing DAIMOS userspace
+(libc, INIT, LOGIN, DSH, and current commands) from GCC/libgcc to KCC and pass
+the real INIT -> LOGIN -> DSH acceptance path. Compiler or assembler defects
+found by that conversion take priority and must be fixed at their source.
+
 ### 2.1 Current DAIMOS source and ABI
 
 The current DAIMOS kernel and libc are authoritative for available
@@ -433,6 +441,8 @@ error rather than corrupting state.
 
 DSH should use kernel sessions and domains as defined by DAIMOS. It must
 not create a second shell-specific session/domain abstraction.
+No SessionFS is required: sessions and process groups are native kernel state,
+and DSH consumes the normal kernel interfaces directly.
 
 ## 10. Command substitution
 
@@ -1162,7 +1172,6 @@ Do not delay the first useful shell for:
 -   unbounded history;
 -   full-screen line editing;
 -   terminal-control databases;
--   sockets;
 -   general Markdown compatibility.
 
 ## 27. Completion criteria for the first substantial DSH

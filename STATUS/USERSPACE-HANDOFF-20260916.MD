@@ -2,7 +2,7 @@
 
 Date: 2026-09-16
 Revision: v4
-Status: PRE-DSH USERSPACE BOOTSTRAP GATE COMPLETE
+Status: MULTIUSER BOOTSTRAP COMPLETE; CURRENT NEXT GATE IS KCC USERSPACE CONVERSION
 
 ## 1. Purpose
 
@@ -12,8 +12,10 @@ processes for CTY, DCS0, and GE0; successful LOGIN replaces itself with the
 configured shell, initially `/SYSTEM/EXEC/DSH`.
 
 This document records the final implementation, the defects found while reaching
-it, and the acceptance state.  Normal DSH feature development may now resume.
-Do not reopen the older Stage1, DAS, KCC, VFS, or EXEC hypotheses unless a new
+it, and the acceptance state.  The bootstrap remains accepted.  Before new DSH
+feature development, convert all existing userspace from GCC/libgcc to KCC and
+pass the same INIT -> LOGIN -> DSH acceptance path.  Do not reopen older Stage1,
+VFS, or EXEC hypotheses unless a new
 regression supplies evidence for them.
 
 ## 2. Toolchain installation order
@@ -178,8 +180,7 @@ generically.  A stronger verifier remains deliberately deferred.
 
 ## 8. SIMH serial transport
 
-DAIMOS networking remains deferred.  The remote-login acceptance uses simulator
-serial transport only:
+THE MULTI-TERMINAL ACCEPTANCE USES SIMULATOR SERIAL TRANSPORT:
 
     DCS0 -> host TCP/telnet port 1101
     GE0  -> host TCP/telnet port 1201
@@ -187,7 +188,7 @@ serial transport only:
 The default boot configuration attaches both listeners before LOGIN output is
 used.  A client that connects after an initial prompt has already been emitted
 can send an empty line to obtain the next LOGIN prompt; this is a simulator
-carrier/prompt timing property, not a DAIMOS networking protocol.
+carrier/prompt timing property of the simulator serial transport.
 
 ## 9. Accepted userspace behavior
 
@@ -220,17 +221,15 @@ performs repeated DCS0 logout/login cycles, checks cross-terminal output
 isolation, exercises a DCS0 foreground STOP, and verifies independent GE0
 respawn.
 
-## 10. Current resident-size observation
+## 10. Resident-size note
 
-The accepted PDP-6 build remains within the existing non-hard resident-size
-policy.  The latest measurement during this gate was:
+THE NUMBERS MEASURED DURING THIS 2026-09-16 HANDOFF ARE HISTORICAL.  CURRENT
+SIZE ACCOUNTING IS IN STATUS/RESIDENT-SIZE.MD AND DAIMOS/PROJECT-STATE.MD.
+THE ACTIVE SHRINK GATE IS KCC KCORE+MRES <= 14288 DECIMAL WORDS; CURRENT KCC
+KCORE+MRES IS ABOUT 14525 WORDS.
 
-    KCORE           021322   8914 words
-    KCORE+MRES      034317  14543 words
-    PERMANENT_LAST  034376  14590 words
-
-INIT, LOGIN, and DSH are userspace images and are not permanent kernel-resident
-storage.
+INIT, LOGIN, AND DSH ARE USERSPACE IMAGES AND ARE NOT PERMANENT KERNEL-RESIDENT
+STORAGE.
 
 ## 11. Patch ordering
 
@@ -252,13 +251,15 @@ base it declares.
 
 ## 12. Next work
 
-The pre-DSH userspace gate is complete.  Resume normal DSH implementation work:
+THE BOOTSTRAP GATE REMAINS COMPLETE.  THE CURRENT NEXT GATE IS NOW:
 
-- pipeline execution and redirection;
-- foreground/background process-group operation and builtins;
-- base command lookup using `/SYSTEM/EXEC` then `/OPTION/EXEC`;
-- getopt help/manual integration and the deferred structured completion model;
-- self-hosting utilities in the established roadmap order.
+1. CONVERT LIBC, INIT, LOGIN, DSH, AND ALL EXISTING NORMAL USERSPACE TARGETS
+   FROM GCC/LIBGCC TO KCC;
+2. FIX ANY KCC/DAS/ABI DEFECTS EXPOSED BY THAT CONVERSION;
+3. PASS THE REAL MULTI-TERMINAL INIT -> LOGIN -> DSH ACCEPTANCE WITH KCC-BUILT
+   USERSPACE;
+4. ONLY THEN RESUME DSH PIPELINES/JOB CONTROL AND THE SELF-HOSTING USERSPACE
+   PATH THROUGH MAKE, DAS, AND NATIVE KCC.
 
-Networking remains deferred for version 0.9.  A stronger password verifier is
-also deferred.
+KERNEL SYSCALLS MAY BE ADDED AS REAL USERSPACE PORTS REQUIRE THEM.  LARGE
+UNRELATED KERNEL RESTRUCTURING REMAINS RECORDED FOR A LATER 0.9 PHASE.
