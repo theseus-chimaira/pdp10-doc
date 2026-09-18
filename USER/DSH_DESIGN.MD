@@ -498,7 +498,11 @@ DAIMOSV1 provides precedent for:
 -   Ctrl-D handling.
 
 The first implementation should keep editing deliberately small and
-bounded.
+bounded.  The accepted kernel TTY design also provides a minimal cooked mode
+for ordinary programs, but interactive DSH deliberately selects raw/no-echo
+input while its own editor is active because history and TAB completion remain
+shell policy.  DSH restores ordinary cooked terminal state when appropriate
+before handing the terminal to programs that expect canonical input.
 
 Richer serial-terminal editing can be added later without changing the
 shell grammar.
