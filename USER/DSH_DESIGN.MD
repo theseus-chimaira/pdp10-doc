@@ -346,25 +346,22 @@ Required special parameters include:
     $NAME
     $[NAME]
 
-Current DAIMOS RUN V1 does not yet copy a general argv/environment into the
-child image.  DAIMOSV1 did support bounded argv/environment transfer and is a
-useful child-image-layout reference; the previous statement that V1 lacked this
-facility was wrong.
-
-Before substantial DSH execution work, DAIMOS must define and implement one
-versioned bounded startup contract shared by RUN and EXEC.  The preferred
-contract keeps the caller-side launch description self-contained and bounded,
-uses counted SIXBIT argument/environment records, and avoids a graph of raw
-user pointers.  The child image receives:
+Current DAIMOS implements the bounded startup contract as RUN V2 and EXEC V1.
+Both caller-side launch descriptions are self-contained and bounded, use
+counted SIXBIT argument/environment records, and contain no graph of raw user
+pointers.  RUN retains its process-group and descriptor-map fields.  RUN and
+EXEC share the PDP-6 child-image vector/record builder.  The child/replacement
+image receives:
 
     AC1 = argc
     AC2 = argv vector
     AC3 = envp vector or zero
 
 Each argv/environment string is a counted SIXBIT record in child memory.
-Environment records use `NAME=VALUE`.  The RUN parent ABI may differ from the
-old V1 pointer ABI, but the proven V1 child-image builder is the reference for
-relocating vectors and records into the new address space.
+Environment records use `NAME=VALUE`.  RUN V2 places the counted executable path first, followed by argv records,
+environment records, and descriptor mappings.  EXEC V1 places the counted path
+first, followed by argv and environment records.  INIT passes the configured
+TTY id to LOGIN as argv[1]; the old private AC1=TTY convention is gone.
 
 Assignment syntax is:
 
@@ -1060,12 +1057,12 @@ The recommended implementation order is:
 -   record git base hashes;
 -   build and run the current testkit;
 -   complete the KCC-built INIT -> LOGIN -> current-DSH acceptance gate;
--   implement and test the bounded RUN/EXEC argv/environment startup contract;
--   verify the CRT0/libc AC1=argc, AC2=argv, AC3=envp entry convention;
--   convert INIT/LOGIN from the private AC1=TTY convention so INIT passes each
-    inittab TTY id as normal argv[1];
--   add and test a small dup2-equivalent descriptor replacement operation for
-    shell-process redirection;
+-   keep RUN V2 / EXEC V1 startup-ABI regression coverage current; the bounded
+    counted-SIXBIT launch blocks, CRT0 AC1/AC2/AC3 convention, and INIT->LOGIN
+    argv[1] TTY handoff are implemented;
+-   keep regression coverage for the implemented `SYS_EXT_DUP2`/`dsys_dup2()`
+    descriptor replacement operation; target probing already covers self-dup,
+    invalid-source atomicity, and pipe-end replacement;
 -   implement and test the minimal canonical/echo TTY ABI and job-mode handoff;
 -   implement and pressure-test the reclaimable D6FS block cache;
 -   inspect current RUN/WAIT/process-control structures;
