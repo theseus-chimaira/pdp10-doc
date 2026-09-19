@@ -1,13 +1,13 @@
 # DAIMOS DSH AND COMMAND-INTERFACE DESIGN
 
-Status: pre-V1 implementation design and handoff\
-Date: 2026-09-13\
+Status: pre-V1 implementation design and specification\
+Date: 2026-09-18\
 Scope: DSH, command utilities, SIXMD command manuals, getopt/help
 support, completion interfaces, and userland overlay planning.
 
 ## 1. Purpose
 
-This document is the implementation handoff for the first substantial
+This document is the implementation specification for the first substantial
 DAIMOS userland port: DSH.
 
 DSH is a native DAIMOS shell inspired primarily by ksh. It is not a
@@ -45,6 +45,11 @@ Before new DSH feature implementation, convert the existing DAIMOS userspace
 (libc, INIT, LOGIN, DSH, and current commands) from GCC/libgcc to KCC and pass
 the real INIT -> LOGIN -> DSH acceptance path. Compiler or assembler defects
 found by that conversion take priority and must be fixed at their source.
+
+Before the substantial port, the TTY control ABI must also distinguish terminal
+signal generation from raw/canonical input and expose a small `isatty`-class
+identity query.  DSH edits its own prompt in raw/no-echo/no-signals mode so a
+CTRL-C at the prompt cannot terminate the shell.
 
 ### 2.1 Current DAIMOS source and ABI
 
@@ -223,6 +228,11 @@ Control structures:
 Background execution:
 
     COMMAND &
+    A ! B &
+
+`&` applies to the completed pipeline/job and terminates that asynchronous job.
+An AND/OR chain is not backgrounded implicitly; use `BEGIN ... END &` to run
+the grouped compound command as one asynchronous job.
 
 Command substitution is reserved as:
 
@@ -240,12 +250,13 @@ the language merely to resemble Bourne shell syntax.
 The parser should support a grammar equivalent to:
 
     SCRIPT   := LIST
-    LIST     := ANDOR ( ; ANDOR )*
+    LIST     := ANDOR ( SEP ANDOR )* [ SEP ]
+    SEP      := ; | RECORD-END
     ANDOR    := NOTCMD ( AND NOTCMD | OR NOTCMD )*
     NOTCMD   := [ NOT ] PIPELINE
-    PIPELINE := COMMAND ( ! COMMAND )*
+    PIPELINE := COMMAND ( ! COMMAND )* [ & ]
     COMMAND  := SIMPLE | IF | FOR | WHILE | UNTIL | GROUP | DEF | CASE
-    SIMPLE   := WORD ( WORD | REDIR )* [ & ]
+    SIMPLE   := WORD ( WORD | REDIR )*
     REDIR    := < WORD | > WORD | >> WORD
     IF       := IF LIST THEN LIST [ ELSE LIST ] FI
     FOR      := FOR NAME IN WORDS DO LIST DONE
@@ -254,8 +265,7 @@ The parser should support a grammar equivalent to:
     GROUP    := BEGIN LIST END
     DEF      := DEF NAME DO LIST DONE
 
-The exact `CASE` arm grammar remains to be frozen. The preferred native
-form is:
+CASE is frozen as:
 
     CASE WORD IN
         WHEN PATTERN [ PATTERN ... ] DO
@@ -264,32 +274,58 @@ form is:
             LIST
     ESAC
 
-Preferred semantics are first matching arm wins, no fall-through, `*`
-and `?` wildcard matching, and the same matcher used by pathname
-globbing. Quoting should be able to make wildcard characters literal.
+The first matching arm wins and there is no fall-through.  `WHEN * DO` is the
+normal default arm.  `*` and `?` use the same bounded matcher as pathname
+globbing.  Quoting makes wildcard characters literal.
 
-### 5.3 Quoting and escaping: still open
+### 5.3 Quoting and escaping
 
-This is a language-level blocker that should be frozen before
-substantial parser work.
+The first working DSH uses these fixed SIXBIT rules:
 
-The final specification must define:
+-   an unquoted physical record end is a list separator equivalent to `;`;
+-   unquoted `#` begins a comment through the physical record end only when it
+    appears where a new token could begin; inside a word it is an ordinary
+    character unless quoted/escaped for some other reason;
+-   unquoted whitespace separates words; keywords/operators are recognized only
+    when the complete token is unquoted;
+-   single quotes `'...'` are fully literal; no variable expansion, command
+    substitution, wildcard interpretation, or backslash processing occurs;
+-   double quotes `"..."` preserve whitespace and make wildcard characters
+    literal while allowing variable expansion and `$(...)`;
+-   inside double quotes, backslash only quotes `"`, `\`, `$`, or a physical
+    record newline;
+-   outside quotes, backslash quotes the next SIXBIT character; backslash before
+    a physical record newline removes that record boundary and continues the
+    logical command;
+-   `''` and `""` create a real empty argument;
+-   adjacent quoted and unquoted fragments concatenate into one argument;
+-   quoted reserved words and operator characters are ordinary data.
 
--   available quote forms;
--   the escape character;
--   variable expansion inside each quote form;
--   command substitution inside each quote form;
--   wildcard suppression;
--   preservation of whitespace;
--   representation of an empty argument;
--   concatenation of quoted and unquoted word fragments;
--   quoting of reserved words and operators;
--   line continuation, if any.
+Variable expansion never performs POSIX/IFS-style implicit word splitting.  A
+variable containing spaces remains one shell argument unless an explicit DSH
+construct says otherwise.
 
-One simplification should remain: variable expansion does not perform
-POSIX/IFS-style implicit word splitting. A variable containing spaces
-remains one shell argument unless an explicit language construct says
-otherwise.
+### 5.4 Invocation and script modes
+
+The first DSH command interface is frozen as:
+
+    DSH
+    DSH -L
+    DSH -C COMMAND [ ARG ... ]
+    DSH SCRIPT [ ARG ... ]
+
+With no script or `-C`, DSH is interactive only when a kernel/libc TTY query confirms that standard input is its controlling terminal.  `-L` selects login-shell startup policy.  `-C` executes
+one command-list string noninteractively and is required by later MAKE use.
+`DSH SCRIPT` reads the native SIXBIT script file noninteractively.
+
+For a script, `$0` is the script path and `$1`... are its arguments.  For
+`-C`, `$0` remains DSH and following arguments become `$1`....
+
+    SOURCE FILE [ ARG ... ]
+
+executes FILE in the current shell and temporarily replaces the positional
+parameter frame for the duration of the sourced file, then restores it.
+Noninteractive shells do not implicitly source profiles.
 
 ## 6. Variables and environment
 
@@ -304,32 +340,53 @@ Required special parameters include:
 
     $?
     $$
+    $0
     $#
     $1 ... $9
     $NAME
     $[NAME]
 
-The current RUN ABI should be used for environment inheritance where
-available. The obsolete DAIMOSV1 assumption that RUN cannot pass an
-environment must be removed.
+Current DAIMOS implements the bounded startup contract as RUN V2 and EXEC V1.
+Both caller-side launch descriptions are self-contained and bounded, use
+counted SIXBIT argument/environment records, and contain no graph of raw user
+pointers.  RUN retains its process-group and descriptor-map fields.  RUN and
+EXEC share the PDP-6 child-image vector/record builder.  The child/replacement
+image receives:
 
-Assignment syntax already has implementation precedent and should remain
-available:
+    AC1 = argc
+    AC2 = argv vector
+    AC3 = envp vector or zero
+
+Each argv/environment string is a counted SIXBIT record in child memory.
+Environment records use `NAME=VALUE`.  RUN V2 places the counted executable path first, followed by argv records,
+environment records, and descriptor mappings.  EXEC V1 places the counted path
+first, followed by argv and environment records.  INIT passes the configured
+TTY id to LOGIN as argv[1]; the old private AC1=TTY convention is gone.
+
+Assignment syntax is:
 
     NAME=VALUE
 
-Shell-state commands should include at least:
+Assignment creates/changes a shell variable but does not export it by default.
+Environment entries inherited at startup begin marked exported.
+
+Shell-state commands include:
 
     SET
-    UNSET
-    EXPORT
+    UNSET NAME
+    EXPORT NAME
+    EXPORT NAME=VALUE
 
-Function-local variables remain an open semantic question. A small
-`LOCAL` or ksh-inspired `TYPESET` mechanism may be added if it can be
-implemented with a bounded call-frame model. It should not be
-implemented until the global/exported variable model is stable.
+`EXPORT NAME` marks the existing value exported, creating an empty value if the
+name did not exist.  `EXPORT NAME=VALUE` sets and exports it.  `UNSET` removes
+the variable.  Expanding an undefined variable contributes an empty fragment.
+There is no IFS-style implicit field splitting.
 
-No IFS-style implicit field splitting is planned.
+The first DSH has no `LOCAL` or `TYPESET`.  Function calls save/replace/restore
+the positional-parameter frame, but ordinary variable assignments inside a
+function affect the shell's global variable table.  `$0` remains the shell or
+script identity; `$#` and `$1`... refer to the current function/source/script
+positional frame.
 
 ## 7. Functions
 
@@ -427,17 +484,27 @@ requested mode.
 
 A pipeline is one shell job and one process group.
 
-The remaining policy decisions are:
+Job references use `%N`.  `FG` or `BG` without an argument selects the most
+recent eligible job.  The first DSH does not implement `%+`/`%-` aliases.
 
--   job numbering syntax;
--   job-reference spelling;
--   exact `JOBS` output;
--   notification timing for completed/stopped background jobs;
--   default stdin policy for background jobs;
--   retention/removal policy for completed job records.
+`JOBS` uses a compact stable form equivalent to:
 
-The job table must be fixed-size. Exhaustion must produce a clear shell
-error rather than corrupting state.
+    %N STATE [STATUS] COMMAND
+
+where STATE is RUNNING, STOPPED, or DONE and STATUS is shown for DONE jobs.
+A pipeline is one job and one process group.
+
+Background completion/stop notification occurs only at safe shell boundaries,
+never in the middle of interactive line editing.  A completed job record is
+reclaimable after its completion has been reported once either by such a
+notification or by `JOBS`.
+
+Background standard input remains inherited.  If a background process attempts
+to read its controlling terminal, the existing kernel foreground-TTY rule stops
+the process group; DSH does not silently redirect stdin to a null device.
+
+The job table must be fixed-size. Exhaustion must produce a clear shell error
+rather than corrupting state.
 
 DSH should use kernel sessions and domains as defined by DAIMOS. It must
 not create a second shell-specific session/domain abstraction.
@@ -453,17 +520,22 @@ Syntax is reserved:
 The implementation should eventually execute a complete DSH command list
 and capture its standard output through a pipe.
 
-Still to define:
+The first implementation is bounded to `DSH_WORD_MAX` captured SIXBIT
+characters; start with 255 unless measurement requires a smaller bound.  Record
+separators in captured text are normalized to single spaces and trailing record
+separators are removed.  The result is one word fragment and is never subjected
+to implicit field splitting.
 
--   maximum captured output;
--   record/newline normalization;
--   treatment of trailing newlines;
--   nesting;
--   whether command substitution is allowed in every word context;
--   failure/status interaction.
+Command substitution is allowed in ordinary unquoted and double-quoted word
+fragments, not inside single quotes.  Nesting is allowed only up to the fixed
+parser/evaluator depth.  It eventually runs a DSH worker/external DSH execution
+context and captures stdout through a pipe; it must not recursively clone the
+interactive shell state.
 
-The implementation must be bounded. No unbounded capture buffer is
-acceptable.
+Capture overflow, malformed nested input, or read/launch failure aborts the
+enclosing simple command with status 2 and a diagnostic.  The child status is
+not assigned to `$?` in the middle of expansion; `$?` changes when the enclosing
+command completes.
 
 ## 11. Globbing
 
@@ -477,14 +549,24 @@ Initial DSH should support:
 Bracket expressions and more elaborate ksh pattern operators are
 deferred.
 
-Globbing should be performed after variable expansion and after quote
-processing has identified literal wildcard characters. No-match behavior
-must be explicitly specified before implementation; it should not
-silently depend on the DAIMOSV1 accident of implementation.
+Globbing is performed after variable expansion and after quote processing has
+identified literal wildcard characters.  If a pattern has no matches, the
+original pattern is left unchanged as one literal argument.
 
 The same bounded wildcard matcher should be reusable for CASE patterns.
 
 ## 12. Interactive input, history, and editing
+
+Login startup policy is fixed before interactive editing details:
+
+-   LOGIN starts DSH with `-L`;
+-   a login DSH reads `/CONFIG/DSH.PROFILE` and then `$HOME/.DSH.PROFILE` if
+    present;
+-   nested interactive shells and noninteractive shells source no profile
+    implicitly;
+-   a missing profile is ignored; a profile read/syntax error is diagnosed but
+    does not terminate an interactive login shell, and leaves a nonzero `$?`;
+-   profile files use native SIXBIT text records.
 
 The CTY baseline is transcript-oriented. DSH must not require cursor
 addressing, curses, ANSI escape sequences, or a terminal database.
@@ -498,7 +580,18 @@ DAIMOSV1 provides precedent for:
 -   Ctrl-D handling.
 
 The first implementation should keep editing deliberately small and
-bounded.
+bounded.  The accepted kernel TTY design also provides a minimal cooked mode
+for ordinary programs, but interactive DSH deliberately selects raw/no-echo
+input while its own editor is active because history and TAB completion remain
+shell policy.
+
+TTY mode is terminal state and must participate in job-control handoff.  DSH
+keeps its own raw/no-echo mode, gives a newly started ordinary foreground job
+canonical+echo mode, and restores the shell mode after the job exits or stops.
+If a foreground job changes its mode and then stops, DSH records that compact
+mode in the job entry and restores it before `FG` continues the job.  This is
+required for full-screen programs such as Elvis; merely restoring the
+foreground process group is insufficient.
 
 Richer serial-terminal editing can be added later without changing the
 shell grammar.
@@ -588,7 +681,8 @@ workaround in DSH.
 ## 15. Builtin policy
 
 A command should be builtin when it must modify current shell state or
-is tightly coupled to shell execution.
+is tightly coupled to shell execution.  `.` is an exact synonym for `SOURCE`
+with the same positional-argument save/restore semantics.
 
 Expected builtins:
 
@@ -955,34 +1049,39 @@ final shell architecture. It currently has only a small parser, `CD`,
 
 ## 23. Implementation sequence
 
-The recommended implementation order for a new chat/work session is:
+The recommended implementation order is:
 
-### Stage 0 - establish the base
+### Stage 0 - establish and complete the platform prerequisites
 
 -   unpack the newest DAIMOS, DAIMOSV1, and pdp10-doc archives;
 -   record git base hashes;
 -   build and run the current testkit;
+-   complete the KCC-built INIT -> LOGIN -> current-DSH acceptance gate;
+-   keep RUN V2 / EXEC V1 startup-ABI regression coverage current; the bounded
+    counted-SIXBIT launch blocks, CRT0 AC1/AC2/AC3 convention, and INIT->LOGIN
+    argv[1] TTY handoff are implemented;
+-   keep regression coverage for the implemented `SYS_EXT_DUP2`/`dsys_dup2()`
+    descriptor replacement operation; target probing already covers self-dup,
+    invalid-source atomicity, and pipe-end replacement;
+-   implement and test the minimal canonical/echo TTY ABI and job-mode handoff;
+-   implement and pressure-test the reclaimable D6FS block cache;
 -   inspect current RUN/WAIT/process-control structures;
 -   do not rely on obsolete ABI text in old DSH documentation.
 
-### Stage 1 - import the DSH core architecture
+### Stage 1 - lock tests to the frozen language and invocation contract
+
+Before importing substantial parser code, add parser/semantic tests for the
+already-frozen quoting, empty-argument, CASE, variable/export, script/-C/-L,
+SOURCE, glob no-match, profile, and job-reference rules.  Do not reopen these
+rules merely because imported DAIMOSV1 code behaves differently.
+
+### Stage 2 - import the DSH core architecture
 
 -   bring over the modular SIXBIT, lexer, parser, environment, and
     evaluator structure;
 -   adapt types and libc boundaries to current DAIMOS;
 -   keep fixed arenas;
 -   get simple external commands and shell-state builtins working.
-
-### Stage 2 - freeze language blockers
-
-Before expanding the parser, finalize:
-
--   quoting/escaping;
--   CASE arm syntax;
--   no-match glob behavior;
--   basic variable/export semantics.
-
-Add parser tests for every frozen rule.
 
 ### Stage 3 - execution and redirection
 
@@ -995,7 +1094,8 @@ Add parser tests for every frozen rule.
 
 ### Stage 4 - pipelines
 
--   arbitrary bounded pipeline chain;
+-   arbitrary bounded pipeline chain, limited by available process/file
+    resources rather than by a one-pipe parser restriction;
 -   process-group creation/join;
 -   descriptor closure;
 -   last-stage status;
@@ -1054,10 +1154,10 @@ Only after the non-overlay implementation works:
     already available;
 -   measure RAM savings and execution cost.
 
-### Stage 11 - profiles and command substitution
+### Stage 11 - command substitution
 
-Implement after the core shell is stable because both exercise
-nested/current-shell execution and native record input.
+Implement the already-frozen bounded capture semantics after the core shell is
+stable.  Profile loading belongs with login/script startup once SOURCE works.
 
 ## 24. Testing requirements
 
@@ -1068,9 +1168,10 @@ DSH requires host and target tests.
 Cover:
 
 -   every keyword/operator;
--   quoting/escaping once frozen;
+-   physical-record separators and token-boundary comments;
+-   quoting/escaping and empty arguments;
 -   redirections;
--   pipelines;
+-   foreground and background pipelines;
 -   compound commands;
 -   malformed input;
 -   arena exhaustion;
@@ -1122,36 +1223,33 @@ Measure:
 
 Resource-limit failures must be deterministic and recoverable.
 
-## 25. Open decisions to settle during implementation
+## 25. Frozen decisions and deliberately deferred non-blockers
 
-The following remain genuinely open and should be tracked explicitly
-rather than decided accidentally in code.
+There are no remaining language or invocation decisions that block the first
+substantial DSH implementation.  Sections 5 through 12 freeze quoting, CASE,
+variables/export, invocation/script modes, profiles, jobs, command substitution,
+and glob no-match behavior.
 
-A. Exact SIXBIT quoting and escaping rules.
+The following are deliberately deferred and must not be decided accidentally in
+the first implementation:
 
-B. Exact CASE arm syntax. Preferred form is `WHEN ... DO`.
+A. Trap/event language.  Add only after basic job control and native process
+   events are stable.
 
-C. Function-local variable semantics and whether `LOCAL`/`TYPESET`
-exists.
+B. Functions or state-changing builtins inside pipelines.  The first DSH
+   accepts external pipeline stages; a worker image is considered later if
+   measurement and semantics justify it.
 
-D. Command-substitution capture and newline rules.
+C. Final userspace overlay boundaries.  These are measurement-gated, not shell
+   language decisions.
 
-E. Profile paths and startup policy.
+D. Exact compiled completion/getopt/index record layout and later SIXMD
+   refinements.  The common semantic architecture is frozen; the compact binary
+   representation may be tuned during Stage 7.
 
-F. Job reference syntax and exact job-status display.
-
-G. Trap/event language, after basic job control is working.
-
-H. Whether a DSH worker image is worthwhile for functions/builtins
-inside pipelines.
-
-I. Final overlay boundaries, based on measured linked sizes.
-
-J. Exact compiled completion/getopt/index record formats and any later
-refinements to SIXMD. The architecture is fixed; binary/record layout is
-not.
-
-K. Globbing no-match behavior.
+E. Advanced job aliases such as `%+` and `%-`, full termios, here-documents,
+   full descriptor-redirection syntax, advanced glob operators, LOCAL/TYPESET,
+   and exported functions.
 
 ## 26. Explicit non-goals for the first working DSH
 
