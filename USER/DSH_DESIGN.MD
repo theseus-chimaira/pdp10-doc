@@ -1,7 +1,7 @@
 # DAIMOS DSH AND COMMAND-INTERFACE DESIGN
 
 Status: pre-V1 implementation design and specification\
-Date: 2026-09-18\
+Date: 2026-09-19\
 Scope: DSH, command utilities, SIXMD command manuals, getopt/help
 support, completion interfaces, and userland overlay planning.
 
@@ -39,17 +39,22 @@ of the design.
 Implementation work should consult these sources in this order.
 
 
-### 2.0 Immediate build prerequisite
+### 2.0 Immediate implementation prerequisites
 
-Before new DSH feature implementation, convert the existing DAIMOS userspace
-(libc, INIT, LOGIN, DSH, and current commands) from GCC/libgcc to KCC and pass
-the real INIT -> LOGIN -> DSH acceptance path. Compiler or assembler defects
-found by that conversion take priority and must be fixed at their source.
+THE GCC/LIBGCC -> KCC/DAS USERSPACE CONVERSION, RUN/EXEC STARTUP ABI, DUP2, TTY
+LINE DISCIPLINE, DESCRIPTOR ISATTY, INHERITED UMASK, LOGIN INITIAL ENVIRONMENT,
+RECLAIMABLE D6FS BLOCK CACHE, AND DIRECT-SLIDE MM COMPACTOR/RELOCATOR ARE
+COMPLETE.
 
-Before the substantial port, the TTY control ABI must also distinguish terminal
-signal generation from raw/canonical input and expose a small `isatty`-class
-identity query.  DSH edits its own prompt in raw/no-echo/no-signals mode so a
-CTRL-C at the prompt cannot terminate the shell.
+THE PRE-DSH KERNEL-STABILIZATION PASS IS COMPLETE.  KEEP THE CONSOLIDATED
+MONITORFS NAMESPACE, PROCESS-ONLY /PROC ALIAS, I/O-ONLY /DEV PROJECTION, AND
+THE SEEK/CHOWN/RMDIR/MTIME/STAT/DATE/TOUCH ABI PASSING THEIR TARGET-SIDE
+REGRESSIONS.  SUBSTANTIAL DSH MAY NOW BEGIN WITHOUT AN OPEN FILESYSTEM/SYSCALL
+GATE.
+
+DO NOT ADD DAIMOSV1 SYSCTL/DEVIO COMPATIBILITY INTERFACES.  INTROSPECTION AND
+ADMINISTRATION TOOLS MUST TARGET MONITORFS.  COMPILER OR ASSEMBLER DEFECTS FOUND
+DURING THIS WORK STILL TAKE PRIORITY AND MUST BE FIXED AT THEIR SOURCE.
 
 ### 2.1 Current DAIMOS source and ABI
 
@@ -131,7 +136,12 @@ handling, interactive history/completion scaffolding, and native input
 handling.
 
 The new DSH should merge the useful concepts from both rather than
-choosing one wholesale.
+choosing one wholesale.  In particular, reuse the parser/SIXBIT/environment/
+PATH/glob/redirection/alias/test architecture, but replace the old executor and
+pipeline/job-control path.  DAIMOSV1 `dsh_native.c` can execute pipeline stages
+sequentially through temporary shell-descriptor redirection; the current DAIMOS
+requires concurrent pipelines grouped into one process group with foreground
+TTY ownership transferred to the job.
 
 ## 3. Fundamental DSH rules
 
@@ -691,6 +701,7 @@ Expected builtins:
     SET
     UNSET
     EXPORT
+    UMASK
     READ
     SHIFT
     RETURN
@@ -702,6 +713,9 @@ Expected builtins:
     BG
     ALIAS
     UNALIAS
+
+`UMASK` with no operand prints the current three-digit octal mask; `UMASK OCTAL`
+sets the low nine permission-mask bits for the shell and future children.
 
 Possible later builtins:
 
