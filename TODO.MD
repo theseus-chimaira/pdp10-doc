@@ -145,3 +145,12 @@ PRIORITY WHEN DISCOVERED DURING DAIMOS WORK.
 - COMPLETE COMMON BAD-MEDIA REMAPPING BELOW D6FS/SWAP/LOGSTORE.
 - INCLUDE THE CURRENT TSFS/RAW-DTC BRIDGE IN THE HEADROOM SWEEP; DO NOT ADD
   READ-PATH FEATURES MERELY TO ENABLE THAT OPTIMIZATION.
+
+## 2026-09-23 D6FS patch-freeze
+
+The cumulative D6FS implementation through crash recovery and maintenance/integrity is
+complete.  The common disk/drum BADMAP runtime mapper remains open and must not be
+reported as implemented.  Experimental fixed-resident variants were rejected for
+consuming the remaining permanent headroom.  The next accepted design should impose
+no permanent cost on clean media and allocate exception state only when bad-media
+metadata is present.

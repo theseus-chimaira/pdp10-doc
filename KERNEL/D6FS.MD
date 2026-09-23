@@ -803,3 +803,13 @@ THE IMPLEMENTATION RULE IS SIZE FIRST, THEN SPEED AT NEARLY THE SAME PRIORITY,
 THEN DISK SPACE, WITH ABSTRACTION ELEGANCE ONLY AFTER THOSE COSTS ARE ACCEPTABLE.
 A LAYER MAY THEREFORE USE A SPECIAL RAW RANGE OR A TINY PRIVATE ACCELERATOR
 WHEN THAT IS MEASURABLY SMALLER/FASTER THAN A MORE GENERAL MECHANISM.
+
+## Current closure boundary (2026-09-23)
+
+D6FS backing ownership, multiple mounts, typed storage reservations, atomic RO/RW
+transitions, conservative crash recovery, and maintenance/integrity tooling are complete.
+The common disk/drum BADMAP runtime translator is still below the acceptance boundary:
+no experimental fixed-resident mapper is part of the accepted kernel.  The current
+measured baseline remains D6FS MRES 2367 words with 18 free permanent addresses in the
+multi-member profile.  A future BADMAP implementation must preserve the clean-media
+baseline and remain below D6FS/swap/logstore semantics.
