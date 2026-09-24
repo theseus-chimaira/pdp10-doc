@@ -178,15 +178,19 @@ PRIORITY WHEN DISCOVERED DURING DAIMOS WORK.
   BLOCKSET, MULTI-DRM USES INTERLEAVE.
 - KEEP TSFS MEMBER SCANNING/CHECKSUM VALIDATION TRANSIENT (USERSPACE OR A
   DISCARD-AFTER-MOUNT MODULE), NEVER PERMANENT KCORE/MRES.
-- COMPLETE COMMON BAD-MEDIA REMAPPING BELOW D6FS/SWAP/LOGSTORE.
+- DONE 2026-09-24: COMMON BAD-MEDIA REMAPPING BELOW D6FS/SWAP/LOGSTORE,
+  INCLUDING OPTIONAL MOVABLE BADMAP, STABLE PHYSICAL SPARES, DSK/DRM MAPPER
+  COVERAGE, RAW SWAP-TAIL MAPPING, AND DESTROYED-SUPERBLOCK REAL-SIMH ACCEPTANCE.
 - INCLUDE THE CURRENT TSFS/RAW-DTC BRIDGE IN THE HEADROOM SWEEP; DO NOT ADD
   READ-PATH FEATURES MERELY TO ENABLE THAT OPTIMIZATION.
 
-## 2026-09-23 D6FS patch-freeze
+## 2026-09-24 BADMAP closure
 
 The cumulative D6FS implementation through crash recovery and maintenance/integrity is
-complete.  The common disk/drum BADMAP runtime mapper remains open and must not be
-reported as implemented.  Experimental fixed-resident variants were rejected for
-consuming the remaining permanent headroom.  The next accepted design should impose
-no permanent cost on clean media and allocate exception state only when bad-media
-metadata is present.
+complete, and the common disk/drum BADMAP runtime mapper is now accepted.  It is an
+optional movable package with one managed-core word per active exception and no
+permanent clean-media cost.  Same-toolchain permanent-size results are identical to the
+RT/PI-fixed baseline: resident 16148 words, last permanent address 037503, 188 addresses
+free below 040000.  Tooling and target regressions cover D6FS, logstore, raw swap-tail
+translation, DSK/DRM geometry, and a real-SIMH boot through destroyed original
+superblock sectors.

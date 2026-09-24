@@ -804,12 +804,13 @@ THEN DISK SPACE, WITH ABSTRACTION ELEGANCE ONLY AFTER THOSE COSTS ARE ACCEPTABLE
 A LAYER MAY THEREFORE USE A SPECIAL RAW RANGE OR A TINY PRIVATE ACCELERATOR
 WHEN THAT IS MEASURABLY SMALLER/FASTER THAN A MORE GENERAL MECHANISM.
 
-## Current closure boundary (2026-09-23)
+## Current closure boundary (2026-09-24)
 
 D6FS backing ownership, multiple mounts, typed storage reservations, atomic RO/RW
-transitions, conservative crash recovery, and maintenance/integrity tooling are complete.
-The common disk/drum BADMAP runtime translator is still below the acceptance boundary:
-no experimental fixed-resident mapper is part of the accepted kernel.  The current
-measured baseline remains D6FS MRES 2367 words with 18 free permanent addresses in the
-multi-member profile.  A future BADMAP implementation must preserve the clean-media
-baseline and remain below D6FS/swap/logstore semantics.
+transitions, conservative crash recovery, maintenance/integrity tooling, and the common
+BADMAP runtime translator are complete.  BADMAP is an optional movable package below
+D6FS/logstore/swap and allocates one managed-core word per active exception.  Clean
+media install no BADMAP package; a same-toolchain comparison with the RT/PI-fixed
+baseline is identical at resident 16148 words, last permanent address 037503, with
+188 addresses free below 040000.  Real SIMH acceptance destroys both original D6FS
+superblock sectors after remapping them to spares and still reaches LOGIN.
