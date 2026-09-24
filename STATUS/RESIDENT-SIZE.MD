@@ -128,3 +128,24 @@ ACCEPTANCE TESTS PASS AT THE 10104-WORD KCORE / 44-WORD MULTI-ROOT-FREE STATE.
 
 NATIVE `D6LZ -X` AND HOST `D6LZ -X` PRODUCE THAT FORMAT, AND TARGET/REAL-SIMH
 REGRESSIONS EXECUTE A NATIVE-COMPRESSED PROGRAM SUCCESSFULLY.
+
+## CONSOLIDATED HEADROOM SWEEP - 2026-09-24
+
+The accepted 2026-09-24 sweep is now consolidated and supersedes the intermediate
+size checkpoints above for current accounting.  With the current KCC toolchain:
+
+    KCORE              9921 WORDS
+    D6FS MRES           2338 WORDS
+    DTFS/TSFS MRES      2041 WORDS
+    MULTI_ROOT         16117 WORDS
+    MULTI_ROOT FREE      266 WORDS BELOW 040000
+
+The consolidated changes keep the public EXEC/DXR/D6LZ ABI unchanged.  They include
+the one-pass startup-vector builder, compact EXEC validation/rollback and target
+counted-SIXBIT record validator, target-only removal of VM checks already guaranteed
+by validated callers, use of the compact PDP-10 DTFS walkers, D6FS directory/provider
+contract compaction, and the corrected GETGID target branch.
+
+Validation passed with the current sources/toolchain: host MM, PDP-6 module-runtime
+and D6LZ target tests, ROOT LOGIN -> DSH -> EXIT -> LOGIN, host and native compressed
+EXEC, EXEC image replacement, and child/session preservation across EXEC.
