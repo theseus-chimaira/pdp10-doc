@@ -58,18 +58,21 @@ measurement; the compression ratio is not part of the boot ABI.
 
 ### 32K KINIT profile
 
-The low-memory profile remains governed by `BOOT_PROFILE=LOWMEM`,
-`BOOT_CORE_WORDS=0100000`, and the configured KINIT stack reserve.  Compression
-does not relax the requirement that the final expanded image plus required
-working ranges fit in the target machine.
+The low-memory profile remains governed by `BOOT_PROFILE=lowmem`,
+`BOOT_CORE_WORDS=0100000`, and the configured KINIT stack reserve.  It writes a
+zero `compressed_words` header and streams the raw KINIT image directly to
+030000; this avoids simultaneous final-image plus compressed-staging storage on
+a 32K machine.  The full profile retains D6LZ36 compressed boot.
 
 ## BOOT FLOW
 
 Stage1 probes DSK0..DSK3, validates member descriptors, constructs the logical
 member map, and reads the selected bootstream in logical round-robin order while
-skipping recorded bad runs.  After reading and validating the compressed stream
-header it stages exactly the declared compressed payload, installs the shared
-decoder at 000060, expands to 030000, and jumps to the relative KINIT entry.
+skipping recorded bad runs.  After reading and validating the stream header, a nonzero `compressed_words`
+field selects the normal compressed path: Stage1 stages exactly that payload,
+installs the shared decoder at 000060, expands to 030000, and jumps to KINIT.
+A zero field selects the LOWMEM raw path and streams the declared uncompressed
+image directly to 030000 before entering KINIT.
 KINIT then reopens the selected boot medium and performs normal DAIMOS boot
 initialization.
 
