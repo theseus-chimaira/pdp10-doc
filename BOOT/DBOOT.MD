@@ -15,20 +15,20 @@ STAGE0 PAPER TAPE/RIM PROXY
   -> SCAN/SELECT DBC OR DB0/DB1/DBX BOOT MEMBERS
   -> READ THE THREE-WORD COMPRESSED DAIMON STREAM HEADER
   -> STAGE THE D6LZ36 PAYLOAD ABOVE THE FINAL UNCOMPRESSED IMAGE
-  -> INSTALL THE COMMON 57-WORD RESUMABLE D6LZ36 DECODER AT 000060
+  -> INSTALL THE COMMON 42-WORD RESUMABLE D6LZ36 CORE AT 000060
   -> EXPAND THE IMAGE DIRECTLY TO 030000
   -> ENTER KINIT AT 030000 + ENTRY_OFFSET
 '''
 
-`000020..000057` remains architectural PDP-6 low memory.  Address `000060` is
-now the fixed D6LZ36 memory-decoder entry and is part of the resident contract.
-KCORE links the exact same decoder source first, so its real
-`d6lz36_decode` symbol is also `000060`; no trampoline or second resident
-copy exists.  The fixed image also exports a resumable token core.  Normal
-Stage1/memory decoding enters it once over the complete in-memory stream, while
-the runtime VFS frontend feeds it eight-word windows and resumes only when a
-window empties.  This removes the duplicate resident token/match engine without
-adding a per-word call to the boot decoder.
+`000020..000057` remains architectural PDP-6 low memory.  Address `000060` is the fixed D6LZ36 resumable-core entry and is part of the resident contract.
+KCORE links the exact same core source first, so `d6lz36_decode_core` is also
+physically `000060`; no trampoline or second resident token engine exists.
+Stage1 carries those exact 42 core words, whose internal transfers are encoded
+against `000060+offset`, copies them to low core, initializes the decoder state,
+and calls `000060` directly.  The generic memory-wrapper ABI is therefore a
+boot/test convenience only and consumes no permanent KCORE words.  At runtime
+the VFS frontend feeds eight-word windows to the same core and resumes only
+when a window empties, without a per-word input call.
 
 Stage1 still treats the expanded KINIT/KCORE image as opaque.  It does not
 parse KINIT, MINIT, MRES, D6FS, or module metadata.  KINIT continues to own
