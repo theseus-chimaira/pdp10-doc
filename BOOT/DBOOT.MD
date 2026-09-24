@@ -15,7 +15,7 @@ STAGE0 PAPER TAPE/RIM PROXY
   -> SCAN/SELECT DBC OR DB0/DB1/DBX BOOT MEMBERS
   -> READ THE THREE-WORD COMPRESSED DAIMON STREAM HEADER
   -> STAGE THE D6LZ36 PAYLOAD ABOVE THE FINAL UNCOMPRESSED IMAGE
-  -> INSTALL THE COMMON 61-WORD D6LZ36 DECODER AT 000060
+  -> INSTALL THE COMMON 57-WORD RESUMABLE D6LZ36 DECODER AT 000060
   -> EXPAND THE IMAGE DIRECTLY TO 030000
   -> ENTER KINIT AT 030000 + ENTRY_OFFSET
 '''
@@ -24,7 +24,11 @@ STAGE0 PAPER TAPE/RIM PROXY
 now the fixed D6LZ36 memory-decoder entry and is part of the resident contract.
 KCORE links the exact same decoder source first, so its real
 `d6lz36_decode` symbol is also `000060`; no trampoline or second resident
-copy exists.
+copy exists.  The fixed image also exports a resumable token core.  Normal
+Stage1/memory decoding enters it once over the complete in-memory stream, while
+the runtime VFS frontend feeds it eight-word windows and resumes only when a
+window empties.  This removes the duplicate resident token/match engine without
+adding a per-word call to the boot decoder.
 
 Stage1 still treats the expanded KINIT/KCORE image as opaque.  It does not
 parse KINIT, MINIT, MRES, D6FS, or module metadata.  KINIT continues to own
