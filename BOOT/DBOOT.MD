@@ -1,4 +1,4 @@
-# PDP-6 HDD DBOOT V1
+# PDP-6 DSK/DRM DBOOT V1
 
 STATUS: CURRENT IMPLEMENTATION SUMMARY.  SOURCE OF TRUTH:
 '../DAIMOS/INCLUDE/DBOOT_V1.H',
@@ -7,11 +7,11 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.  SOURCE OF TRUTH:
 
 ## BOOT PATH
 
-The current production disk boot path is:
+The current production DSK/DRM boot path is:
 
 '''TEXT
 STAGE0 PAPER TAPE/RIM PROXY
-  -> DSK STAGE1
+  -> DEVICE STAGE1 (DSK270 OR DRM236)
   -> SCAN/SELECT DBC OR DB0/DB1/DBX BOOT MEMBERS
   -> READ THE THREE-WORD COMPRESSED DAIMON STREAM HEADER
   -> STAGE THE D6LZ36 PAYLOAD ABOVE THE FINAL UNCOMPRESSED IMAGE
@@ -36,7 +36,7 @@ those responsibilities after decompression.
 
 ### Compressed stream header
 
-The current DSK Stage1 stream is:
+The current DSK and DRM Stage1 stream is:
 
 '''TEXT
 0  SIXBIT DAIMON
@@ -66,9 +66,15 @@ a 32K machine.  The full profile retains D6LZ36 compressed boot.
 
 ## BOOT FLOW
 
-Stage1 probes DSK0..DSK3, validates member descriptors, constructs the logical
-member map, and reads the selected bootstream in logical round-robin order while
-skipping recorded bad runs.  After reading and validating the stream header, a nonzero `compressed_words`
+The DSK Stage1 probes DSK0..DSK3 and the DRM Stage1 probes DRM0..DRM3.  Both
+validate the same member descriptors, construct the same logical member map,
+and read the selected bootstream in logical round-robin order while skipping
+recorded bad runs.  The metadata and stream machinery are intentionally shared
+by design; only raw media address formation and controller I/O are device
+specific.  DRM maps one 128-word DAIMOS block to the Type-236 controller as
+`unit<<16 | block<<3` and performs a polled Type-167/236 DMA transfer.
+
+After reading and validating the stream header, a nonzero `compressed_words`
 field selects the normal compressed path: Stage1 stages exactly that payload,
 installs the shared decoder at 000060, expands to 030000, and jumps to KINIT.
 A zero field selects the LOWMEM raw path and streams the declared uncompressed
@@ -175,11 +181,12 @@ HIDDEN BAD-BLOCK FCBS.  SEE 'KERNEL/BLOCKSET.MD'.
 
 ## STAGE1 DIAGNOSTICS
 
-The size-reduced DSK Stage1 no longer carries packed SIXBIT fatal strings.
+The size-reduced DSK and DRM Stage1 loaders no longer carry packed SIXBIT
+fatal strings.
 Failure is reported as an AC1 numeric reason followed by HALT:
 
 '''TEXT
-1  no readable DSK
+1  no readable selected device (DSK or DRM)
 2  no complete selected set
 3  invalid compressed-image header
 4  bootstream read failure
