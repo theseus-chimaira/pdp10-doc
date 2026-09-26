@@ -23,7 +23,7 @@ STAGE0 PAPER TAPE/RIM PROXY
 `000020..000057` remains architectural PDP-6 low memory.  Address `000060` is the fixed D6LZ36 resumable-core entry and is part of the resident contract.
 KCORE links the exact same core source first, so `d6lz36_decode_core` is also
 physically `000060`; no trampoline or second resident token engine exists.
-Stage1 carries those exact 42 core words, whose internal transfers are encoded
+Stage1 carries those exact 40 core words, whose internal transfers are encoded
 against `000060+offset`, copies them to low core, initializes the decoder state,
 and calls `000060` directly.  The generic memory-wrapper ABI is therefore a
 boot/test convenience only and consumes no permanent KCORE words.  At runtime

@@ -813,8 +813,10 @@ D6FS backing ownership, multiple mounts, typed storage reservations, atomic RO/R
 transitions, conservative crash recovery, maintenance/integrity tooling, and the common
 BADMAP runtime translator are complete.  BADMAP is an optional movable package below
 D6FS/logstore/swap and allocates one managed-core word per active exception.  Clean
-media install no BADMAP package.  The current same-toolchain tree measures KCORE
-9980 / KCORE+MRES 16127; single-root PERMANENT_LAST is 037456 with 209 free
-addresses, while active multi-root MULTI_LAST is 037527 with 168 free addresses
-below 040000.  Real SIMH acceptance destroys both original D6FS
+media install no BADMAP package.  At the 2026-09-24 D6FS/BADMAP closure
+checkpoint, the same-toolchain tree measured KCORE 9980 / KCORE+MRES 16127;
+single-root PERMANENT_LAST was 037456 with 209 free addresses, while active
+multi-root MULTI_LAST was 037527 with 168 free addresses below 040000.  These
+are historical closure figures; STATUS/RESIDENT-SIZE.MD owns current sizing.
+Real SIMH acceptance destroys both original D6FS
 superblock sectors after remapping them to spares and still reaches LOGIN.
