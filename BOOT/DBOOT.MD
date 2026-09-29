@@ -59,9 +59,19 @@ DTC and MTC consume this stream sequentially from one medium.  PTR preserves
 its operator-friendly two-tape handoff: Tape 1 carries a count followed by the
 three-word DAIMON header and the first compressed segment; after `TAPE2`, Tape
 2 carries a count followed by the remaining compressed segment.  The two PTR
-segments are staged contiguously before the same decoder is invoked.  MTC uses
-the declared compressed-word count rather than Type-516 EOR as its termination
-oracle because EOR may become visible before the final DCT word is delivered.
+segments are staged contiguously before the same decoder is invoked.  Type-516
+MTC boot media is split into records no larger than the simulator/controller
+32-KiB record buffer.  Stage1 treats EOR as a record boundary, restarts READ on
+the next record, and continues until the declared compressed-word count is
+satisfied; the count, not EOR, remains the image-termination oracle.
+
+The sequential Stage1 loaders use a temporary pushdown list below the KINIT
+load window while reading and expanding the stream.  Immediately before KINIT
+entry they move AC17 to the first word after the expanded image, matching the
+DSK/DRM handoff contract.  This is required because both the expanded KINIT
+image and the subsequent KCORE low-memory copy can overwrite a fixed Stage1
+stack.  Post-decode fatal paths likewise remain above the installed
+`000060..000127` decoder image.
 
 The current full-profile measurement is 23202 uncompressed payload words and
 21756 D6LZ36 words, about 6.2 percent smaller.  This is only a dated image
