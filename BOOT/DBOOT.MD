@@ -1,18 +1,21 @@
-# PDP-6 DSK/DRM DBOOT V1
+# PDP-6 STAGE1 COMPRESSED BOOT AND DSK/DRM DBOOT V1
 
 STATUS: CURRENT IMPLEMENTATION SUMMARY.  SOURCE OF TRUTH:
 `SYSTEM/STAND/PDP6/DSK/STAGE1.S`, `SYSTEM/STAND/PDP6/DRM/STAGE1.S`,
+`SYSTEM/STAND/PDP6/DTC/STAGE1.S`, `SYSTEM/STAND/PDP6/MTC/STAGE1.S`,
+`SYSTEM/STAND/PDP6/PTR/STAGE1.S`,
 `SYSTEM/KERNEL/STORAGE/BLOCKSET_LAYOUT.H`, AND THE CURRENT PDP10-TOOLS
 BOOTSET IMAGE BUILDER.  THE OLD BOOTINFO HEADER IS NOT PART OF THE CURRENT ABI.
 
 ## BOOT PATH
 
-The current production DSK/DRM boot path is:
+The current production compressed-image contract is shared by all implemented
+PDP-6 Stage1 transports.  DSK/DRM add DBOOT member discovery around it:
 
 '''TEXT
 STAGE0 PAPER TAPE/RIM PROXY
-  -> DEVICE STAGE1 (DSK270 OR DRM236)
-  -> SCAN/SELECT DBC OR DB0/DB1/DBX BOOT MEMBERS
+  -> DEVICE STAGE1 (DSK270, DRM236, DTC551, MTC516, OR PTR)
+  -> DEVICE-SPECIFIC STREAM DISCOVERY/TRANSFER
   -> READ THE THREE-WORD COMPRESSED DAIMON STREAM HEADER
   -> STAGE THE D6LZ36 PAYLOAD ABOVE THE FINAL UNCOMPRESSED IMAGE
   -> INSTALL THE COMMON 40-WORD RESUMABLE D6LZ36 CORE AT 000060
@@ -36,7 +39,7 @@ those responsibilities after decompression.
 
 ### Compressed stream header
 
-The current DSK and DRM Stage1 stream is:
+The normal full-profile Stage1 stream is:
 
 '''TEXT
 0  SIXBIT DAIMON
@@ -51,6 +54,14 @@ boot core.  The forward decoder therefore cannot overwrite unread source.
 Stage1 requires both decoder success and exact consumption of the declared
 compressed-word count.  The staging range is dead after expansion and becomes
 the KINIT stack area.
+
+DTC and MTC consume this stream sequentially from one medium.  PTR preserves
+its operator-friendly two-tape handoff: Tape 1 carries a count followed by the
+three-word DAIMON header and the first compressed segment; after `TAPE2`, Tape
+2 carries a count followed by the remaining compressed segment.  The two PTR
+segments are staged contiguously before the same decoder is invoked.  MTC uses
+the declared compressed-word count rather than Type-516 EOR as its termination
+oracle because EOR may become visible before the final DCT word is delivered.
 
 The current full-profile measurement is 23202 uncompressed payload words and
 21756 D6LZ36 words, about 6.2 percent smaller.  This is only a dated image
@@ -81,6 +92,10 @@ A zero field selects the LOWMEM raw path and streams the declared uncompressed
 image directly to 030000 before entering KINIT.
 KINIT then reopens the selected boot medium and performs normal DAIMOS boot
 initialization.
+
+DTC, MTC, and PTR currently implement the normal compressed stream only; the
+explicit 32K raw LOWMEM path remains a DSK-oriented diagnostic/acceptance
+profile.
 
 Stage1 is not a filesystem reader, module linker, or rescue OS.
 
