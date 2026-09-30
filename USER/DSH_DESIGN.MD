@@ -445,6 +445,12 @@ The implementation must:
 Pipeline status is the status of the last stage unless a later explicit
 feature changes that policy.
 
+Pipeline transport is the native 36-bit word FIFO ABI.  Normal text pipeline
+stages exchange S6REC/SIXBIT words, the same representation used by native
+text files.  A stage which requires complete output must tolerate short
+WRITE_WORDS results and continue until its record/buffer has been transferred;
+IPC itself does not decode text or make multiword records atomic.
+
 The implementation may use a fixed maximum number of pipeline stages,
 but this is an implementation resource limit rather than a language
 semantic. Start with a small measured limit such as 8 and adjust from
