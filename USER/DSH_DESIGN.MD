@@ -188,6 +188,14 @@ The initial PATH should remain:
 
     /SYSTEM/EXEC:/OPTION/BASE/EXEC
 
+Public commands implemented by shared multiplexers still have visible entries
+under `/SYSTEM/EXEC`.  These entries are D6FS symlinks to private implementations
+under `/SYSTEM/LIBEXEC`; the command map itself is also private at
+`/SYSTEM/LIBEXEC/MAP`.  This keeps one executable image per multiplexer while
+making `/SYSTEM/EXEC` an accurate, inspectable command namespace.  `WHICH` is a
+normal external utility and reports these public paths rather than the private
+multiplexer targets.
+
 Command lookup order is:
 
 1.  builtin
