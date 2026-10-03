@@ -98,7 +98,7 @@ Important rules already defined there include:
 -   `OPTIONS`, `OPERANDS`, `ENVIRONMENT`, `FILES`, `EXIT STATUS`, and
     `SEE ALSO` are semantic sections;
 -   option declarations generate option-parser descriptions, synopsis
-    text, `-H` output, and DSH option completion;
+    text, HELP output, and DSH option completion;
 -   operand metavariables define completion classes;
 -   malformed manuals fail validation at build/install time;
 -   malformed or missing installed metadata must never crash DSH or a
@@ -840,7 +840,7 @@ The library should:
 -   consume a compact generated per-command option descriptor;
 -   recognize valid one-letter options;
 -   know whether an option requires a value;
--   implement standard `-H` handling;
+-   provide descriptors usable by the separate HELP command;
 -   return option/value information to the application;
 -   avoid embedding duplicate help tables in each utility;
 -   use bounded storage;
@@ -871,9 +871,10 @@ Deferred until a real command requires them:
 -   mutually exclusive option groups;
 -   complex subcommand grammars.
 
-### 19.3 `-H`
+### 19.3 HELP
 
-`-H` is common short help and may be implicit for compliant commands.
+DAIMOS DOES NOT RESERVE A PER-COMMAND `-H` HELP OPTION.  SHORT HELP IS
+PROVIDED BY `HELP COMMAND` USING SIXMD OR ITS GENERATED COMPACT DESCRIPTOR.
 
 Generated short help contains at least:
 
@@ -883,7 +884,8 @@ Generated short help contains at least:
 -   short option descriptions;
 -   direction to `MAN` for full documentation.
 
-Programs must not carry a second hand-maintained `-H` text table.
+Programs must not carry a second hand-maintained help text table.  Basic
+command execution must not depend on help/manual metadata being available.
 
 ### 19.4 Proposed library boundary
 
@@ -925,9 +927,10 @@ Responsibilities:
 `HELP` should be a small command-oriented entry point rather than a
 second documentation database.
 
-Possible behavior:
+Required behavior:
 
--   `HELP COMMAND` displays the generated short help;
+-   `HELP COMMAND` displays the generated short command-line help: command
+    summary, synopsis, options, and operands;
 -   without a command, it explains how to use DSH/MAN or lists basic
     help entry points.
 
@@ -935,7 +938,15 @@ It should consume generated descriptors where possible.
 
 ### 20.3 APROPOS / WHATIS
 
-These should use generated indexes rather than scanning every full
+`APROPOS WORD` searches the generated one-line command descriptions derived
+from each SIXMD anchored level-one heading and prints matching
+`COMMAND - SUMMARY` records.  It does not render the long manual or the HELP
+option/operand view.
+
+WHATIS, if retained as a separate command, uses the same one-line description
+index for exact-name lookup rather than becoming another manual renderer.
+
+These interfaces should use generated indexes rather than scanning every full
 manual at runtime.
 
 The index is derived data rebuilt from manuals.
@@ -1143,7 +1154,7 @@ rules merely because imported DAIMOSV1 code behaves differently.
 
 -   finalize the small generated descriptor;
 -   implement getopt/help library;
--   implement `-H`;
+-   implement HELP from SIXMD metadata;
 -   adapt TRUE/FALSE/ECHO/TEST/CAT/PWD;
 -   add descriptor and manual validation tests.
 
@@ -1224,7 +1235,7 @@ Cover:
 -   invalid option syntax;
 -   invalid operand ordering;
 -   generated synopsis;
--   `-H`;
+-   HELP;
 -   missing/corrupt descriptor fallback;
 -   descriptor bounds;
 -   completion classes.
