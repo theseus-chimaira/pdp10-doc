@@ -785,19 +785,18 @@ Diagnostics must distinguish at least:
 
 ## 17. Profiles and startup
 
-Profile execution exists conceptually but requires a clean native
-implementation.
+The startup policy frozen in section 12 is implemented and target-validated:
 
-Still to define:
+-   `DSH -L` reads `/CONFIG/DSH.PROFILE` first and then
+    `$HOME/.DSH.PROFILE`;
+-   missing profiles are ignored;
+-   a profile read/syntax error leaves nonzero `$?` without terminating the
+    login shell;
+-   ordinary interactive and noninteractive shells do not source either file
+    implicitly;
+-   profile files use native SIXBIT/S6REC text only.
 
--   system profile path;
--   user profile path;
--   login-shell versus every-interactive-shell policy;
--   error handling;
--   whether noninteractive shells source anything implicitly.
-
-Profile files must use the native SIXBIT record representation. Do not
-reintroduce a byte-text fallback merely to enable profiles.
+Do not reintroduce a byte-text fallback merely to enable profiles.
 
 ## 18. SIXMD command-manual profile
 
