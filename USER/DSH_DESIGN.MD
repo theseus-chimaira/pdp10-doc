@@ -46,11 +46,13 @@ LINE DISCIPLINE, DESCRIPTOR ISATTY, INHERITED UMASK, LOGIN INITIAL ENVIRONMENT,
 RECLAIMABLE D6FS BLOCK CACHE, AND DIRECT-SLIDE MM COMPACTOR/RELOCATOR ARE
 COMPLETE.
 
-THE PRE-DSH KERNEL-STABILIZATION PASS IS COMPLETE.  KEEP THE CONSOLIDATED
-MONITORFS NAMESPACE, PROCESS-ONLY /PROC ALIAS, I/O-ONLY /DEV PROJECTION, AND
-THE SEEK/CHOWN/RMDIR/MTIME/STAT/DATE/TOUCH ABI PASSING THEIR TARGET-SIDE
-REGRESSIONS.  SUBSTANTIAL DSH MAY NOW BEGIN WITHOUT AN OPEN FILESYSTEM/SYSCALL
-GATE.
+THE FUNCTIONAL PRE-DSH KERNEL-STABILIZATION WORK IS COMPLETE.  KEEP THE
+CONSOLIDATED MONITORFS NAMESPACE, PROCESS-ONLY /PROC ALIAS, I/O-ONLY /DEV
+PROJECTION, AND THE SEEK/CHOWN/RMDIR/MTIME/STAT/DATE/TOUCH ABI PASSING THEIR
+TARGET-SIDE REGRESSIONS.  THERE IS NO OPEN FILESYSTEM/SYSCALL FEATURE GATE FOR
+SUBSTANTIAL DSH.  THE SEPARATE HARD RESIDENT-SIZE GATE REMAINS ACTIVE UNTIL
+THE FULLY CONFIGURED PERMANENT IMAGE IS BELOW 040000 AND THE FINAL
+KERNEL/BOOT/LOGIN ACCEPTANCE RUN PASSES.
 
 DO NOT ADD DAIMOSV1 SYSCTL/DEVIO COMPATIBILITY INTERFACES.  INTROSPECTION AND
 ADMINISTRATION TOOLS MUST TARGET MONITORFS.  COMPILER OR ASSEMBLER DEFECTS FOUND
@@ -1090,7 +1092,7 @@ final shell architecture. It currently has only a small parser, `CD`,
 
 The recommended implementation order is:
 
-### Stage 0 - establish and complete the platform prerequisites
+### Stage 0 - verify the completed platform prerequisites
 
 -   unpack the newest DAIMOS, DAIMOSV1, and pdp10-doc archives;
 -   record git base hashes;
@@ -1102,8 +1104,9 @@ The recommended implementation order is:
 -   keep regression coverage for the implemented `SYS_EXT_DUP2`/`dsys_dup2()`
     descriptor replacement operation; target probing already covers self-dup,
     invalid-source atomicity, and pipe-end replacement;
--   implement and test the minimal canonical/echo TTY ABI and job-mode handoff;
--   implement and pressure-test the reclaimable D6FS block cache;
+-   keep the implemented canonical/echo TTY ABI and job-mode handoff under
+    regression;
+-   keep the reclaimable D6FS block cache under pressure/regression coverage;
 -   inspect current RUN/WAIT/process-control structures;
 -   do not rely on obsolete ABI text in old DSH documentation.
 
