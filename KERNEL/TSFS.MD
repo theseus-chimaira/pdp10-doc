@@ -410,7 +410,7 @@ storage.
 
 ## 18. Tool and component responsibilities
 
-### `DAIMOS/tools/host/mktsfs`
+### `pdp10-tools/mktsfs`
 
 Major changes:
 
@@ -424,7 +424,7 @@ Major changes:
 - optional external transition profile;
 - V1.1 canonical metadata generation retained.
 
-### `DAIMOS/tools/host/tsfscheck`
+### `pdp10-tools/tsfscheck`
 
 Major changes:
 
@@ -471,7 +471,7 @@ from measured packing rather than guesswork:
 1. Add a host-only prototype compact encoder for the current root metadata.
 2. Measure exact class A/B/C word counts and prove the minimum feasible `W`
    for 1..8 members.
-3. Implement the one-block shard format and decoder in DAIMOS `tools/host` only.
+3. Implement the one-block shard format and decoder in `pdp10-tools` only.
 4. Extend `tsfscheck` and require logical equivalence with V1.1 metadata.
 5. Implement relative-distance encoding and the escape format.
 6. Implement single-member longitudinal replica placement and measure seek
