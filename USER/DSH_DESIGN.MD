@@ -1080,24 +1080,24 @@ From `dsh_native.c`:
 -   profile disablement once a correct native record reader is
     available.
 
-### 22.3 Current minimal DSH source
+### 22.3 Current DSH source
 
-The current DAIMOS tree also contains a much smaller
-`userland/dsh/dsh.c`. Treat it as evidence for the current libc/syscall
-calling conventions and bootstrapping environment, not as the desired
-final shell architecture. It currently has only a small parser, `CD`,
-`EXIT`, output redirection, and command dispatch.
+THE ACTIVE `userland/dsh/` TREE IS THE SUBSTANTIAL, MODULAR NATIVE SHELL:
+`dsh.c`, `dsh_lex.c`, `dsh_parse.c`, `dsh_env.c`, `dsh_exec.c`,
+`dsh_s6.c`, AND THE PDP-6 VARIABLE FAST PATH.  THE FORMER MINIMAL SHELL
+DESCRIPTION IS HISTORICAL AND MUST NOT BE USED AS IMPLEMENTATION GUIDANCE.
+CURRENT FUNCTIONAL STATUS IS IN `USER/DSH.MD`; OPEN WORK IS TRACKED ONLY IN
+DAIMOS `userland/dsh/TODO.MD`.
 
 ## 23. Implementation sequence
 
 The recommended implementation order is:
 
-### Stage 0 - verify the completed platform prerequisites
+### Stage 0 - maintain regression coverage for completed platform prerequisites
 
--   unpack the newest DAIMOS, DAIMOSV1, and pdp10-doc archives;
--   record git base hashes;
--   build and run the current testkit;
--   complete the KCC-built INIT -> LOGIN -> current-DSH acceptance gate;
+-   use the current DAIMOS checkout and pdp10-doc contract as authorities;
+-   record git bases for reproducible test runs;
+-   keep KCC-built INIT -> LOGIN -> DSH acceptance under regression;
 -   keep RUN V2 / EXEC V1 startup-ABI regression coverage current; the bounded
     counted-SIXBIT launch blocks, CRT0 AC1/AC2/AC3 convention, and INIT->LOGIN
     argv[1] TTY handoff are implemented;
