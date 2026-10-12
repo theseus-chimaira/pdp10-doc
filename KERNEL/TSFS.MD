@@ -510,3 +510,24 @@ V1.2 is complete when all of the following hold:
 - SIMH and AAP boot-root regression tests pass;
 - AAP demonstrates a material reduction in boot/login seek latency versus V1.1.
 
+
+## 21. TSFS-root resident module profile (2026-10-12)
+
+An explicit `ROOT=tape` PDP-6 image uses TSFS as its root filesystem.
+It never installs D6FS, even if Type-270 disk or Type-236 drum hardware is
+present. KINIT omits the D6FS MINIT/MRES entry and will not select a D6FS
+root in this profile. The raw DSK/DRM drivers, BLOCKSET/BADMAP, LOGSTORE,
+MEMFS, and auxiliary swap/backing services remain available; excluding D6FS
+does **not** remove those physical devices.
+
+In the mixed `ROOT=auto` image, the D6FS MINIT also checks the root selected
+by MINIT and declines installation when it is DTC/TSFS. The mixed image still
+carries both filesystem packages, and its static worst-case resident size is
+not yet within 16K; this is not a claim of auto-root size acceptance.
+
+The separately linked TSFS-only build uses 15,322 resident words without
+BLOCKSET (15,355 with BLOCKSET). The highest resident address with BLOCKSET
+is 15,402 decimal; 981 addressable words remain below octal `040000`.
+`daimos-testkit` validates the real linked kernel and absence of D6FS with
+`test-daimos-tsfs-root-no-d6fs`. The single-member TSFS tape-image capacity
+constraint is independent and remains deferred without changing the limit.
