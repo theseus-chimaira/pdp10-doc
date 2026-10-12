@@ -1,5 +1,56 @@
 # DAIMOS PID 1: INIT AND SUPERVISOR
 
+## One PDP-6 APR block for resident SUPERVISOR (2026-10-12 v11)
+
+The resident SUPERVISOR now requires exactly one **02000-octal-word
+hardware allocation block** (1024 decimal words), instead of two.
+The verified PDP-6 DXR contains **001177 image words** and **000051
+BSS words**, with origin 000020 and a per-executable stack reservation
+of 000400; the resulting 001670-word requirement rounds to 002000.
+
+To support this safely, plain non-PURE, non-compressed DXR2 images may
+carry an optional third-word `ST2` extension instead of `TX2`:
+`stack_words,,SIXBIT/ST2/`. Stack reservations are validated between
+0400 and 02000 words. The linker supports `--stack-words` (on-target
+`--STACK-WORDS`) with an octal argument. Existing DXR1/DXR2 images
+and programs not requesting ST2 retain their 02000-word stack default.
+The loader records this setting in protected logical word 017 of the
+new user image and checks the startup argument records and remaining
+stack capacity before committing execution.
+
+SUPERVISOR uses compact root-privileged `SYS_LOGCTL_EVENT` (suboperation
+011) instead of building a full 0200-word logging record on its user
+stack. The kernel's LOGSTORE MRES temporarily allocates its own 0200
+word record, constructs the existing on-disk format, commits it, and
+frees that scratch. The old general `SYS_LOGCTL_APPEND` remains usable
+by other programs and the on-disk log format is unchanged.
+
+Measured kernel growth is 0072 octal KCORE words and 37 decimal words
+in the LOGSTORE MRES. Compared with the 1024-decimal-word process
+reduction, net standing resident core saving is approximately **929
+decimal words**, excluding transient event scratch and any MM descriptor
+effects. The actual stack depth depends on the handoff arguments.
+
+The production PDP-6 build and 115/115 DSH conformance pass. The
+LOGDUMP test confirms persistent INIT_READY and LOGIN records; a
+separate eight-entry INITTAB test with seven 102-character pathnames
+reaches LOGIN on TTY0 and records all seven expected launch failures.
+Both results were checked against the actual AUXSTORE drum sectors,
+not merely against the in-memory LOGSTORE producer sequence.
+
+The v11 fix also corrects a shared LOGSTORE backend registration defect:
+AUXSTORE MINIT had connected the direct LOGSTORE I/O path to the raw
+relocated DSK/DRM service entries (hardware address, buffer), although
+the caller supplied unit, physical block, and buffer. The system now
+installs the matching KCORE validation/conversion bridges. This repairs
+both the original APPEND and the compact EVENT operations without
+changing the established record format.
+
+Maximum observed user-stack depth, forced repeated LOGIN respawns, and
+the unrelated complete 32K LOGIN-to-DSH acceptance are not yet certified.
+See DAIMOS design/SUPERVISOR-ONE-APR-BLOCK-20261012-v11.MD for the
+kernel, linker, and loader contracts.
+
 ## Reuse INIT's immutable EXEC argument records (2026-10-12 v7)
 
 The SUPERVISOR receives up to eight pathnames as counted SIXBIT EXEC
