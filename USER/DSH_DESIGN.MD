@@ -654,6 +654,28 @@ work. Vi-related history editing stays deferred for potential code sharing.
 
 ### PDP-6 32K core sizing (source audit, 2026-10-12)
 
+**32K runtime occupancy measurement (v14).** A one-time instrumented
+LOGIN used SYS_MEMINFO and SYS_PROCINFO immediately before DSH EXEC.
+Physical core is 0100000 octal words; kernel/modules consume 031152,
+and process allocations total 025020: INIT PID 1 and LOGIN PID 2 each
+occupy 012000, with another 01020 words of process overhead. Even
+after destroying LOGIN's image, no more than 033606 words are free.
+The largest 02000-word aligned DSH extent that can fit *with INIT
+resident* is therefore 032000, versus the current 044000 extent.
+Actual contiguous memory may be smaller. A host-only testkit fixture
+reproduces this calculation. The temporary LOGIN diagnostic was
+removed after measurement.
+
+Thus more image/BSS cleanup helps generally but cannot by itself
+explain away the present 32K LOGIN/EXEC failure. Investigate whether
+INIT has restorable swap backing and meets the swap-victim selection
+conditions (state, mapping hold, pinning, transition). Never swap INIT
+without proving its safe reload. An experimental lazy variable table
+also failed when a persistent variable payload was allocated above a
+temporary AST BRK frame and reclaimed at unwind; it was rolled back.
+Any future persistent variable arena must have independently correct
+ownership/lifetime semantics rather than pinning discarded temporaries.
+
 **V13 update:** fixed AST descriptors no longer contain fourteen words of
 redirection filenames each. These records now live in optional payloads
 and are deep-copied/rebound for stored functions. The PDP-6 image measures
