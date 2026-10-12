@@ -1,5 +1,29 @@
 # DAIMOS PID 1: INIT AND SUPERVISOR
 
+## PDP-6 executable and alignment audit (2026-10-12 v6)
+
+A line-by-line source review and generated-KCC comparison identified
+unused code in the shared syscall object. SUPERVISOR now links only
+eight ABI-identical PDP-6 UUO veneers from its own assembler file:
+EXIT, WRITECHAR, RUN, WAIT, GETPID, GETTIME, LOGCTL and TTYCTL.
+Its image fell from 001442 to **001236 octal words** (0204 words saved),
+while BSS remains 000261 and rounded initial VM remains 004000.
+The complete PDP-6 build and 115/115 DSH conformance checks pass.
+
+The hardware minimum process relocation/protection granularity is
+**02000 octal words**, not an arbitrary size in the generic physical
+allocator. The PDP-6 APR relocates the upper eight logical address
+bits, while ten low bits pass unchanged. Process VM creation, BRK,
+compaction, and swapping therefore align process extents to 02000.
+The generic MM can already allocate smaller non-process extents, but
+individual process protection and relocation cannot be reduced to a
+smaller unit by editing an allocator constant. User-space sharing of
+one hardware page would be a different, significantly less isolated
+process model and is not supported by the current DAIMOS architecture.
+
+Further source-specific optimization and stack constraints are
+documented in DAIMOS design/SUPERVISOR-LINE-APR-AUDIT-20261012-v6.MD.
+
 ## Resident RAM optimization: transient LOGSTORE record (2026-10-12 v4)
 
 The PID 1 SUPERVISOR uses a private compile-time setting to allocate
