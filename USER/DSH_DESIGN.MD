@@ -263,6 +263,12 @@ Variable disambiguation uses:
 
     $[NAME]
 
+The existing `$[NAME]` form is implemented. For a future conditional
+parameter-expansion subset, reserve `$<NAME>`, `$<NAME:-DEFAULT>`,
+`$<NAME:=DEFAULT>`, `$<NAME:+ALT>`, and `$<NAME:?MESSAGE>`. These spellings
+are not yet implemented. Lexer, quoting and nesting require separate
+design and acceptance before enabling the extension.
+
 The shell must not attempt to force unavailable Unix punctuation into
 the language merely to resemble Bourne shell syntax.
 
@@ -622,6 +628,29 @@ foreground process group is insufficient.
 
 Richer serial-terminal editing can be added later without changing the
 shell grammar.
+
+### Persistent history recovery
+
+The DSH history cache stores only the last 16 valid SIXBIT S6REC commands
+in 496 words of static storage. Loading scans forward and displaces older
+records without allocating memory proportional to the file size.
+
+DSH uses advisory FLOCK across the complete history load/repair or append.
+With write access and a lock, an incomplete or malformed trailing record
+causes truncation to the last complete valid record boundary. Transient
+read I/O errors, unavailable locks and failed repair instead disable
+further persistence in that shell session. An append write failure
+attempts rollback to the previous EOF under the same lock.
+
+History is disposable user data, not a reason to add a D6FS journal.
+The policy does not promise crash-atomic filesystem metadata or protect
+against uncooperative utilities bypassing advisory locks. D6FSCK retains
+its separate interrupted-filesystem recovery responsibility.
+
+The live two-boot repair test passes 5/5 PDP-6 probes; the updated shell
+also passes the 115/115 full target conformance run (2026-10-12).
+Lock-contention and failed-write injection remain additional acceptance
+work. Vi-related history editing stays deferred for potential code sharing.
 
 ## 13. Completion
 
