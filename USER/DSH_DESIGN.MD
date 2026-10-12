@@ -654,6 +654,14 @@ work. Vi-related history editing stays deferred for potential code sharing.
 
 ### PDP-6 32K core sizing (source audit, 2026-10-12)
 
+**PID 1 v2 update:** INIT's startup-only configuration and mounting
+code now EXEC-replaces itself with a separate `SUPERVISOR`, which retains
+PID 1 and uses only 006000 octal words of initial VM instead of the
+previous 012000-word combined INIT or the 010000-word reduced startup
+image. This improvement does not yet satisfy the full 32K DSH EXEC
+requirement. The figures below record the earlier pre-split v14
+measurement and must not be mistaken for the current PID 1 footprint.
+
 **32K runtime occupancy measurement (v14).** A one-time instrumented
 LOGIN used SYS_MEMINFO and SYS_PROCINFO immediately before DSH EXEC.
 Physical core is 0100000 octal words; kernel/modules consume 031152,
