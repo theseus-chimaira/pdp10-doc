@@ -679,6 +679,28 @@ temporary nested execution scratch from persistent function lifetimes.
 Do not simply reduce capacity or discard quotation masks to satisfy a
 size number.
 
+The third source stage implements compact AST descriptors. The active
+parser uses one reusable 180-word payload, with additional argument-bearing
+nodes allocated in scoped BRK storage. Function nodes retain their own
+permanent BSS payloads, with deep copying and pointer rebinding after
+function-array compaction. This prevents function bodies from referring to
+the temporary memory reclaimed after nested SOURCE/evaluation. The same
+20-argument, 16-AST-node and eight stored-function-node limits remain.
+
+Measured PDP-6 KCC/DAS result: image 035603 octal words, BSS 010136
+octal words; image + BSS + 02020 origin/stack is 047761, which VM rounds
+to 050000 octal words. Compared with 056000 before this refactor, the
+physical allocation decreases by 06000 octal (3072 decimal) words.
+The 036000 executable image limit passes. The full 115-case target suite
+and ten AST-specific lifetime probes pass. The 32K lowmem test still
+requires its own successful INIT -> LOGIN -> DSH execution.
+
+Current PDP-6 executable text remains privately allocated per process,
+including PURE-text images; PURE records an immutable boundary used by
+the swap/reload backing path rather than sharing one physical text extent
+among multiple processes. Text sharing is a possible future VM feature,
+not part of the current compact-AST change.
+
 ## 13. Completion
 
 Completion is required, but the exact future completion specification is
