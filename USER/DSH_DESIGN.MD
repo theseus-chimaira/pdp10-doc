@@ -654,6 +654,14 @@ work. Vi-related history editing stays deferred for potential code sharing.
 
 ### PDP-6 32K core sizing (source audit, 2026-10-12)
 
+**V13 update:** fixed AST descriptors no longer contain fourteen words of
+redirection filenames each. These records now live in optional payloads
+and are deep-copied/rebound for stored functions. The PDP-6 image measures
+035726 octal words, static BSS 003374, and the initial rounded user extent
+remains 044000 octal. The production image-size limit passes. CTY
+conformance 115/115 and focused redirection tests 7/7 pass. This is a
+RAM reduction, not yet evidence of successful 32K LOGIN/EXEC.
+
 The current DSH KCC/DAS/DLINK image is 035545 octal words and its
 uninitialized static storage is 015241 octal words. Including the EXEC
 020-word origin and 02000-word stack, the user VM needs 055026 words.
