@@ -516,18 +516,33 @@ V1.2 is complete when all of the following hold:
 An explicit `ROOT=tape` PDP-6 image uses TSFS as its root filesystem.
 It never installs D6FS, even if Type-270 disk or Type-236 drum hardware is
 present. KINIT omits the D6FS MINIT/MRES entry and will not select a D6FS
-root in this profile. The raw DSK/DRM drivers, BLOCKSET/BADMAP, LOGSTORE,
-MEMFS, and auxiliary swap/backing services remain available; excluding D6FS
-does **not** remove those physical devices.
+root in this profile. The raw DSK/DRM drivers, LOGSTORE, MEMFS, and
+auxiliary swap/backing services remain available; excluding D6FS does **not**
+remove those physical devices. A TSFS root uses at most one raw auxiliary
+DSK/DRM unit and therefore omits BLOCKSET and BADMAP MINIT/MRES packages.
+Neither package is involved in direct AUXSTORE access.
 
 In the mixed `ROOT=auto` image, the D6FS MINIT also checks the root selected
 by MINIT and declines installation when it is DTC/TSFS. The mixed image still
 carries both filesystem packages, and its static worst-case resident size is
 not yet within 16K; this is not a claim of auto-root size acceptance.
 
-The separately linked TSFS-only build uses 15,322 resident words without
-BLOCKSET (15,355 with BLOCKSET). The highest resident address with BLOCKSET
-is 15,402 decimal; 981 addressable words remain below octal `040000`.
-`daimos-testkit` validates the real linked kernel and absence of D6FS with
-`test-daimos-tsfs-root-no-d6fs`. The single-member TSFS tape-image capacity
-constraint is independent and remains deferred without changing the limit.
+The separately linked TSFS-only build now uses **15,257 resident words**.
+Its highest resident address is **15,304 decimal**, leaving **1,079**
+addressable words below octal `040000`. Disabling the unused BADMAP package
+saves 65 resident words; BLOCKSET was already omitted from the single-root
+resident count but is now absent from the linked image. Disk and drum profiles
+continue to retain BLOCKSET/BADMAP.
+
+The compact TSFS-root image no longer creates `/PICTURES` or imports any
+staged pictures, while D6FS image deployment remains unchanged. With pictures
+removed, the single-member TSFS media image packs successfully in the tested
+configuration (approximately 578 KiB) without expanding media capacity.
+`daimos-testkit` checks the linked kernel with
+`test-daimos-tsfs-root-no-d6fs` and the actual media manifest/image with
+`test-daimos-tsfs-root-no-pictures`. The media test uses a diagnostic DSH
+size override because the independent production DSH limit remains in force.
+
+Full TSFS boot acceptance is not yet proven: a separate simulator boot reaches
+LOGSTORE/MEMFS/DTFS initialization but halts before LOGIN (`MUUO105`). Do not
+conflate a successfully packed tape image with a successful root boot.
