@@ -1,5 +1,18 @@
 # DAIMOS PID 1: INIT AND SUPERVISOR
 
+## Resident SUPERVISOR text cleanup (2026-10-12 v3)
+
+The PDP-6 SUPERVISOR image has shrunk from 001530 to **001447** octal
+words, with BSS unchanged at 000461. The change removes a redundant
+RUN record-clearing loop, a temporary TTY string, repeated SIXBIT field
+extraction, and a constant two-word copy loop. All service validation,
+ONCE/RESPAWN behavior, and eight-entry capacity remain unchanged.
+
+The normal 02000-octal-word user stack reservation is unchanged, so
+the initial rounded SUPERVISOR VM remains 006000 octal words. The
+full PDP-6 boot and DSH conformance pass 115/115 on the changed image.
+The separate 32K PDP-6 DSH EXEC constraint remains open.
+
 Date: 2026-10-12. Implementation: two-stage initialization for the PDP-6.
 
 The kernel starts `/SYSTEM/INIT` as **PID 1**. INIT reads
