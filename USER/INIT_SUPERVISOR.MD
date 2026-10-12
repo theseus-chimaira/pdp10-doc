@@ -1,5 +1,29 @@
 # DAIMOS PID 1: INIT AND SUPERVISOR
 
+## Reuse INIT's immutable EXEC argument records (2026-10-12 v7)
+
+The SUPERVISOR receives up to eight pathnames as counted SIXBIT EXEC
+arguments. These records already remain in the process's startup
+argument area below the initial stack pointer. SUPERVISOR now retains
+validated pointers directly to these records rather than duplicating
+the path payloads into its permanent eight-entry BSS table. They remain
+readable for later service respawns, including after VM relocation.
+
+| PDP-6 property (octal) | v6 | v7 |
+| --- | ---: | ---: |
+| Image | 001236 | **001210** |
+| BSS | 000261 | **000051** |
+| Image+BSS+origin | 001537 | **001301** |
+| Initial VM, standard 02000 stack | 004000 | **004000** |
+
+The unchanged normal stack allocation remains the barrier to the one
+02000-word process target. A future per-image smaller stack reservation
+must leave space for all initial EXEC argument records *and* worst-case
+stack use, including the 0200-word temporary LOGSTORE record.
+The complete PDP-6 build and 115/115 DSH conformance probes pass with
+v7. Maximum-length eight-service and repeated-respawn stress tests
+are still separate requirements.
+
 ## PDP-6 executable and alignment audit (2026-10-12 v6)
 
 A line-by-line source review and generated-KCC comparison identified
