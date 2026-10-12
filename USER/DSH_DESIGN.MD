@@ -679,16 +679,18 @@ temporary nested execution scratch from persistent function lifetimes.
 Do not simply reduce capacity or discard quotation masks to satisfy a
 size number.
 
-The third source stage implements compact AST descriptors. The active
-parser uses one reusable 180-word payload, with additional argument-bearing
-nodes allocated in scoped BRK storage. Function nodes retain their own
+The third source stage implements compact AST descriptors. Argument-bearing
+active nodes allocate payloads in scoped BRK storage. Function nodes retain
+their own
 permanent BSS payloads, with deep copying and pointer rebinding after
 function-array compaction. This prevents function bodies from referring to
 the temporary memory reclaimed after nested SOURCE/evaluation. The same
 20-argument, 16-AST-node and eight stored-function-node limits remain.
+An optional static one-payload cache was investigated and rejected because
+it increased permanent BSS without lowering the initial rounded VM extent.
 
-Measured PDP-6 KCC/DAS result: image 035603 octal words, BSS 010136
-octal words; image + BSS + 02020 origin/stack is 047761, which VM rounds
+Measured PDP-6 KCC/DAS result: image 035552 octal words, BSS 007651
+octal words; image + BSS + 02020 origin/stack is 047443, which VM rounds
 to 050000 octal words. Compared with 056000 before this refactor, the
 physical allocation decreases by 06000 octal (3072 decimal) words.
 The 036000 executable image limit passes. The full 115-case target suite
