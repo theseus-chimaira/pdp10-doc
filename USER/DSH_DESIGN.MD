@@ -703,6 +703,31 @@ the swap/reload backing path rather than sharing one physical text extent
 among multiple processes. Text sharing is a possible future VM feature,
 not part of the current compact-AST change.
 
+### Lazy function pool and token-bounded AST allocation (2026-10-12)
+
+The v9 implementation removes the permanently reserved eight-slot
+function-argument payload array from static BSS. The same bounded
+1,440-word pool is allocated on first DEF using BRK and reused thereafter;
+function-node compaction still rebinds live payload pointers.
+Restoring temporary parse BRK respects the function pool's persistent
+high-water mark so functions survive nested SOURCE calls.
+
+Active argument-bearing nodes use nine PDP-6 words per possible
+lexical argument (seven SIXBIT record words and two mask words),
+capped at twenty per node. Thus a two-token simple command reserves
+18 temporary words instead of 180. All configured node, function,
+argument, SIXBIT and history limits remain unchanged.
+
+The validated DXR image is 035671 octal words, BSS 005013 octal,
+unrounded image+BSS+startup 044724, and 02000-aligned initial VM
+046000 octal words. The previous compact AST build reserved 050000.
+Normal image limit 036000: PASS; target DSH conformance 115/115:
+PASS; extended function/AST lifetime probes 16/16: PASS.
+
+PDP-6 executable text remains private to each process. The live 32K
+boot still needs independent acceptance; a smaller rounded process
+allocation alone does not guarantee sufficient kernel and user core.
+
 ## 13. Completion
 
 Completion is required, but the exact future completion specification is
