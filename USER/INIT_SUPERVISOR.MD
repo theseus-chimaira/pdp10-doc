@@ -1,5 +1,26 @@
 # DAIMOS PID 1: INIT AND SUPERVISOR
 
+## Resident RAM optimization: transient LOGSTORE record (2026-10-12 v4)
+
+The PID 1 SUPERVISOR uses a private compile-time setting to allocate
+the LOGSTORE event record on the existing reserved user stack instead
+of keeping the 0200-octal-word block permanently in BSS. Log calls
+are synchronous and serialized by PID 1; other programs keep their
+static-record implementation.
+
+| Measurement (octal) | v3 | v4 |
+| --- | ---: | ---: |
+| SUPERVISOR image | 001447 | **001442** |
+| BSS | 000461 | **000261** |
+| Stack reservation | 002000 | 002000 |
+| Rounded resident VM | 006000 | **004000** |
+
+The reduced BSS crosses the physical allocation boundary, saving
+02000 octal (1024 decimal) words of resident core. The extra temporary
+stack use during logging is 0200 octal words. A full PDP-6 boot and
+115/115 shell conformance pass with the new layout. A separate 32K
+LOGIN/DSH EXEC verification remains outstanding.
+
 ## Resident SUPERVISOR text cleanup (2026-10-12 v3)
 
 The PDP-6 SUPERVISOR image has shrunk from 001530 to **001447** octal
