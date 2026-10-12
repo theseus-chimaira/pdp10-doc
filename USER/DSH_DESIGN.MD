@@ -652,6 +652,33 @@ also passes the 115/115 full target conformance run (2026-10-12).
 Lock-contention and failed-write injection remain additional acceptance
 work. Vi-related history editing stays deferred for potential code sharing.
 
+### PDP-6 32K core sizing (source audit, 2026-10-12)
+
+The current DSH KCC/DAS/DLINK image is 035545 octal words and its
+uninitialized static storage is 015241 octal words. Including the EXEC
+020-word origin and 02000-word stack, the user VM needs 055026 words.
+PDP-6 VM extents are rounded to 02000-word boundaries, so DSH currently
+occupies a 056000-word user extent. Fixed KCORE ends at 023610 octal:
+even those two allocations alone exceed physical 32K core by 01610
+octal words. Other resident kernel allocations increase the deficit.
+
+The 036000 DXR executable image-size build gate passes, but it is not
+a proof of 32K operability. The 32K live boot test reaches INIT/LOGIN
+and fails on ROOT's DSH EXEC; LOGIN: EXEC FAILED is the observed
+symptom. Reducing total VM footprint and rerunning the dedicated 32K
+boot test is required before claiming supported minimum hardware.
+
+The main inefficient static allocation is struct dsh_node: all 16
+active parser nodes and eight stored function nodes embed complete
+20-argument SIXBIT record arrays and two quote-mask arrays, even for
+AST node kinds that have no argument list. This costs 3200 + 1600 =
+4800 words of BSS. The intended refactor is compact node headers plus
+payload storage allocated only for actual arguments. Preserve all
+existing node, argument and function capacities, and correctly separate
+temporary nested execution scratch from persistent function lifetimes.
+Do not simply reduce capacity or discard quotation masks to satisfy a
+size number.
+
 ## 13. Completion
 
 Completion is required, but the exact future completion specification is
