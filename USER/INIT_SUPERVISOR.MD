@@ -1,3 +1,17 @@
+## LOGIN minimal-libc v2 progress (2026-10-13)
+
+LOGIN's initial minimal-libc split removes generic S6REC output,
+unused monitor-call wrappers and its full 128-word static LOGSTORE
+record. The existing SYS_LOGCTL_EVENT interface sends a four-word
+event to LOGSTORE, which builds the persistent record outside LOGIN.
+The fresh-build measured DXR image is 004375 octal words with zero BSS.
+With 000020 origin and 001000 reserved stack, this requires 005415
+octal words, rounded to 006000 (three APR blocks), instead of 010000
+in v1. LOGIN authentication, PASSWD file parsing and EXEC environment
+setup are unchanged. This is a tested intermediate result; the
+002000-octal-word single-APR goal is not yet achieved. See DAIMOS
+design/LOGIN-SHRINK-20261013-v2.MD.
+
 # DAIMOS PID 1: INIT AND SUPERVISOR
 
 ## LOGIN one-block resident reduction (2026-10-13 v1)
