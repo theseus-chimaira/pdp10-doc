@@ -1,3 +1,17 @@
+## LOGIN PASSWD reader separation (2026-10-13 v3)
+
+`userland/login/passwd_reader.c` now owns the account-file read and
+parsing; `passwd_reader.h` defines its account record. LOGIN still
+owns the supplied-password comparison, interactive TTY, compact
+authentication/session/EXEC logging, credential transition and shell
+EXEC. This is a statically linked source-module boundary, not an
+additional AUTH process. Successful EXEC replaces LOGIN with DSH; PID 1
+restarts LOGIN after the shell exits. A future password-hash verifier
+belongs in LOGIN, not the record reader. The fresh image grows from
+004375 to 004630 octal text words, BSS remains zero, and total APR
+allocation remains 006000 octal words. A single APR remains a future
+size target.
+
 ## LOGIN minimal-libc v2 progress (2026-10-13)
 
 LOGIN's initial minimal-libc split removes generic S6REC output,
