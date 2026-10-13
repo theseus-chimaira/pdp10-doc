@@ -1,5 +1,26 @@
 # DAIMOS PID 1: INIT AND SUPERVISOR
 
+## LOGIN one-block resident reduction (2026-10-13 v1)
+
+LOGIN is a separate process from PID 1. Its uncompressed DXR2 executable
+now carries an ST2 stack reservation of 01000 octal words. The unchanged
+006133 image and 000255 BSS, plus 000020 origin, require 007430 words;
+PDP-6 APR rounding now allocates 010000 instead of 012000 words. This
+saves one 02000-word (1024-decimal-word) process extent while LOGIN is
+active. Other executables retain their original stack reservations.
+
+LOGIN retains a larger 01000 stack than SUPERVISOR's 00400 because it
+constructs EXEC environment records on its stack and parses account
+files. Its actual high-water mark under worst-case login input has not
+yet been measured. The disk root installs the ordinary, uncompressed
+LOGIN DXR so the D6LZ format cannot discard the ST2 extension.
+
+The fresh PDP-6 disk build, ROOT LOGIN -> DSH, 115/115 shell conformance,
+and physical AUXSTORE persisted LOGIN event all passed. The separate
+32K low-memory LOGIN-to-DSH acceptance is not established. See
+DAIMOS design/LOGIN-ONE-APR-BLOCK-20261013-v1.MD and daimos-testkit
+daimos-login-one-apr-size-20261013-v1.sh.
+
 ## One PDP-6 APR block for resident SUPERVISOR (2026-10-12 v11)
 
 The resident SUPERVISOR now requires exactly one **02000-octal-word
