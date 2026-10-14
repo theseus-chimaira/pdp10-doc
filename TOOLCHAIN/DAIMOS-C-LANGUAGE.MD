@@ -2,6 +2,30 @@
 
 This document consolidates measured PDP-10 KCC/GCC interoperability findings originally maintained in pdp10-testkit. Each subsection preserves its source document and qualification; measurements are not generalized beyond their stated probes.
 
+## OS-independent PDP-6 libc BLT acceleration (2026-10-14)
+
+KCC and PDP-10 GCC share a separately linked freestanding `libp10c-v2.a`
+archive, independent of DAIMOS kernel services and compiler arithmetic
+helpers. Standard C memory/string functions operate on the compiler's
+9-bit `char`; the separate `p10bytes-v2.h` interface accepts raw PDP-10
+byte-pointer descriptors of variable widths.
+
+On baseline PDP-6, aligned `memcpy`/`memset` and native 6/9/18/36-bit
+`p10bcopy_v2`/`p10bfill_v2` use `BLT` for four or more complete 36-bit
+words. Small transfers use ordinary word instructions, and partial or
+unaligned fields use `LDB`/`DPB`/`IBP`. Forward seed propagation is safe
+for uniform fill. `memmove` keeps its direction-sensitive backward path;
+`BLT` must not be used for an unsafe overlapping copy.
+
+The testkit verified four C semantic programs under both KCC and GCC
+(eight passing execution cells) and separate assembly regressions for
+6-, 7-, 8-, 9-, 18-, and 36-bit byte pointers, including long-copy and
+fill tails. The installed KCC and GCC archives were binary-identical
+in staging. These are correctness results; actual runtime speedups and
+an optimal `BLT` crossover threshold remain to be measured.
+
+---
+
 ## KCC header search and `#include_next` (2026-10-14)
 
 The Unix-hosted KCC preprocessor supports GNU-style `#include_next` with
