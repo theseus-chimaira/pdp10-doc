@@ -2,6 +2,24 @@
 
 This document consolidates measured PDP-10 KCC/GCC interoperability findings originally maintained in pdp10-testkit. Each subsection preserves its source document and qualification; measurements are not generalized beyond their stated probes.
 
+## KCC header search and `#include_next` (2026-10-14)
+
+The Unix-hosted KCC preprocessor supports GNU-style `#include_next` with
+both `<header>` and `"header"` spelling. Search resumes after the explicit
+or implicit include directory that supplied the current header; the origin
+is preserved through nested includes. An excluded directive has no effect.
+
+KCC's host installation includes its target headers under
+`$(KCCLIBDIR)/include`, normally `$PREFIX/lib/kcc/include`. The testkit
+uses `$PDP10_PREFIX/lib/kcc/include` or an explicit `KCC_INCLUDE_DIR` during
+compiler tests; ordinary GCC headers are not interchangeable with KCC's
+target ABI definitions.
+
+The PDP-6 testkit regression checks three successive include directories,
+both operand spellings, nested include return and an excluded directive.
+This preprocessor support is **not** validation of the varargs calling ABI
+or of libc linkage; those semantic tests remain separately pending.
+
 ---
 
 ## Source: DAIMOS-LANGUAGE-COMPATIBILITY.md
