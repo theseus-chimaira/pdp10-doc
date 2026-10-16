@@ -164,6 +164,26 @@ CONFORMANCE RUN, DEDICATED REAL-DCS EDITOR/FOREGROUND ACCEPTANCE, AND A
 DIRECT NORMAL-BOOT ROOT-LOGIN/EXTERNAL-COMMAND SMOKE TEST PASS WITH THIS
 LAYOUT.
 
+## 2026-10-16 KCC DSH IMAGE-SIZE REGRESSION CHECK
+
+A separate full-profile `ROOT=tape BOOT=ptr` build in an isolated DAIMOS
+worktree initially produced a DSH image of octal `036021`, exceeding the
+unchanged EXEC image ceiling `036000`. The private `dsh_s6_literal` helper
+was simplified: all five current callers supply compile-time uppercase
+ASCII names, so runtime lowercase-to-uppercase conversion was redundant.
+The helper still uses `dsh_s6_clear` and bounded `dsh_s6_append` calls.
+A rebuild with the same KCC/DAS toolchain yielded `DXR image=035754`
+(37 PDP-6 words fewer). This is an independently measured newer build,
+not a replacement for the earlier `035551` acceptance measurement above.
+The source assumption and resulting size are checked by the versioned
+`daimos-testkit/tests/validation/daimos-simh-ptr-tsfs-image-v1.py` test.
+
+The same isolated image was booted on SIMH using its PDP-6 RIM Type-760
+paper-tape Stage-1, both compressed-image payload tapes, and a TSFS
+member attached to DECtape unit DTC0. The console reached `INIT V1`
+and `LOGIN:`. Interactive DSH conformance was not rerun by this boot
+smoke test, and reaching LOGIN does not imply a completed login session.
+
 THE RAW INTERACTIVE EDITOR ACCEPTS NORMAL ASCII LOWERCASE INPUT BY CONVERTING
 IT TO UPPERCASE BEFORE THE SIXBIT PRINTABLE-RANGE CHECK.  AN EARLIER CHECK
 ORDER DISCARDED LOWERCASE BEFORE CONVERSION, WHICH MADE TYPED TEXT APPEAR
