@@ -78,3 +78,30 @@ not count as passing guest execution. All four real images pass on AAP.
 The tests prove **software D-format correctness on two independent PDP-6
 simulators**, not the PDP-6 native hardware FP format, later PDP-10 FP
 compatibility, AAP logical tick costs, or real execution time.
+
+## 71-bit signed integer/native float and precise target literals
+
+KCC `-x=pdp6` also previously miscompiled signed 71-bit integer to
+36-bit `float`, converting the high36 word alone via simulated scalar
+`FLTR`; `10LL` therefore became zero. The current implementation first
+converts the entire signed pair to the validated integer-only software
+D-format, then narrows and rounds to the 36-bit single representation.
+The inverse cast widens the single value before calling the full-width
+signed conversion helper. The PDP-6 double-to-single compiler expansion
+now handles negative 71-bit values, guard/sticky bits, ties to even and
+fraction overflow carry. The fixes do not enable any later-PDP-10 FP
+instruction on PDP-6.
+
+KCC's host literal parser and emitter also previously narrowed through
+24-significand-bit IEEE binary32, losing representable bits of the 27-bit
+PDP-10 single format. The host compiler retains binary64 precision until
+it rounds and packs the 36-bit target word. Unary minus no longer narrows
+through host float; the other `TS_FLOAT` compile-time arithmetic folds
+remain an explicitly open precision-correctness audit.
+
+The PDP10-Testkit 21-case 71-bit/native-float regression and nine-case
+single-float literal regression both pass KCC optimized and unoptimized
+on SIMH PDP-6. Their four independently linked guest images also pass
+on AAP PDP-6. The AAP immediate-HALT negative control is still rejected.
+Neither these results nor the earlier two-word D-format tests establish
+correctness on a KA10, KI10, KS10 or KL10.
