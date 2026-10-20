@@ -56,12 +56,35 @@ needed to reconcile the simulator discrepancy. The testkit's manual
 `kcc-pdp6-negative-fp-runtime-v1` regression currently fails on SIMH
 and is **not** counted as accepted behavior.
 
-The older source-wide byte-identity comparison of integrated KCC versus
-KPARSE/KGEN/KOPT also remains manual. Optimized KPARSE deliberately runs
-`bindopt`, but an unoptimized output difference starting in `cccse.c`
-remains unexplained. The focused real-phase floating-point test above
-passes; that is narrower evidence than claiming all translation units
-produce byte-identical assembly.
+## DAIMOS peephole-ring phase identity (2026-10-20)
+
+The previously unexplained unoptimized `cccse.c` output difference
+was caused by inconsistent code-generator peephole ring capacities.
+KGEN used 64 `PCODE` entries while DAIMOS KCC1 and integrated KCC
+used 256. The register allocator consults the pending pseudo-code
+history; KGEN's earlier flush changed its recent-register-use data
+and therefore its allocation choices, despite equivalent input trees.
+
+All DAIMOS KCC backends now use the **same 64-entry ring**, saving
+192 `PCODE` slots in those previously using 256. Non-DAIMOS
+builds retain the historical 256-entry configuration. An isolated
+`cccse.c` experiment confirmed byte identity after using a common
+ring size. The full regression
+`pdp10-testkit/misc/kcc-regression/kcc-phase-byte-identity-20261006.sh`
+then passed on all **27 compiler translation units**, with strict
+integrated/KCC1 identity in both KCC modes and strict KIR1/KGEN
+identity at `-n`. It has been re-enabled in the testkit.
+
+Optimized KPARSE deliberately runs its additional `bindopt` pass;
+its optimized KIR1 assembly need not be byte-identical to integrated
+KCC. Instead, the KPCODE2 floating-point guest executes successfully
+through the entire optimized and unoptimized phase pipeline.
+
+A detached, sequential 13-check acceptance run also passed all
+tests with zero failures, including the full phase test, KPCODE2
+format/guest, SIMH PDP-6 arithmetic/conversions, AAP PDP-6 execution,
+ABI and test inventory. The separate SIMH/AAP *negative halfway*
+native-FP discrepancy described above remains open.
 
 Authoritative test sources, exact expected values and recorded known
 failure are in `pdp10-testkit/docs/KCC-PDP6-TARGET-FLOAT-FOLDING-20261020-v1.md`.
