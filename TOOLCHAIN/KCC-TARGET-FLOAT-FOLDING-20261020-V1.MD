@@ -110,8 +110,12 @@ through the entire optimized and unoptimized phase pipeline.
 A detached, sequential 13-check acceptance run also passed all
 tests with zero failures, including the full phase test, KPCODE2
 format/guest, SIMH PDP-6 arithmetic/conversions, AAP PDP-6 execution,
-ABI and test inventory. The separate SIMH/AAP *negative halfway*
-native-FP discrepancy described above remains open.
+ABI and test inventory. Subsequently the SIMH PDP-6 negative-halfway
+FADR/FSBR discrepancy was corrected and independently verified
+against the AAP PDP-6 model on eight cases. The 24-case corrected
+SIMH boundary suite passes; the separate AAP exact-normalization
+discrepancy at `-134217728.0F + 1.0F` remains unresolved. The manual
+AAP 24-case disagreement regression must not be counted as passing.
 
 Authoritative test sources, exact expected values and recorded known
 failure are in `pdp10-testkit/docs/KCC-PDP6-TARGET-FLOAT-FOLDING-20261020-v1.md`.
