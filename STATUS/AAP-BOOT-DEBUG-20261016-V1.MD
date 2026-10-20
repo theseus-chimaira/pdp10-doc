@@ -2,8 +2,32 @@
 
 ## Scope and status
 
-DAIMOS tape-root Stage1 can boot to `INIT V1`, `LOGIN: ROOT`, and, intermittently,
-`DSH V1` on the AAP PDP-6 Type-551/Type-626 simulator. Boot is **not reliable**;
+**UPDATE 2026-10-18 V23C:** The original AAP startup-to-DSH problem is
+resolved with the native Type-626 bounded CTY input FIFO (v23b) and an INIT
+hardware-presence check (v23c). The *unaltered* default INITTAB still lists
+CTY0, DCS0 and GE0; INIT now starts LOGIN only for controllers confirmed by
+MINIT in the existing MonitorFS `/DEV` namespace. A fresh AAP tape-root
+diagnostic boot reaches `INIT V1`, accepts `ROOT`, and enters `DSH V1`
+without respawn or authentication errors. Native/host v23c tests and the
+captured AAP block-word verifier pass (234 forward, 21 reverse, zero errors).
+No kernel residency is added in v23c; transient INIT gains 67 text words,
+with unchanged BSS. The default INITTAB was **not** reduced to a single
+session in production. The observations below are retained as historical
+investigation evidence, not the current boot failure status.
+
+**UPDATE 2026-10-19 V37:** The later, independently rerun AAP DECtape-root
+test did execute external `ECHO RETESTED_OK_V24` and `PWD` successfully and
+returned a fresh DSH prompt after each command. ECHO finished after 300.2
+seconds and PWD after 548.2 seconds from test start. The old v43 240-second
+timeout is historical evidence, not a current command-execution failure.
+This was a 256K test using the experimental PI3 search path and a diagnostic
+DSH image ceiling, not a 32K boot or permanent size acceptance. See
+`STATUS/PDP6-SIMH-TYPE551-REGRESSION-20261019-V34.MD` and
+`daimos-testkit/tests/validation/daimos-aap-boot-basic-v37.py`.
+
+Historically DAIMOS tape-root Stage1 could boot to `INIT V1`, `LOGIN: ROOT`,
+and intermittently `DSH V1` on the AAP Type-551/Type-626 simulator. Those
+older runs were **not reliable**;
 reaching the DSH banner does **not** prove shell commands work. SIMH previously
 reached DSH and executed `ECHO TAPEROOTOK` successfully.
 
