@@ -57,5 +57,24 @@ portable software D-format and from later PDP-10 CPU capabilities.**
 Consequently only the PDP-6-native test-matrix cells are activated;
 KA10/KI10/KS10/KL10 and other floating-point modes have neither an
 implicit compatibility guarantee nor a passing result from these tests.
-AAP PDP-6 execution remains unverified until a reliable post-removal
-replacement for its old diagnostic `cpustatus` test oracle is established.
+## Independent AAP PDP-6 guest execution (2026-10-20)
+
+AAP PDP-6 execution has now passed for the unchanged GCC upstream test
+and the 17 integer plus 10 fractional D-format conversion cases. The
+KCC optimized and unoptimized guest images are independently linked and
+verified on SIMH, then deposited and executed on the unmodified AAP
+emulator (221/235 words for upstream, 624/818 for the boundary test).
+
+The AAP emulator no longer provides its former debugging `cpustatus`
+command or timing traces. The new test in
+`pdp10-testkit/misc/validation/test-kcc-aap-dimode-float-pdp6-v1.py`
+uses the real synchronous console memory examination: it initializes the
+linked `__test_exit` word to a nonzero sentinel, verifies that value before
+execution, and accepts only the guest's subsequent `exit(0)` write of
+zero. An intentionally modified negative-control guest that immediately
+HALTs fails this oracle, so successful linking or an early HALT alone do
+not count as passing guest execution. All four real images pass on AAP.
+
+The tests prove **software D-format correctness on two independent PDP-6
+simulators**, not the PDP-6 native hardware FP format, later PDP-10 FP
+compatibility, AAP logical tick costs, or real execution time.
