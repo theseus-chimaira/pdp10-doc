@@ -3,6 +3,23 @@
 DATE: 2026-10-19
 STATUS: SIMH BOOT REGRESSION REPAIRED; AAP TAPE COMMANDS VERIFIED V37
 
+## 2026-10-20 V64 INDEPENDENT PI3 KERNEL ACCEPTANCE
+
+A fresh 256K KCC tape-root image using the existing PI3 search changes
+booted the rebuilt `sims/BIN/pdp6` with the V34 Type-551 selected-transport
+repair. The two-command external shell test returned **2/2 PASS**:
+`ECHO RETESTED_OK_V24` and `PWD` both produced their output and returned to
+the DSH prompt. The test was run via
+`daimos-testkit/tests/validation/daimos-simh-dtc-selected-v34.sh`, with
+the preserved V64 boot image and the rebuilt SIMH binary. Evidence:
+`$TMPDIR/daimos-uncommitted-20261020-v64/simh-tape-sims-fixed-v64/report-v34.md`.
+The PI3 kernel changes in `tape_io.s` and `storage_router.s` were committed
+separately as DAIMOS `2c85325`. An earlier V64 attempt using the stale
+installed simulator timed out and is not an acceptance result. The new
+MonitorFS swapped-process metadata reader is a **different, failing**
+experiment and remains uncommitted. Neither run establishes strict 32K
+boot or resident-size acceptance.
+
 ## 2026-10-19 V37 AAP TAPE-ROOT ACCEPTANCE UPDATE
 
 THE INDEPENDENT AAP HEADLESS PDP-6, BOOTING A 256K DAIMOS DECtape/TSFS
