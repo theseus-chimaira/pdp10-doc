@@ -48,13 +48,40 @@ hardware floating modes or to all floating overflow/underflow cases.
 
 ## Open hardware and compiler-phase discrepancies
 
-The AAP PDP-6 model reports `0543400000000` for a negative halfway
-native FADR/FSBR case, whereas the installed SIMH PDP-6 reports
-`0544000000001`. The compiler's PDP-6 folding model follows the
-independent AAP observation, but source hardware documentation is still
-needed to reconcile the simulator discrepancy. The testkit's manual
-`kcc-pdp6-negative-fp-runtime-v1` regression currently fails on SIMH
-and is **not** counted as accepted behavior.
+The original SIMH PDP-6 reported `0544000000001` for the negative
+halfway `-134217728.0F + -1.0F`, while AAP reported `0543400000000`.
+The historical Stanford SAIL `10TO6.TED` explicitly specifies that
+negative halfway floating arithmetic on a PDP-6 rounds toward zero,
+unlike the later PDP-10. In SIMH's sign-extended two's-complement
+fraction, the discarded bits were exactly `FPRBIT2`, but the PDP-6
+path added a full `FPRBIT1`, crossing a normalization boundary.
+SIMH now cancels the half-bit only for this negative exact-tie case;
+other rounding operations, and all later PDP-10 CPU paths, are unchanged.
+The original regression and eight cross-verified AAP/SIMH negative-halfway
+cases pass under both KCC modes, as do 24 mathematically calculated
+boundary cases on corrected SIMH.
+
+**A different AAP result remains unresolved, and AAP is not changed.**
+For `-134217728.0F + 1.0F` (positive operand, not negative halfway),
+AAP yields `0544000000003`. A mathematical exact-result oracle and
+corrected SIMH yield `0544000000001`. The AAP result was independently
+confirmed by guest memory examination (case index `011`, operand
+words `0543400000000` and `0201400000000`). This may be an original
+PDP-6 arithmetic peculiarity rather than an emulator defect: point 6
+of `10TO6.TED` describes loss of significant low-word bits during
+PDP-6 floating normalization. Whether that condition applies here
+requires studying the original DEC 166 CPU drawings, especially the
+`FAT*` and `NRT*` pulse sequences corresponding to AAP `emu/apr.c`.
+No AAP correction has been designed or applied.
+
+The complete AAP 24-case run is preserved as a separately registered
+**manual, failing** test; the normal independent AAP acceptance includes
+the eight confirmed negative-halfway cases. Treat AAP hardware fidelity
+as **unproven**, not disproven, until primary DEC circuitry resolves the
+exact-result discrepancy.
+
+Primary evidence: [SAIL 10TO6.TED (1973), Floating Point Instructions,
+items 5 and 6](https://www.saildart.org/10TO6.TED%5BH%2CDOC%5D).
 
 ## DAIMOS peephole-ring phase identity (2026-10-20)
 
