@@ -2,6 +2,31 @@
 
 DATE: 2026-10-20
 
+## 2026-10-20 V76: OPTIONAL MONITORFS MRES VERIFIED, NOT DEFAULT
+
+The optional `MONITORFS_MRES_ENABLED=1` configuration successfully boots a
+fresh GCC PDP-6 low-memory 48K disk-root image.  Its pinned/relocated MRES
+passes five live namespace probes covering process NAME, CMDLINE, STATE,
+domains, and devices.  A separate real-swap test also PASSes: it verifies
+the target is actually swapped, reads exact startup metadata from MonitorFS
+MRES, then resumes and waits for the reader and pressure children.
+
+GCC 48K disk-root fixed resident comparison, in decimal PDP-10 words:
+
+                          MonitorFS in KCORE    MonitorFS in MRES
+    KCORE                       10492                 9472
+    MonitorFS MRES                  0                 1039
+    KCORE + all MRES            13368                13387
+    PERMANENT_LAST              13415                13434
+
+The MRES arrangement adds 19 fixed resident words overall.  `KCORE` alone
+falls by 1020 words, but this is not a total memory saving.  Since permanent
+RAM is the dominant optimization goal, the default remains off; runtime
+MRES validation is accepted for the tested GCC configuration only.  KCC
+fixed-memory measurement and net-zero MRES overhead are prerequisites for
+reconsidering the default.  The separate 32K boot-size work remains deferred.
+
+
 ## 2026-10-20 V75: ACTUAL SLOT-0 KERNEL STACK CONSUMPTION
 
 The original permanently pinned slot-0 idle/exit/swap-service stack occupied
