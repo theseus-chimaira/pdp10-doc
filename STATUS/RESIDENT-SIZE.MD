@@ -2,6 +2,33 @@
 
 DATE: 2026-10-20
 
+## 2026-10-20 V75: ACTUAL SLOT-0 KERNEL STACK CONSUMPTION
+
+The original permanently pinned slot-0 idle/exit/swap-service stack occupied
+`0100` octal (64 decimal) words.  This is **not enough** when a sleeping
+process wakes from swap: slot 0 calls `proc_swap_service_one`, `proc_swap_in`,
+aligned MM allocation and nested backing-store/I/O and cleanup routines.
+The 48K live swapped-process V74 test initially stalled in this path.
+
+An exploratory `0200`-octal (128-word) stack made the full 48K test PASS.
+With the existing test-only `PROC_STACK_WATERMARK=1` canaries, the *first
+untouched* stack word was at offset `0116` octal (78 decimal).  Since the
+PDP-6 pushdown stack grows upward from the base, **77 words were touched**
+by this test's deepest measured path.  An allocation of 78 words is the
+observed minimum; it is *not* a safe general-purpose reserve.
+
+The accepted V75 setting is `0140` octal (96 decimal) words, identically in
+`system/kernel/boot/kinit.h` and `system/kernel/proc/proc_pdp6.s`.  The full
+48K PDP-6 swapped MonitorFS / wake / WAIT regression PASSed again with the
+96-word stack and automatic watermark assertion; the first untouched word
+remained at offset 78, leaving 18 unused words.  The increase versus the
+original stack is **32 resident RAM words**, rather than the **64** added
+by the 128-word trial.  This is a dynamic MM allocation and does not change
+the linked KCORE endpoint.  This is a measured workload peak, not a promise
+about every possible future nested kernel path.  Strict 32K boot sizing
+remains deferred by user request.
+
+
 ## 2026-10-20 V73 STARTUP RECORDS AND RESIDENT SWAP METADATA
 
 MonitorFS no longer needs a dedicated BACKSTORE reader to display argv and
