@@ -1,6 +1,45 @@
 # DAIMOS RESIDENT-SIZE STATUS
 
-DATE: 2026-10-06
+DATE: 2026-10-20
+
+## 2026-10-20 V73 STARTUP RECORDS AND RESIDENT SWAP METADATA
+
+MonitorFS no longer needs a dedicated BACKSTORE reader to display argv and
+environment records for nonresident processes.  On swap-out, the V72/V73
+implementation validates and preserves only the occupied startup prefix in
+an exact-size, non-reclaiming dynamic allocation.  The existing stable u-area
+gains one snapshot pointer at octal offset `0410`.  Snapshots are allocated
+only for swapped processes, accounted in MEMINFO, and released on swap-in or
+process teardown.  Process descriptors still occupy three words; the disk
+swap format is unchanged.  The removed KCC swap reader occupied 691 text
+words; the new snapshot implementation has 225 KCC text words and one BSS
+word, excluding ordinary allocator code already in KCORE.
+
+The V73 correction makes MonitorFS, PROCINFO COMM, and snapshot capture find
+startup records from the **original** VM length, stored as the high half of
+the per-process `PROC_BRK_WORD`.  `BRK` growth changes the current allocation
+length in `vm_state` but does not move argc/argv/envp, so using the latter
+as the origin previously made resident DSH metadata disappear.  Capturing
+the snapshot also rejects an impossible original length beyond the allocated
+VM.  No further per-process state is necessary.
+
+Fresh KCC 256K link endpoints, octal (exclusive KCORE low end):
+
+    Old BACKSTORE reader     025723
+    V72 snapshot             024754  (-487 decimal words)
+    V73 stable BRK origin    024776  (+18 vs V72; -469 vs old reader)
+
+The unchanged 256K KCC LOGIN -> DSH MonitorFS live acceptance now passes
+NAME, CMDLINE, ENVIRONMENT, relative path traversal and domain fields.
+An independent fresh GCC low-memory 48K disk-root run passes the same oracle,
+with KCORE endpoint `024454` octal.  Both GCC and KCC PDP-6 native snapshot
+tests pass with deliberate post-start heap growth; the native MonitorFS word
+I/O fixture passes with a grown VM and correct stable u-area.  These tests
+do not yet exercise MonitorFS while its observed target process is actually
+swapped.  Full fixed KCORE+MRES size acceptance must still be measured on
+the relevant configuration; the figures above measure KCORE endpoints, not
+the complete permanent-memory total.  Strict 32K transient image fitting
+remains deliberately deferred and is not inferred from the 48K test.
 
 ## ACTIVE RULE
 
