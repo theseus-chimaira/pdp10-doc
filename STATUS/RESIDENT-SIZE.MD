@@ -2,6 +2,22 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V95: SHARED MAPPED BULK-WORD SYSCALL PATH
+
+Native `READ_WORDS` and `WRITE_WORDS` now select their FILE handler in AC5
+and share user-pointer mapping, argument preparation, indirect handler call
+and mapping-release tail. The VM mapping hold routine preserves AC5; the
+translation routine does not alter it. Unchanged special branches handle
+pipe/TTY blocking reads and zero-word device writes. The fully folded KCC
+256K full-profile disk-root link changed `__kcore_low_end` from `022761`
+to `022754` octal, **9665 -> 9660 KCORE words (-5)**. The syscall-dispatch
+object itself shrank **827 -> 822** words. A focused real 256K SIMH
+PTR/PTP WORDTOKEN8 full/partial read/write round-trip PASSed.
+No full testkit, 32K or TSFS testing; the strict below-8192 target now
+requires **1469** more KCORE words saved. Historical KCORE word counts use
+the corrected executive base of `060` octal.
+
+
 ## 2026-10-21 V94: SHARED FILE DEVICE DISPATCH, CORRECTED KCORE ACCOUNTING
 
 The FILE word-I/O paths for six write devices and three read devices now
