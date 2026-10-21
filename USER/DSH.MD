@@ -1,5 +1,28 @@
 # DAIMOS DSH CURRENT SUMMARY
 
+## 2026-10-21 V31/V32 PACKED-NAME OPTIMIZATION AND TEST ACCEPTANCE
+
+The V31 DSH equality helper compares complete packed SIXBIT words for
+names rather than decoding every character.  V32 reuses this helper for
+`UNALIAS` removal.  Length checks and the second 36-bit word preserve
+distinctions between names that share their first six characters.
+Aliases, function lookup, definitions/redefinitions, and `UNALIAS`
+behavior were verified with dedicated native SIMH probes.
+
+GCC 32K-default image sizes (octal words): V30 `031365`, V31 `031353`,
+V32 `031326`; BSS stays `012755`.  This saves 037 octal words (31 decimal)
+without disabling the editor, scripting language, or job control.  A
+strictly below-`030000` image still requires a further `01327` octal
+words (727 decimal), in addition to physical 32K and stack/BRK checks.
+
+The V32 testkit run passed 4/4 packed-name tests, 4/4 packed-UNALIAS
+tests, and the complete 115/115 DSH conformance suite.  The corrected
+test harness isolates simulator media per invocation, preserving the
+original boot-root image and preventing a prior dirty root from changing
+later test results.  Details appear in
+`STATUS/DAIMOS-SIMH-D6FS-TEST-ISOLATION-20261021-V1.MD`.
+
+
 ## 2026-10-21 GCC V29 FULL CONFORMANCE AND 32K SIZE STATUS
 
 DSH v28 shares one quote-mask emission path for all parameter expansions,
