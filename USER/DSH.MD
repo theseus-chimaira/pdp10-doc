@@ -1,5 +1,29 @@
 # DAIMOS DSH CURRENT SUMMARY
 
+## 2026-10-21 EXPERIMENTAL V26 EDITOR/LOOP STATUS
+
+The versioned DSH v26 branch adds `BREAK [LEVELS]` and
+`CONTINUE [LEVELS]`.  The optional level count is a positive integer
+bounded by the loops active in the current function frame; invalid use
+returns status 2.  These commands also work in `SOURCE` scripts and do not
+allow a function to break an enclosing caller's loop.  All 12 dedicated
+SIMH loop tests pass.  The wider 115-probe shell suite passes 113 probes;
+two compact-HELP synopsis assertions still require baseline comparison.
+
+DSH's 180-character interactive input now delegates packed SIXBIT insertion
+and deletion to `userland/libc/edcore`, a small caller-owned-storage module
+whose get/insert/delete/replace interface is independent of TTY I/O.  That
+same core is intended for future ED and EX programs; their multi-line
+storage and ex command parser are not yet implemented.  Host-side core
+tests pass.  History remains compile-time optional and off in the 32K GCC
+configuration; completion and job control are still available.
+
+The proposed `$<NAME>` parameter syntax is **not yet implemented**.
+The current unquoted `<` and `>` lexer operators require special handling
+for the adjacent `$<` prefix before an expansion grammar can be added.
+These results are experimental and do not establish the strict below-030000
+octal text-size or physical 32K boot acceptance gates.
+
 STATUS REVIEW: 2026-10-10 (DOCUMENTATION RECONCILIATION; NO NEW TARGET RUN)
 STATUS: SUBSTANTIAL IMPLEMENTATION IN CONFORMANCE/COVERAGE PASS; SEE
 USER/DSH_DESIGN.MD FOR THE FROZEN SPECIFICATION AND DAIMOS
