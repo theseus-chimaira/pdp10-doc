@@ -8,6 +8,28 @@ Listed 381 defined linked records from 32 KCORE input objects; .text 9374, .data
 
 ## First bottom-up classification
 
+### V88: first source-and-caller review (2026-10-21)
+
+No changes are accepted in this first pass. `mm_pin` and `mm_unpin` are
+two-word wrappers sharing `mm_pin_adjust`. `file_unlink` and `file_rmdir`
+share `file_remove`; `vfs_create` and `vfs_mount` likewise enter shared
+implementations. `vfs_name_is6` is a four-word check used for dot and
+dot-dot names. `proc_slot_ptr` has process and EXEC callers, so it is
+not an unused helper. `fs_copy_words`, `fs_move_words` and
+`fs_zero_words` serve filesystem providers as well as resident VM/MM
+and module operations; relocating them to detachable filesystem MRES
+would introduce lifetime/dependency concerns. TTY packed halfword
+base getters/setters are already compact and serve TTY and canonical
+input paths. No deletion or forced inline transformation is justified
+from these observations alone.
+
+The relocation-reference counts in this inventory are incomplete for
+boot-time patching and for internal branch labels: treat them only as
+hints, not as evidence of dead code. The next pass should evaluate
+larger TTY/scheduler entries and measure any candidate by a fresh linked
+KCORE delta before acceptance.
+
+
 Of 315 exported text entries, 72 have a one-word interval to the next exported entry, 61 have two through eight words, and 51 have nine through sixteen words. These numbers are not independent function sizes: dispatch/PI vectors, return constants, aliases, and trampoline entrypoints dominate the short intervals. Linked text entries occupy 296 distinct absolute addresses.
 
 * **Retain/inspect as dispatch infrastructure:** KCORE `dsk270`/`drm236` two-word drivers, MonitorFS nine-word jump table, `fs_mres` provider entries, and the `storage_router` service jumps must be cross-checked with MINIT patching before any modification. Their relocations can be zero even when hardware interrupt or boot-time code consumes them.
