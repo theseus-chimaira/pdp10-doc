@@ -10,6 +10,25 @@ Listed 381 defined linked records from 32 KCORE input objects; .text 9374, .data
 
 ### V88: first source-and-caller review (2026-10-21)
 
+### V89: TTY, scheduler, and VFS small-function review
+
+`proc_tty_pending_take` and `proc_tty_pending_store` are required KCORE
+interfaces called by both DCS and GE MRES. Their shared packed record is
+process/session state, not dedicated hardware-driver state. The output-route
+get/set pair also maintains packed-state and sentinel semantics, so merging
+the two entrypoints is not an evident saving. `proc_sched_resched_select`
+and `proc_sched_tick_select` already tail-enter the common runnable process
+scanner, but have distinct elapsed-tick behavior. `proc_sched_resched_current`
+requests deferred scheduling using the PI path, so it is not KINIT-only.
+
+VFS `chmod` and `chown`/`utime` already dispatch through common mutation
+and setattr handlers. `vfs_readdir_raw` also distinguishes MonitorFS from
+regular MRES filesystem providers. These are live interfaces, not duplicate
+full implementations. Candidate investigation should now proceed into
+`vfs_readonly` and its mutation callers, syscall marshaling and the
+TTY pending-byte encoding, with measured KCORE deltas and >32K tests.
+
+
 No changes are accepted in this first pass. `mm_pin` and `mm_unpin` are
 two-word wrappers sharing `mm_pin_adjust`. `file_unlink` and `file_rmdir`
 share `file_remove`; `vfs_create` and `vfs_mount` likewise enter shared
