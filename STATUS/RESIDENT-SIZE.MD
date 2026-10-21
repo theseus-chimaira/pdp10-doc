@@ -2,6 +2,18 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V80: GCC MULTIPROCESS SCHEDULER RECHECK
+
+The formerly failing GCC-kernel PDP-6 multiprocess scheduler oracle now
+PASSes on a fresh full-profile 256K disk-root build (`COMPILER=gcc`, five
+boot users, SIMH 8M throttle).  It checks timer preemption before the first
+CPU checkpoint, process contexts, NICE and disk sleep/wakeup without
+loosening assertions.  Recorded marker sequence:
+`<abBcdCeExyxyxyxyxyxy2xxyyDA35D14`.  No scheduler or compiler code
+was changed for this V80 recheck.  The cause of the former failure has
+not been independently identified; strict 32K remains deferred.
+
+
 ## 2026-10-21 V79: DCS TRANSMIT BACKPRESSURE (SIMH PDP-6)
 
 V78 `HELP DAS` terminal output was corrupted and stalled when the SIMH
