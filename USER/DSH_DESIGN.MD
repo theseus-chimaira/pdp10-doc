@@ -263,6 +263,12 @@ Variable disambiguation uses:
 
     $[NAME]
 
+DSH v27 adds the SIXBIT-compatible extended parameter forms `$<NAME>`,
+`$<NAME:-DEFAULT>`, `$<NAME:=DEFAULT>`, `$<NAME:+ALT>` and
+`$<NAME:?MESSAGE>` (bounded, literal and nonrecursive).  Adjacent `$<`
+is lexically distinguished from standalone `<` input redirection.  This
+addition does not change the original positional or special parameters.
+
 The shell must not attempt to force unavailable Unix punctuation into
 the language merely to resemble Bourne shell syntax.
 

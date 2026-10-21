@@ -1,5 +1,28 @@
 # DAIMOS DSH CURRENT SUMMARY
 
+## 2026-10-21 EXPERIMENTAL V27 PARAMETER EXPANSION
+
+The PDP-6 SIXBIT shell now implements bounded `$<NAME>` variable expansion
+and `$<NAME:-DEFAULT>`, `$<NAME:=DEFAULT>`, `$<NAME:+ALT>` and
+`$<NAME:?MESSAGE>`.  The default/alternative/message is literal SIXBIT,
+without nested expansion; a complete expression and its expanded result
+must each fit within the existing 36-character record limit.  An unset or
+empty variable activates the `:-`, `:=` and `:?` operators, while `:+`
+requires a nonempty value.  `:=` preserves any existing export flag and
+`:?` prints a diagnostic and returns status 2 when the value is missing.
+
+An adjacent unescaped `$<` starts an expression before `<` is interpreted
+as input redirection.  The terminating `>` is internal to the expansion;
+later `<`, `>` and `>>` retain ordinary redirection syntax.  Single-quoted
+and escaped `$` expressions remain literal, while double-quoted expressions
+expand.  Existing `$NAME` and `$[NAME]` forms remain unchanged.  There is
+no support yet for nested defaults, embedded `>`, or recursive expansions.
+
+The host lexer checks and the 25 new target SIMH expansion probes pass.
+GCC executable image/BSS are 032307/012755 octal on the versioned v27
+branch, larger in text than v26.  The strict below-030000 image target and
+physical 32K boot acceptance remain open.
+
 ## 2026-10-21 EXPERIMENTAL V26 EDITOR/LOOP STATUS
 
 The versioned DSH v26 branch adds `BREAK [LEVELS]` and
@@ -18,9 +41,8 @@ storage and ex command parser are not yet implemented.  Host-side core
 tests pass.  History remains compile-time optional and off in the 32K GCC
 configuration; completion and job control are still available.
 
-The proposed `$<NAME>` parameter syntax is **not yet implemented**.
-The current unquoted `<` and `>` lexer operators require special handling
-for the adjacent `$<` prefix before an expansion grammar can be added.
+At v26 the `$<NAME>` parameter syntax was **not yet implemented**.  The
+subsequent v27 implementation and limitations are documented above.
 These results are experimental and do not establish the strict below-030000
 octal text-size or physical 32K boot acceptance gates.
 
