@@ -1,5 +1,32 @@
 # GCC PDP-6 Local 9-bit Character Array Boundary Correction (2026-10-19)
 
+## Installed toolchain synchronization, 2026-10-21 (V46)
+
+The source-level fix below remained valid, but the installed GCC under
+`$PDP10_PREFIX` contained an **older cc1 binary**.  Its SHA-256 was
+`8051a01c5bb64fcdc85d73fb45e8c939e654b97832273fc3e7aaa4b94c096a4f`.
+That stale binary still failed `pdp10-gcc-char-word-boundary-v45` at -O1
+and misrendered `HELP ECHO` and `HELP DAS` in the newer DSH v29 image.
+The source repository already contained the correction (commit
+`df27247`); no additional compiler backend patch was required.
+
+After rebuilding `gcc-pdp10-build-v1/gcc/cc1` from the current source,
+the installed cc1 SHA-256 is now
+`dca2ce75da0e128ac0f6309ee2d1b2c55bcf539bdd590449e065afa0e3ee7768`.
+The original installed binary was backed up in `$TMPDIR` with the versioned
+name `pdp10-gcc-cc1-installed-before-char-boundary-v46-20261021`.
+
+The **installed** toolchain now passes the existing target v45 test at
+-O0, -O1, -O2 and -Os.  A fresh GCC/SIMH build resolves the compact HELP
+problems (2/2 dedicated tests) and passes 115/115 DSH conformance cases.
+The DSH v29 image/BSS remains 031365/012755 octal words.  The new
+`daimos-testkit` `test-daimos-gcc-help-toolchain-20261021-v46` target
+combines the compiler regression with the paired HELP probes to reject
+future stale installations.  This does not constitute strict 32K
+acceptance: DSH is still 01366 octal image words above the required
+strictly-below-030000 text target.
+
+
 ## Fault and root cause
 
 The GCC PDP-10 backend generated incorrect assembly for optimized reads of

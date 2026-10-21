@@ -1,5 +1,26 @@
 # DAIMOS DSH CURRENT SUMMARY
 
+## 2026-10-21 GCC V29 FULL CONFORMANCE AND 32K SIZE STATUS
+
+DSH v28 shares one quote-mask emission path for all parameter expansions,
+reducing GCC text by 0203 octal words without BSS growth.  V29 gates
+interactive TAB completion behind `DSH_ENABLE_COMPLETION`: it defaults
+to off for the 32K GCC build and can be enabled with
+`-DDSH_ENABLE_COMPLETION=1` on larger builds.  Packed SIXBIT line editing,
+`BREAK`/`CONTINUE`, pipeline execution, scripting, and job control remain
+available independently of this option.  The v29 off/on GCC image sizes
+are 031365/032104 octal words, with identical BSS of 012755 octal.
+
+The v26-v29 `HELP ECHO` and `HELP DAS` failures were caused by a stale
+installed GCC compiler, predating upstream backend correction `df27247`
+for optimized 9-bit local-char indexing.  After rebuilding and installing
+GCC, the dedicated target regression passed all optimization levels and a
+new, clean GCC/SIMH **115/115 DSH conformance run passed**; both compact
+HELP cases are now green.  No HELP implementation workaround was made.
+The below-030000 text target (still 01366 octal words short), stack/BRK
+accounting, and physical 32K acceptance remain open.
+
+
 ## 2026-10-21 EXPERIMENTAL V27 PARAMETER EXPANSION
 
 The PDP-6 SIXBIT shell now implements bounded `$<NAME>` variable expansion
