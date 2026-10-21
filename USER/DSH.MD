@@ -1,5 +1,39 @@
 # DAIMOS DSH CURRENT SUMMARY
 
+## 2026-10-21 V39-V44 SIXBIT SHARING, VERIFIED BASELINE, OPEN PROCESS BUG
+
+The accepted DSH V44 source reuses common bounded SIXBIT text operations:
+whole-record append (V39), range extraction for names and values (V40),
+PATH/glob construction with the correct distinct separator rules (V41),
+and a private common character-range append loop (V42).  V44 explicitly
+restores V42's tested source after a subsequent V43 optimization failed.
+
+Default GCC image/BSS in octal words: V37 `031021/012755`, V39
+`030717/012755`, V40 `030674/012755`, V41 `030657/012755`, V42/V44
+**`030645/012755`**.  The improvement over V37 is 0154 octal words
+(108 decimal) of text, with zero BSS growth.  The strict below-030000
+image limit requires another 0646 octal words (422 decimal); physical
+32K and peak stack/BRK safety remain unverified.
+
+V39 passed 161/161 isolated SIMH tests; V41 passed 171/171 including
+dedicated path-boundary and process tests; V42 passed 115/115 full
+conformance and 6/6 isolated process probes.  These tests cover existing
+scripting, quotes, expansion, globbing, pipelines, aliases, functions,
+redirection, and job control.  Original D6FS source media remained CLEAN.
+
+V43 (`39bd17a`) attempted to factor builtin NAME=VALUE splitting.  It is
+**not accepted**: two full SIMH runs failed five process-related cases
+including pipelines, even though its six isolated process probes pass.
+The new helper is not called before the first failure; the generated
+pipeline and external-launch instruction sequences were identical after
+normalizing local assembler label numbers.  This leaves a suspected
+code-layout-sensitive compiler, linker, loader, or scheduler defect to
+investigate; its actual cause has not been established.  V44 (`4b96b8a`)
+reverts this experiment without weakening process safety or removing
+shell features.  See DAIMOS `PROJECT-STATE.MD` and the DSH TODO for the
+bug's exact acceptance status and further work.
+
+
 ## 2026-10-21 V34-V37 FULL-GRAMMAR PARSER ACCEPTANCE
 
 Four successive GCC text optimizations retain the complete DSH shell
