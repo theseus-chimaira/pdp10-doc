@@ -2,6 +2,31 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V97: SHARED SIX-WAY USER-POINTER SYSCALL PATH
+
+CHDIR, GETCWD, MKDIR, UNLINK, TRUNCATE and MEMINFO now select their
+KCORE service in AC5 and share `native_sys_one_ptr`, retaining the
+user-mapping hold/failure/release semantics and the caller's AC2 scalar.
+Fresh folded KCC full-profile 256K link: `__kcore_low_end` octal
+**022747 -> 022736**, **9655 -> 9646 KCORE words (-9)**. Syscall
+dispatch input DOBJ **817 -> 808** text words. The new focused 256K
+SIMH `test-daimos-kcore-oneptr-v97` PASSes all six syscalls and bad
+logical pointer failure/recovery. No 32K, TSFS or full testkit tests.
+Strictly below 8192 now requires **1455 more words**.
+
+Comparison from the supplied historical TENEX/ITS assembler sources:
+DAIMOS's primary 040..077 UUO dispatch occupies **16 packed words**;
+the extension dispatch occupies **14 packed words**, total **30 words**
+excluding dispatch instructions. TENEX's `128-tenex/sys.collec` builds
+one `XWD FPC,handler` JSYS vector word per JSYS number up to 0777 octal
+(**512 words**). ITS `src/system/its.1652` uses a UUO opcode-class
+table, then numbered `.CALL` dispatch and symbolic SIXBIT name/descriptor
+tables. These are **front-end tables**, not comparable complete syscall
+implementations. The useful lesson is to preserve DAIMOS's packed KCORE
+front-end while pursuing cold-service relocation into pinned MRES. Full
+analysis and historical source paths are kept in `DAIMOS/KCORE.MD`.
+
+
 ## 2026-10-21 V96: SHARED DIRREAD/PROCINFO SYSCALL OUTPUT PATH
 
 The native DIRREAD and PROCINFO entrypoints now select their respective
