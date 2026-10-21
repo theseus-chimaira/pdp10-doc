@@ -2,6 +2,22 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V85: KCORE-ONLY 8K OPTIMIZATION TARGET
+
+The active size goal is **KCORE below 020000 octal (8192 words)**.  No
+32K memory configurations are to be tested for now.  Total KCORE+MRES
+occupancy and individual MRES sizes remain informational; they are not
+optimization pass/fail criteria during this phase.  In DAIMOS,
+`make permanent-size` defaults to a report-only mode, retaining the
+optional `PERMANENT_SIZE_ENFORCE=1` override for the prior strict 040000
+permanent-address gate.  The routine testkit simulator target no longer
+invokes the old strict permanent-size gate; explicit testing is retained.
+
+The current KCC full disk-root report measures KCORE at 10702 decimal
+words; reaching 8192 requires eliminating 2510 words, or 2511 words to
+get strictly below 8K.  This is a target, not a passing result.
+
+
 ## 2026-10-21 V80: GCC MULTIPROCESS SCHEDULER RECHECK
 
 The formerly failing GCC-kernel PDP-6 multiprocess scheduler oracle now
