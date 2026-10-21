@@ -2,6 +2,20 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V86: DEFAULT MONITORFS MRES
+
+The full MonitorFS KCORE runtime was replaced with the existing nine-word
+dispatch layer, and full MonitorFS service is installed in the pinned MRES
+by default.  Fresh KCC full-profile 256K disk-root build: KCORE
+**10702 -> 9674 words** (1028-word reduction); linker
+`__kcore_low_end=023002` octal.  MonitorFS MRES is 1039 installed words;
+combined residency is deliberately not the optimization gate in this phase.
+The complete 115-probe DSH conformance run passed, no failures.  Prior
+optional MRES GCC 48K live MonitorFS and swap acceptance remains valid.
+The active KCORE 8K target needs 1482 further words eliminated to reach
+8192, or 1483 to get strictly below 8K.  No 32K configuration was tested.
+
+
 ## 2026-10-21 V85: KCORE-ONLY 8K OPTIMIZATION TARGET
 
 The active size goal is **KCORE below 020000 octal (8192 words)**.  No
