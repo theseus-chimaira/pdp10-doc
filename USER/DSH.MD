@@ -1,5 +1,32 @@
 # DAIMOS DSH CURRENT SUMMARY
 
+## 2026-10-21 V34-V37 FULL-GRAMMAR PARSER ACCEPTANCE
+
+Four successive GCC text optimizations retain the complete DSH shell
+grammar, redirections, quotation masks, globbing, parameter expansion,
+functions, scripts, pipelines, and job control:
+
+* V34 centralizes bounded copying of a lexer SIXBIT word and its literal
+  and quote masks into the AST, shared by simple commands, FOR, DEF and CASE.
+* V35 classifies a reserved-word command once per dispatch.
+* V36 classifies AND/OR tokens once per relevant parser operation.
+* V37 shares binary AST node construction for pipelines, boolean
+  operators and command lists.
+
+Measured GCC-default DSH image/BSS in octal words: V32 `031326/012755`,
+V34 `031105/012755`, V35 `031071/012755`, V36 `031036/012755`,
+V37 **`031021/012755`**.  Net code saving is 0305 octal/197 decimal
+words since V32; no BSS increase.  The remaining reduction needed to
+meet an image strictly below `030000` is 01022 octal/530 decimal words.
+This does not establish real 32K stack and BRK safety.
+
+Every stage passed the full isolated SIMH suite: 115/115 standard DSH
+conformance, 4/4 packed names, 4/4 packed UNALIAS, 25/25 angle parameter
+expansion and 12/12 loop-control probes (161/161), plus media isolation.
+After the runs, each source D6FS fixture remained CLEAN; V35-V37 had
+superblock 703, sequence 1.  No language features were disabled.
+
+
 ## 2026-10-21 V31/V32 PACKED-NAME OPTIMIZATION AND TEST ACCEPTANCE
 
 The V31 DSH equality helper compares complete packed SIXBIT words for
