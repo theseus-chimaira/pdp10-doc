@@ -2,18 +2,40 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V94: SHARED FILE DEVICE DISPATCH, CORRECTED KCORE ACCOUNTING
+
+The FILE word-I/O paths for six write devices and three read devices now
+share one AC1/AC2 setup and indirect call through their existing
+MINIT-patchable KCORE jump slots. The affected KCC `file_runtime.dobj`
+text fell 1175 -> 1160 words. The **fully folded** KCORE endpoint moved
+`023000 -> 022761` octal, **9680 -> 9665 decimal words** (-15 words).
+The PDP-6 focused FILE regression passes all nine patchable device entries,
+argument/count, transfer position and absent-device cases; live 256K SIMH
+PTR/PTP full and partial physical word transfers PASS. Other devices were
+not separately live-tested. No 32K/full testkit run.
+
+**Correction to V86–V93 textual sizes:** KCORE begins at `000060` octal,
+not `000070`. `image/report-permanent.sh` confirms that linked words are
+`__kcore_low_end - 060` (octal). The old sizes were understated by eight
+decimal words; linker endpoints and successive deltas remain correct.
+Thus V86 KCORE `023002` means **9682**, not 9674; moving MonitorFS saved
+**1020**, not 1028, from the V85 baseline 10702. V91 was 9681 and V92/V93
+were 9680. Latest V94 KCORE **9665** needs **1474** fewer words to be
+strictly less than 8192 (1473 fewer to reach exactly 8192).
+
+
 ## 2026-10-21 V86: DEFAULT MONITORFS MRES
 
 The full MonitorFS KCORE runtime was replaced with the existing nine-word
 dispatch layer, and full MonitorFS service is installed in the pinned MRES
 by default.  Fresh KCC full-profile 256K disk-root build: KCORE
-**10702 -> 9674 words** (1028-word reduction); linker
+**10702 -> 9682 words** (1020-word reduction, corrected V94); linker
 `__kcore_low_end=023002` octal.  MonitorFS MRES is 1039 installed words;
 combined residency is deliberately not the optimization gate in this phase.
 The complete 115-probe DSH conformance run passed, no failures.  Prior
 optional MRES GCC 48K live MonitorFS and swap acceptance remains valid.
-The active KCORE 8K target needs 1482 further words eliminated to reach
-8192, or 1483 to get strictly below 8K.  No 32K configuration was tested.
+The V86 KCORE 8K target needed 1490 further words eliminated to reach
+8192, or 1491 to get strictly below 8K. No 32K configuration was tested.
 
 
 ## 2026-10-21 V85: KCORE-ONLY 8K OPTIMIZATION TARGET

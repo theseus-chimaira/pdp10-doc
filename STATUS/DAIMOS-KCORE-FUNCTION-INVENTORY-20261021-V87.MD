@@ -1,6 +1,6 @@
 # DAIMOS V87 — KCORE linked symbol inventory, smallest first
 
-V86 KCC full-profile 256K disk-root baseline, `MONITORFS_MRES_ENABLED=1`, linker map `__kcore_low_end=023002` octal. KCORE is **9674 words**, and 1482 words must be saved to reach 8192 (1483 to get strictly below). No 32K testing.
+V86 KCC full-profile 256K disk-root baseline, `MONITORFS_MRES_ENABLED=1`, linker map `__kcore_low_end=023002` octal. KCORE is **9682 words**, and 1490 words must be saved to reach 8192 (1491 to get strictly below). Corrected in V94 after accounting for base `060` octal instead of `070`. No 32K testing.
 
 **Measurement caveat:** Table includes every exported defined symbol mapped into KCORE, including data, aliases, service entries and non-functions. `span≤` is the distance to the next *exported symbol in the same input object and section*, or section end. It is an **upper bound on the entry region**, not a proven exclusive function size: internal labels, alignment, aliases and folding can change true spans. Zero means an alias at another symbol address. Relocation references are static references in the KCORE input objects and the available MRES/KINIT package objects, not dynamic call counts; locally resolved branches and indirect calls are not counted. Do not remove functions on zero references alone.
 
