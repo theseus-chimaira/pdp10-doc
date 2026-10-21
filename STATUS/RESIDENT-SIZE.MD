@@ -2,6 +2,23 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V96: SHARED DIRREAD/PROCINFO SYSCALL OUTPUT PATH
+
+The native DIRREAD and PROCINFO entrypoints now select their respective
+KCORE service in AC6 and share the user-result-pointer translation,
+index preservation in AC5, indirect call and mapping-release path.
+Their user argument contracts, failure handling and API remain unchanged.
+`vm_user_mapping_hold` preserves AC5 and does not change AC6;
+`vm_user_words` touches AC1/AC3/AC4 only. Fresh folded KCC 256K
+full-profile disk-root KCORE endpoint **022754 -> 022747 octal**, or
+**9660 -> 9655 decimal words (-5)**. The syscall-dispatch input DOBJ
+text changed **822 -> 817 words**. Focused native PDP-6 SIMH
+`test-daimos-monitorfs-process-decimal` PASS with additional `/PROC`
+DIRREAD entry/type verification alongside existing PROCINFO checks.
+No full testkit, 32K or TSFS tests. Strictly below 8192 needs
+**1464 more words** removed from KCORE.
+
+
 ## 2026-10-21 V95: SHARED MAPPED BULK-WORD SYSCALL PATH
 
 Native `READ_WORDS` and `WRITE_WORDS` now select their FILE handler in AC5
