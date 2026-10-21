@@ -2,6 +2,20 @@
 
 DATE: 2026-10-20
 
+## 2026-10-20 V77: KCC DSH EXEC IMAGE BELOW NORMAL LIMIT
+
+The default DSH build already excludes command history using
+`DSH_ENABLE_HISTORY=0`, so that existing switch cannot save more code.
+V77 reuses the checked counted-SIXBIT line decoder for text input instead
+of duplicating length checking and word copying in `dsh_getline_text()`.
+KCC image: `036021` -> `035764` octal, a saving of `035` octal
+(29 decimal) words.  BSS remains `012751` octal.  The result is `014`
+octal (12 decimal) words beneath the standard `036000` EXEC image limit.
+A fresh 256K PDP-6 multiprocess test passes using the KCC kernel and
+GCC-built test INIT.  This is not evidence for the separate GCC-kernel
+scheduler issue.  Strict 32K boot testing remains deferred.
+
+
 ## 2026-10-20 V76: OPTIONAL MONITORFS MRES VERIFIED, NOT DEFAULT
 
 The optional `MONITORFS_MRES_ENABLED=1` configuration successfully boots a
