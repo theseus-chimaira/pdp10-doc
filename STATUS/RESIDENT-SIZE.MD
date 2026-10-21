@@ -2,6 +2,31 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V98: PINNED SYSINFO MRES, 118 FEWER KCORE WORDS
+
+The cold PROCINFO and MEMINFO query routines moved from the old 122-word
+KCORE `syscall_info.s` object to `syscall_info_mres_v98.s`, loaded as a
+mandatory, pinned `SINFO` MRES package by MINIT before runtime processes
+and optional filesystem providers. KCORE retains three one-word stubs:
+the two public query entries and the existing MEMFS usage-hook patch
+slot. A one-word KCORE variable holds the permanent-resident word count
+published by KINIT; relocated MEMINFO now reads it as data rather than
+relying on a patched immediate inside movable module code. This also
+preserves the existing MEMFS module-runtime binding and absence behavior.
+
+Folded full-profile 256K KCC KCORE endpoint **022736 -> 022550 octal**,
+**9646 -> 9528 words (-118)**. The original KCORE object became
+**3 text + 1 data** words, and the new MRES contains 122 initialized
+service words (plus its package descriptor). Full 256K disk-root image
+link PASS. Targeted 256K PDP-6 SIMH native test PASS for both PROCINFO
+and MEMINFO, returned process and permanent-memory information,
+invalid user pointers, and recovery. No 32K, TSFS or full testkit runs.
+KCORE requires **1337 more words** saved to be strictly below 8192.
+
+Next candidate: the cold 272-word `proc_run_block` implementation, after
+independent process/RUN lifetime and fixed MRES dependency auditing.
+
+
 ## 2026-10-21 V97: SHARED SIX-WAY USER-POINTER SYSCALL PATH
 
 CHDIR, GETCWD, MKDIR, UNLINK, TRUNCATE and MEMINFO now select their
