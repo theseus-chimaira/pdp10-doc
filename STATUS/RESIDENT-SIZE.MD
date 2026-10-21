@@ -2,6 +2,25 @@
 
 DATE: 2026-10-20
 
+## 2026-10-21 V79: DCS TRANSMIT BACKPRESSURE (SIMH PDP-6)
+
+V78 `HELP DAS` terminal output was corrupted and stalled when the SIMH
+Type 630 terminal transmit queue filled.  V79 adds an explicit DCSB CONI
+`0100` transmit-ready indication in the paired PDP-6 simulator and checks
+it in DAIMOS's `dcs_putchar` before DATAO.  When necessary, the simulator
+polls/drains its pending TMXR output before advertising ready, preventing
+both the original lost characters and the first finite-poll experiment's
+premature timeouts.  On a fresh 256K KCC PDP-6 disk image, isolated HELP
+DAS passes with its original assertions and full DSH conformance passes
+115/115 using the paired builds.
+
+Resident cost: DCS MRES DXR `000074` to `000105` octal = 9 decimal
+additional PDP-10 words.  KCORE linked endpoint stays `024776` octal;
+DSH stays `035764` octal.  These are software/simulator acceptance results,
+not proof that real Type 630 hardware supplies the simulator's extra
+CONI `0100` readiness bit.  Hardware compatibility remains open.
+
+
 ## 2026-10-20 V77: KCC DSH EXEC IMAGE BELOW NORMAL LIMIT
 
 The default DSH build already excludes command history using
