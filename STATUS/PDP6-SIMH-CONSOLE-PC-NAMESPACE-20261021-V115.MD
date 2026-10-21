@@ -52,6 +52,21 @@ an explicit `-lm` option on the local Termux toolchain because of a
 separate, pre-existing Makefile library dependency; that issue is not
 included in the namespace correction.
 
-The full DAIMOS trap-frequency runtime acceptance remains a separate
-regression gate.  Neither its syscall-frequency thresholds nor any
-32K/size acceptance criterion was changed by this work.
+## Subsequent DAIMOS group-022 acceptance (v120)
+
+The full DAIMOS trap-frequency runtime test subsequently passed under
+both KCC and the separately validated GCC PDP-6 compiler on the corrected
+SIMH binary.  The observed startup, ECHO, MEMSTAT, LS, PS and CAT128 syscall
+counts were KCC 111/16/19/33/23/18 and GCC 90/16/19/33/25/18, below their
+unchanged respective ceilings of 128/35/70/70/110/45.
+
+The functional testkit fixture explicitly sets `DSH_IMAGE_LIMIT=037000`
+(commit `0f6ad07`) because the current DSH `036021` image does not fit the
+strict default `036000` limit.  This remains diagnostic 256K execution,
+not 32K size/boot acceptance.  The separately corrected KA10/KI10 default
+math-library link is committed as sims `5f6d21b`.
+
+Evidence: `$TMPDIR/daimos-trap-runtime-fixed-pc-v117.log` and
+`$TMPDIR/daimos-trap-gcc-fixed-pc-v118.log`.  Group 022 is independently
+accepted for both compilers; groups 027-030 and the full atomic non-size
+matrix remain open.
