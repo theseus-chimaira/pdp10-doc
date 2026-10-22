@@ -2,6 +2,31 @@
 
 DATE: 2026-10-20
 
+## 2026-10-22 V102: PINNED BACKSTORE ALLOCATOR RELOCATION
+
+Following `DAIMOS/KCORE.MD`, the first-fit backing bitmap allocator and
+free loops have moved to mandatory pinned `BALOC` MRES. Four persistent
+bitmap/state words, the KINIT-needed bitmap-size and initialization
+helpers, and the original two public jump slots remain in KCORE. MINIT
+installs the two-service package after console and clock, before process
+boot and backing FS consumers. The MRES retains the original KCORE
+bitmap addresses, so no allocation state is duplicated or fragmented.
+
+The old 108-text-word KCORE backing-store object is now 10 text words
+plus its four BSS words. **Folded KCORE endpoint `022545 -> 022403`
+octal**, **9525 -> 9427 decimal words**, a **98-word reduction**.
+The new pinned allocator MRES reports **100 initialized resident words**;
+its size is informational under the KCORE-only 8K objective. Complete
+256K KCC image and MRES exports PASS. Focused real 48K SIMH
+`test-daimos-monitorfs-swapped-live-v74` PASSes process swap/restore,
+swapped MonitorFS metadata, wakeup and WAIT. No 32K, full testkit or
+TSFS run. Strictly below 8192 needs **1236** more KCORE words saved.
+
+Build lesson: retain short MINIT/package symbol names to stay inside the
+PDP-10 object's external symbol limit; a longer first attempt failed
+at image link and was corrected without altering service semantics.
+
+
 ## 2026-10-22 V101: SHARED SWAP-MODE RETURNS AND COMPLETE BUILD INPUTS
 
 After consulting `DAIMOS/KCORE.MD`, `proc_storage_publish_v30`
