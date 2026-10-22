@@ -1,5 +1,12 @@
 # DAIMOS secondary TSFS mount on tape-root system — V96
 
+**Historical result, superseded 2026-10-22 (V165):** This experiment
+does **not** describe a supported filesystem interface. TSFS is
+accessible only as the boot-root filesystem; post-boot MOUNT.TSFS was
+retired and its dependent tests were removed. Image creation and
+DECtape writes belong in userspace tooling and `dd`. The historical
+observations below are preserved for diagnostic provenance only.
+
 ## Scope
 
 The non-size functional acceptance of an independently mounted TSFS volume
