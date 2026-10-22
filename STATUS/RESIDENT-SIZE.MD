@@ -2,6 +2,25 @@
 
 DATE: 2026-10-20
 
+## 2026-10-22 V101: SHARED SWAP-MODE RETURNS AND COMPLETE BUILD INPUTS
+
+After consulting `DAIMOS/KCORE.MD`, `proc_storage_publish_v30`
+now uses the existing common success and error return tails of
+`proc_storage_expect_v30`. Fully folded KCC KCORE endpoint
+`022547 -> 022545` octal, **9527 -> 9525 decimal words (-2)**;
+`proc_swap.dobj` text 725 -> 723. Focused PDP-6 swap backing and
+PURE verification tests PASS in normal and contract-checking modes.
+The unit fixture now supplies V72 snapshot service stubs to match the
+production interface; snapshot integration remains separately tested.
+
+Also corrected a stale incremental-build hazard: outer KCORE image
+dependencies now include all composite `proc_swap.s` kernel inputs.
+The `daimos-testkit` source-dependency regression PASSes, protecting
+future swap-core optimization size measurements from old DOBJ reuse.
+No 32K, TSFS or full testkit run. Strictly below 8192 KCORE requires
+**1334 more words** of reductions.
+
+
 ## 2026-10-22 V100: CONSERVATIVE RUN INSTRUCTION ELIMINATION
 
 RUN/EXEC remain resident and fully functional. RUN allocates and clears
