@@ -1,5 +1,50 @@
 # DAIMOS DSH CURRENT SUMMARY
 
+## 2026-10-22 V53 PIPELINE FAILURE REAP — ACCEPTED; LONG PIPELINE STRESS OPEN
+
+DSH V53 (`affe718`) fixes a genuine process-slot leak in the error path
+of `dsh_exec_pipeline`.  If an earlier stage had already launched and a
+later stage could not launch, DSH closed its parent pipe descriptors and
+sent TERM to the process group but did not WAIT for the children it had
+started.  A target `PS` inspection confirmed one unreaped ZOMB (state 4)
+after `ECHO SHOULDNOTBLOCK ! /NO/SUCH/PROGRAM`.  V53 terminates and then
+reaps exactly the stages launched before returning the original error.
+
+The permanent `daimos-testkit` regression (`3c67166`) checks status 127,
+absence of any zombie row in `PS`, and successful execution of a further
+pipeline; all 3/3 checks pass.  A fresh v53 installed DSH image was
+verified byte-for-byte against the independent GCC build (SHA-256
+`b6985a64ad87ed285b9bd8084711eb01b492d6f2c7f1833289ceec9d8d89e158`).
+Image/BSS is `030655/012755` **octal words**, two image words smaller
+than the last original-KCORE fully accepted V41 image (`030657`).  The
+strictly-below-`030000` text target still requires saving `0656` octal
+words (430 decimal).  Physical 32K/stack/BRK acceptance is open.
+
+V53 with the **V51 diagnostic KCORE**, not the original V41 KCORE, passed
+**173/173 isolated SIMH probes**: 115 general conformance, 4 packed
+names, 4 packed UNALIAS, 25 angle parameter expansion, 12 loop-control,
+4 PATH/glob, 6 process, and 3 zombie-reaping checks.  Host lexer and
+SIMH media isolation checks also passed, and the source D6FS root
+remained CLEAN.
+
+**Separate, unresolved kernel/process fault:** the versioned 42-probe
+nested-pipeline stress (testkit `27b3a8d`) fails on the original V41 and
+V43 DSH images using byte-identical original KCORE (40 probes pass,
+41st multi-stage pipeline times out).  A V53 build with the V51 diagnostic
+kernel passed 35 but failed 7 cases; several trapped invalid UUOs near
+logical PC `004` despite valid physical entry instructions and an
+initial saved PC `020`.  This stress defect predates V43 and survives
+the V53 zombie fix.  Its cause has not yet been established.  Continue
+investigating process context, pipe EOF/reference counts, and wait/wakeup;
+do not introduce code padding, disable shell features, or attribute the
+fault to GCC without proof.  The 42-probe stress suite stays **opt-in**
+and deliberately outside the passing default acceptance.
+
+This V53 section overrides earlier claims below that V42/V44 had fully
+accepted original-KCORE test images, or that the V43 assignment factoring
+was the confirmed cause of the later pipeline failures.
+
+
 ## 2026-10-21 V39-V44 SIXBIT SHARING, VERIFIED BASELINE, OPEN PROCESS BUG
 
 The accepted DSH V44 source reuses common bounded SIXBIT text operations:
