@@ -2,6 +2,26 @@
 
 DATE: 2026-10-20
 
+## 2026-10-22 V100: CONSERVATIVE RUN INSTRUCTION ELIMINATION
+
+RUN/EXEC remain resident and fully functional. RUN allocates and clears
+each child u-area with `fs_zero_words`, including its final snapshot
+pointer at offset `0410`. The previously unconditional subsequent `SETZM`
+of the same word was redundant in ordinary configurations. It is now
+emitted only with `PROC_STACK_WATERMARK=1`, where watermark sentinel
+initialization really overwrites this word and must be undone. No
+process-management ABI or child-creation behavior was changed.
+
+Folded full-profile KCC KCORE endpoint **022550 -> 022547 octal**;
+**9528 -> 9527 words**, a **one-word saving**. The RUN text object fell
+**272 -> 271** words. The watermark-enabled RUN assembly also assembles
+successfully, retaining the clear. Focused 256K SIMH
+`test-daimos-process-lifecycle` PASS, covering RUN, GETPID, WAIT,
+zombie reaping, orphan adoption, and explicit FD descriptor mappings.
+No full testkit, 32K configuration, or TSFS tests. Remaining to strictly
+below 8192 words: **1336 words**.
+
+
 ## 2026-10-22 V99: SYSINFO OPTIONAL, RUN/EXEC REMAINS CORE
 
 The 118-word V98 SYSINFO MRES reduction is retained, but the diagnostic
