@@ -2,6 +2,25 @@
 
 DATE: 2026-10-20
 
+## 2026-10-22 V99: SYSINFO OPTIONAL, RUN/EXEC REMAINS CORE
+
+The 118-word V98 SYSINFO MRES reduction is retained, but the diagnostic
+services are no longer boot prerequisites. `SYSINFO_MRES_ENABLED=0`
+omits the pinned `SINFO` package and its MINIT entry; the two resident
+query stubs return `-1` without preventing process creation or filesystem
+operations. A normal installation remains default-on, but a failed
+MRES install or invalid export leaves both fallbacks intact and is
+nonfatal. Focused 256K SIMH runtime tests for both
+`SYSINFO_MRES_ENABLED=0` and `=1` PASS, including ordinary file calls,
+MEMINFO/PROCINFO enabled or absent, and invalid pointer recovery.
+KCORE remains **9528 words**, target strictly below 8192 needs 1337.
+
+RUN/EXEC are essential components in all configurations. Their
+implementation remains in KCORE; future changes are limited to
+provably equivalent small-instruction reductions with focused tests.
+No 32K machine tests, TSFS work, or full testkit run.
+
+
 ## 2026-10-21 V98: PINNED SYSINFO MRES, 118 FEWER KCORE WORDS
 
 The cold PROCINFO and MEMINFO query routines moved from the old 122-word
