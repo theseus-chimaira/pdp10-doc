@@ -1,5 +1,32 @@
 # DAIMOS GROUP 030: EXEC/RUN NEGATIVE-LAUNCH VALIDATION (V190)
 
+## 2026-10-23 RUN late-failure rollback stress (V197)
+
+`daimos-testkit` v197 adds the native PDP-6 fixture
+`test-daimos-run-late-rollback`. It keeps three children alive while
+executing 16 invalid RUN requests whose fourth explicit descriptor
+mapping names a nonexistent parent FD 15. Earlier validation and
+executable/VM/startup/u-area setup succeed; the invalid mapping is
+detected in the late RUN file-descriptor publication loop. All sixteen
+RUN calls return `-1`. After each failure, the fixture confirms that
+`SYS_MEMINFO` process-slot and process-word totals still equal their
+pre-failure baseline. The waiting children are then unblocked and
+reaped, accounting returns to the initial baseline, and an ordinary
+RUN/WAIT succeeds afterward.
+
+Native 256K PDP-6 fresh-image test: **PASS**. Evidence:
+`$TMPDIR/daimos-run-late-rollback-v197-native-b.log`. The first
+prototype failed an invalid test assumption that initial slot usage
+must be exactly one; the corrected fixture uses the observed nonzero
+baseline and passes. No production kernel modifications, new resident
+memory or stack changes resulted. `__kcore_low_end=025657` octal.
+
+The test demonstrates RUN late descriptor-map rollback and recovery,
+not deliberate full MM exhaustion, a complete audit of dynamic-MM
+allocation leakage or post-commit EXEC failure. The 32K-specific
+image/boot/DSH errors remain **deferred by project direction**, not
+accepted. Full-profile permanent-memory acceptance remains separate.
+
 ## 2026-10-23 RUN lifecycle and scope-ID retest (V196)
 
 The existing daimos-testkit `test-daimos-process-lifecycle` and
