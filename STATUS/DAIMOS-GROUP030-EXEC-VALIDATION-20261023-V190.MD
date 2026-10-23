@@ -1,5 +1,28 @@
 # DAIMOS GROUP 030: EXEC/RUN NEGATIVE-LAUNCH VALIDATION (V190)
 
+## 2026-10-23 v205 uncompressed physical-memory EXEC pressure accepted
+
+The native PDP-6 256K `test-daimos-exec-create-oom` fixture now PASSes:
+an uncompressed DXR replacement (image `0100000` octal words, BSS
+`077000` octal words) starts successfully through low-memory EXEC
+after the current process grows to `0600000` words and prevents a
+staged replacement VM from fitting alongside it. The new image
+executes as PID 1; no static RAM or kernel change beyond the earlier
+v201 36-bit ENOMEM comparison correction was required.
+
+The first v205 native run failed before that correction (`<H!x`),
+and a subsequent run already passed with the correction. The latest
+fixture failure occurred solely in a strict formatting assumption:
+`dxrcheck` renders the valid octal image field as `100000`, not
+`0100000`. The fixture now accepts the actual representation while
+still checking both image and BSS sizes. Its fresh native PASS is
+recorded in `$TMPDIR/daimos-exec-create-oom-v205-accepted.log`,
+including linked `__kcore_low_end=025657` octal.
+
+This is specific 256K functional acceptance, not acceptance of the
+separately deferred 32K gate or unresolved full-profile resident RAM
+budget.
+
 ## 2026-10-23 Low-memory EXEC fallback root-cause correction (V201)
 
 On a normal 256K PDP-6, an oversized but valid padded-and-compressed
