@@ -46,3 +46,13 @@ functional-only `DAIMOS_EXEC_OBSERVE_SECONDS=35` and
 `DSH_IMAGE_LIMIT=037000`; the 15-second and `036000` production gates
 have not been relaxed. Further failure injection after VM creation,
 the native 32K path and complete group-030 acceptance remain open.
+
+## Follow-up negative-launch regression (V192)
+
+After DAIMOS commit `e2248c0` corrected the marker lifetime,
+the existing native 28-case malformed EXEC/RUN regression and normal
+current-image replacement both PASSed on a fresh PDP-6 simulator image.
+Evidence: `$TMPDIR/daimos-exec-v192-malformed-retest.log`.
+This confirms the fix does not regress the established invalid-record
+checks. The functional-only 35-second and `037000` settings were used;
+strict production limits remain separate and open.
