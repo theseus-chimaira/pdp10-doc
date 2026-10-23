@@ -1,5 +1,28 @@
 # DAIMOS GROUP 030: EXEC REAL-TIME OWNER ROLLBACK (V191)
 
+## 2026-10-23 EXEC staged transaction fault injection (V200)
+
+daimos-testkit `test-daimos-exec-commit-rollback` (commit `de17627`)
+executes the production PDP-6 `exec_replace_current` assembler with
+deterministic replacement of its external loader, startup and VM teardown
+calls. **Eight modes PASS**: failed initial load, startup failure,
+old-VM destroy failure, two successful PURE backing mount-bit commits,
+new RT reservation rollback on startup failure, preservation of an
+existing RT owner on startup failure, and old RT owner release on a
+successful non-RT EXEC. The old-VM teardown failure checks that the
+user-mapping hold is restored. Previous swap state and credential mount
+bits are verified on failures and correct replacements on success.
+
+Evidence: `$TMPDIR/daimos-exec-commit-rollback-v200-final.log`.
+This is an **instruction-level fault-injection** regression of the real
+transaction body, not a full native-kernel injected `mm_free` failure.
+The independent v191-v193 native EXEC tests cover real filesystem and
+decoder failure paths. A successful RT-to-RT replacement and direct
+EXEC-loader physical ENOMEM remain outside the accepted v200 matrix.
+There is no new KCORE, persistent RAM or stack allocation, and the
+linked KCORE end remains `025657` octal. Strict 32K acceptance remains
+deferred by project direction; full-profile size is a separate issue.
+
 ## 2026-10-23 POST-VM-CREATION DECODE FAILURE REGRESSION (V193)
 
 The v191 native fixture was extended by the versioned testkit file
