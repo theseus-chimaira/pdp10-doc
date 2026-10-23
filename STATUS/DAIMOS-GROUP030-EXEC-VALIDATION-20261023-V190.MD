@@ -1,5 +1,30 @@
 # DAIMOS GROUP 030: EXEC/RUN NEGATIVE-LAUNCH VALIDATION (V190)
 
+## 2026-10-23 Low-memory EXEC fallback root-cause correction (V201)
+
+On a normal 256K PDP-6, an oversized but valid padded-and-compressed
+DXR stage cannot be allocated alongside a parent whose active VM has
+grown to `0400000` octal words. Before the repair, the native pressure
+fixture printed `<H!x`: the syscall returned an ordinary failure
+instead of selecting the existing low-memory EXEC retry. Unpressured
+large-image and pressured small-image controls passed independently.
+
+Root cause: in resident `exec_replace_current`, `CAIE` compares an
+18-bit immediate and cannot recognize `EXEC_LOAD_NOMEM` (`-2`) as a
+full 36-bit result. Corrected the comparison to `CAME 1,[-2]` without
+new state or a stack/frame enlargement. Native pressured large-DXR
+replacement now PASSes and executes the replacement as PID 1; the
+unpressured large-DXR control PASSes. The independent v200 PDP-6
+instruction-level eight-case transaction rollback test also PASSes.
+
+Evidence: `$TMPDIR/daimos-exec-pressure-v201-fullcompare-test.log`,
+`$TMPDIR/daimos-exec-pressure-control-v201-afterfix.log`, and
+`$TMPDIR/daimos-exec-commit-rollback-v201-retest.log`.
+The full-profile native build's post-p10fold `__kcore_low_end` remains
+`025657` octal. This correction does not discharge unrelated strict
+DSH image-size, runtime or 16K permanent-size gates; 32K-specific
+acceptance remains deferred by request.
+
 ## 2026-10-23 RUN CHILD VM ALLOCATION FAILURE (V199)
 
 `daimos-testkit` adds `test-daimos-run-create-oom`, a native PDP-6
