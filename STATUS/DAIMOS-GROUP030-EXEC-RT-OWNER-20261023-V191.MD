@@ -23,6 +23,16 @@ KCORE exclusive endpoint remains `025657` octal. Test settings were
 explicitly functional-only (35-second observation and `037000` DSH
 image limit). The strict size/timing and native 32K tests remain open.
 
+### Independent compressed RT_REQUIRED RUN child check (V194)
+
+The existing `daimos-rt-required-v1` native PDP-6 fixture also PASSed
+after v193, checking RUN-created compressed RT_REQUIRED child admission,
+competing-owner rejection and release/reacquire. Evidence:
+`$TMPDIR/daimos-rt-required-v193-regression.log`. The fixture uses its
+original 30-second observation and the functional-only `037000` DSH
+image cap. Strict timing, executable size, full permanent residency
+and native 32K acceptance remain open.
+
 Date: 2026-10-23
 
 ## Defect and root cause
