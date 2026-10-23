@@ -1,5 +1,33 @@
 # DAIMOS GROUP 030: EXEC/RUN NEGATIVE-LAUNCH VALIDATION (V190)
 
+## 2026-10-23 VM growth allocation exhaustion with RUN pressure (V198)
+
+The new daimos-testkit target `test-daimos-run-vm-oom` extends the
+existing v197 native RUN fixture on the standard 256K PDP-6. Three
+children remain alive while the caller requests a well-formed 18-bit
+`BRK(0776000)` four times. A near-256K resident user VM cannot fit
+beside the kernel and other active process allocations. All four
+requests fail as expected in the VM/MM allocation path. Each returns
+without changing the original break, the caller's process extent
+length or the sentinel data; process slot counts remain stable.
+Reported process-resident words do not increase after failure (reclaim
+may swap out an eligible sleeping child, reducing that counter).
+
+The test then completes v197's 16 late RUN descriptor-map failure
+checks, waits for the three children to exit, and verifies recovery
+with an additional valid RUN/WAIT. The fresh-image native simulator
+test **PASSed**. Evidence:
+`$TMPDIR/daimos-run-vm-oom-v198-native.log`. The original v197 target
+still cross-compiles with the v198 checks disabled.
+
+This establishes a real unallocatable-VM growth and rollback case; it
+does not yet demonstrate direct ENOMEM inside `exec_load_process` or
+`vm_space_create` during RUN/EXEC. It does not individually enumerate
+dynamic-MM descriptors. No DAIMOS resident changes were made, and the
+linked KCORE exclusive end remains `025657` octal. The 32K gate is
+explicitly deferred, and strict full-profile size and timing limits
+have not been changed.
+
 ## 2026-10-23 RUN late-failure rollback stress (V197)
 
 `daimos-testkit` v197 adds the native PDP-6 fixture
