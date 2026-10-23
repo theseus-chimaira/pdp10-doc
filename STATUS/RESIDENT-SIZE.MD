@@ -27,9 +27,12 @@ DAIMOS v188 full report (`$TMPDIR/daimos-permanent-v188b.log`); a
 standalone `make permanent-size` failure is expected while the address
 limit remains exceeded. The older October 6 figures below are historical.
 
-The v186 native EXEC replacement and child-session runs passed with
-the diagnostic 35-second window and functional-only image size cap;
-v188 native runtime regressions were still pending at measurement time.
+The v186 and v188 native EXEC replacement and child-session runs passed
+with the diagnostic 35-second window and functional-only image-size cap.
+The v188 results (`$TMPDIR/daimos-exec-v188-replace.log` and
+`$TMPDIR/daimos-exec-v188-child.log`) were confirmed after the size
+measurement. Strict timing, image-size and malformed-input acceptance
+remain open.
 
 ## 2026-10-23 EXEC/RUN LINKED KCORE-ONLY CHECKPOINT V187
 
