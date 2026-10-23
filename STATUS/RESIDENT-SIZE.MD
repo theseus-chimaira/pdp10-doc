@@ -1,6 +1,25 @@
 # DAIMOS RESIDENT-SIZE STATUS
 
-DATE: 2026-10-06
+## 2026-10-23 EXEC/RUN LINKED KCORE-ONLY CHECKPOINT V187
+
+The latest DAIMOS resident EXEC/RUN source optimizations through v186
+decreased the **same-build-profile post-p10fold KCORE exclusive-end
+symbol** `__kcore_low_end` from `025715` octal (v173 comparison point)
+to `025661` octal (v186): 28 fewer linked resident words. The two
+fresh-image native PDP-6 EXEC regressions (current-image replacement
+and session-leader child replacement/parent reap) pass using the
+explicit functional-only 35-second observation and `037000` DSH cap.
+
+This is **not** an updated `make permanent-size` measurement: it does
+not measure total KCORE+MRES, the permanent high-water address,
+irreducible scratch, or the strict size and 15-second timing gates.
+Do not compare these exclusive-end addresses directly with historical
+KCORE text/BSS totals. The full accounting below remains the last
+documented complete snapshot until a new identical-profile permanent-
+size measurement is available. The tests and size measurements are
+recorded in DAIMOS `PROJECT-STATE.MD` and `KCORE.MD` (v187).
+
+DATE: 2026-10-23
 
 ## ACTIVE RULE
 
