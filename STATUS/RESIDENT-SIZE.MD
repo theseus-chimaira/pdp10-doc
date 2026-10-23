@@ -1,5 +1,36 @@
 # DAIMOS RESIDENT-SIZE STATUS
 
+## 2026-10-23 CURRENT KCC FULL/AUTO PERMANENT SIZE V188
+
+The current DAIMOS `make -C system/boot/pdp6 permanent-size` using the
+default full/auto KCC profile and the installed PDP-6 assembler/linker
+reports the following **measured, failing** fixed-memory accounting
+after resident EXEC/RUN v188:
+
+| Component/limit | Value |
+| --- | ---: |
+| KCORE alone | 11135 words (`025577` octal) |
+| KCORE + configured MRES | 18670 words (`044356` octal) |
+| `PERMANENT_LAST` | `044435` octal |
+| `MULTI_ROOT` | `044417` octal |
+| `MULTI_LAST` | `044476` octal |
+| Single-root distance to `040000` | -2333 addresses |
+| Multi-root distance to `040000` | -2366 addresses |
+
+The strict architectural size gate fails in both configurations.
+The same-build-profile KCORE exclusive-end symbol is `025657` octal;
+this is **not** the same quantity as the `025577` reported KCORE size.
+It is 30 linked resident words below the v173 comparison endpoint
+`025715`. These EXEC/RUN instruction savings do not suffice to close
+the 16K fixed-memory deficit. The source of this measurement is the
+DAIMOS v188 full report (`$TMPDIR/daimos-permanent-v188b.log`); a
+standalone `make permanent-size` failure is expected while the address
+limit remains exceeded. The older October 6 figures below are historical.
+
+The v186 native EXEC replacement and child-session runs passed with
+the diagnostic 35-second window and functional-only image size cap;
+v188 native runtime regressions were still pending at measurement time.
+
 ## 2026-10-23 EXEC/RUN LINKED KCORE-ONLY CHECKPOINT V187
 
 The latest DAIMOS resident EXEC/RUN source optimizations through v186
@@ -14,10 +45,9 @@ This is **not** an updated `make permanent-size` measurement: it does
 not measure total KCORE+MRES, the permanent high-water address,
 irreducible scratch, or the strict size and 15-second timing gates.
 Do not compare these exclusive-end addresses directly with historical
-KCORE text/BSS totals. The full accounting below remains the last
-documented complete snapshot until a new identical-profile permanent-
-size measurement is available. The tests and size measurements are
-recorded in DAIMOS `PROJECT-STATE.MD` and `KCORE.MD` (v187).
+KCORE text/BSS totals. This earlier checkpoint predates the v188 full
+permanent-size measurement recorded above. The tests and size
+measurements are recorded in DAIMOS `PROJECT-STATE.MD` and `KCORE.MD`.
 
 DATE: 2026-10-23
 
