@@ -1,5 +1,40 @@
 # DAIMOS GROUP 030: EXEC/RUN NEGATIVE-LAUNCH VALIDATION (V190)
 
+## 2026-10-23 RUN CHILD VM ALLOCATION FAILURE (V199)
+
+`daimos-testkit` adds `test-daimos-run-create-oom`, a native PDP-6
+256K end-to-end regression that directly stresses the RUN loader's
+`vm_space_create` allocation failure. The parent is the normal v197
+INIT image. Only `/SYSTEM/EXEC/TSFSPROBE` is replaced by a separately
+linked large valid child DXR. Its 077000 octal BSS words remain below
+the DXR loader's 077777 octal limit, but the complete text/BSS/stack
+requires at least 0100000 physical words in another process extent.
+
+The child is first RUN and reaped **successfully without pressure**.
+The parent then grows its own active, unswappable VM to near the actual
+256K physical limit, checking process memory plus required child VM is
+larger than installed physical core. Four identically valid RUN requests
+for the same DXR return `-1`; none publishes an additional child,
+alters the parent's break/writable data or increases accounted process
+words. After restoring the original parent break, the **same RUN/WAIT
+succeeds** and resident accounting returns to its original baseline.
+The fixture also finishes v197's three-blocked-child/16-late-fdmap
+rollback and recovery checks.
+
+Fresh-image native PDP-6 test **PASS**. Log:
+`$TMPDIR/daimos-run-create-oom-v199-native-c.log`. All three related
+v197/v198/v199 fixtures still cross-compile with the PDP-6 GCC C99
+toolchain. Early test preparations were rejected: enlarging the boot
+parent prevented INIT startup, and a 0100000-octal BSS child exceeded
+the DXR format limit. The corrected separate-child executable and
+pre-pressure positive control remove both confounders.
+
+No production source, size gate or kernel state changed. Linked KCORE
+exclusive end remains `025657` octal. Separate EXEC transactional
+replacement allocation failure/commit fault injection remains open.
+Strict 32K acceptance stays deferred at project direction; full-profile
+permanent-size acceptance remains a separate unresolved issue.
+
 ## 2026-10-23 VM growth allocation exhaustion with RUN pressure (V198)
 
 The new daimos-testkit target `test-daimos-run-vm-oom` extends the
