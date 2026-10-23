@@ -1,5 +1,28 @@
 # DAIMOS GROUP 030: EXEC REAL-TIME OWNER ROLLBACK (V191)
 
+## 2026-10-23 POST-VM-CREATION DECODE FAILURE REGRESSION (V193)
+
+The v191 native fixture was extended by the versioned testkit file
+`tests/validation/daimos-exec-rt-postvm-v193.h` (testkit commit
+`dcaca8c`). It creates a test-only RT_REQUIRED compressed DXR2 with
+valid header shape, exactly one output image word, one compressed
+control word and one relocation-map word. The D6LZ control requires
+an additional literal, so the bounded decoder reports premature EOF
+after the ordinary `vm_space_create` call. This exercises the loader's
+post-VM-creation cleanup rather than only header-validation failures.
+
+On a fresh 256K PDP-6 simulator image the v193 test PASSed all owner
+transitions: new RT claim released after failed compressed decode,
+preexisting owner retained, prior header-failure checks, successful
+RT-required EXEC admission and successful ordinary EXEC owner release.
+The expected marker stream was `<abcdRN`, followed by HALT.
+Evidence: `$TMPDIR/daimos-exec-rt-postvm-v193-native.log`.
+
+The loader source and fixed resident footprint were unchanged; the
+KCORE exclusive endpoint remains `025657` octal. Test settings were
+explicitly functional-only (35-second observation and `037000` DSH
+image limit). The strict size/timing and native 32K tests remain open.
+
 Date: 2026-10-23
 
 ## Defect and root cause
