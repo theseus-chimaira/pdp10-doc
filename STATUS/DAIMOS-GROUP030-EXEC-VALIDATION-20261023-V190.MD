@@ -1,5 +1,22 @@
 # DAIMOS GROUP 030: EXEC/RUN NEGATIVE-LAUNCH VALIDATION (V190)
 
+## 2026-10-23 RUN lifecycle and scope-ID retest (V196)
+
+The existing daimos-testkit `test-daimos-process-lifecycle` and
+`test-daimos-process-id-lifetime` targets both PASS on fresh native
+256K PDP-6 images. Verified RUN/GETPID/WAIT, WAIT/nohang, orphan
+adoption, zombie reap, explicit descriptor mapping, and preservation
+of process-group/session/domain identifiers across creator-slot reuse.
+Logs: `$TMPDIR/daimos-run-lifecycle-v196-native.log` and
+`$TMPDIR/daimos-run-id-lifetime-v196-native.log`.
+
+The strict 32K boot/KCORE size gate and DSH issues specific to that
+profile are **deferred by explicit project direction**, not fixed or
+accepted. Neither test changes executable size, permanent RAM, or
+KCORE code; the current full-profile KCORE exclusive endpoint remains
+`025657` octal. The independent full-profile permanent memory deficit
+is recorded in `STATUS/RESIDENT-SIZE.MD` and remains unresolved.
+
 Date: 2026-10-23
 
 The native PDP-6 replacement fixture now performs 28 malformed inline
