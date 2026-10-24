@@ -54,6 +54,17 @@ corresponding KCORE+MRES physical footprint is 13,653 words, not the
 bare 13,605-word linked report. These are 15 words below the earlier
 fixed 32-entry registry baseline.
 
+### 256K guest descriptor samples (v266)
+
+A first-boot PDP-6 256K GCC test with all 63 numbered process
+slots occupied completed successfully. SIMH sampled the actual
+registry without modifying permanent KCORE. At the final process's
+start marker, 132 of 136 extent descriptors were occupied; at its
+completion marker, eight were occupied. These are point readings,
+not lifetime peak statistics. Only four descriptors remained free
+at the final-start checkpoint, so additional concurrent allocation
+and swapping must be tested before regarding the reserve as adequate.
+
 ## 2. MEMORY-MANAGEMENT BOUNDARY
 
 V0.9 PLACES ALLOCATION, COMPACTION, PINNING, PROCESS-IMAGE MOVEMENT, AND
