@@ -43,8 +43,9 @@ boundaries. The user-image and per-process kernel u-area normally each
 require one extent. Capacity is a metadata ceiling, not a promise that
 all processes fit resident in physical RAM. The native PDP-6 allocator
 boundary tests pass at both 24 and 136 extents; the five-process
-fresh-image scheduler test passes with this scheme. 256K sustained
-load/peak testing remains open.
+fresh-image scheduler test passes with this scheme. A fresh 256K GCC full-profile five-process scheduler boot also
+passes; simultaneous 64-process load and peak occupancy testing
+remain open.
 
 KCORE size is measured against the 32K-word lowmem GCC disk-root link.
 The v261 KCORE label is 10,742 words, while the actual fixed nucleus
