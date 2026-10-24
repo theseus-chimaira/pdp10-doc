@@ -22,6 +22,37 @@ CORE WITHOUT REWRITING ITS INTERNAL LOGICAL POINTERS.
 THE PERMANENT KERNEL NUCLEUS IS NEVER MOVED AND MUST REMAIN PROTECTED FROM USER
 MODE.
 
+### RAM-scaled MM extent descriptors (v261, 2026-10-24)
+
+KINIT reserves the PDP-6 MM descriptor registry immediately after the
+linked KCORE boundary, before publishing the first free-memory arena.
+The symbol `mm_extents` retains its fixed direct address, so assembler MM
+and VM consumers do not acquire pointer indirection. Each descriptor
+requires two 36-bit words. Boot-time capacity is twice the selected
+process-slot count plus eight non-process/transient entries, giving:
+
+| Installed RAM | Process slots | MM descriptors | MM table (words) |
+|---|---:|---:|---:|
+| 32K | 8 | 24 | 48 |
+| 64K | 16 | 40 | 80 |
+| 128K | 32 | 72 | 144 |
+| 256K | 64 | 136 | 272 |
+
+Both process slots and extent capacity grow at complete 8K memory-bank
+boundaries. The user-image and per-process kernel u-area normally each
+require one extent. Capacity is a metadata ceiling, not a promise that
+all processes fit resident in physical RAM. The native PDP-6 allocator
+boundary tests pass at both 24 and 136 extents; the five-process
+fresh-image scheduler test passes with this scheme. 256K sustained
+load/peak testing remains open.
+
+KCORE size is measured against the 32K-word lowmem GCC disk-root link.
+The v261 KCORE label is 10,742 words, while the actual fixed nucleus
+plus its external 48-word descriptor backing is 10,790 words. The
+corresponding KCORE+MRES physical footprint is 13,653 words, not the
+bare 13,605-word linked report. These are 15 words below the earlier
+fixed 32-entry registry baseline.
+
 ## 2. MEMORY-MANAGEMENT BOUNDARY
 
 V0.9 PLACES ALLOCATION, COMPACTION, PINNING, PROCESS-IMAGE MOVEMENT, AND
