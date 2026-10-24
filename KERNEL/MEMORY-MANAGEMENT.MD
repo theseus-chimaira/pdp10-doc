@@ -65,6 +65,18 @@ not lifetime peak statistics. Only four descriptors remained free
 at the final-start checkpoint, so additional concurrent allocation
 and swapping must be tested before regarding the reserve as adequate.
 
+### 256K native insertion trace (v267)
+
+A new 63-process fresh-boot PDP-6 SIMH run traced every entry into
+`mm_extent_insert` with a simulator breakpoint action, without changing
+permanent KCORE. The 151 recorded entry samples reached a maximum
+pre-insert count of 131. The assembler performs its only positive
+extent-count update on successful insertion inside that routine;
+together with the independently observed 132-descriptor occupancy in
+v266, this establishes a peak of **132 out of 136** for this particular
+workload. Only four descriptors remained free at peak. Allocation and
+swap-transition pressure beyond this workload is still unverified.
+
 ## 2. MEMORY-MANAGEMENT BOUNDARY
 
 V0.9 PLACES ALLOCATION, COMPACTION, PINNING, PROCESS-IMAGE MOVEMENT, AND
