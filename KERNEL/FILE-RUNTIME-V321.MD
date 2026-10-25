@@ -67,3 +67,16 @@ restoration of the provider result. This static gate passes for v324.
 It is not evidence of correct scheduling under simultaneous requests;
 a native multi-process contention test is still required before
 changing the lock lifecycle. No additional RAM reduction was made.
+
+## PDP-6 provider-lock register recovery probe (v326, 2026-10-25)
+
+`daimos-testkit` provides `make test-daimos-provider-lock-native-v326`,
+which extracts and executes the production `fs_provider_reg_call`
+sequence on a native PDP-6 instruction simulator. A test-controlled
+lock wait deliberately overwrites request registers before it returns;
+the gateway must restore its process-private saved request, call the
+correct provider, preserve its return and release the lock. The probe
+also verifies the non-serialized MEMFS route. Native fixture PASS.
+This is a simulated wait oracle, not simultaneous process execution or
+physical-device I/O; real scheduler contention remains unverified.
+No production change or permanent memory reduction was made in v326.
