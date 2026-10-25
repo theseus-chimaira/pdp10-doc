@@ -74,3 +74,69 @@ direction reversal.
 The timing figures above characterize the **current AAP implementation**.
 They must not be presented as separately measured historical hardware
 performance or as measured DAIMOS filesystem throughput.
+
+## AAP work remaining: independent Type-555 transport motion
+
+The Type-551 shares one Type-136 data-transfer path: only one selected
+transport can read/write data through that controller at a time. Independent
+transport movement should permit other units to position their tapes while
+the selected unit transfers data. **AAP does not yet emulate this**:
+`pdp6/emu/dt.c` explicitly notes `TODO: currently only selected drive will
+move, this is wrong`, and `dtcycle()` calls `dxmove(dt->seldx)` only.
+
+Required work, before treating simultaneous seeking as available in DAIMOS:
+
+1. Verify original Type-551/555 selection, motor-control, start/stop and
+   reversal semantics against hardware documentation. In particular, confirm
+   how software commands an unselected transport to continue moving.
+2. Keep motion state and relevant acceleration/reversal delays separately
+   for each `Dx555`, instead of treating global `Dt551` fields `ut_go`,
+   `ut_rev`, `ut_time` and `delay` as independent-drive state. The existing
+   `Dx555.motion` field can be reused where its semantics permit.
+3. Advance every running transport on the periodic tape tick, independently
+   of which unit is selected. A deselection must not implicitly freeze a
+   transport that hardware would leave running.
+4. Preserve a single controller mark decoder, checksum/data buffers and
+   Type-136 transfer path. On selection changes reacquire mark-track timing
+   without resetting or changing unrelated transports' positions.
+5. Extend regression coverage in `daimos-testkit`: concurrent transfer on
+   unit 1 with other units seeking; independently stop/reverse a different
+   unit; switch to a moving unit and verify block numbers and data; verify
+   existing DECtape boot and TSFS paths.
+
+Preliminary scope: a moderate change, tentatively 150-300 implementation and
+test lines, **not an established estimate**. The historical command semantics
+are the main uncertainty. Do not implement concurrent tape motion by merely
+replacing `dxmove(dt->seldx)` with a loop: that would leave global start/stop
+and direction behavior incorrect. No emulator change was made as part of
+this documentation.
+
+## Paper-tape bootstrap comparison
+
+The PDP-6 Type-760 high-speed paper-tape reader is rated at approximately
+**400 frames/characters per second**; the Type-761 punch is approximately
+**63.3 characters per second**. Assuming six 6-bit tape frames per 36-bit
+word (before format-specific overhead), the reader accepts approximately
+66.7 words/s, compared with the measured 2,382.56 words/s DECtape stream.
+The frame count depends on the actual paper-tape encoding; do not confuse
+host file byte counts with physical tape frames without checking the format.
+
+Build artifacts inspected on 2026-10-25 in the DAIMOS PDP-6 boot output
+(artifacts timestamped 2026-10-24):
+
+| Artifact | Measured size | Hypothetical Type-760 reading time |
+| --- | ---: | ---: |
+| `kcore.rim` | 10,476 `deposit` words | 157.14 s (2 min 37 s) |
+| `kinit.rim` | 18,487 `deposit` words | 277.31 s (4 min 37 s) |
+| Both stages | 28,963 words | 434.45 s (7 min 14 s) |
+| `stage1-dsk.pt` | 4,213 host bytes | 10.53 s **if** one byte equals one tape frame |
+
+The `.rim` artifacts here are **SIMH deposit-command text files**, not
+physical RIM-format paper tapes. Their `deposit` line counts measure loaded
+words, not encoded tape length. The full-stage times above assume exactly
+six frames per word and omit tape leaders, checksums, record framing and
+CPU/loader overhead. They are lower-bound reading estimates, not measured
+paper-tape boot times. The smaller `stage1-dsk.pt` is the current disk-boot
+bootstrap loaded via the paper-tape reader; it subsequently loads the rest
+of the operating system from disk, rather than feeding both stages through
+the reader. Its byte-based estimate is conditional on frame encoding.
