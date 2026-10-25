@@ -38,3 +38,21 @@ The GCC lowmem full link saves one additional permanent word:
 KCORE 024756 -> 024755 octal (10734 -> 10733 decimal),
 KCORE+MRES 036512 -> 036511 octal. The four targeted file and VFS
 regressions passed; strict 32K acceptance remains deferred.
+
+## Provider service index normalization (v324, 2026-10-25)
+
+The KCORE register gateway normalizes public provider numbers 4..7 to
+service-table indices 0..3 immediately upon entry. MEMFS index zero
+continues directly without taking the physical-provider lock. For DTFS,
+D6FS and TSFS, the seven saved request registers now contain the table
+index; the lock acquisition, sleeping wait, complete provider call,
+release and wakeup sequence remain unchanged. There is no second
+provider-index subtraction after restoring registers. Invalid IDs still
+select the no-service return. This is private implementation staging,
+not a change to the register provider ABI or MRES service jump table.
+
+Measured full GCC lowmem disk-root link versus v322: KCORE 024755 ->
+024752 octal, KCORE+MRES 036511 -> 036506 octal (three decimal words
+saved), PERMANENT_LAST 036570 -> 036565 octal. Existing file and VFS
+regressions passed. Additional multi-process contention tests remain
+appropriate; strict 32K acceptance is deferred.
