@@ -56,3 +56,14 @@ Measured full GCC lowmem disk-root link versus v322: KCORE 024755 ->
 saved), PERMANENT_LAST 036570 -> 036565 octal. Existing file and VFS
 regressions passed. Additional multi-process contention tests remain
 appropriate; strict 32K acceptance is deferred.
+
+## Provider lock contract gate (v325, 2026-10-25)
+
+The testkit now provides `make test-daimos-provider-lock-contract-v325`.
+It checks source-level invariants of the resident provider bridge:
+private AC1..AC7 preservation through wait/retry, MEMFS's direct route,
+physical-provider serialization, completion unlock and wakeup, and
+restoration of the provider result. This static gate passes for v324.
+It is not evidence of correct scheduling under simultaneous requests;
+a native multi-process contention test is still required before
+changing the lock lifecycle. No additional RAM reduction was made.
