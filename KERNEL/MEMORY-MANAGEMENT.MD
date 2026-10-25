@@ -1,3 +1,15 @@
+### Dedicated AUXSTORE and root-mount mapping order (v277)
+
+The D6FS root mount uses the shared BLOCKSET direct-tail configuration.
+AUXSTORE therefore publishes its dedicated backing-store mapping **after**
+root filesystem mounting, before process initialization. Publishing
+AUXSTORE earlier allowed D6FS to replace its I/O span without resetting
+the advertised backstore capacity. The corrected order passed the native
+PDP-6 256K eight-pressure-child swap/resume and pipe-integrity test.
+No permanent kernel words were added (32K GCC lowmem disk-root KCORE 10742,
+KCORE+MRES 13605 words). The test does not replace long-duration swap
+stress and repeated eviction/recovery verification.
+
 # DAIMOS V0.9 MEMORY MANAGEMENT AND DEMAND MODULES
 
 STATUS: SELECTED V0.9 ARCHITECTURE, 2026-09-07.  THIS DOCUMENT DEFINES THE
