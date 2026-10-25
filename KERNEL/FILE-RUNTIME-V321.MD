@@ -104,3 +104,14 @@ KCORE 024752 -> 024747 octal, KCORE+MRES 036506 -> 036503 octal,
 a saving of three permanent words. Four targeted testkit suites passed;
 a dedicated UNLINK/RMDIR type matrix remains a useful follow-up.
 Strict 32K acceptance remains deferred.
+
+## Shared CREATE/SYMLINK output publication (v329, 2026-10-25)
+
+`vfs_create_store_result` publishes the canonical returned vnode
+through the caller's output pointer saved at `(17)`. A single PDP-6
+indirect `MOVEM 3,@(17)` now replaces a pointer load and separate
+store. The operation result check, inherited mount ID, provider request
+ABI and stack lifetime are unchanged. Full linked GCC lowmem disk-root
+image: KCORE 024747 -> 024746 octal, KCORE+MRES 036503 -> 036502
+octal, saving one permanent word. Four file/VFS target suites passed.
+Strict 32K acceptance remains deferred.
