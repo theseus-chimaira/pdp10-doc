@@ -27,3 +27,14 @@ The daimos-testkit GCC fixtures `target-file-pdp6`,
 shared/exclusive conflicts and unlock operations. A dedicated test
 for two distinct mounts whose low vnode fields collide is a further
 regression opportunity. Strict 32K acceptance remains deferred.
+
+## VFS CREATE request-mode staging (v322, 2026-10-25)
+
+The shared CREATE/MKDIR/MKFIFO staging routine now moves the masked
+creation mode straight from AC6 to request AC4 rather than taking an
+unnecessary step through AC3. The mode's umask processing, existing
+stack-passed node-result argument and provider ABI are unchanged.
+The GCC lowmem full link saves one additional permanent word:
+KCORE 024756 -> 024755 octal (10734 -> 10733 decimal),
+KCORE+MRES 036512 -> 036511 octal. The four targeted file and VFS
+regressions passed; strict 32K acceptance remains deferred.
