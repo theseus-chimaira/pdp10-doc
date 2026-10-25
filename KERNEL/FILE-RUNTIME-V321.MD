@@ -80,3 +80,14 @@ also verifies the non-serialized MEMFS route. Native fixture PASS.
 This is a simulated wait oracle, not simultaneous process execution or
 physical-device I/O; real scheduler contention remains unverified.
 No production change or permanent memory reduction was made in v326.
+
+## Provider gateway dispatch extension (v327, 2026-10-25)
+
+`daimos-testkit` now runs `test-daimos-provider-lock-native-v327`,
+including the existing simulated lock-wait and register-recovery test,
+plus D6FS/TSFS service-jump selection and invalid provider-ID rejection.
+The extracted production gateway passes on the PDP-6 simulator. The
+fixture uses controlled wait/wakeup and service oracles, not real
+concurrent processes or physical filesystem I/O. Such a contention
+regression remains outstanding. No production changes or RAM savings
+were introduced.
