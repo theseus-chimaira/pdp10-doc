@@ -91,3 +91,16 @@ fixture uses controlled wait/wakeup and service oracles, not real
 concurrent processes or physical filesystem I/O. Such a contention
 regression remains outstanding. No production changes or RAM savings
 were introduced.
+
+## File removal type decision consolidation (v328, 2026-10-25)
+
+The resident `file_remove` path shared by UNLINK and RMDIR now
+normalizes the target `vfs_stat` type to a directory boolean and
+compares it with the existing operation's desired directory status.
+UNLINK still rejects directories, while RMDIR still rejects
+non-directories. The vnode lookup, parent access, busy-store protection,
+FIFO detach and provider calls are unchanged. GCC lowmem full image:
+KCORE 024752 -> 024747 octal, KCORE+MRES 036506 -> 036503 octal,
+a saving of three permanent words. Four targeted testkit suites passed;
+a dedicated UNLINK/RMDIR type matrix remains a useful follow-up.
+Strict 32K acceptance remains deferred.
