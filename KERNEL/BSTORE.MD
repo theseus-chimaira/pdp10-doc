@@ -1,3 +1,20 @@
+### v481 KCORE reduction boundary (2026-10-27)
+
+The process swap *transfer/reclaim* implementation now resides in a pinned
+SWAP MRES. This does **not** transfer ownership of the common BACKSTORE
+bitmap. `backstore.s` is still KCORE (108 pre-link TEXT, 4 BSS words):
+MEMFS uses the same allocation/free interface and backing I/O paths.
+Its migration must use a shared service and preserve one authoritative
+bitmap; adding a second allocator or moving it behind an optional SWAP
+package would violate this contract.
+
+During KINIT, `proc_swap_boot_init` currently allocates one process swap
+record per slot, the bitmap (`ceil(backstore_blocks/36)` words), and a
+two-bit-per-slot process storage-state map together. Zero backing capacity
+does not imply the executable-backing records are unnecessary. Consider
+splitting their lifetimes only after validating all PROC, MEMFS and VM
+consumers and measuring runtime MM occupation, not merely static KCORE.
+
 # DAIMOS BSTORE / BCACHE DESIGN AND IMPLEMENTATION PLAN
 
 STATUS: STORAGE CONSOLIDATION IMPLEMENTED; AUXSTORE MEDIA TOOLING/LAYOUT

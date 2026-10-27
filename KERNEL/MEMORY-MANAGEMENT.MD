@@ -1,3 +1,23 @@
+### Process swap transfer service in boot MRES (v481, 2026-10-27)
+
+The permanent PDP-6 KCORE retains `proc_swap_reclaim` and
+`proc_swap_service_one` as one-word patchable jump entries. The SWAP MINIT
+installs a pinned `swapv481` MRES and retargets these entries to its two
+exported methods. Calls before publication return -1 through the existing
+resident error leaf. Memory allocation retry policy, VM growth retry, and
+the idle-loop swap request check remain in KCORE. Swap-in/out transactions,
+reclaim orchestration, and PURE prefix omission execute in MRES. The PURE
+backing-descriptor decode and packed per-process storage-state functions
+remain resident because they have independent VM/lifecycle consumers.
+
+GCC lowmem linked disk-root measurement: KCORE 8960 -> 8652 words; MRES
++308 words; permanent KCORE+MRES 13415 -> 13415 words. A tape-root link
+gives 8652 KCORE and 13339 combined, likewise unchanged overall. Native
+32K swap-wait and swap-stress and PDP-6 PURE reconstruction/verifier tests
+pass. The SWAP MRES source and MINIT entries must appear in the same order,
+shortly after MonitorFS; a late package installation failed under 32K
+boot allocation pressure even though the final permanent sizes matched.
+
 ### Dedicated AUXSTORE and root-mount mapping order (v277)
 
 The D6FS root mount uses the shared BLOCKSET direct-tail configuration.
