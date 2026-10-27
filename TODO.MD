@@ -1,5 +1,21 @@
 # PDP10-DOC TODO
 
+## 2026-10-27 DAIMOS v512 documentation synchronization
+
+DAIMOS/TODO.MD now owns the consolidated pre-final-KCORE functional freeze
+inventory. This document tracks only design/current-state documentation,
+not a second implementation queue. Keep clock/DATE/SETTIME, explicit
+MKSWAP/AUXSTORE, mixed-device/BLOCKSET inventories, swapped MonitorFS
+process metadata and scheduler acceptance synchronized when implemented.
+Before declaring the KCORE ABI frozen, record explicit release-scope decisions
+for D6 streaming codec cutover, TSFS v1.2, remaining BSTORE migration,
+production MEMFS XIP and compressed process swap. Do not mark these complete
+based on design documents or isolated component tests. Accepted v508-v511
+32K AUXST1 results supersede earlier provisional failures; avoid a new raw
+AUXSTORE D6FS superblock requirement. Post-0.9 overlays and runtime module
+movement remain deferred. Update subject documents only after tested changes.
+
+
 DATE: 2026-09-30
 
 THIS FILE TRACKS OPEN DOCUMENTATION WORK ONLY.  IMPLEMENTATION PRIORITY IS
