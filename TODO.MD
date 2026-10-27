@@ -2,6 +2,15 @@
 
 ## 2026-10-27 DAIMOS v512 documentation synchronization
 
+V521 GRANULARITY AUDIT (2026-10-27): The general DAIMOS MM allocator
+already supports exact word counts and one-word alignment. The PDP-6 APR
+process VM still requires 02000-octal (1024 decimal) word mapping
+alignment. The P0 objective is to find and remove avoidable rounding in
+software-managed allocations, never to claim unsupported 512-word APR
+process mappings. Source-audit evidence is recorded in DAIMOS
+`design/mm-granularity-audit-20261027-v521.md`; update implementation
+claims in `KERNEL/MEMORY-MANAGEMENT.MD` only after native tests pass.
+
 DECISION 5 (2026-10-27): opt-in compressed process swapping for explicitly
 approved executables (e.g. shell) is required before the final KCORE sweep.
 Unapproved executables retain raw swapping; the executable eligibility bit
