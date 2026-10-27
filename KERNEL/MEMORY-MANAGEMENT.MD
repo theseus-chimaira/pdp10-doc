@@ -1,3 +1,16 @@
+### Shared BACKSTORE allocator in pinned MRES (v484, 2026-10-27)
+
+The process swap service and the common process/MEMFS backing allocator
+share the pinned SWAP MRES. Four public backing-store calls remain as
+single-word patchable KCORE entry points; the four backing-state words
+remain authoritative and resident. There is no second package/bitmap.
+The KCORE end marker is deliberately linked after these state words;
+the MM descriptor table starts exactly at `__kcore_low_end`. GCC PDP-6
+lowmem disk KCORE is 8548 words and combined KCORE+MRES is 13415 words
+after relocation, 104 fewer KCORE words with no growth in combined RAM.
+The 32K native swap-wait and swap-stress tests pass. Dynamic swap-record,
+bitmap and storage-mode boot allocation remains unchanged.
+
 ### Process swap transfer service in boot MRES (v481, 2026-10-27)
 
 The permanent PDP-6 KCORE retains `proc_swap_reclaim` and

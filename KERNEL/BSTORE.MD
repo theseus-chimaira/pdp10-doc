@@ -1,3 +1,23 @@
+### v484: BACKSTORE allocator resident split (2026-10-27)
+
+The authoritative bitmap and four associated state words stay in KCORE,
+shared by process swap and MEMFS. The allocator TEXT has moved into the
+permanently installed SWAP/shared MRES. KCORE exposes the original four
+`backstore_*` functions through one-word JRST entries patched by SWAP
+MINIT. Neither the API nor the single-bitmap ownership changes; this
+MRES is installed on the existing boot path and is not a removable
+optional module while its clients are active.
+
+On the PDP-6 full GCC lowmem link KCORE shrank 8652 -> 8548 words, and
+shared SWAP MRES grew 308 -> 412 words, giving no change in combined
+permanent occupancy (disk 13415, tape 13339 words). The corrected build
+puts `kcore_end.dobj` last: backing state occupies 020620..020623,
+`__kcore_low_end` and dynamically allocated MM extents begin at 020624.
+The earlier experimental KINIT failure resulted from this boundary
+overlap, not a need for another allocator or a change in storage ABI.
+Native 32K swap-wait and swap-stress and the standalone PDP-6 BACKSTORE
+fixture pass. The boundary regression lives in daimos-testkit.
+
 ### v481 KCORE reduction boundary (2026-10-27)
 
 The process swap *transfer/reclaim* implementation now resides in a pinned
