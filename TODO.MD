@@ -2,6 +2,13 @@
 
 ## 2026-10-27 DAIMOS v512 documentation synchronization
 
+DECISION 2 (2026-10-27): TSFS v1.2 sharded metadata is required before
+DAIMOS 0.9 release but scheduled after the final KCORE optimization. Keep
+TSFS-specific implementation in removable filesystem MRES and host image
+tools, retaining existing generic KCORE/VFS interfaces where possible;
+validate any necessary kernel/boot ABI changes separately. This is a
+schedule decision only, not evidence that v1.2 is implemented.
+
 P0 UPDATE (2026-10-27): memory allocation granularity reduction to
 512 decimal words is a pre-final-KCORE prerequisite, not post-release
 research. Document the exact octal/decimal unit conventions and the
