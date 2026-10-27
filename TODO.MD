@@ -2,6 +2,11 @@
 
 ## 2026-10-27 DAIMOS v512 documentation synchronization
 
+DECISION 4 (2026-10-27): production privileged, strictly non-writing
+MEMFS XIP EXEC/RUN and native lifecycle validation are required before
+the final KCORE optimization and the DAIMOS 0.9 release. Current isolated
+pin/admission/VM tests are not production process launch acceptance.
+
 DECISION 3 (2026-10-27): finish remaining BSTORE shared backing,
 BCACHE and LOGSTORE migration before the final KCORE optimization and
 DAIMOS 0.9 release. Document tested implementation changes in
