@@ -2,6 +2,13 @@
 
 ## 2026-10-27 DAIMOS v512 documentation synchronization
 
+DECISION 5 (2026-10-27): opt-in compressed process swapping for explicitly
+approved executables (e.g. shell) is required before the final KCORE sweep.
+Unapproved executables retain raw swapping; the executable eligibility bit
+and actual compressed swap-record bit remain separate. Require raw fallback,
+no net permanent RAM growth and native performance/rollback acceptance.
+This is a release-scope decision, not a completed implementation.
+
 DECISION 4 (2026-10-27): production privileged, strictly non-writing
 MEMFS XIP EXEC/RUN and native lifecycle validation are required before
 the final KCORE optimization and the DAIMOS 0.9 release. Current isolated
