@@ -2,6 +2,14 @@
 
 ## 2026-10-27 DAIMOS v512 documentation synchronization
 
+P0 UPDATE (2026-10-27): memory allocation granularity reduction to
+512 decimal words is a pre-final-KCORE prerequisite, not post-release
+research. Document the exact octal/decimal unit conventions and the
+PDP-6 APR 1024-word hardware process-map alignment separately from
+software MM allocation granularity. Update MEMORY-MANAGEMENT.MD with
+measured, tested behavior after implementation; do not claim native
+512-word PDP-6 protected process mappings without hardware evidence.
+
 DAIMOS/TODO.MD now owns the consolidated pre-final-KCORE functional freeze
 inventory. This document tracks only design/current-state documentation,
 not a second implementation queue. Keep clock/DATE/SETTIME, explicit
