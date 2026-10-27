@@ -2,6 +2,12 @@
 
 ## 2026-10-27 DAIMOS v512 documentation synchronization
 
+DECISION 3 (2026-10-27): finish remaining BSTORE shared backing,
+BCACHE and LOGSTORE migration before the final KCORE optimization and
+DAIMOS 0.9 release. Document tested implementation changes in
+KERNEL/BSTORE.MD and related filesystem/device documents; distinguish
+accepted AUXST1/BACKSTORE support from genuinely unfinished work.
+
 DECISION 2 (2026-10-27): TSFS v1.2 sharded metadata is required before
 DAIMOS 0.9 release but scheduled after the final KCORE optimization. Keep
 TSFS-specific implementation in removable filesystem MRES and host image
