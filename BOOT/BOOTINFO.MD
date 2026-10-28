@@ -14,6 +14,16 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v643: native GCC full-profile 96K initialization
 
+### v644: native KCC full-profile 96K initialization
+
+The KCC variant of the 96K disk-root full-profile image independently
+builds and boots in PDP-6 SIMH. Its KINIT ends at octal `113573`, with
+the unchanged octal `0600` stack reserve intact. DSK270, DRM236,
+BLOCKSET, MEMFS and D6FS initialize, and the simulator stops at the
+linked `proc_boot_init` entry (`066510`) before userland execution.
+Testkit `daimos-kinit-full96-kcc-v644.sh` PASS. This is not an
+interactive DSH or full 256K acceptance result.
+
 The 96K GCC full-profile disk-root image builds and boots on native
 PDP-6 SIMH to the map-derived `proc_boot_init` breakpoint. Linked
 KINIT ends at octal `107421`, preserving the `0600`-octal reserve;
