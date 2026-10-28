@@ -2,6 +2,17 @@
 
 STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
+## 2026-10-28 v638: 32K KINIT image boundary
+
+The lowmem GCC KINIT image now ends at octal `077200`, reduced from
+`077236` by 30 decimal words using PDP-6-native probe and diagnostic
+routines. At 32K memory the unchanged octal `0600` stack reserve also
+starts at `077200`. The image passes `mkimage` and native PDP-6 SIMH
+boots print `MEM 32 K` and reach `INIT V1` on a TSFS+AUXSTORE setup.
+No permanent KCORE words moved or grew. The limit is met exactly,
+without spare linked-image margin: failure-path stack watermark and
+additional memory/boot-profile acceptance remain open.
+
 SOURCE OF TRUTH IS THE DAIMOS SOURCE TREE:
 
 ```TEXT
