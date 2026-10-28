@@ -10,6 +10,14 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v641: native 32K kernel-only initialization acceptance
 
+### v642: KINIT installed-core detection at larger memory sizes
+
+The native testkit v642 kernel-only matrix runs one instrumented GCC
+lowmem TSFS-root image with 48K, 96K and 256K installed core. All
+three SIMH runs report the expected `MEM` value, initialize DTC and
+DSK270 and stop at the linked `proc_boot_init` entry before userspace.
+This verifies lowmem-image detection, not full-profile or DSH behavior.
+
 The normal GCC 32K tape-root image can be tested without entering
 userspace by stopping SIMH at the final-map `proc_boot_init` symbol.
 Testkit `daimos-kinit-kernel-only-v641.sh` validates the unchanged
