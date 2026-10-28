@@ -12,6 +12,15 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v642: KINIT installed-core detection at larger memory sizes
 
+### v643: native GCC full-profile 96K initialization
+
+The 96K GCC full-profile disk-root image builds and boots on native
+PDP-6 SIMH to the map-derived `proc_boot_init` breakpoint. Linked
+KINIT ends at octal `107421`, preserving the `0600`-octal reserve;
+DSK270, DRM236, BLOCKSET, D6FS, and MEMFS initialize successfully.
+The regression `daimos-kinit-full96-gcc-v643.sh` covers full-profile
+kernel initialization, not userspace/DSH or the KCC compiler variant.
+
 The native testkit v642 kernel-only matrix runs one instrumented GCC
 lowmem TSFS-root image with 48K, 96K and 256K installed core. All
 three SIMH runs report the expected `MEM` value, initialize DTC and
