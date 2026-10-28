@@ -22,6 +22,16 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v647: interactive full-profile ROOT login and DSH matrix
 
+### v648: explicit disk-selector fatal-path stack measurement
+
+The instrumented native PDP-6 48K tape-root boot with console switch
+selector `1` (explicit disk root rather than tape selector `2`)
+reaches the fatal HALT and records KINIT high-water `0164` octal
+(116 decimal words), below the `0600`-octal reserve. Testkit
+`daimos-kinit-disk-selector-failure-v648.sh` PASS. This adds
+selector-failure coverage, **not** independent D6FS mount or MM
+allocation failure-path stack measurements. Production code is unchanged.
+
 The four GCC/KCC x 96K/256K full-profile disk-root configurations
 pass native PDP-6 SIMH ROOT login, DSH startup, `ECHO`, external
 `TRUE` with `STATUS:0`, and orderly `HALT`. The final D6FS filesystem
