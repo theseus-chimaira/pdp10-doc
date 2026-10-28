@@ -4,6 +4,17 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ## 2026-10-28 v638: 32K KINIT image boundary
 
+### v639: optional KINIT stack watermark bounds
+
+The KINIT stack reserve has an exclusive end address. On the v638 32K
+image, `077200 + 0600 = 0100000`, which is beyond installed 32K core.
+The optional sentinel-fill and high-water scan routines now stop at the
+last valid word, `end - 1`. This changes only transient KINIT diagnostics,
+not normal stack allocation or permanent KCORE residency.
+The instrumented lowmem GCC TSFS image links and boots on native PDP-6
+SIMH with 48K core (MEM 48 K, INIT V1; testkit v639). Actual 32K
+failure-path high-water acceptance remains a separate open gate.
+
 The lowmem GCC KINIT image now ends at octal `077200`, reduced from
 `077236` by 30 decimal words using PDP-6-native probe and diagnostic
 routines. At 32K memory the unchanged octal `0600` stack reserve also
