@@ -24,6 +24,17 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v648: explicit disk-selector fatal-path stack measurement
 
+### v649: native D6FS mount-validation failure watermark
+
+An instrumented GCC 96K full-profile disk-root PDP-6 SIMH boot with
+both D6FS superblock magic words invalidated in isolated disk copies
+selects the disk root successfully, then rejects the invalid D6FS
+superblocks with `?RT` and fatal HALT. Its KINIT stack high-water is
+`0172` octal (122 decimal words) versus the unchanged `0600` octal
+(384-word) reserve. Testkit `daimos-kinit-d6fs-mount-failure-v649.sh`
+PASS. Independent allocation, I/O, and missing-INIT failures remain
+to be measured. Original media is not modified.
+
 The instrumented native PDP-6 48K tape-root boot with console switch
 selector `1` (explicit disk root rather than tape selector `2`)
 reaches the fatal HALT and records KINIT high-water `0164` octal
