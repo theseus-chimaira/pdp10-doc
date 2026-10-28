@@ -6,6 +6,17 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v639: optional KINIT stack watermark bounds
 
+### v640: fatal-root stack watermark measurement
+
+When watermark instrumentation is enabled, the KINIT fatal HALT entry
+points now record the current high-water mark before stopping. The
+native PDP-6 48K tape-root test forces an invalid root selector and
+reads the saved value after HALT: octal `0164`, or 116 decimal stack
+words, below the unchanged octal `0600` (384-word) reserve. Testkit
+`daimos-kinit-failure-watermark-v640.sh` verifies the actual measured
+value and bounds. Normal uninstrumented KINIT is unchanged. This does
+not establish every failure-path high-water or the 32K kernel-only gate.
+
 The KINIT stack reserve has an exclusive end address. On the v638 32K
 image, `077200 + 0600 = 0100000`, which is beyond installed 32K core.
 The optional sentinel-fill and high-water scan routines now stop at the
