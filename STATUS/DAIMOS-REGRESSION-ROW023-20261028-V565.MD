@@ -22,3 +22,18 @@ DAIMOS TODO acceptance commit: `3dbb9a5`. This closes **row 023 only**;
 other GCC/KCC grouped tests, secondary mount acceptance, and the complete
 matrix remain distinct gates. Neither resident RAM nor production KCORE
 code changed.
+
+## Subsequent storage rows v566–v567
+
+On 2026-10-28 the next two complete matrix rows were also run in target
+order, using the unchanged production kernel and test oracles:
+
+- Row 024 (v566): `test-daimos-logstore-v1` PASS;
+  `test-daimos-mtc516-online` PASS.
+- Row 025 (v567): `test-daimos-dsk270-online` PASS;
+  `test-daimos-dsk270-elevator` PASS.
+
+The three adjacent accepted rows 023–025 therefore cover fourteen matrix
+targets. This is **not** the complete GCC/KCC acceptance suite. DAIMOS
+TODO commit `4e53a0c` records the additional two rows. No kernel or
+persistent RAM modifications were required.
