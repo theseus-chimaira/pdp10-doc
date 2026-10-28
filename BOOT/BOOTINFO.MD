@@ -18,6 +18,15 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v645: native KCC full-profile 256K initialization
 
+### v646: native GCC full-profile 256K initialization
+
+The independent GCC 256K full-profile disk-root build and SIMH boot
+PASS, with KINIT image end `107421`, `0600` octal stack reserve,
+correct `MEM 256 K`, DSK270/DRM236 and BSET/LOGSTR/MEMFS/D6FS
+initialized and a breakpoint at `proc_boot_init` (`063067`). Testkit
+`daimos-kinit-full256-gcc-v646.sh` PASS. Both 96K and 256K full-profile
+GCC/KCC kernel-only gates are covered; interactive DSH remains open.
+
 The KCC full-profile disk-root image builds with 256K configured core
 and reaches the linked `proc_boot_init` boundary on native PDP-6 SIMH.
 KINIT ends at octal `113573`, preserving the `0600` reserve. SIMH
