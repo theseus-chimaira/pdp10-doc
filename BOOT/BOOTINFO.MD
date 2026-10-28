@@ -20,6 +20,23 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v646: native GCC full-profile 256K initialization
 
+### v647: interactive full-profile ROOT login and DSH matrix
+
+The four GCC/KCC x 96K/256K full-profile disk-root configurations
+pass native PDP-6 SIMH ROOT login, DSH startup, `ECHO`, external
+`TRUE` with `STATUS:0`, and orderly `HALT`. The final D6FS filesystem
+check reports CLEAN media in every case. Testkit
+`daimos-dsh-full-profile-v647.sh` provides the repeatable regression.
+
+**Writable root media must be CLEAN before the next boot.** The KINIT
+tests that break at `proc_boot_init` run *after* D6FS mounts the root
+and publishes a DIRTY superblock. Such an interrupted test does not
+perform orderly shutdown, and reusing its disks makes the next boot
+fail with `?RT`. This is expected DIRTY-generation rejection, not a
+root discovery or superblock parser failure. The v647 test checks
+initial CLEAN state, isolates writable disk/drum copies, and verifies
+CLEAN status after successful shutdown.
+
 The independent GCC 256K full-profile disk-root build and SIMH boot
 PASS, with KINIT image end `107421`, `0600` octal stack reserve,
 correct `MEM 256 K`, DSK270/DRM236 and BSET/LOGSTR/MEMFS/D6FS
