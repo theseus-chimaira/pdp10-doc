@@ -8,6 +8,17 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v640: fatal-root stack watermark measurement
 
+### v641: native 32K kernel-only initialization acceptance
+
+The normal GCC 32K tape-root image can be tested without entering
+userspace by stopping SIMH at the final-map `proc_boot_init` symbol.
+Testkit `daimos-kinit-kernel-only-v641.sh` validates the unchanged
+`0600` octal stack-reserve boundary, hardware initialization and
+successful DTC/DSK270/DTFS discovery before userland execution.
+Native PDP-6 SIMH PASS: `MEM 32 K`, expected device markers, and
+breakpoint at `proc_boot_init` octal `061423`, without `INIT V1`.
+No unsupported `PROC_BOOT_USERS=0` configuration is introduced.
+
 When watermark instrumentation is enabled, the KINIT fatal HALT entry
 points now record the current high-water mark before stopping. The
 native PDP-6 48K tape-root test forces an invalid root selector and
