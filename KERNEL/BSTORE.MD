@@ -1,3 +1,15 @@
+# v669 — full-system swap acceptance still blocked
+
+Isolated native PDP-6 BACKING/MM rollback tests v664-v668 PASS, but the
+historic full-system testkit v298 has a stale assumption that
+`proc_swap_out` is an absolute KCORE symbol. It now resides in the
+loadable SWAP MRES. The corrected testkit v669 runner reaches simulator
+execution; without high-volume tracing, the guest prints `?RT` and
+halts at `065206` before completion of the pressure workload. A
+traced run timed out after repeated breakpoints. These are **not**
+full-system rollback acceptance passes. Diagnose boot/startup before
+resuming scheduler fault injection. No production code changed.
+
 # v668 — verified recoverable MM-free rollback
 
 An isolated native PDP-6 test now executes the production swap-out

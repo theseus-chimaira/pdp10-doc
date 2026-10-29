@@ -1,3 +1,12 @@
+# v669 — scheduler-level swap fault acceptance status
+
+The native branch-level rollback tests remain valid, but scheduler
+integration is not yet established. An updated full-system regression
+no longer assumes fixed KCORE addresses for the loadable swap module;
+the current pressure guest halts with `?RT` at `065206` before its
+expected completion markers. This is an unresolved test/startup
+blocker, not evidence of successful or failed swap recovery.
+
 # v668 — late MM-free failure native regression
 
 Native PDP-6 execution now verifies recovery from a failed `mm_free`
