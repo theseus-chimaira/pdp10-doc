@@ -1,3 +1,17 @@
+# v659 — VOLUME mapper-unavailable behavior
+
+The permanent BACKING transfer service now fails closed when a
+multi-device VOLUME is configured but its BLOCKSET mapper is absent.
+Previously it fell through to direct DEVICE arithmetic, potentially
+addressing the wrong sectors. A direct DEVICE range still bypasses
+the VOLUME mapper. This changes neither AUXST1 media layout nor
+BLOCKSET binary service ABI.
+
+The v659 fail-closed source test and v658 routing test PASS. The
+fresh native 32K GCC D6FS/disk image builds and boots through
+`proc_boot_init` with BSET/D6FS loaded. Native mapper-loss fault
+injection remains outstanding. No code-size optimization was run.
+
 # v658 — separate direct DEVICE regions from VOLUME tail mapping
 
 The permanent storage bridge now exposes `device_range_configure` for
