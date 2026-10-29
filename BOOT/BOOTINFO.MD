@@ -26,6 +26,19 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v649: native D6FS mount-validation failure watermark
 
+### v650: native MM idle-stack allocation failure watermark
+
+On a GCC 96K full-profile KINIT built with stack-watermark support,
+the native PDP-6 SIMH test patches only the live instruction requesting
+the `0100`-word kernel idle-stack allocation. It requests `0777777`
+words instead, causing the genuine `mm_alloc` error path to reach
+fatal HALT before filesystem mounting or userland startup. The patch
+site is discovered from the linked image; neither production source nor
+persisted media is altered. Recorded high-water is `0172` octal
+(122 decimal words), below the unchanged `0600` reserve (384 words).
+Both source-media D6FS checks report CLEAN. Testkit
+`daimos-kinit-mm-alloc-failure-v650.sh` PASS.
+
 An instrumented GCC 96K full-profile disk-root PDP-6 SIMH boot with
 both D6FS superblock magic words invalidated in isolated disk copies
 selects the disk root successfully, then rejects the invalid D6FS
