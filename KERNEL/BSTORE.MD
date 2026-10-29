@@ -1,3 +1,18 @@
+# v665 — multi-block BACKING failure contract
+
+Native PDP-6 instruction test of the production BACKING transfer
+routine confirms that a failing second block of a three-block write
+returns an error and never writes the third. Separate source checks
+confirm swap-out and MEMFS eviction publish their new backing records
+only after successful writes, freeing abandoned allocations on the
+write-error branch. Both testkit v665 checks PASS.
+
+This is **failure atomicity of publication**, not physical atomicity
+of multi-block storage: earlier blocks can already have been written.
+Full-system in-flight controller faults, late MM rollback paths and
+persistent snapshot recovery still need acceptance tests. No change
+to production code, media layout or KCORE size optimization.
+
 # v664 — isolated native BACKING failure coverage
 
 Native PDP-6 execution verifies that an unavailable multi-device

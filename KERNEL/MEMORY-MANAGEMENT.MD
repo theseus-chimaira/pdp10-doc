@@ -1,3 +1,11 @@
+# v665 — process/MEMFS BACKING failure observation (2026-10-29)
+
+Native PDP-6 BACKING I/O returns failure on the first failed block
+without issuing later writes. Process swap-out and MEMFS eviction
+keep newly written BACKING extents unpublished until the write succeeds
+and release allocations on write failure (testkit v665). This does not
+guarantee multi-block physical atomicity or complete late-MM rollback.
+
 V513 SIZE UPDATE (2026-10-27): FRESH CURRENT GCC PERMANENT-SIZE RESULTS,
 NOT THE OLD V219 KCORE SNAPSHOT. 32K LOWMEM TAPE: KCORE `020544` (8548
 WORDS), PACKAGED KCORE+MRES 13463, PERMANENT LAST 13510, 2873 WORDS FREE
