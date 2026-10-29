@@ -1,3 +1,23 @@
+# v658 — separate direct DEVICE regions from VOLUME tail mapping
+
+The permanent storage bridge now exposes `device_range_configure` for
+single physical DSK/DRM regions and `volume_tail_configure` for
+multi-member root tails translated by the existing BLOCKSET MRES.
+`blockset_direct_configure` remains an ABI-compatible symbol alias.
+Both I/O paths use one common physical DSK270/DRM236 dispatcher;
+neither AUXST1 nor BLOCKSET on-media formats change.
+
+The intended nomenclature is DEVICE (one physical drive), VOLUME
+(optional multi-device block mapping), REGION (bounded block range),
+BACKING (shared authoritative swap/MEMFS space), LOG (persistent records)
+and CACHE (discardable copies). This terminology is a staged source
+migration, not a new stack of generic runtime storage layers.
+
+Fresh 32K lowmem GCC PDP-6 SIMH D6FS disk boot reached
+`proc_boot_init` with BSET and D6FS loaded. Testkit direct/volume
+routing inspection PASS. Multi-member and fault-path integration
+remain open; DTFS/TSFS features are deferred for now.
+
 # v657 — shared AUXSTORE raw-region I/O (first production feature increment)
 
 Production AUXSTORE bootstrap exports `auxstore_boot_region_read` and
