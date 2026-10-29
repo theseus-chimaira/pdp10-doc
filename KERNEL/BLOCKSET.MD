@@ -1,3 +1,13 @@
+## v664 — native mapper-absence execution test
+
+The daimos-testkit v664 PDP-6 instruction test executes the real
+`fs_mres.s` BACKING gateway. With a VOLUME configured and its mapper
+uninstalled, read returns -1 without calling the physical driver.
+With a direct DEVICE region configured, read succeeds through the
+physical driver. The native test passes; the prior v659 source-only
+check now has instruction-level coverage. Full-system in-flight
+controller/mapper failure testing remains open.
+
 ## v663 — native multi-member VOLUME regression (2026-10-29)
 
 Following the v658-v662 DEVICE/VOLUME/BACKING source interface changes,

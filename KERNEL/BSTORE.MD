@@ -1,3 +1,12 @@
+# v664 — isolated native BACKING failure coverage
+
+Native PDP-6 execution verifies that an unavailable multi-device
+VOLUME mapper cannot silently fall back to direct DEVICE addressing.
+The direct-device path remains operational. This test uses the real
+BACKING transfer assembly with instrumented device entry points;
+production KCORE and AUXST1 formats are unchanged. Full-system
+partial-transfer recovery remains pending.
+
 # v663 — VOLUME compatibility evidence
 
 The existing native multi-member D6FS suite PASSed on two/four-member
