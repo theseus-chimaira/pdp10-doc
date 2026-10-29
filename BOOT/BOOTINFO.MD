@@ -28,6 +28,19 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v650: native MM idle-stack allocation failure watermark
 
+### v651: native BLOCKSET read-service I/O failure watermark
+
+Native PDP-6 SIMH 96K GCC full-profile KINIT is interrupted immediately
+after Stage1 loading to patch only the linked in-memory
+`blockset_boot_read` entry to return a storage error. The physical
+disk root remains discoverable; subsequent D6FS mount read fails,
+producing `?RT` and fatal HALT. The recorded stack high-water is
+`0172` octal (122 decimal words), below the unchanged `0600`-octal
+(384-word) reserve. The test resolves entrypoints from the linked
+maps, uses no persistent code changes, and verifies CLEAN D6FS media
+before and after. Testkit `daimos-kinit-blockset-read-failure-v651.sh`
+PASS. Missing/nonregular `/SYSTEM/INIT` remains open.
+
 On a GCC 96K full-profile KINIT built with stack-watermark support,
 the native PDP-6 SIMH test patches only the live instruction requesting
 the `0100`-word kernel idle-stack allocation. It requests `0777777`
