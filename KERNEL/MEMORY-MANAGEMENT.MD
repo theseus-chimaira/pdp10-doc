@@ -1,3 +1,14 @@
+# v667 — failed unpin is an invariant violation
+
+Contrary to the broader v666 rollback wording, an unexpected failed
+`mm_unpin` cannot safely return to normal scheduling: the physical pin
+state may be inconsistent. Both swap-out unpin sites now fail closed
+through the existing storage invariant handler. In contrast, an
+ordinary failed `mm_free` after successful unpin still rolls back the
+provisional BACKING allocation before publishing DISK state.
+Isolated native PDP-6 branch failure tests PASS. Full-system MM fault
+injection and scheduler acceptance remain open.
+
 # v666 — late swap memory release (2026-10-29)
 
 Swap-out keeps DISK state unpublished until both `mm_unpin` and

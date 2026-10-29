@@ -1,3 +1,19 @@
+# v667 — unsafe late swap-out unpin cleanup fixed
+
+The v666 audit did not establish safe behavior when `mm_unpin` itself
+failed: the prior rollback could clear TRANSITION and resume a process
+with unresolved physical pin ownership. The PDP-6 swap-out assembly now
+routes either failed unpin (normal postwrite path or error cleanup)
+to the existing storage/MM invariant handler, rather than silently
+resuming. A successful unpin followed by failed `mm_free` retains its
+existing recoverable prepublication rollback.
+
+Testkit v667 source and isolated native PDP-6 fault branches PASS,
+the adjusted v666 regression PASSes, and a fresh GCC 32K disk-root
+image boots through `proc_boot_init` with BSET/D6FS loaded. Full-system
+fault/scheduler testing is not implied. This is a correctness fix,
+not KCORE size optimization.
+
 # v666 — swap late-memory-release rollback audit
 
 The PDP-6 `proc_swap_out` implementation writes a provisional BACKING
