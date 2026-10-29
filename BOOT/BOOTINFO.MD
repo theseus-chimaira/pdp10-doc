@@ -30,6 +30,20 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v651: native BLOCKSET read-service I/O failure watermark
 
+### v652: KINIT bootstrap stack reserve reduced to 256 words
+
+The KINIT bootstrap stack default is now octal `0400` (256 decimal
+words), reduced from `0600` (384 words), with consistent PDP-6 boot,
+kernel-build and KINIT-header defaults. The highest previously
+measured fatal-path stack watermark was `0172` octal (122 words).
+The new reserve leaves 134 words above that measured high-water.
+
+The fresh native PDP-6 32K GCC lowmem instrumented build reaches
+`proc_boot_init`; linked image end `077260` plus stack `0400` is
+`077660`, strictly below the `0100000` core boundary. Invalid-root
+HALT records `0164` octal (116 words). These observations validate
+the reduction against measured paths, not untested failure conditions.
+
 Native PDP-6 SIMH 96K GCC full-profile KINIT is interrupted immediately
 after Stage1 loading to patch only the linked in-memory
 `blockset_boot_read` entry to return a storage error. The physical
