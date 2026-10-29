@@ -2,6 +2,17 @@
 
 STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
+## 2026-10-29 v656: host MM fixture compatibility restored
+
+The `daimos-testkit` `make mm-core` host regression now passes on the
+current PDP-6 kernel sources. VM extent move, swap eligibility and
+MM-backed VM destruction have test-only C99 host references because
+the production implementations are PDP-6 assembly. The tests now
+respect runtime MM descriptor capacity and the production process
+count policy (8 slots at 32K, rising to 64). No kernel production
+code or permanent KCORE words changed. Host references do not
+substitute for target-native VM or MEMFS XIP lifecycle testing.
+
 ## 2026-10-29 v655: native DSK0 loss and KINIT watermark build coherence
 
 The GCC full-profile 96K PDP-6 SIMH controller-loss test detaches
