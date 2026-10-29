@@ -1,3 +1,12 @@
+# v670 — D6FS mount-stage evidence
+
+Native PDP-6 breakpoint tracing of the v669 scheduler-pressure boot
+shows BLOCKSET discovery, repeated physical block reads, and entry to
+`d6fs_super_select` before `?RT`. Neither `vfs_mount` nor `vfs_stat`
+is reached. Testkit v670 reproduces that failure-stage classification
+using linked KINIT symbols. The exact failing superblock or pre-VFS
+check remains unproven. Full-system scheduler rollback is still blocked.
+
 # v669 diagnostic refinement — meaning of ?RT
 
 `?RT` is `KINIT_ERR_RT` in `kinit_boot()`: root mount failed or

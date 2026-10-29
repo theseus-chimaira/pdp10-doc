@@ -1,3 +1,10 @@
+# v670 — swap pressure test still blocked before scheduling
+
+Testkit v670 confirms that the 256K pressure image stops in KINIT
+D6FS pre-VFS mounting after BLOCKSET reads and superblock selection
+entry. This is not an MM rollback result. Keep isolated native v664-v668
+successes distinct from still-open full-system scheduler acceptance.
+
 # v669 follow-up — halt classification
 
 The full-system swap pressure test halts in KINIT root mount/INIT
