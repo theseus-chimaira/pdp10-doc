@@ -1,3 +1,18 @@
+# v662 — BACKING runtime consumers
+
+Process swap initialization and MonitorFS SWAP statistics both query
+`backing_region_blocks()` for the logical capacity. The historical
+`blockset_tail_blocks()` symbol remains a binary-compatible alias;
+the linked map places both at octal `005071`. The internal shared
+transfer entry is named `backing_region_io` while preserving the
+existing `backstore_read/write` and legacy BLOCKSET entry labels.
+The change retains a single DEVICE/VOLUME I/O path, no extra resident
+state or dispatch layer, and unchanged AUXST1/BLOCKSET formats.
+
+Testkit v662, v660, v659 PASS. The fresh GCC 32K image builds and
+boots on PDP-6 SIMH to `proc_boot_init` with BSET/D6FS loaded; D6FS
+checks CLEAN. Native multi-member mapper-loss injection remains open.
+
 # v661 — LOG boot REGION routing
 
 LOG bootstrap reads and writes now call the bounded AUXST1 REGION

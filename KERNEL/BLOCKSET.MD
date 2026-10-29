@@ -1,3 +1,11 @@
+## v662 — BACKING is not a BLOCKSET-specific resource
+
+Resident BACKING capacity is now queried by both swap boot and
+MonitorFS through `backing_region_blocks()`. BLOCKSET remains only
+the optional mapper for a multi-member VOLUME; ordinary DEVICE
+REGION I/O never depends on it. The old tail-count function is a
+compatibility alias, not a second allocator or transfer path.
+
 # CURRENT BLOCKSET IMPLEMENTATION STATE (2026-09-24)
 
 ## Current routing terminology — 2026-10-29 v661
