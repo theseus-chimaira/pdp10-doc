@@ -32,6 +32,16 @@ STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
 ### v652: KINIT bootstrap stack reserve reduced to 256 words
 
+### v653: missing/nonregular SYSTEM/INIT root acceptance
+
+Native PDP-6 SIMH full-profile D6FS root acceptance rejects either
+a missing `/SYSTEM/INIT` directory entry (zero child reference) or a
+nonregular INIT FCB (directory type). In both cases D6FS initializes
+but KINIT emits `?RT` and HALTs before starting INIT V1. Testkit
+`daimos-kinit-nonregular-init-v653.sh` PASS in `missing` and
+`nonregular` modes. It edits only disposable copies of CLEAN disk
+media. No production kernel changes or repeated stack measurements.
+
 The KINIT bootstrap stack default is now octal `0400` (256 decimal
 words), reduced from `0600` (384 words), with consistent PDP-6 boot,
 kernel-build and KINIT-header defaults. The highest previously
