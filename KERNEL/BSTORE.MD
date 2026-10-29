@@ -1,3 +1,18 @@
+# v660 — DEVICE/VOLUME/REGION resident state names
+
+The backing bridge retains its existing three resident configuration
+words, now named `device_region_map`, `volume_data_blocks` and
+`backing_region_count`. The historical `blockset_direct_*` names remain
+compatibility aliases on the **same addresses**; the old tail-count
+function is likewise aliased by `backing_region_blocks()`. Process swap
+boot calls the latter. These are semantic source names only: no new
+storage dispatch layer or persistent metadata format is introduced.
+
+Source regressions v658-v660 PASS, fresh native GCC 32K disk build
+PASS, D6FS checker CLEAN, and PDP-6 SIMH reaches `proc_boot_init` with
+BSET/D6FS loaded. Multi-member mapper-loss fault injection remains
+open. No KCORE size optimization is part of this change.
+
 # v659 — VOLUME mapper-unavailable behavior
 
 The permanent BACKING transfer service now fails closed when a
