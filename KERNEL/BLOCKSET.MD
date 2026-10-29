@@ -1,3 +1,17 @@
+## v663 — native multi-member VOLUME regression (2026-10-29)
+
+Following the v658-v662 DEVICE/VOLUME/BACKING source interface changes,
+the existing native PDP-6 D6FS HDD v582 multi-member suite PASSed on
+two- and four-member volumes, including normal file operations and
+rejection of unequal/missing member sets. A first attempt was blocked
+by old x86-64 host PTY/TCP relay executables on an AArch64 host;
+rebuilding those helpers resolved the test harness incompatibility.
+Testkit v663 uses versioned, host-native helper binaries on each run.
+
+The v659 missing-mapper path is only source-checked; live mapper-loss
+fault injection remains outstanding. No media format or KCORE
+optimization change is associated with this acceptance milestone.
+
 ## v662 — BACKING is not a BLOCKSET-specific resource
 
 Resident BACKING capacity is now queried by both swap boot and

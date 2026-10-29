@@ -1,3 +1,10 @@
+# v663 — VOLUME compatibility evidence
+
+The existing native multi-member D6FS suite PASSed on two/four-member
+HDD volumes after the DEVICE/VOLUME split. Backing-mapper fault-injection
+is still open; see KERNEL/BLOCKSET.MD. The testkit v663 launcher avoids
+host relay binaries inherited from a different CPU architecture.
+
 # v662 — BACKING runtime consumers
 
 Process swap initialization and MonitorFS SWAP statistics both query
