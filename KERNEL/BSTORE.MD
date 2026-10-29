@@ -1,3 +1,21 @@
+# v657 — shared AUXSTORE raw-region I/O (first production feature increment)
+
+Production AUXSTORE bootstrap exports `auxstore_boot_region_read` and
+`auxstore_boot_region_write` for BACKSTORE, LOGSTORE and CACHESTORE,
+using partition-relative block addresses. The region selector and
+block offset must be valid; no request may escape into an adjacent
+partition. LOGSTORE bootstrap read/write now uses this shared
+interface. Existing raw BACKSTORE allocation and physical I/O are
+preserved pending migration and rollback/recovery validation.
+
+Host testkit v657 region bounds PASS; existing AUXSTORE choice v492
+and D6FS overlap v507 PASS. This is feature implementation, not a
+KCORE optimization, and does not close the remaining BSTORE migration.
+
+The online D6FS packer and agreed storage/admin extensions are in
+version 0.9 release scope. DTFS/TSFS features are temporarily deferred
+while KCORE feature implementation proceeds.
+
 ### v484: BACKSTORE allocator resident split (2026-10-27)
 
 The authoritative bitmap and four associated state words stay in KCORE,
