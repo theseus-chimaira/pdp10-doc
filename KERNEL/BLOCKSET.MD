@@ -1,5 +1,18 @@
 # CURRENT BLOCKSET IMPLEMENTATION STATE (2026-09-24)
 
+## Current routing terminology — 2026-10-29 v661
+
+The historical BLOCKSET description below remains relevant only to
+multi-member VOLUME mapping. Single-device REGION access uses the
+direct DEVICE selector and physical base, without invoking the
+BLOCKSET mapper. Direct and mapped BACKING I/O share one physical
+DSK270/DRM236 transfer path. A configured multi-member VOLUME fails
+closed if its mapper is unavailable (v659). The old external symbols
+remain ABI aliases; v660 renamed the three underlying configuration
+words without adding resident storage. AUXST1 is a boot-time layout
+descriptor, not a general-purpose runtime storage layer.
+
+
 BLOCKSET IS THE COMMON LOGICAL BLOCK-SET ABSTRACTION.  A SINGLE D6FS DSK ROOT
 BYPASSES BLOCKSET COMPLETELY.  A MULTI-MEMBER DSK ROOT INSTALLS A COMPACT
 38-WORD ROOT MRES USING HOMOGENEOUS EQUAL-SIZE INTERLEAVE.  THE ROOT RUNTIME

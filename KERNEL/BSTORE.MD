@@ -1,3 +1,13 @@
+# v661 — LOG boot REGION routing
+
+LOG bootstrap reads and writes now call the bounded AUXST1 REGION
+operations directly. The intermediate `auxstore_boot_log_read/write`
+wrappers have been deleted. The preexisting root-backed BLOCKSET LOG
+fallback is retained. LOG is a durable record ring, BACKING owns the
+temporary swap/MEMFS allocation bitmap, and CACHE contains only
+discardable copies; these are independent policies sharing only
+physical addressing. No persistent KCORE dispatch layer was added.
+
 # v660 — DEVICE/VOLUME/REGION resident state names
 
 The backing bridge retains its existing three resident configuration

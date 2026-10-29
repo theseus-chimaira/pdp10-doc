@@ -1,3 +1,15 @@
+### Storage vocabulary and 0.9 feature acceptance (v661)
+
+The current source terminology is DEVICE (physical unit), VOLUME
+(optional multi-device mapping), REGION (bounded physical range),
+BACKING (temporary authoritative swap/MEMFS blocks), LOG (durable
+records), and CACHE (discardable copies). AUXST1 parsing is boot-time
+configuration, not a new permanent dispatch layer. Direct LOG REGION
+bootstrap routing landed v661. Remaining runtime feature integration,
+failure recovery, CACHESTORE L2 and the online D6FS packer are
+version 0.9 scope. DTFS/TSFS implementation is temporarily deferred,
+not removed from release scope. No KCORE size sweep is underway.
+
 # PDP10-DOC TODO
 
 ## 2026-10-27 DAIMOS v512 documentation synchronization
