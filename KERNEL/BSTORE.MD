@@ -1,3 +1,14 @@
+# v666 — swap late-memory-release rollback audit
+
+The PDP-6 `proc_swap_out` implementation writes a provisional BACKING
+span, then attempts `mm_unpin` and `mm_free`. Failure of either takes
+the prepublication rollback path: release provisional BACKING, clear
+the temporary u-area backing field and TRANSITION. Only successful
+memory release leads to DISK mode publication. A new testkit v666
+source control-flow regression PASSes, as does the earlier native v665
+partial-write test. Live fault-injected MM unpin/free and scheduler
+recovery remain unverified; no production change was required.
+
 # v665 — multi-block BACKING failure contract
 
 Native PDP-6 instruction test of the production BACKING transfer

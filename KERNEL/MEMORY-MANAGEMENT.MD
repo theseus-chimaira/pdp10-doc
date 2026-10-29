@@ -1,3 +1,11 @@
+# v666 — late swap memory release (2026-10-29)
+
+Swap-out keeps DISK state unpublished until both `mm_unpin` and
+`mm_free` succeed. The error branch releases provisional BACKING and
+clears TRANSITION while retaining the resident extent. Testkit v666
+checks the source instruction ordering. Real native MM error injection
+is still necessary to establish the complete runtime guarantee.
+
 # v665 — process/MEMFS BACKING failure observation (2026-10-29)
 
 Native PDP-6 BACKING I/O returns failure on the first failed block
