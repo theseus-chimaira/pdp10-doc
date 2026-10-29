@@ -1,3 +1,12 @@
+# v668 — late MM-free failure native regression
+
+Native PDP-6 execution now verifies recovery from a failed `mm_free`
+after successful swap-out unpin. The provisional BACKING span is
+released while original resident VM ownership and swap record are
+retained; transition and provisional u-area state are cleared.
+An unexpected `mm_unpin` failure remains fatal by v667 design.
+Full-system scheduler fault injection remains outstanding.
+
 # v667 — failed unpin is an invariant violation
 
 Contrary to the broader v666 rollback wording, an unexpected failed

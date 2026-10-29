@@ -1,3 +1,13 @@
+# v668 — verified recoverable MM-free rollback
+
+An isolated native PDP-6 test now executes the production swap-out
+late rollback branch with `mm_unpin` successful and `mm_free` failing.
+It confirms the process remains resident, the original swap record is
+unchanged, the temporary BACKING allocation is freed, and TRANSITION
+and the provisional u-area backing field are cleared. Testkit v668
+PASS. This is not a full scheduler-level injected fault or an assertion
+of physical multi-block I/O atomicity. No production code changed.
+
 # v667 — unsafe late swap-out unpin cleanup fixed
 
 The v666 audit did not establish safe behavior when `mm_unpin` itself
