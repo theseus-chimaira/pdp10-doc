@@ -2,6 +2,27 @@
 
 STATUS: CURRENT IMPLEMENTATION SUMMARY.
 
+## 2026-10-29 v655: native DSK0 loss and KINIT watermark build coherence
+
+The GCC full-profile 96K PDP-6 SIMH controller-loss test detaches
+DSK0 immediately after Stage1 loads KINIT. With a fresh, consistently
+instrumented KINIT (`KINIT_STACK_WATERMARK=1`, reserve `0400` octal),
+root initialization fails safely at the fatal HALT. Stack high-water
+is `0172` octal (122 decimal words), leaving 134 words of the
+256-word reserve. The original D6FS diskset remains CLEAN; testkit
+`daimos-kinit-controller-media-loss-v655.sh` PASS.
+
+This exposed an independent build dependency defect. Reusing a build
+directory with different watermark settings could regenerate KINIT C
+without regenerating the assembler's matching watermark/reserve
+definitions. A preliminary `0577` octal report from such a mixed
+image was **not** a valid stack measurement. The boot and kernel
+Makefiles now use a versioned mode stamp to invalidate the C and
+assembler KINIT outputs together whenever the reserve or watermark
+setting changes. Testkit `daimos-kinit-mode-invalidation-v655.sh`
+passes mode switches 1 -> 0 -> 1 using the same build directory.
+No permanent KCORE data or instruction words were added.
+
 ## 2026-10-28 v638: 32K KINIT image boundary
 
 ### v639: optional KINIT stack watermark bounds
