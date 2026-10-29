@@ -1,3 +1,9 @@
+# v669 follow-up — halt classification
+
+The full-system swap pressure test halts in KINIT root mount/INIT
+validation (`?RT`), prior to scheduler or swap transaction execution.
+Full-system scheduler rollback has therefore not been exercised.
+
 # v669 — scheduler-level swap fault acceptance status
 
 The native branch-level rollback tests remain valid, but scheduler

@@ -1,3 +1,11 @@
+# v669 diagnostic refinement — meaning of ?RT
+
+`?RT` is `KINIT_ERR_RT` in `kinit_boot()`: root mount failed or
+`root_has_init()` did not find a regular `/SYSTEM/INIT`. The failure
+occurs before scheduler pressure begins; it is not evidence that
+BACKING rollback itself failed. Testkit v669 now has a root-media
+preflight, but which of these two root checks failed remains unknown.
+
 # v669 — full-system swap acceptance still blocked
 
 Isolated native PDP-6 BACKING/MM rollback tests v664-v668 PASS, but the
