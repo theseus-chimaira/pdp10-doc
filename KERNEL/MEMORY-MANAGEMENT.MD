@@ -1,3 +1,22 @@
+# v870 - last PIPE/FIFO release is retry-safe (2026-10-31)
+
+The PDP-6 `pipe_close_ref` previously published zero reader/writer
+references before freeing the final MM allocation. If the free failed,
+the FILE layer correctly retained the descriptor, but its next close
+would observe a pipe with zero references and could not undo the
+partial teardown. The final reference is now freed before publication.
+If `mm_free` rejects an active named FIFO, the code relinks its existing
+object at the FIFO list head without new storage; reference counts and
+the descriptor remain unchanged. Non-final closes continue to publish
+updated counts and wake waiting peers as before.
+
+Native PDP-6 v870 exercises failed MM release and retry through the real
+FILE and PIPE close code, for both anonymous and named pipes, and tests
+ordinary non-final decrement: PASS. KCORE lowmem link PASS, exclusive
+end `021217` octal, six words above v869. This resolves one teardown
+atomicity bug; it is not an enabled OOM killer. Forced-fatal exits,
+provider waits and other resource destructors still require coverage.
+
 # v868-v869 - current EXIT and final teardown FILE guard (2026-10-31)
 
 The native PDP-6 EXIT syscall and current-process fatal-event handler
