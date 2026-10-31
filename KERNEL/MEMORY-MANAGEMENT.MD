@@ -1,3 +1,28 @@
+# v868-v869 - current EXIT and final teardown FILE guard (2026-10-31)
+
+The native PDP-6 EXIT syscall and current-process fatal-event handler
+now respect the aggregate `file_close_all` return. If any VFS sync fails,
+that descriptor remains open and the process returns an error rather
+than freeing its u-area. The matching C reference fatal-event path
+checks close failure too. Native v868 exercises failed first-close,
+successful second-close, retry, and preservation of exit status: PASS.
+
+The resident `proc_finish_slot` now rejects a missing stable u-area or
+any of its 16 still-open two-word FILE entries *before* modifying RT
+ownership, session membership, VM state or run-queue state. The C
+reference includes the same preflight. Native v869 confirms that even
+the last live descriptor blocks all teardown helper calls, then verifies
+normal zombie publication after the entry is cleared: PASS. This adds
+no permanent metadata or heap allocations. Lowmem KCORE links at
+exclusive end `021211` octal (18 words above v867 `021167`).
+
+This guard prevents orphaned descriptors but does not ensure progress on
+unrecoverable fatal exits. APR faults and post-commit EXEC errors cannot
+return to the faulting userspace process; provider waits, recursive HUP
+and failed teardown still need allocation-free bounded resolution.
+OOM termination remains disabled, and full-system OOM acceptance has
+not been established.
+
 # v867 - fatal-other FILE close failure keeps victim resources (2026-10-31)
 
 The native PDP-6 `file_close_all_at_v865` now returns a failure result
