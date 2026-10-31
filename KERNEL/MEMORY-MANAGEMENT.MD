@@ -1,3 +1,28 @@
+# v874 - Type 340 display-list replacement is ownership-atomic (2026-10-31)
+
+Before v874, the optional DPY driver published its new list and IOWD
+before attempting `mm_free` on the old list. A failed old release was
+ignored and its allocated extent lost its sole published owner.
+
+The corrected replacement prepares the new image and IOWD privately,
+disables PI7 while releasing the old extent, and publishes the new base
+and IOWD only after release succeeds. If old release fails, the old
+list/IOWD remain published; the newly allocated extent is freed and
+the old list is scheduled for clock-driven refresh. The caller receives
+-1 and the accepted-write counter is not incremented. This needs no
+extra permanent KCORE or MRES data words. If rollback of the new
+allocation *also* fails, an explicit MM invariant HALT prevents a
+silent unowned allocation; that double-failure case remains untested.
+
+Native PDP-6 v874 checks failed release, rollback, retry, successful
+replacement, allocation failure, initial installation, STOP, IOWD
+preservation and write-count publication: PASS. The same regression
+FAILs against pre-v870 source, proving it detects the old bug. v709,
+v871, v870 and Type 340 PI policy also PASS. Direct DPY MRES link and
+lowmem KCORE link PASS; the resident end is unchanged at `021216`
+octal. Actual Type 340 replay after a forced release failure and
+system-wide OOM kill acceptance remain outstanding.
+
 # v873 - native PIPE rollback versus full-system FIFO acceptance (2026-10-31)
 
 The v870 native PIPE final-MM-free fixture fails on pre-v870 v869
