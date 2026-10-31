@@ -1,3 +1,24 @@
+# v882 - full-system pinned u-area finalization validated (2026-10-31)
+
+An isolated, test-only PDP-6 boot image exercises the production
+`proc_exit_finish`, `proc_uarea_release`, `mm_pin`, `mm_free`
+and `mm_unpin` with an actual pinned stable u-area. The harness
+pins the first process executing its own EXIT, releases its pin
+on the third attempted free, and inspects guest MM counters after
+HALT. The selected exiting slot varies with scheduling (1/2
+across runs); it observes three release attempts, two actual
+`MM_ERR_BUSY` returns, one pin and unpin each, and no hook errors.
+The original session HUP and TTY detach/reattach integration also
+finishes normally. This confirms the v881 idle finalizer can
+recover from transient MM pinning in a booted guest.
+
+The harness changes only an ephemeral kernel source copy under
+`$TMPDIR`. Production KCORE remains `021567` octal (9,079
+words); no permanent data or code was introduced for the test.
+The non-current fatal-termination path can return a transient
+failure to its caller, and permanent MM failure or sustained-load
+reaper fairness remain unverified. OOM killing stays disabled.
+
 # v881 - deferred MM release after VM teardown (2026-10-31)
 
 Process EXIT switches away from the target's private kernel stack
