@@ -1,3 +1,41 @@
+# v890 - full-system low-memory EXEC fatal recovery
+
+v890 verifies that the existing fatal FILE owner-stack
+continuation is also safe after an irreversible EXEC commit.
+An actual user-mode `dsys_exec` submits a valid launch
+record. A disposable PDP-6 kernel returns test-only
+`EXEC_LOAD_NOMEM` at the staged-load boundary so that the
+production `exec_replace_current_lowmem` fallback really
+destroys the old VM, including normal swap detachment.
+The guest confirms `VM_SPACE_NONE` and only then makes
+the replacement loader return failure. The kernel propagates
+`EXEC_REPLACE_FATAL` through `native_sys_exec`, without
+restoring the destroyed user image.
+
+The unchanged `proc_fatal_close_current_v879` owns all
+remaining FILE descriptors and the original private
+executive stack. The isolated VFS provider rejects two
+FD-0 closes with -5. The process yields for 1 and 2
+clock ticks while retaining its FILE descriptor and error
+witness (the existing `GETTEARDOWN` ERR class is 5).
+The third close succeeds; the descriptor and u-area
+word-067 witness clear, and the parent receives exactly
+one fatal EXEC exit status 1 through `WAIT`.
+
+Full-system SIMH PASS: one staged NOMEM, one real VM
+destroy, one failed replacement loader, three close
+passes, two rejections, two sleeps, preserved ownership,
+one final exit, correct `<EH`/HALT and no test errors.
+Prior native fatal EXEC/provider/MM regressions PASS.
+No production kernel source or persistent-memory changes:
+KCORE `022124` octal = 9,300 words, 1,108 above the
+8,192-word goal.
+
+Both APR-fatal (v889) and low-memory EXEC-fatal (v890)
+transient FILE refusal are accepted in full-system tests.
+Indefinite provider refusal still has unbounded ownership
+lifetime; automatic OOM killing remains disabled.
+
 # v889 - real APR-fatal user with transient FILE-provider refusal
 
 The private-stack fatal FILE retry policy is now exercised in
