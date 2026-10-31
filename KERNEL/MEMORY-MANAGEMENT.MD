@@ -1,3 +1,13 @@
+# v873 - native PIPE rollback versus full-system FIFO acceptance (2026-10-31)
+
+The v870 native PIPE final-MM-free fixture fails on pre-v870 v869
+source and passes after the repair. The separate full-system KCC
+named-FIFO regression still times out (exit 124) after D6FS startup;
+the same timeout occurs against isolated v869 commit `8b4e7d9`,
+so it predates the new close-ordering code. The cause and any possible
+additional regressions are not established by this comparison. Keep
+full-system FIFO acceptance open, independently of native v870 PASS.
+
 # v871 - Type 340 final-close ownership survives failed MM free (2026-10-31)
 
 The native FILE DPY close previously ignored the raw-list stop result:
