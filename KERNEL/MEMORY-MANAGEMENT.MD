@@ -1,3 +1,27 @@
+# v876 - RT ownership survives failed HUP and VM cleanup (2026-10-31)
+
+Previously `proc_finish_slot` revoked real-time ownership before
+session-HUP callbacks and only marked the target TRANSITION afterward.
+Because a member's FILE/provider cleanup can sleep or fail, the target
+could be selected for execution during its own teardown, or retain a
+live descriptor/u-area without its original RT owner lease.
+
+The PDP-6 resident finalizer and C fallback now reject an already
+TRANSITIONing target, mark TRANSITION after successful FILE preflight
+but before HUP, and restore that state on failed HUP or failed VM
+destruction. RT ownership is revoked only when VM destruction succeeds.
+There are no new persistent data words. Later release errors *after*
+VM removal remain nonrecoverable through normal user scheduling.
+
+Native v876 checks the transition preflight, RT ownership through
+failed HUP and failed VM destroy, retry and eventual zombie commit:
+PASS. The same test FAILs against pre-v876 source. A lowmem KCORE
+link PASSes at exclusive end `021226` octal, four words above v875.
+The full-system v875 session-teardown regression PASSed using CTY
+with unrelated graphical color-scope devices disabled; a separate
+post-v876 system rerun is required for corresponding acceptance.
+Automatic OOM killing is still disabled.
+
 # v875 - session HUP teardown retains TTY on failure (2026-10-31)
 
 The session leader formerly detached its controlling TTY before
