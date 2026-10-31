@@ -1,3 +1,27 @@
+# v878 - post-commit fatal EXEC closes FILE descriptors (2026-10-31)
+
+The PDP-6 low-core EXEC replacement can report
+`EXEC_REPLACE_FATAL` after the old user VM has been removed. The
+`native_sys_exec` handler formerly jumped immediately to
+`proc_exit_current`, bypassing `file_close_all`. The finalizer's
+required live-FILE guard then rejected the process even when its
+descriptors could have been closed normally.
+
+The post-commit fatal branch now closes the stable process-private
+FILE table before entering nonreturning slot-0 EXIT. A rejected close
+retains the descriptor for ownership accounting; the finalizer must
+not release that u-area. Since the old VM is gone, a persistent
+close failure cannot safely return to EXEC and still requires a
+deferred cleanup design. This change adds no permanent memory.
+
+Native PDP-6 v878 tests fatal EXEC with successful and rejected
+FILE close, normal EXEC, pre-commit failure and failed mapping:
+PASS. The pre-v878 negative control FAILs as expected. Earlier
+FILE, EXIT, session and finalizer regressions PASS. KCORE links at
+exclusive end `021227` octal (+1 word against v877). Full-system
+post-commit fault injection and automatic OOM termination remain
+unverified.
+
 # v877 - post-v876 full-system session HUP PASS (2026-10-31)
 
 The ordinary full-system `daimos-session-teardown-v1.sh` guest PASSes
