@@ -1,3 +1,35 @@
+# v881 - deferred MM release after VM teardown (2026-10-31)
+
+Process EXIT switches away from the target's private kernel stack
+before destroying VM and its final stable u-area. If MM rejects
+the last u-area free after VM_SPACE_NONE is published, an immediate
+retry from the shared permanent stack must not block other runnable
+processes. Before v881 this case returned failure and HALTed EXIT.
+
+The finalizer now leaves TRANSITION and the u-area owner intact, and
+records a pending marker with the original low-18-bit exit status
+in the preallocated unused u-area word 067. The session/domain/event
+control word is not changed (its bit 010 is part of session ID, not
+a spare flag). Slot 0 scans for these marked VM_NONE processes
+at most once per timer tick, with scheduler PI6 inhibited during
+shared MM and process-table updates. A successful retry follows
+only the last release, run-queue, adoption and zombie/free commit
+stages, without repeating session HUP or VM destruction.
+
+The C fallback validates the same marker, TRANSITION and VM_NONE.
+`proc_exit_finish` now returns to idle when this specific deferred
+owner exists, and continues reporting other failed finalizations.
+One permanent last-retry-tick word is added, with no change in
+process-descriptor or u-area size. Native fault-injected finalizer
+and compiled KCC EXIT handoff tests PASS; older FILE/VM tests PASS.
+KCORE links at `021567` octal (9,079 words, +100 from v880).
+
+The idle-only scan is neither a progress guarantee for permanently
+failing MM nor a full-system injected-MM acceptance test. OOM victim
+killing remains disabled pending PI6 and failure recovery proof.
+The ordinary headless full-system session HUP and TTY lifecycle
+regression PASSes with v881. It does not inject a failed MM free.
+
 # v880 - error-preserving DISK swap detach and VM ownership (2026-10-31)
 
 Before v880, `proc_swap_detach` returned void and discarded a disk
