@@ -1,3 +1,25 @@
+# v871 - Type 340 final-close ownership survives failed MM free (2026-10-31)
+
+The native FILE DPY close previously ignored the raw-list stop result:
+`vfs_sync` returned zero for this device even if its dynamic-list extent
+could not be freed. The DPY MRES also discarded the active list base
+before checking `mm_free`. The corrected close now propagates the real
+stop failure so FILE retains the descriptor. With no DPY module loaded,
+close is a successful no-op; a write still returns an error.
+
+The DPY MRES disables PI7 while attempting the free. If MM rejects it,
+the same extent base and original IOWD are restored and the 30-Hz
+refresh is scheduled again, permitting a subsequent close to retry.
+On success, the IOWD is cleared. Native v871 fault injection and the
+updated v709 direct-gateway tests PASS; direct DPY assembly and lowmem
+KCORE link PASS. KCORE exclusive end is `021216` octal, one word below
+v870. No additional permanent data is allocated.
+
+Failure while freeing the old list during *replacement* is still an
+unresolved resource-lifetime issue. Actual hardware replay following
+an injected failure, nonreturning APR/EXEC fatal exits and bounded OOM
+reclaim progress also remain unverified. Automatic OOM kill is OFF.
+
 # v870 - last PIPE/FIFO release is retry-safe (2026-10-31)
 
 The PDP-6 `pipe_close_ref` previously published zero reader/writer
