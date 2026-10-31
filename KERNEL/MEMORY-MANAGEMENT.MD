@@ -1,3 +1,34 @@
+# v889 - real APR-fatal user with transient FILE-provider refusal
+
+The private-stack fatal FILE retry policy is now exercised in
+a full booted PDP-6 guest. The test program accesses a virtual
+address outside its mapped APR range; the real CLK PI6 APR
+fault handling redirects to `proc_fatal_close_current_v879`.
+No synthetic EXEC fatal return is used. The guest's copied
+test kernel intercepts `vfs_sync` for the faulting process's
+FD 0 only and returns -5 twice before allowing ordinary
+VFS synchronization. No production VFS or kernel changes.
+
+For the rejected calls the descriptor remains owned and the
+existing `GETTEARDOWN(pid|0400)` reports FILE stage 1,
+error class 5. The owner-stack continuation yields for 1 and
+then 2 clock ticks. A successful third VFS call clears
+the descriptor and u-area word-067 witness before the
+process exits. The parent receives the expected fault
+termination through WAIT; subsequent user execution and
+final HALT are normal.
+
+Full-system SIMH counters PASS: one actual APR fault, three
+VFS-sync calls/two -5 results, three fatal-close passes,
+two clock sleeps, two retained-FD checks, one successful
+release, one witness clear, one exit, zero unexpected errors.
+The native fatal-EXEC/backoff and provider tests still PASS.
+No source or data modifications in production KCORE:
+`022124` octal = 9,300 resident words, unchanged from v888.
+Full-system post-commit EXEC fatal injection and indefinite
+provider refusal remain unverified recovery cases; OOM
+victim killing remains disabled.
+
 # v888 - capture the first real fatal FILE-close provider failure
 
 On a fatal APR or post-commit EXEC private-stack continuation,
