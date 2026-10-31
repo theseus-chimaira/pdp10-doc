@@ -1,3 +1,17 @@
+# v877 - post-v876 full-system session HUP PASS (2026-10-31)
+
+The ordinary full-system `daimos-session-teardown-v1.sh` guest PASSes
+with v875/v876 source: session-leader exit HUPs running and stopped
+jobs, detaches the controlling TTY, and allows reattachment. The
+test uses headless Type 340 and disables unrelated graphical
+WCNSLS/OCNSLS devices; the unisolated simulator had previously
+crashed in SDL before INIT with exit 139. This does not alter kernel
+semantics or hide the session workload. Native failed-HUP and failed
+VM-destroy probes remain separate passing tests. Neither provider
+failure injection inside the full-system guest nor nonreturning
+APR/EXEC/OOM termination has passed. No production code or size
+change in v877; KCORE endpoint remains `021226` octal.
+
 # v876 - RT ownership survives failed HUP and VM cleanup (2026-10-31)
 
 Previously `proc_finish_slot` revoked real-time ownership before
@@ -17,9 +31,8 @@ Native v876 checks the transition preflight, RT ownership through
 failed HUP and failed VM destroy, retry and eventual zombie commit:
 PASS. The same test FAILs against pre-v876 source. A lowmem KCORE
 link PASSes at exclusive end `021226` octal, four words above v875.
-The full-system v875 session-teardown regression PASSed using CTY
-with unrelated graphical color-scope devices disabled; a separate
-post-v876 system rerun is required for corresponding acceptance.
+The full-system session-teardown regression PASSed after v875 and
+again on post-v876 source using CTY with graphical backends disabled.
 Automatic OOM killing is still disabled.
 
 # v875 - session HUP teardown retains TTY on failure (2026-10-31)
