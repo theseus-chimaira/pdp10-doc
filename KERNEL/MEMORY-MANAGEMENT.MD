@@ -1,3 +1,49 @@
+# v888 - capture the first real fatal FILE-close provider failure
+
+On a fatal APR or post-commit EXEC private-stack continuation,
+`file_close_all_at_v865` now captures the first genuinely
+rejected descriptor and the return value from its actual
+FILE provider. This is stored in the owner's previously
+unused u-area word 067 while the FILE fatal-close bit is set.
+LH holds a valid witness marker (octal 040) and FD 0..017;
+RH stores the provider's signed 18-bit return. Retries replace
+the witness. On successful closure of all entries it is
+cleared, allowing the existing post-VM MM finalizer to reuse
+word 067 for its own unrelated high-bit marker and exit status.
+An ordinary/nonfatal bulk close never writes this record.
+
+The `GETTEARDOWN(pid|0400)` detail response adds FILE
+error classification in bits 15..17: 0 not recorded,
+1..5 the real negative return -1..-5, 6 another nonzero
+result. Existing stage, count, first descriptor and VFS/
+PIPE/DPY fields are unchanged, as is the operation-041
+UUO dispatch. `ps` prints the class in numeric `ERR`.
+This reports the boundary error but not necessarily the
+root cause inside a filesystem or device provider.
+
+MM free still distinguishes -5 (physical pin) from -4
+(no exact matching extent, wrong type or wrong owner);
+v887's existing exact-extent snapshot offers current
+owner/type/pin evidence without adding a second failure
+record. A detail snapshot is not an atomic history of
+the preceding MM operation.
+
+Native PDP-6 tests PASS first actual provider error/FD,
+changing errors on later close passes, retained descriptors,
+successful clearing, and no nonfatal witness. Pre-v888
+source FAILs the negative control as expected. Previous
+fatal-close and teardown-query tests PASS. The separate
+native `daimos-mm-release-cause-v888.sh` runs production
+`mm_free` and `mm_unpin`: it proves exact -5 for physical
+pins, -4 for missing/type/owner metadata errors without
+discarding the extent, and successful free after unpin.
+Full-system ordinary session HUP and TTY detach/reattach
+PASS with the changed FILE runtime; actual injected fatal
+FILE provider refusal in a booted guest remains untested.
+KCORE
+`022124` octal = 9,300 words (+26 over v887),
+no new permanent RAM. Automatic OOM killing is disabled.
+
 # v887 - on-demand FILE and MM owner detail
 
 The v886 `GETTEARDOWN(pid)` query remains ABI-compatible.
