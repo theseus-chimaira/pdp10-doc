@@ -1,3 +1,52 @@
+# v886 - read-only teardown-owner diagnostics
+
+Persistent FILE and MM providers may refuse release indefinitely.
+v885 reduces retry frequency but cannot safely prove that a live
+provider handle or pin is abandoned. v886 therefore exposes
+the **existing ownership state**, not a forced reclaim mechanism.
+
+The already resident `procctl` UUO 077 gains sub-operation
+`SYS_PROCCTL_GETTEARDOWN` (octal 041), which takes one process
+slot/PID and returns a nonnegative diagnostic:
+
+Sub-op 020 is already the UUO-077 PIPE extension; 041 is the
+first available selector correctly forwarded to PROCCTL. This
+preserves all preexisting extension operations.
+
+- 0: normal process or completed zombie (no active teardown)
+- 1: fatal APR/post-EXEC FILE-close owner, with private stack intact
+- `(ticks << 2)|2`: deferred post-VM u-area MM release owner,
+  with the current shared reaper retry interval in 60 Hz ticks.
+
+Invalid and FREE user slots return -1. The MM state is recognized
+only when TRANSITION, VM_SPACE_NONE, a stable u-area and its
+word-067 finalize marker all agree. FILE ownership is recognized
+by the existing `PROC_FATAL_CLOSE_BIT`. The low two result
+bits form the stage; the upper bits provide the **shared** MM
+backoff (16..512), not a per-process provider-failure count.
+The FILE stack's current private delay is not exported. Neither
+query exposes raw MM/FILE pointers, kernel addresses or user data.
+
+`ps` reports `TD` and `RETRY` numeric columns using this
+query. An operator can locate the stuck process and investigate
+the provider's I/O completion, reference ownership or MM pin;
+if the provider can legitimately release the reference, normal
+background cleanup finishes the process. There is no unsafe
+forced-close or arbitrary MM unpin operation in this interface.
+
+Native PDP-6 query tests PASS for normal, FILE, deferred MM,
+invalid/FREE, stale-marker and zombie cases. PS target C
+compilation and KCORE link PASS. Resident KCORE ends at
+`021762` octal (9,202 words; +37 from v885, including four
+packed dispatch-table words), with no
+permanent-data growth. Automated OOM termination remains disabled.
+The full-system native-UUO query also PASSes: ordinary and invalid
+PID results, exact MM-pending state during two real MM_BUSY
+release failures, then normal finalizer and session HUP/TTY
+completion while a separate user keeps running. The early
+op-020 experiment failed because it collided with PIPE creation;
+the corrected op 041 preserves PIPE and other older ABI calls.
+
 # v885 - resource-preserving capped teardown retry intervals
 
 In PDP-6 fatal APR and post-commit EXEC teardown, a FILE provider
