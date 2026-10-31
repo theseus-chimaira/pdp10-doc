@@ -1,3 +1,56 @@
+# v879 - owner-stack fatal cleanup and VM-less executive retry (2026-10-31)
+
+User-origin APR faults and post-commit fatal EXEC now enter the common
+resident `proc_fatal_close_current_v879` continuation *before* moving
+onto the permanent slot-0 stack. The process's exit status remains on
+its stable private executive stack while `file_close_all` runs.
+Rejected closes retain their FILE entries; the continuation sleeps
+one clock tick with `proc_sleep_ticks`, then retries when scheduled.
+Successful closure alone permits irreversible `proc_exit_current`.
+This does not allocate new heap, swap, or permanent descriptor storage.
+
+The previously spare low bit 2 in the per-u-area control word now
+marks an active fatal-close continuation. A second event (including
+STOP/CONT) cannot destroy or suspend its sleeping executive stack.
+Already-transitioning and u-area-less targets are rejected by event
+delivery. OOM and ordinary swap-out selection exclude such a process.
+The C event/swap/scheduler fallbacks implement the corresponding
+policy.
+
+After post-commit EXEC failure there may be no valid user VM at all.
+A tagged fatal-close kernel continuation may nevertheless be selected
+and resumed without a swap-in request, including when owned by a
+real-time process. Executive-context restore skips APR activation
+for a tagged VM_SPACE_NONE (-1) or zero-base state. The native
+scheduler now distinguishes VM_SPACE_NONE from actual resident base
+and genuine zero-base swapped processes; untagged destroyed processes
+are excluded even with an RT lease or ready-once selection. Generic
+`VM_SPACE_ACTIVE` and the C scheduler fallback also exclude
+VM_SPACE_NONE instead of treating its all-ones RH as a live VM.
+Direct native swap-out and exchange-pair preflight now reject the
+fatal-close flag, preventing MM from evicting that private stack.
+
+Native PDP-6 v879 tests check repeated failed closes, timer yields,
+descriptor ownership, duplicate-event exclusion, status retention,
+successful exit, VM-less selection, RT dispatch and APR-safe restore:
+PASS. Updated EXEC/FILE/EXIT/session/RT/OOM selector native suites
+PASS. The native swap guard test covers flagged owners, mapping hold,
+transition and normal admission: PASS. Pre-v879 swap-out FAILs the
+negative-control fixture as expected. Lowmem KCORE link PASS,
+exclusive end `021403` octal (8,963 words), 108 words above v878 and
+771 words above the strict 020000
+octal resident target; no new persistent data words.
+
+Final-source full-system ordinary session-leader HUP and TTY
+detach/reattach PASS in a headless simulator. This does not include a
+rejected provider close, PI6 continuation replay under fault, or
+bounded fatal cleanup recovery.
+
+This does not guarantee the overall FILE release eventually succeeds
+or that a blocking provider returns. Full-system PI6/timer retry
+under actual failing I/O, errors after VM destruction and automatic
+OOM termination remain unaccepted; OOM killing stays disabled.
+
 # v878 - post-commit fatal EXEC closes FILE descriptors (2026-10-31)
 
 The PDP-6 low-core EXEC replacement can report
