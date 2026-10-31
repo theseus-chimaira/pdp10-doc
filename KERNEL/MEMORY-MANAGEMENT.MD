@@ -1,3 +1,40 @@
+# v885 - resource-preserving capped teardown retry intervals
+
+In PDP-6 fatal APR and post-commit EXEC teardown, a FILE provider
+can reject close without releasing its handle. The process must
+retain its private executive continuation and original exit status
+until every FILE descriptor is actually closed. v885 stores a
+retry delay in one word on the existing private kernel stack and
+backs off unsuccessful attempts from 1 tick up to 01000 octal
+(512) ticks, or about 8.5 seconds at 60 Hz. Repeated rejection
+never authorizes kernel-forced release.
+
+The deferred post-VM u-area finalizer similarly treats a failed
+MM free as resource ownership, not as successful reclamation.
+The existing single resident word `proc_finish_last_tick_v881`
+now combines pending (high LH bit), a capped 020..01000-octal
+tick shared retry delay (remaining LH), and the last service tick
+(low 17 RH bits). Reaper service increases the interval after
+continued rejection and clears it once no owner remains pending.
+A newly deferred owner resets the interval for prompt first
+retry; an older pending owner does not reset it each pass.
+Normal runnable-user and RT/swap priority rules remain those
+accepted in v884.
+
+Native PDP-6 FILE cap, MM shared interval and ownership/retry
+tests PASS. The unchanged pre-v885 FILE-close code fails the
+negative-control acceptance. The full-system PDP-6 session HUP
+test with a continuously runnable companion, real MM pin and
+two MM_ERR_BUSY results before eventual successful release still
+PASSes. KCORE exclusive end `021715` octal: 9,165 words,
+30 above v884, no new static data word.
+
+Persistent provider failure can retain a process slot, FILE
+handle or MM extent indefinitely despite the reduced retry CPU
+overhead. Releasing such resources by timeout would violate the
+ownership invariant. There is no automatic forced reclaim and
+OOM victim termination remains disabled.
+
 # v884 - deferred u-area reaper scheduling under sustained load
 
 The v881-v883 deferred finalizer originally ran only while slot 0
