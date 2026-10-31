@@ -1,3 +1,41 @@
+# v884 - deferred u-area reaper scheduling under sustained load
+
+The v881-v883 deferred finalizer originally ran only while slot 0
+was idle. Another permanently runnable user could prevent that idle
+loop from executing, so even a transient MM pin could leave an
+already-dead process's u-area quarantined indefinitely.
+
+v884 repurposes the high bit of the existing resident
+`proc_finish_last_tick_v881` word as a pending-finalization flag;
+the low 17 bits retain the last MM service tick. A failed u-area
+free arms this flag. The slot-0 reaper clears it before processing,
+and any still-failing finalizer re-arms it. No new data word or
+process-table field is required.
+
+At a normal PI6 quantum, pending deferred cleanup overdue by
+020 octal ticks is granted one slot-0 service turn, even when an
+ordinary process remains runnable. The service finishes by
+requesting ordinary scheduling immediately, so it does not hold
+the CPU for a further clock quantum. Runnable real-time ownership
+and outstanding disk-swap service retain priority. A sleeping or
+stopped RT lease does not prevent maintenance. Time comparison
+uses the 17-bit modular clock, handling epoch wrap. Without
+pending cleanup, slot 0 skips MM scanning.
+
+Native PDP-6 maintenance throttle, runnable-user scheduling,
+RT/disk priority, dormant-RT handling and timer-wrap fixtures
+PASS. Pre-v884 scheduler code FAILs the new negative control as
+expected. Full-system PDP-6 MM pin/unpin fault injection with a
+separate continuously spinning user PASSes; its guest records two
+reaper turns while the run queue is nonempty, two actual MM_ERR_BUSY
+results followed by a successful release, and normal session
+HUP/TTY completion. Production KCORE links at `021657` octal
+(9,135 words), +39 resident text over v883, no new static data.
+
+This proves normal-user fairness, not a hard guarantee under an
+indefinitely running real-time owner or permanently refusing MM
+and FILE providers. Automatic OOM termination remains disabled.
+
 # v883 - non-current fatal HUP commit versus deferred MM release
 
 After an external fatal event closes a process's FILE entries,
