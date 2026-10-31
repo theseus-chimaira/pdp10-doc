@@ -105,6 +105,37 @@ a saving of three permanent words. Four targeted testkit suites passed;
 a dedicated UNLINK/RMDIR type matrix remains a useful follow-up.
 Strict 32K acceptance remains deferred.
 
+## Explicit descriptor-table close for fatal-other termination (v865, 2026-10-31)
+
+The PDP-6 fatal-event path formerly replaced the process-global
+`file_table` pointer with the victim's descriptor table while calling
+`file_close_all`. A provider SYNC call may wait for serialization and
+schedule another process, exposing the wrong descriptor table globally.
+
+The resident FILE runtime now has a shared `file_close_entry_v865`
+helper, which accepts a descriptor-entry address, and
+`file_close_all_at_v865`, which walks a specified stable u-area
+descriptor table. Ordinary `file_close(fd)` and `file_close_all`
+remain public wrappers with their previous semantics. Fatal-other
+event delivery passes the target's table explicitly and never swaps
+the current process's `file_table` pointer. The new helper has no
+new persistent state or dynamically allocated scratch space.
+
+Native PDP-6 testkit `daimos-file-close-target-v865.sh` executes
+production FILE leaves and fatal-other dispatch with instrumented
+provider SYNC and process finalization; PASS. Existing direct-mount
+v417 PASS on both baseline and changed source. The older v19 check
+fails identically before and after this change because it still checks
+an obsolete mount-extension position. The linked lowmem KCORE endpoint
+improved from 021306 to 021301 octal, saving five words; the separate
+020000 endpoint gate still fails.
+
+This fixes cross-process FILE table isolation; it does **not** yet
+establish a fully allocation-free OOM kill/reap path. In particular,
+provider-lock ownership, failed closes, and teardown of a process that
+is holding an I/O lease still require resolution before OOM killing
+can be enabled.
+
 ## Shared CREATE/SYMLINK output publication (v329, 2026-10-25)
 
 `vfs_create_store_result` publishes the canonical returned vnode
