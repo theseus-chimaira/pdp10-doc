@@ -1,3 +1,35 @@
+# v880 - error-preserving DISK swap detach and VM ownership (2026-10-31)
+
+Before v880, `proc_swap_detach` returned void and discarded a disk
+process's swap record even if `backstore_free` silently rejected
+the recorded block range. `vm_space_destroy` then published
+VM_SPACE_NONE, severing the owner from unreleased backing storage.
+
+The detach operation now validates every block of the allocation
+before releasing the backing bitmap and modifying the process swap
+record or counters. If the block range, occupancy, or process block
+counter is invalid, it returns -1 without publishing any changes.
+`vm_space_destroy` checks this error and retains the previous VM
+state, making ownership retryable instead of silently lost.
+
+Validation reuses the existing read-only bitmap verifier in SWAP MRES
+via a new export `backstore_mres_verify_allocated_v880` at index 6.
+MINIT patches a single resident entry, which fails safely when
+the module is unavailable. There is no duplicate verifier and no
+new permanent bitmap or descriptor table. The SWAP MRES link
+and its new export PASS.
+
+Native VM destroy error/retry and real C detach bitmap fault
+injection tests PASS; pre-v880 VM error propagation FAILs the
+negative control as expected. Existing backing verifier and range
+checks PASS. KCORE link PASS at `021423` octal (8,979 words),
+16 words over v879 `021403`. Errors after VM destruction,
+especially u-area MM release from the permanent slot-0 stack,
+remain unresolved; this change does not enable OOM killing.
+The post-v880 full-system headless session teardown regression PASSes
+with the updated SWAP MRES installed. It does not inject an invalid
+backing bitmap during actual guest execution.
+
 # v879 - owner-stack fatal cleanup and VM-less executive retry (2026-10-31)
 
 User-origin APR faults and post-commit fatal EXEC now enter the common
