@@ -1,3 +1,34 @@
+# v883 - non-current fatal HUP commit versus deferred MM release
+
+After an external fatal event closes a process's FILE entries,
+VM destruction is irreversible. If MM cannot immediately release
+the now-dead process's stable u-area, v881 retains it quarantined
+under TRANSITION, VM_SPACE_NONE and the per-u-area word-067 marker.
+Before v883 this committed delivery still returned -1 to a
+session leader: the HUP appeared to fail, but re-delivery would
+correctly be refused because the target was already transitioning.
+
+`proc_event_apply` now returns success for this precisely
+identified post-VM pending state. Pre-VM or failed FILE-close
+operations continue to return an error, and duplicate fatal
+events are rejected. Slot-0 idle reaping owns the eventual
+MM release, parent notification and zombie publication.
+The C policy fallback matches the native PDP-6 branch.
+
+The native PDP-6 integrated event/finalizer test PASSes for
+precommit VM-destroy rejection, committed delivery, retry,
+duplicate-event exclusion and exactly
+one parent notification. The pre-v883 negative control FAILs
+as expected. KCORE link PASS: `021610` octal (9,096 words),
++17 resident words over v882, no permanent-data increase.
+Full-system non-current MM pin acceptance also PASSes using the
+testkit-only `daimos-noncurrent-uarea-pin-v883.sh`: target
+slot 2, 3 release attempts, two real MM_ERR_BUSY responses,
+one pin/unpin each, zero errors and normal session HUP/TTY HALT.
+The v882 current-EXIT injection still PASSes. Continuously
+runnable companion fairness and permanent-MM-failure policy
+remain separate acceptance gates.
+
 # v882 - full-system pinned u-area finalization validated (2026-10-31)
 
 An isolated, test-only PDP-6 boot image exercises the production
