@@ -1,3 +1,18 @@
+# v867 - fatal-other FILE close failure keeps victim resources (2026-10-31)
+
+The native PDP-6 `file_close_all_at_v865` now returns a failure result
+after visiting all 16 fixed file descriptors. An FD whose `vfs_sync`
+fails remains open, so `proc_event_apply` must not finalize that target
+and free its u-area. It now returns failure instead. Native v867 fault
+injection confirms the failed descriptor survives, another descriptor
+closes, and finalization succeeds on retry after provider recovery.
+The ordinary v865 target-file isolation test also passes.
+
+This consumes no additional permanent KCORE data. It is a cleanup
+correctness prerequisite, not enabled OOM killing or guaranteed resource
+progress: current-process EXIT, recursive session teardown, permanently
+failed sync, and held provider locks still need bounded OOM-safe handling.
+
 # v670 — swap pressure test still blocked before scheduling
 
 Testkit v670 confirms that the 256K pressure image stops in KINIT
