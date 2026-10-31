@@ -1,3 +1,24 @@
+# v875 - session HUP teardown retains TTY on failure (2026-10-31)
+
+The session leader formerly detached its controlling TTY before
+delivering fatal HUP to members. When a member's FILE close failed,
+the leader's cleanup aborted but the TTY was already detached, leaving
+a partially terminated session without its original TTY association.
+
+The resident PDP-6 `proc_session_teardown` now waits until all member
+HUP calls succeed before clearing the TTY state. The old output route
+remains preserved. A failed HUP keeps the original record intact, and
+subsequent cleanup may retry. One additional saved AC holds the TTY
+index across member event callbacks; no permanent data is allocated.
+This does not undo member HUPs already committed before a failure.
+
+Native v875 fault-injection tests a failed second HUP, original TTY
+retention, retry, nonleader and detached cases: PASS; the same test
+FAILs against pre-v875 source. Lowmem KCORE link PASS at `021222`
+octal, four words above v874. Full-system scheduler/session acceptance
+and nonreturning APR/EXEC fatal-exit resource safety remain open.
+OOM victim termination is not enabled.
+
 # v874 - Type 340 display-list replacement is ownership-atomic (2026-10-31)
 
 Before v874, the optional DPY driver published its new list and IOWD
