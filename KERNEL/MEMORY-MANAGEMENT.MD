@@ -1,3 +1,43 @@
+# v887 - on-demand FILE and MM owner detail
+
+The v886 `GETTEARDOWN(pid)` query remains ABI-compatible.
+For more specific diagnosis, set `SYS_TEARDOWN_DETAIL_FLAG`
+(octal 0400) in the process PID argument. Only the low eight
+bits select a PID; additional bits beyond the detail flag are
+rejected. The query remains read-only and requires no new
+permanent state or syscall selector.
+
+When stage is fatal FILE-close, the detail result packs the
+number of live entries in the process's existing 16-descriptor
+table, the first remaining FD (020 means no descriptors) and
+its provider class: VFS=0, PIPE=1 or DPY raw list=2. All
+fields are derived from the stable u-area, not a global current
+FILE pointer; no vnode, private address or kernel pointer leaves
+the query. A remaining descriptor is not proof that its provider
+is permanently unavailable.
+
+When stage is deferred post-VM MM-release, the detail result
+reports the actual pin count (0..255) of the exact u-area MM
+extent, after checking type MM_TYPE_KERNEL_DYNAMIC and owner
+01000+PID. The sentinels 0400 (no extent), 0401 (wrong type)
+and 0402 (wrong owner) distinguish an invalid extent from
+an ordinary pin. These values are returned shifted left two
+bits and combined with stage 2. A pin count of zero can mean
+the next cleanup attempt will succeed; it does not prove that
+a previous busy result was wrong.
+
+Native PDP-6 detail and v886 compatibility tests PASS.
+The pre-v887 source FAILs the native negative control. A
+full-system PDP-6 guest PASSes a live MM detail snapshot (one
+physical pin), two actual MM_ERR_BUSY release failures, later
+unpin and successful final reaping, an independently runnable
+process and normal HUP/TTY/PIPE completion. The `ps` program
+adds a numeric `DETAIL` column alongside TD and RETRY.
+Production KCORE `022072` octal = 9,274 words, +72
+resident words from v886, no new permanent data. The
+interface provides diagnosis, not arbitrary forced resource
+release. OOM termination remains disabled.
+
 # v886 - read-only teardown-owner diagnostics
 
 Persistent FILE and MM providers may refuse release indefinitely.
