@@ -136,6 +136,28 @@ provider-lock ownership, failed closes, and teardown of a process that
 is holding an I/O lease still require resolution before OOM killing
 can be enabled.
 
+## Provider owner visibility for bounded OOM selection (v866, 2026-10-31)
+
+The physical-provider serializer in resident `fs_mres.s` now records
+the holder of its lease in the **existing** `fs_provider_ready` word.
+An unlocked word has a nonzero RH. A locked word contains
+`owner_slot+1,,0`, permitting slot zero to be distinguished from an
+unknown owner (zero). Unlock still sets -1 and wakes waiting processes.
+The gateway tests RH for availability, so a nonzero LH owner value
+cannot make a busy provider appear unlocked.
+
+The KCORE `proc_oom_select_v863` selector excludes the recorded holder
+and refuses selection when a busy provider has no known holder. This
+prevents OOM from attempting synchronous descriptor cleanup against a
+victim known to own that same serialization lease. It does not protect
+against other, as-yet unaudited resource locks.
+
+Native PDP-6 provider-lock v326/v327/v866 tests, OOM selector
+v863/v866 tests, and the updated static v325 gate PASS. Lowmem KCORE
+end increases from 021301 to 021313 octal (10 executable words) with
+zero new persistent data words. OOM termination is still disabled
+pending full cleanup and fault-injection acceptance.
+
 ## Shared CREATE/SYMLINK output publication (v329, 2026-10-25)
 
 `vfs_create_store_result` publishes the canonical returned vnode
