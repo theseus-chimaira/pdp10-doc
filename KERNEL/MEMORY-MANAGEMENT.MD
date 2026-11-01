@@ -1,3 +1,18 @@
+# v920 - Guard direct noncurrent process finalization
+
+`proc_finish_slot` can destroy a process VM directly, even when its caller
+does not go through the v918 fatal-event guard. The v920 PDP-6 path now
+refuses a noncurrent target marked `PROC_WAIT_EVENT_LH` before taking the
+transition lock or touching its FILE/VM/u-area ownership. Current-process
+exit is unaffected: it runs on its own executive stack.
+
+A native PDP-6 regression confirms direct refusal with no VM or u-area
+release, followed by successful existing fatal lifecycle when the wait
+state clears. Native v883, v918 OOM/fatal, and v868 regressions PASS.
+Nine assembly lines added, no new resident words or syscall ABI changes.
+This prevents unsafe stack reclamation, not recovery of a permanently
+stalled filesystem provider. Automatic OOM killing remains disabled.
+
 # v919 - Booted remote fatal refusal during private provider waits
 
 The 256K PDP-6 full-system test v919 has three independent jobs:
