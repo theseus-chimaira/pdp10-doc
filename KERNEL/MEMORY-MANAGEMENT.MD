@@ -1,3 +1,24 @@
+# v907 - Full-system physical u-area HUP partial-commit acceptance
+
+The production v905 session-HUP retry is validated on a booted 256K
+PDP-6 using the genuine MM extent table. A disposable test kernel
+pins the first member's u-area before its fatal HUP. VM destruction
+commits, but u-area free returns MM_BUSY and retains a stable
+TRANSITION+VM_NONE+FINALIZE owner. A second member refuses its first
+HUP; the controlling TTY remains attached. Parent-initiated PROCCTL
+HUP retry skips the committed first child, delivers the second HUP,
+and reaches the TTY-detach commit. The test unpins the exact extent
+only after verifying the deferred owner. The parent waits for all
+children and reattaches the TTY; guest HALT is normal.
+
+Measured counters: first child slot 3, leader 2, u-area physical base
+20020 decimal, one pin/unpin, one injected refusal, one later member
+HUP delivery, zero duplicate first-member HUPs, one pending-owner
+verification, zero errors. Kernel instrumentation is isolated in
+daimos-testkit; the production syscall ABI and code are unchanged.
+Persistent FILE/MM provider refusal and safe automatic OOM termination
+still require separate recovery proof.
+
 # v905 - Session HUP retries must skip only committed fatal exits
 
 A session leader may deliver HUP to child A, whose VM destruction
