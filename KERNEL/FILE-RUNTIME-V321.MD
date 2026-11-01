@@ -1,3 +1,17 @@
+## 2026-11-01 v899: verified PIPE final CLOSE under real MM_BUSY
+
+A full 256K PDP-6 guest now verifies the native PIPE last-reference
+transaction against the real MM allocator. A disposable test-only
+kernel pins the exact anonymous PIPE extent at the last CLOSE.
+Physical `mm_free` refuses it with MM_ERR_BUSY. The descriptor and
+reader count remain owned; the pipe can still deliver EOF via its
+word-read interface. A second CLOSE unpins and frees the extent;
+the descriptor disappears and a new PIPE operates normally.
+SIMH PASS: one pin, one rejected MM release, one unpin, zero errors,
+and normal HALT. This validates transient provider rollback, not a
+right to force-close or reclaim a permanently pinned/invalid owner.
+No production code or ABI changed.
+
 # File-runtime lock mount identity (v321)
 
 The resident DAIMOS file runtime checks FLOCK conflicts using the
