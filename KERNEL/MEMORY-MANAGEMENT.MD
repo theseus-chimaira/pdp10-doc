@@ -1,3 +1,21 @@
+# v914 - Permanent invalid FILE-provider error retains its owner
+
+A booted 256K PDP-6 extends the existing v891 APR-fatal FILE test to
+one permanently refusing VFS provider returning -4 (invalid-provider
+class), rather than -5 (busy). The copied-kernel injection applies only
+to the faulting process's FD 0 VFS_SYNC call. Eleven consecutive rejects
+leave that descriptor allocated, its private executive continuation
+asleep, and its u-area error witness intact. GETTEARDOWN reports FILE
+stage and the actual class-4 diagnostic. Eleven owner-stack retries
+reach the 512-tick delay cap, zero exits/forced releases occur, and
+another user remains runnable before the controlled test HALT.
+
+This is further FILE error-class containment coverage without a kernel
+change. MM invalid/missing extent repair, provider lock handling and
+allocation-free OOM retirement remain separate unresolved issues.
+Native v888, v909 and v885 regressions PASS; automatic OOM killing stays
+OFF. No changes to production KCORE, RAM, MRES or ABI.
+
 # v913 - Booted Type-340 confirms physical double-refusal ownership
 
 A 256K booted PDP-6 with live PI6/PI7 executes raw display-list
