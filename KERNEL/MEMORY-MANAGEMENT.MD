@@ -1,3 +1,23 @@
+# v913 - Booted Type-340 confirms physical double-refusal ownership
+
+A 256K booted PDP-6 with live PI6/PI7 executes raw display-list
+replacement while a disposable test-only kernel pins the genuine
+owner-014 MM extent for the old list and the newly allocated list.
+Both release attempts reject with MM_BUSY. An additional WRITE_WORDS
+and CLOSE also reject before any third extent can be allocated. The
+observed old MM base 19760 decimal remains `dpy_list_base`, and the
+new MM base 19792 remains `dpy_list_orphan_v912`. The guest counts four
+refused frees, two pins, no unpins, 18 raw PI6 refreshes, 18 PI7 frame
+completions (12 refreshes after first refusal), zero errors and normal
+HALT. FILE/process slot counts remain stable across the rejection.
+
+Native v912, v874 and v904 regressions PASS. This is the full-system
+PI7/double-free acceptance missing after v912, not a claim that a
+permanently pinned provider will eventually release RAM. All fault
+hooks remain outside production in daimos-testkit. No new production
+code, data, ABI or KCORE size; fatal FILE teardown and safe automatic
+OOM victim retirement still require separate proof.
+
 # v912 - Type-340 replacement preserves both owners on double MM refusal
 
 The DPY native-program replacement can hold two MM owner-014 extents:
