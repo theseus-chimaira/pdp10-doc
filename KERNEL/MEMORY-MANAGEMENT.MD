@@ -1,3 +1,41 @@
+# v925 - Saved executive return protects the wakeup handoff
+
+The v924 two-bit scheduler wait-class guard was necessary but not
+sufficient. On parent wakeup `proc_notify_parent_wake` clears
+`PROC_WAIT_LH_MASK` before its saved executive continuation resumes.
+During that noncurrent runnable handoff the process still owns its
+private kernel stack, even though the wait-class bits are zero.
+
+The PDP-6 scheduler saves the PI return address in the stable u-area
+`CTX_PC` word 020. The return has LH 010000 set for user mode; a saved
+executive continuation lacks that bit. All three remote-destructive
+entry points now reject a noncurrent target without a saved user
+return: read-only OOM selection, remote fatal delivery before FILE close,
+and direct `proc_finish_slot` before VM or u-area release. The existing
+full wait-class guards remain intact. A self-exiting process is still
+allowed to use its own stack. No new resident data or per-process
+metadata are allocated; twelve assembly instructions are added.
+
+New v925 native negative controls against the old source reproduce the
+unsafe selection (exit 010), remote fatal attempt (032) and direct
+finalization (034). The corrected kernel passes those tests, including
+ordinary saved user-mode returns and the previous CHILD/INTR paths.
+Historical teardown/FILE/RT/deferred-owner tests pass after their
+synthetic process fixtures initialize user-mode saved return contexts.
+The v921 source audit now requires both the wait mask and CTX_PC guard.
+
+The existing booted 256K PDP-6 v924 provider/CHLD scenario also passes
+against v925 KCORE: three real fatal refusals (one WAIT_CHILD), unchanged
+serialized FS lease `4,,0`, 73 runnable bystander cycles, zero errors,
+and controlled HALT. That is a full-system nonregression, not a direct
+booted injection of the wakeup handoff itself.
+
+Cooperative deferred TERM remains a separate problem: a fatal event
+refused while the owner is inside its executive continuation is not
+queued by v925. Neither a permanently nonreturning provider nor an
+allocation-free OOM killer is solved. Do not forcibly release leases;
+automatic OOM termination remains disabled.
+
 # v924 - All private wait classes protect live executive stacks
 
 The v918/v920 guards initially tested `PROC_WAIT_EVENT_LH` (020000)
