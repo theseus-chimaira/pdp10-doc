@@ -1,3 +1,19 @@
+# v918 - Protect suspended kernel-event continuations
+
+A process marked with `PROC_WAIT_EVENT_LH` may be suspended on its
+private executive stack, including inside an FS provider or MM call.
+Non-current fatal delivery now refuses to close its FILEs or destroy
+its VM until the continuation has unwound. The read-only OOM candidate
+selector likewise excludes such a process. Both checks use existing
+resident scheduler state; no additional RAM or syscall ABI changes.
+
+Native PDP-6 v918 verifies no remote close or VM destroy on a private
+event waiter, then normal fatal lifecycle after the wait state clears.
+A separate native v918 OOM test verifies candidate exclusion. Native
+v866, v883, v879, v868, v867, v865 and v885 regressions also pass.
+OOM termination remains disabled: this prevents unsafe reclamation but
+does not free resources held by a permanently stalled continuation.
+
 # v917 - Independent filesystem provider wait event
 
 The serialized filesystem gateway previously used the owner-encoded
