@@ -1,3 +1,20 @@
+# v916 - Foreign provider-lock waiter retains owner until real release
+
+The FS serialized gateway's lease in `fs_provider_ready` is a live
+ownership contract. A second process must not steal the lease, dispatch
+into the shared workspace, or force-unlock an owner still inside the
+provider. Native PDP-6 testkit v916 holds a foreign owner across four
+repeated waiter attempts, verifies that the lock is preserved and no
+provider call occurs while occupied, then permits a fifth attempt to
+observe release and complete with the original seven-register ABI and
+stack frame. The v915 same-owner refusal path remains accepted.
+
+No production change or extra KCORE RAM in v916. This is simulated
+native wait/retry coverage, not a full-system test in which a provider
+never returns. No bounded recovery from a permanently stalled foreign
+owner is claimed, and OOM victim termination remains disabled until
+allocation-free teardown and progress are proved.
+
 # v915 - Provider lock rejects same-owner recursive deadlock
 
 The DTFS/D6FS/TSFS serialized provider gateway stores the owning
