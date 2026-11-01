@@ -1,3 +1,32 @@
+# v892 - unpublished RUN rollback retries failed post-VM u-area release
+
+In resident PDP-6 `proc_slot_discard`, a failed u-area `mm_free` after
+successful VM teardown formerly left an uncommitted RUN child in
+TRANSITION/VM_NONE without the marker required by slot-0 cleanup.
+The allocation could stay owned indefinitely even after its provider
+became able to release it.
+
+The v892 fix uses two bits in existing u-area word 067: FINALIZE and
+DISCARD (`0600000` octal in the left half). The existing deferred-MM
+reaper distinguishes this unpublished child from the ordinary EXIT
+FINALIZE marker and retries only its u-area release. On success it
+publishes FREE, not a zombie, and does not notify a parent or repeat
+VM/session/TTY teardown. Retry delays and scheduling rules are shared
+with the v881-v885 service, without allocating any additional RAM.
+
+Native PDP-6 fault injection PASS: first two releases reject, a third
+succeeds, VM and TTY teardown occur once, and neither HUP nor WAIT
+publication happens. The pre-v892 source FAILS the same fixture at
+the missing marker; v881/v883/v885 regression tests remain PASS. The
+full-system PDP-6 RUN v197 regression also PASSes 16 ordinary post-VM
+fdmap rollback failures, but does not inject a rejected MM release.
+Same-configuration GCC lowmem disk-root package link reports KCORE
+9,351 -> 9,381 words (+30 code), KCORE+MRES 15,837 -> 15,867,
+and permanent endpoint 15,884 -> 15,914; static RAM is unchanged.
+Full-system injection of RUN u-area pinning is still pending.
+Permanent provider refusal and safe automatic OOM termination are
+not resolved by this change.
+
 # v891 - indefinitely refusing FILE provider under scheduler load
 
 A booted PDP-6 test now demonstrates the conservative fatal FILE
