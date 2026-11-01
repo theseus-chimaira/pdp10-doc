@@ -1,3 +1,28 @@
+# v909 - Permanent MM refusal has bounded idle retry and correct stage
+
+A 256K booted PDP-6 test permanently pins the actual executive u-area
+of a child terminated by the APR protection-fault path. No fake MM
+return is used: the real allocator rejects every free of that extent.
+Before v909, timer-driven scheduler admission enforced the shared
+exponential delay, but an already-running slot-0 idle loop ignored it
+and retried on every clock tick: 1,281 refused frees and 1,280 reaper
+passes over 02400 octal observed ticks. The new idle-loop elapsed-time
+guard uses the existing packed last-attempt epoch and capped interval,
+with modular subtraction across timer wrap. No new persistent state.
+
+The same guest also caught a stale fatal-FILE-close phase bit after
+FILE closure and VM destruction. On the post-VM MM-deferred path the
+kernel now clears only that expired bit, preserving TRANSITION,
+VM_SPACE_NONE, FINALIZE and the pinned MM owner. `GETTEARDOWN` then
+reports MM stage and 512-tick backoff; its detail query reports one
+physical MM pin. Nonblocking WAIT cannot reap the victim, and a
+second process continues to run. Corrected counters: seven failed
+MM frees, six idle-reaper passes, one pin, zero unexpected errors.
+Native v909 validates the FILE-to-MM phase transition and a pre-fix
+negative control; v881/v885/v886/v888 regressions remain applicable.
+This proves bounded safe retention, not eventual recovery from a
+permanently failing provider. Automatic OOM killing remains disabled.
+
 # v908 - Booted PDP-6 confirms DPY PI7 replay across MM_BUSY
 
 The Type-340 raw display list's final CLOSE is now accepted with actual
