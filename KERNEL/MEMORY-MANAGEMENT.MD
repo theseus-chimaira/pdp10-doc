@@ -1,3 +1,26 @@
+# v893 - full-system real-MM recovery for unpublished RUN rollback
+
+The v892 post-VM RUN discard retry now has booted PDP-6 acceptance,
+not just an isolated native assembly fixture. A valid user-mode RUN
+allocates a child VM and u-area, then fails its fourth file-descriptor
+mapping. After production VM destruction, a temporary test-only
+kernel hook pins the child's physical u-area, so the normal MM
+allocator rejects the first two frees with genuine MM_ERR_BUSY (-5).
+The existing slot-zero reaper retries until a test-only unpin enables
+the third free. The unpublished child becomes FREE, never a zombie.
+
+In the 256K full-system PDP-6 guest, an independent child runs and
+exits normally; the parent observes no WAIT event for the rejected
+RUN child. The test records target PID 3, one pin, three release
+calls, two MM_ERR_BUSY, one unpin, two reaper dispatches, zero
+errors, console `<RFBP` and normal HALT: PASS.
+
+All instrumentation stays in a disposable copied-kernel build.
+Production source, ABI, static allocation and KCORE size are
+unchanged in v893; the same-profile v892 lowmem measurement remains
+9,381 words. Permanent provider refusal, failed pre-VM rollback,
+and automatic OOM process termination remain separate open gates.
+
 # v892 - unpublished RUN rollback retries failed post-VM u-area release
 
 In resident PDP-6 `proc_slot_discard`, a failed u-area `mm_free` after
