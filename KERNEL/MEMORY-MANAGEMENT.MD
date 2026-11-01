@@ -1,3 +1,27 @@
+# v921 - OOM teardown call-chain audit (termination remains disabled)
+
+An executable static audit in daimos-testkit now tracks the PDP-6
+termination path and guards against silently treating the OOM selector
+as a killer. The resident `proc_oom_select_v863` remains read-only.
+
+The existing noncurrent fatal path attempts FILE closure through
+`file_close_all_at_v865` -> `file_close_entry_v865` -> `vfs_sync`.
+The provider may sleep or fail while retaining a FILE descriptor.
+`proc_finish_slot` can deliver session HUPs, which may partially commit
+before another member refuses. VM teardown calls the MEMFS XIP provider,
+`mm_free`, and `proc_swap_detach`; the latter verifies and releases
+nonresident backing. `proc_uarea_release` calls the in-place MM free.
+
+The v918/v920 wait-state guards protect live private executive
+continuations, and v917/v919 booted tests establish bystander progress
+and remote fatal refusal. None demonstrates bounded release when an
+owner never resumes, transitive allocation-freedom of all provider and
+session callbacks, or failure-atomic closure of the entire chain.
+
+v921 is a source-backed safety inventory, not a proof of OOM-kill
+readiness. No production code, resident RAM, or ABI changes were made.
+Automatic OOM victim termination remains disabled.
+
 # v920 - Guard direct noncurrent process finalization
 
 `proc_finish_slot` can destroy a process VM directly, even when its caller
