@@ -1,3 +1,21 @@
+# v908 - Booted PDP-6 confirms DPY PI7 replay across MM_BUSY
+
+The Type-340 raw display list's final CLOSE is now accepted with actual
+physical MM pin/refusal/unpin/free on a running 256K PDP-6. The
+instrumented kernel is disposable; normal driver `dpy_list_stop`
+and FILE_CLOSE code are unchanged. The test confirms `DPY OK`, native
+raw WRITE_WORDS, PI6 clock refresh, PI7 BLKO frame completion and
+replay *after* the first MM_BUSY (-5). The failed CLOSE leaves the
+original FILE descriptor and MM owner live, not leaked or discarded.
+After physical unpin the same descriptor closes normally; another
+program opens/writes/closes and process/FILE accounting is unchanged.
+Observed MM base 19730 decimal, three tracked free attempts, one
+pin/unpin, one busy, 18 raw refresh/PI7 completion cycles, six
+refreshes after failure before unpin, zero errors, normal HALT.
+Existing native v709/v871/v874/v904 and PI7 policy tests PASS.
+This proves bounded recoverable MM_BUSY, not indefinite provider
+refusal or safe automatic OOM termination. No production RAM change.
+
 # v907 - Full-system physical u-area HUP partial-commit acceptance
 
 The production v905 session-HUP retry is validated on a booted 256K
