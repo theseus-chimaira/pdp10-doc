@@ -1,3 +1,21 @@
+# v922 - Repeated partial session-HUP refusal retains ownership
+
+The existing v905 session-teardown logic does not consider a member
+fully delivered until it sees TRANSITION, VM_NONE and FINALIZE together.
+A new native PDP-6 test repeats the second member's refused HUP while
+the first member has already committed VM destruction but still holds
+a pending u-area MM release. Across both failures the first member is
+not signaled twice, its ownership marker is unchanged, and the session
+TTY remains attached. Once the second member succeeds, the TTY is
+released. The test also rejects a deliberately restored pre-v905
+implementation (negative control: nonzero test exit 023).
+
+Native v905, v875 and v918 regression tests PASS, as does the v921
+OOM teardown source audit. No production KCORE, resident RAM or ABI
+change in v922. Session HUP retry is covered for this failure sequence;
+permanently nonreturning filesystem providers and allocation-free OOM
+termination remain unproven. Automatic OOM killing stays disabled.
+
 # v921 - OOM teardown call-chain audit (termination remains disabled)
 
 An executable static audit in daimos-testkit now tracks the PDP-6
