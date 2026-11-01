@@ -1,3 +1,21 @@
+# v915 - Provider lock rejects same-owner recursive deadlock
+
+The DTFS/D6FS/TSFS serialized provider gateway stores the owning
+process slot plus one in the existing `fs_provider_ready` lock word's
+left half. An attempted nested provider call by the same owner formerly
+entered `proc_wait_event` and could sleep permanently awaiting its own
+lease. v915 tests the encoded owner before entering that wait: the
+nested invocation returns -5, restores the seven-word request stack
+frame and *does not release the caller's existing lease*. Other
+processes still wait and resume after the owner unlocks. The bypassed
+MEMFS provider is unaffected. No new resident BSS or ABI change.
+
+Native PDP-6 v915 self-owner and independent-waiter assertions PASS,
+alongside v866/v326/v327 owner/ABI regression tests. This is local
+self-deadlock protection, not a solution for a provider stalled while
+another process owns the lease. Full booted provider lock and safe
+allocation-free OOM victim retirement still require acceptance.
+
 # v914 - Permanent invalid FILE-provider error retains its owner
 
 A booted 256K PDP-6 extends the existing v891 APR-fatal FILE test to
