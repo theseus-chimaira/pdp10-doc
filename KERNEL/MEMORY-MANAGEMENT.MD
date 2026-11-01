@@ -5,16 +5,23 @@ process slot plus one in the existing `fs_provider_ready` lock word's
 left half. An attempted nested provider call by the same owner formerly
 entered `proc_wait_event` and could sleep permanently awaiting its own
 lease. v915 tests the encoded owner before entering that wait: the
-nested invocation returns -5, restores the seven-word request stack
-frame and *does not release the caller's existing lease*. Other
-processes still wait and resume after the owner unlocks. The bypassed
-MEMFS provider is unaffected. No new resident BSS or ABI change.
+nested invocation returns -5, restores the saved ACs and seven-word
+request stack frame, and *does not release the caller's existing lease*.
+Other processes still wait and resume after the owner unlocks. The
+bypassed MEMFS provider is unaffected. Nine resident KCORE instructions
+are added; no extra BSS, process metadata or ABI change.
 
 Native PDP-6 v915 self-owner and independent-waiter assertions PASS,
 alongside v866/v326/v327 owner/ABI regression tests. This is local
 self-deadlock protection, not a solution for a provider stalled while
 another process owns the lease. Full booted provider lock and safe
 allocation-free OOM victim retirement still require acceptance.
+
+Post-change full 256K PDP-6 v914 APR-fault/FATAL-FILE regression also
+PASSes against the final nine-instruction v915 gateway: 11 permanent
+provider errors, 11 retained FD checks, bounded 512-tick sleep retry,
+zero errors and a runnable bystander until controlled test HALT. This
+is an integration regression, not a booted nested-lock injection.
 
 # v914 - Permanent invalid FILE-provider error retains its owner
 
