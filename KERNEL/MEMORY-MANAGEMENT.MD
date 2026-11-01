@@ -1,3 +1,41 @@
+# v924 - All private wait classes protect live executive stacks
+
+The v918/v920 guards initially tested `PROC_WAIT_EVENT_LH` (020000)
+only. Native fault tests established that `proc_wait_child` instead
+sleeps with `PROC_WAIT_CHILD_LH` (040000), even though its private
+kernel stack remains live. The old OOM selector could select this
+victim; remote TERM and direct noncurrent `proc_finish_slot` could
+attempt teardown on its still-suspended continuation.
+
+All three production guards now use the full existing
+`PROC_WAIT_LH_MASK` (060000), covering EVENT (020000), CHILD (040000)
+and interruptible waits (060000). This is an operand substitution,
+not an added instruction: no new KCORE code words, data words, per-slot
+state or syscall ABI changes. A self-exiting process still uses its
+own stack and is not blocked by the foreign-target check.
+
+Three new native PDP-6 regressions each rejected the pre-fix kernel:
+OOM selected the CHILD waiter (test exit 010), remote fatal delivery
+attempted its cleanup (032), and direct finalization attempted VM/u-area
+release (033). They now pass for both CHILD and INTR, while the prior
+EVENT and normal-fatal tests remain accepted. Historical leaf-assembly
+fixtures now define the complete wait mask; v921's source audit asserts
+all three guard sites and all wait-class encodings.
+
+The booted 256K PDP-6 v924 test exercises a real `dsys_wait` parent,
+a separate living child, a serialized FS lease owner, its blocked
+waiter, and a runnable bystander. Three remote TERM requests reach and
+are refused by the real fatal guard, including exactly one WAIT_CHILD
+refusal. FS lease ownership remains `4,,0` throughout, the bystander
+advances 72 sleep cycles, and the guest reaches controlled HALT with
+zero errors.
+
+Refusing a fatal request is not deferred signal delivery: callers see
+failure and may retry after the target's private wait ends. An owner
+whose filesystem provider never returns remains quarantined, not
+forcibly unlocked or reclaimed. A bounded cancellation protocol and
+allocation-free OOM termination remain open; automatic OOM killing OFF.
+
 # v923 - Repeated FILE SYNC refusal preserves descriptor ownership
 
 A native PDP-6 test extends the original v867 explicit-target FILE close
