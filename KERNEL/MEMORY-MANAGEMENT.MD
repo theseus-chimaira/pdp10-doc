@@ -1,3 +1,19 @@
+# v904 - DPY STOP quiesces hardware before unpublishing its raw list
+
+The raw Type-340 STOP path previously cleared `dpy_list_base` before
+`CONO 0130,000100` disabled the controller/PI7. An interrupt at that
+point could classify the still-running raw BLKO completion as a
+retained-text frame. The two existing operations are reordered:
+first quiesce the controller, then clear the published base and
+refresh state, and attempt MM release. A refused release still restores
+ownership and retries through the existing FILE close path.
+Native PDP-6 v904 executes real MM free/unpin with a pinned and then
+wrong-owner descriptor; both reject close without losing ownership.
+A corrected owner frees the exact extent; absent-list close succeeds.
+The pre-v904 order fails an isolated source-order negative control.
+v709/v871/v874 regressions PASS; live device-interrupt injection
+remains pending. No added code instructions or permanent data.
+
 # v896 - RUN startup cannot leave an unowned u-area MM extent
 
 For a newly claimed SIDL RUN child, the PDP-6 constructor now records
