@@ -1,3 +1,19 @@
+# v923 - Repeated FILE SYNC refusal preserves descriptor ownership
+
+A native PDP-6 test extends the original v867 explicit-target FILE close
+fixture to two consecutive remote fatal-delivery failures. Each failed
+SYNC leaves its original descriptor live; an independently successful
+close stays cleared and is not dispatched again on later retries.
+The remote operation does not replace the calling process's global
+`file_table`. When SYNC finally succeeds, only the surviving descriptor
+is closed and fatal slot finalization runs once.
+
+Native v923 and historical v867, v865 and v885 tests PASS. This verifies
+partial FILE-close retry behavior without changing production KCORE,
+resident RAM or ABI. A provider that never completes or refuses forever
+is still not recoverable through forced descriptor disposal. Automatic
+OOM termination remains disabled until bounded teardown is proven.
+
 # v922 - Repeated partial session-HUP refusal retains ownership
 
 The existing v905 session-teardown logic does not consider a member
