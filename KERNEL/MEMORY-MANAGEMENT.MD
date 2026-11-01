@@ -1,3 +1,34 @@
+# v911 - SYS_MEMINFO FILE count survives the shared request buffer
+
+The resident PDP-6 SYS_MEMINFO syscall uses the caller's nine-word
+result structure as a temporary seven-word filesystem MRES request.
+The initialization BLT for words 2..8 previously occurred *after* the
+FILE descriptor scan had stored its count in result word 7; the BLT
+therefore erased the count. This was unrelated to actual descriptor
+allocation, which already used the entire FILE_NFILE=16 u-area table.
+The SYS_MEMINFO scan and reported file_slots_total were additionally
+limited to octal 015 (13), not octal 020 (16).
+
+The production correction moves the unchanged FILE scan after MEMFS
+request completion and uses octal 020 for both limits. The syscall
+record layout, FILE lifecycle, process accounting, resident BSS and
+instruction count are unchanged. On the 256K PDP-6, a C89 guest
+repeatedly DUPs a live CTY descriptor, checks file_slots_used after
+each operation through final FD 15, fills all 16 FILE slots, and
+returns to the initial count by CLOSE. Guest <F, normal HALT: PASS.
+The independent old-capacity negative fails at !1; the independent
+old-ordering negative fails at !4. Both are real booted test images
+with disposable source modifications in daimos-testkit v911.
+
+The v910 permanent-DPY-refusal full-system test was rerun against
+corrected SYS_MEMINFO and still PASSes: three real MM_BUSY returns,
+one physical pin, no unpin, 18 raw PI6/PI7 frames, 12 after the first
+refusal, zero errors, stable populated FILE/process counters. The
+original v910 counter comparison did not independently establish
+positive FILE occupancy before v911, because both old samples were
+overwritten. Permanent provider refusal remains a retained owner;
+this correction is not OOM or forced-release support.
+
 # v910 - Permanent DPY MM_BUSY retains the same physical owner
 
 The full-system 256K PDP-6 v910 acceptance uses a headless but present
