@@ -1,3 +1,20 @@
+# v919 - Booted remote fatal refusal during private provider waits
+
+The 256K PDP-6 full-system test v919 has three independent jobs:
+a holder suspended inside the serialized filesystem gateway, a foreign
+waiter sleeping on the gateway event, and a runnable bystander. INIT
+sends TERM to both suspended jobs after the wait states are established.
+The real non-current fatal-delivery guard refuses both requests using
+existing `PROC_WAIT_EVENT_LH` state. Test-only probes in a disposable
+kernel record exactly two guard-path refusals, no error, and unchanged
+provider ownership (`4,,0`) at acquisition, contention and controlled
+HALT. The bystander completed 72 scheduler sleep cycles.
+
+No production code or resident memory changed in v919. The test proves
+remote fatal refusal with a live private executive continuation; it
+does not establish resource reclamation after a permanently stalled
+provider. Automatic OOM victim termination remains disabled.
+
 # v918 - Protect suspended kernel-event continuations
 
 A process marked with `PROC_WAIT_EVENT_LH` may be suspended on its
