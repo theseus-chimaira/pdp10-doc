@@ -1,3 +1,27 @@
+# v895 - booted PDP-6 confirms real pre-VM RUN MM_BUSY recovery
+
+The v894 unpublished-RUN VM retry now passes full-system 256K PDP-6
+acceptance using actual MM allocator operations rather than mocked
+VM failure return codes. After RUN loads a child process VM and fails
+an invalid fourth FD mapping, a test-only copied-kernel hook pins
+the exact child VM extent before `vm_space_destroy`. The normal
+destructor consequently receives two genuine MM_ERR_BUSY (-5)
+responses. The SIDL+TRANSITION and scheduler-bit-02 ownership marker
+remain intact and readable through `GETTEARDOWN` stage 3.
+
+The slot-zero reaper dispatches twice, the test unpins the real VM
+before its third release attempt, and the unpublished child is
+discarded without a zombie, session HUP or parent WAIT report.
+An independent user process runs and exits normally. Guest SIMH
+counters PASS: target 3, pins 1, VM release calls 3, busy 2,
+unpins 1, reaper 2, errors 0. CTY `<RFBP` and normal HALT PASS.
+
+Instrumentation and counters exist only in the disposable copied
+kernel; production code, syscall ABI, resident data and image size
+are unchanged. Last GCC lowmem disk-root KCORE remains 9,426 words.
+Permanent provider refusal, complete allocation-free OOM policy
+and the 8,192-word resident target remain outstanding.
+
 # v894 - retry unpublished RUN VM release before u-area existence
 
 Before v894, failed `vm_space_destroy` in `proc_slot_discard` left
