@@ -1,3 +1,25 @@
+# v910 - Permanent DPY MM_BUSY retains the same physical owner
+
+The full-system 256K PDP-6 v910 acceptance uses a headless but present
+Type-340 with live PI6/PI7, not a stubbed DPY driver. Its disposable
+kernel hooks the ordinary MM free path, pins the exact owner-014 dynamic
+raw-list extent (physical base 19732 decimal), and deliberately never
+unpins it. Three successive FILE CLOSE requests all receive real
+MM_BUSY (-5). `dpy_list_stop` restores the published raw-list base on
+each rejected free; FILE_CLOSE retains the descriptor. FILE and process
+slot counts measured after the original OPEN remain stable through all
+three refusals. The raw program continues to refresh: 18 PI6 starts,
+18 PI7 frame completions and 12 additional frames after the first busy.
+There are three rejected frees, one pin, zero unpins and zero test
+errors. The guest HALTs normally. v871/v874/v904 and PI7 policy tests
+also PASS. No permanent kernel text, BSS or ABI is added.
+
+The pinned extent deliberately remains in use at test HALT: v910 proves
+failure containment and ownership preservation, not reclamation under
+permanent refusal. Replacement rollback double faults, locked-provider
+cleanup and allocation-free OOM process retirement remain unaccepted.
+The OOM killer stays disabled, and new TSFS v1.2 work is post-KCORE.
+
 # v909 - Permanent MM refusal has bounded idle retry and correct stage
 
 A 256K booted PDP-6 test permanently pins the actual executive u-area
