@@ -1,3 +1,36 @@
+# v894 - retry unpublished RUN VM release before u-area existence
+
+Before v894, failed `vm_space_destroy` in `proc_slot_discard` left
+an unpublished RUN child in SIDL, still owning its VM, without a
+retryable finalizer. The v892 post-VM u-area marker was not usable
+because the child might not yet have an allocated u-area.
+
+The resident PDP-6 rollback now retains TRANSITION and marks
+unused SIDL scheduler RH bit 1 (`PROC_SIDL_DISCARD_VM_PENDING=02`).
+The existing slot-zero deferred-cleanup service recognizes this
+specific combination and retries VM destruction without allocating
+another stack or descriptor. Once the VM is actually destroyed,
+the marker is removed; any subsequent failed u-area release uses
+the independent v892 FINALIZE|DISCARD marker in word 067.
+The pre-VM marker does not overlap SIDL PURE mount-extension bit 0
+or live runnable-queue links. No forced MM unpin or provider bypass
+is performed, and permanently failing owners remain protected.
+
+`PROCCTL(GETTEARDOWN)` exposes read-only stage 3 RUN_VM plus the
+existing shared MM retry interval even for a child with no u-area.
+The previous NONE/FILE/MM stages and detail flag are unchanged.
+Native PDP-6 tests verify two failed VM releases each for a no-uarea
+and with-uarea child, then successful VM destruction, a separate
+u-area MM refusal and eventual exact-once FREE without a zombie,
+HUP or WAIT. The old v893 source fails the new negative control;
+v881/v883/v885/v886/v887/v892 regressions PASS.
+
+Identical GCC lowmem disk-root KCORE 9,381 -> 9,426 words (+45),
+KCORE+MRES 15,867 -> 15,912, and permanent endpoint 15,914 ->
+15,959. Static RAM, per-process descriptor and syscall slots are
+unchanged. A full booted guest with real pinned process VM and
+recovered pre-VM rollback remains to be accepted before OOM work.
+
 # v893 - full-system real-MM recovery for unpublished RUN rollback
 
 The v892 post-VM RUN discard retry now has booted PDP-6 acceptance,
