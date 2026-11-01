@@ -1,3 +1,23 @@
+# v896 - RUN startup cannot leave an unowned u-area MM extent
+
+For a newly claimed SIDL RUN child, the PDP-6 constructor now records
+the base and PROC_F_UAREA bit immediately after zeroing its successfully
+allocated private u-area. `vm_space_startup` follows this publication.
+If it rejects startup, `proc_slot_discard` sees the real MM owner and
+can release it, or defer cleanup using the v892/v894 pending markers
+if a provider refuses. This does not publish a runnable child, change
+the three-word descriptor or add resident state. Ordinary startup
+currently returns success; the full-system test injects a rejection
+at the unpublished RUN call site rather than disrupting boot-time
+INIT startup. The real MM extent probe returns MISSING for the exact
+u-area base after rollback; a subsequent RUN/WAIT succeeds. An
+isolated negative control restores the earlier publication ordering
+and observes one leaked extent even though the child slot is FREE.
+Full-system tests PASS; native deferred cleanup tests remain green.
+There is no added permanent RAM or kernel code: same-profile GCC
+KCORE 9,426, KCORE+MRES 15,912, endpoint 15,959 words. The remaining
+provider-failure and automatic OOM-kill restrictions are unchanged.
+
 # v895 - booted PDP-6 confirms real pre-VM RUN MM_BUSY recovery
 
 The v894 unpublished-RUN VM retry now passes full-system 256K PDP-6
