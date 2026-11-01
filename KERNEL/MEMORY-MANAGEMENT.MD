@@ -1,3 +1,22 @@
+# v905 - Session HUP retries must skip only committed fatal exits
+
+A session leader may deliver HUP to child A, whose VM destruction
+commits but whose u-area MM free remains pending, then fail to HUP
+child B. A retry formerly attempted another HUP on child A, which is
+TRANSITION and rejected by `proc_event_apply`, indefinitely preventing
+control-TTY release even when child B recovered.
+
+The session scanner now tests three independent pieces of evidence:
+TRANSITION in the process descriptor, VM_SPACE_NONE, and a finalize
+marker in the still-owned u-area. Only the complete committed fatal
+exit is skipped. A partially transitioning living member continues
+to block teardown, rather than being silently bypassed. No provider
+resources are forcibly discarded. Native PDP-6 positive and isolated
+pre-v905 negative tests cover both members, retry, TTY ownership and
+partial-marker cases. The older v875 regression also passes.
+Full-system injected partial-provider failure remains to be tested;
+automatic OOM termination remains disabled.
+
 # v904 - DPY STOP quiesces hardware before unpublishing its raw list
 
 The raw Type-340 STOP path previously cleared `dpy_list_base` before
