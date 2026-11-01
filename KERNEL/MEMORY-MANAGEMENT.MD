@@ -1,3 +1,20 @@
+# v917 - Independent filesystem provider wait event
+
+The serialized filesystem gateway previously used the owner-encoded
+lock word as the scheduler wait event. The actual scheduler tests the
+entire event word, including its nonzero owner field. Consequently a
+foreign waiter retried continuously instead of sleeping.
+
+The corrected gateway uses one separate resident event word: zero while
+held and signaled on unlock. The existing lock word still identifies
+its owner. Slot zero refuses to wait on a held foreign lease.
+
+Booted 256K PDP-6 acceptance confirms one suspended holder, one blocked
+waiter, unchanged owner encoding (4,,0), 72 independent bystander cycles,
+zero errors and controlled HALT. Native v917 and earlier provider-lock
+regressions pass. No syscall ABI changes. This does not establish
+recovery of permanently held resources.
+
 # v916 - Foreign provider-lock waiter retains owner until real release
 
 The FS serialized gateway's lease in `fs_provider_ready` is a live
