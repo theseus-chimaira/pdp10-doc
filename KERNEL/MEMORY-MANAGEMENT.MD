@@ -1,3 +1,32 @@
+# v891 - indefinitely refusing FILE provider under scheduler load
+
+A booted PDP-6 test now demonstrates the conservative fatal FILE
+ownership policy when a provider *never* accepts close. The isolated
+guest's VFS-sync hook returns -5 on every FD-0 close of a genuine
+APR-faulted process. A separate user process continues running.
+The victim retains its private kernel stack, FILE entry and recorded
+real provider-error witness; the user-visible
+`GETTEARDOWN(pid|0400)` call continues to show stage FILE, FD 0,
+ERR 5. A saturated retry interval is not permission to discard
+any of these resources.
+
+Full-system native PDP-6 testkit v891 PASS after 02400 octal ticks:
+11 refused VFS operations, 11 owner-stack retries and sleeps,
+exponential backoff reaching the 01000 octal (512 decimal) tick
+cap, 11 owned-descriptor checks, independent process progress,
+no descriptor or word-067 witness loss, no victim EXIT and zero
+test assertion failures. The test-only HALT is for inspection,
+not a claim that the still-owned process was reaped.
+
+The production kernel is unchanged at KCORE 022124 octal
+(9,300 words, +1,108 above the 8,192-word goal); no additional
+persistent RAM, API or recovery privilege is introduced. Permanent
+provider failure remains a resource-lifetime problem needing
+provider-specific diagnosis and repair. Malformed MM allocation
+metadata, guaranteed recovery and automatic OOM victim termination
+remain unresolved. Do not force release or automatically kill an
+owner based solely on elapsed retries.
+
 # v890 - full-system low-memory EXEC fatal recovery
 
 v890 verifies that the existing fatal FILE owner-stack
