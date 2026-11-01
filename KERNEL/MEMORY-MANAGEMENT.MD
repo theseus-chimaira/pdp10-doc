@@ -1,3 +1,25 @@
+# v912 - Type-340 replacement preserves both owners on double MM refusal
+
+The DPY native-program replacement can hold two MM owner-014 extents:
+the published old list and the unpublished new allocation. If release
+of both fails, the former driver executed HALT because the new extent
+could not be tracked. v912 records the unpublished extent in one
+optional DPY-MRES BSS word, `dpy_list_orphan_v912`, while retaining the
+old published list and its PI6/PI7 replay state. Any subsequent DPY
+WRITE_WORDS or STOP first retries release of this pending extent; if
+MM refuses, the syscall returns an error without any new allocation
+or old-list mutation. Once MM releases it, the pointer is cleared and
+the requested operation proceeds. No forced free, main KCORE BSS or
+syscall ABI change is introduced.
+
+Native PDP-6 v912 tests both rejected frees, tracked owner, no third
+allocation while blocked, release-and-retry success and original v874
+replacement/STOP. The v871/v874/v904 and PI7 policy tests PASS. One
+extra word of *optional DPY-MRES* BSS is required. Permanently pinned
+owners remain allocated until their provider releases them. Full
+booted double-fault/PI7 acceptance and fatal FILE/MM cleanup remain
+open; automatic OOM termination remains disabled.
+
 # v911 - SYS_MEMINFO FILE count survives the shared request buffer
 
 The resident PDP-6 SYS_MEMINFO syscall uses the caller's nine-word
