@@ -111,3 +111,11 @@ stack. The existing finalizer continues to recheck session state. A full
 standalone HUP fixture failed to link (missing `proc_tty_line_try_reset_v897`)
 and is not counted as a passing HUP test. VM destruction is not yet staged;
 OOM termination remains disabled pending fault-injected exit acceptance.
+
+## v992: native HUP fixture recovery
+
+The historical native v905 HUP retry fixture has been repaired with a
+proper text-section test-only TTY reset callback. Current deferred
+VM_NONE+FINALIZE HUP retry PASSes, while the old-behavior negative
+control fails as expected (exit 010). This is not yet a booted v991
+EXIT preflight fault-injection test. Both existing OOM P0 gates remain open.
