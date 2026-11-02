@@ -46,11 +46,13 @@ LINE DISCIPLINE, DESCRIPTOR ISATTY, INHERITED UMASK, LOGIN INITIAL ENVIRONMENT,
 RECLAIMABLE D6FS BLOCK CACHE, AND DIRECT-SLIDE MM COMPACTOR/RELOCATOR ARE
 COMPLETE.
 
-THE PRE-DSH KERNEL-STABILIZATION PASS IS COMPLETE.  KEEP THE CONSOLIDATED
-MONITORFS NAMESPACE, PROCESS-ONLY /PROC ALIAS, I/O-ONLY /DEV PROJECTION, AND
-THE SEEK/CHOWN/RMDIR/MTIME/STAT/DATE/TOUCH ABI PASSING THEIR TARGET-SIDE
-REGRESSIONS.  SUBSTANTIAL DSH MAY NOW BEGIN WITHOUT AN OPEN FILESYSTEM/SYSCALL
-GATE.
+THE FUNCTIONAL PRE-DSH KERNEL-STABILIZATION WORK IS COMPLETE.  KEEP THE
+CONSOLIDATED MONITORFS NAMESPACE, PROCESS-ONLY /PROC ALIAS, I/O-ONLY /DEV
+PROJECTION, AND THE SEEK/CHOWN/RMDIR/MTIME/STAT/DATE/TOUCH ABI PASSING THEIR
+TARGET-SIDE REGRESSIONS.  THERE IS NO OPEN FILESYSTEM/SYSCALL FEATURE GATE FOR
+SUBSTANTIAL DSH.  THE SEPARATE HARD RESIDENT-SIZE GATE REMAINS ACTIVE UNTIL
+THE FULLY CONFIGURED PERMANENT IMAGE IS BELOW 040000 AND THE FINAL
+KERNEL/BOOT/LOGIN ACCEPTANCE RUN PASSES.
 
 DO NOT ADD DAIMOSV1 SYSCTL/DEVIO COMPATIBILITY INTERFACES.  INTROSPECTION AND
 ADMINISTRATION TOOLS MUST TARGET MONITORFS.  COMPILER OR ASSEMBLER DEFECTS FOUND
@@ -1078,32 +1080,33 @@ From `dsh_native.c`:
 -   profile disablement once a correct native record reader is
     available.
 
-### 22.3 Current minimal DSH source
+### 22.3 Current DSH source
 
-The current DAIMOS tree also contains a much smaller
-`userland/dsh/dsh.c`. Treat it as evidence for the current libc/syscall
-calling conventions and bootstrapping environment, not as the desired
-final shell architecture. It currently has only a small parser, `CD`,
-`EXIT`, output redirection, and command dispatch.
+THE ACTIVE `userland/dsh/` TREE IS THE SUBSTANTIAL, MODULAR NATIVE SHELL:
+`dsh.c`, `dsh_lex.c`, `dsh_parse.c`, `dsh_env.c`, `dsh_exec.c`,
+`dsh_s6.c`, AND THE PDP-6 VARIABLE FAST PATH.  THE FORMER MINIMAL SHELL
+DESCRIPTION IS HISTORICAL AND MUST NOT BE USED AS IMPLEMENTATION GUIDANCE.
+CURRENT FUNCTIONAL STATUS IS IN `USER/DSH.MD`; OPEN WORK IS TRACKED ONLY IN
+DAIMOS `userland/dsh/TODO.MD`.
 
 ## 23. Implementation sequence
 
 The recommended implementation order is:
 
-### Stage 0 - establish and complete the platform prerequisites
+### Stage 0 - maintain regression coverage for completed platform prerequisites
 
--   unpack the newest DAIMOS, DAIMOSV1, and pdp10-doc archives;
--   record git base hashes;
--   build and run the current testkit;
--   complete the KCC-built INIT -> LOGIN -> current-DSH acceptance gate;
+-   use the current DAIMOS checkout and pdp10-doc contract as authorities;
+-   record git bases for reproducible test runs;
+-   keep KCC-built INIT -> LOGIN -> DSH acceptance under regression;
 -   keep RUN V2 / EXEC V1 startup-ABI regression coverage current; the bounded
     counted-SIXBIT launch blocks, CRT0 AC1/AC2/AC3 convention, and INIT->LOGIN
     argv[1] TTY handoff are implemented;
 -   keep regression coverage for the implemented `SYS_EXT_DUP2`/`dsys_dup2()`
     descriptor replacement operation; target probing already covers self-dup,
     invalid-source atomicity, and pipe-end replacement;
--   implement and test the minimal canonical/echo TTY ABI and job-mode handoff;
--   implement and pressure-test the reclaimable D6FS block cache;
+-   keep the implemented canonical/echo TTY ABI and job-mode handoff under
+    regression;
+-   keep the reclaimable D6FS block cache under pressure/regression coverage;
 -   inspect current RUN/WAIT/process-control structures;
 -   do not rely on obsolete ABI text in old DSH documentation.
 

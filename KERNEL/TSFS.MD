@@ -410,7 +410,7 @@ storage.
 
 ## 18. Tool and component responsibilities
 
-### `pdp10-tools/mktsfs`
+### `DAIMOS/tools/host/mktsfs`
 
 Major changes:
 
@@ -424,7 +424,7 @@ Major changes:
 - optional external transition profile;
 - V1.1 canonical metadata generation retained.
 
-### `pdp10-tools/tsfscheck`
+### `DAIMOS/tools/host/tsfscheck`
 
 Major changes:
 
@@ -471,7 +471,7 @@ from measured packing rather than guesswork:
 1. Add a host-only prototype compact encoder for the current root metadata.
 2. Measure exact class A/B/C word counts and prove the minimum feasible `W`
    for 1..8 members.
-3. Implement the one-block shard format and decoder in `pdp10-tools` only.
+3. Implement the one-block shard format and decoder in DAIMOS `tools/host` only.
 4. Extend `tsfscheck` and require logical equivalence with V1.1 metadata.
 5. Implement relative-distance encoding and the escape format.
 6. Implement single-member longitudinal replica placement and measure seek
@@ -510,3 +510,39 @@ V1.2 is complete when all of the following hold:
 - SIMH and AAP boot-root regression tests pass;
 - AAP demonstrates a material reduction in boot/login seek latency versus V1.1.
 
+
+## 21. TSFS-root resident module profile (2026-10-12)
+
+An explicit `ROOT=tape` PDP-6 image uses TSFS as its root filesystem.
+It never installs D6FS, even if Type-270 disk or Type-236 drum hardware is
+present. KINIT omits the D6FS MINIT/MRES entry and will not select a D6FS
+root in this profile. The raw DSK/DRM drivers, LOGSTORE, MEMFS, and
+auxiliary swap/backing services remain available; excluding D6FS does **not**
+remove those physical devices. A TSFS root uses at most one raw auxiliary
+DSK/DRM unit and therefore omits BLOCKSET and BADMAP MINIT/MRES packages.
+Neither package is involved in direct AUXSTORE access.
+
+In the mixed `ROOT=auto` image, the D6FS MINIT also checks the root selected
+by MINIT and declines installation when it is DTC/TSFS. The mixed image still
+carries both filesystem packages, and its static worst-case resident size is
+not yet within 16K; this is not a claim of auto-root size acceptance.
+
+The separately linked TSFS-only build now uses **15,257 resident words**.
+Its highest resident address is **15,304 decimal**, leaving **1,079**
+addressable words below octal `040000`. Disabling the unused BADMAP package
+saves 65 resident words; BLOCKSET was already omitted from the single-root
+resident count but is now absent from the linked image. Disk and drum profiles
+continue to retain BLOCKSET/BADMAP.
+
+The compact TSFS-root image no longer creates `/PICTURES` or imports any
+staged pictures, while D6FS image deployment remains unchanged. With pictures
+removed, the single-member TSFS media image packs successfully in the tested
+configuration (approximately 578 KiB) without expanding media capacity.
+`daimos-testkit` checks the linked kernel with
+`test-daimos-tsfs-root-no-d6fs` and the actual media manifest/image with
+`test-daimos-tsfs-root-no-pictures`. The media test uses a diagnostic DSH
+size override because the independent production DSH limit remains in force.
+
+Full TSFS boot acceptance is not yet proven: a separate simulator boot reaches
+LOGSTORE/MEMFS/DTFS initialization but halts before LOGIN (`MUUO105`). Do not
+conflate a successfully packed tape image with a successful root boot.
