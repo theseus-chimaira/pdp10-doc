@@ -39,3 +39,14 @@ incompletely initialized child.
 
 Testkit v982 source checks assert these existing paths. They are not
 substitutes for booted exhausted-RAM failure and teardown acceptance.
+
+## v983-v984 booted BRK testing
+
+After repairing a missing test-only `memset` link, the standard BRK/SBRK
+growth, data-preservation and shrink guest passes on a 256K PDP-6.
+A separate v984 guest repeatedly grows its own break until a request
+fails, verifies that the break remains unchanged, shrinks to the initial
+break and exits normally. This is a verified failure/rollback behavior,
+not a demonstrated physical-memory OOM: a user-address limit could also
+cause the failing request. Instrument MM failure cause before claiming
+true RAM exhaustion. Automatic termination remains disabled.
