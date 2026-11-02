@@ -50,3 +50,13 @@ break and exits normally. This is a verified failure/rollback behavior,
 not a demonstrated physical-memory OOM: a user-address limit could also
 cause the failing request. Instrument MM failure cause before claiming
 true RAM exhaustion. Automatic termination remains disabled.
+
+## v985: physical-memory pressure accepted
+
+An isolated clean v197 RUN fixture with the existing v198 physical-OOM
+extension passes on a booted 256K PDP-6. Four valid 18-bit BRK growth
+requests fail under physical-MM pressure while preserving the caller's
+break, VM size, data and RUN rollback/recovery. This provides a genuine
+physical-pressure test distinct from the unclassified v984 repeated-growth
+failure. It still does not authorize automatic termination; allocation-free,
+bounded owner-side teardown is not yet certified.
