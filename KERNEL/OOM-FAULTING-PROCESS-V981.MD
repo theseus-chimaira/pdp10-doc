@@ -119,3 +119,11 @@ proper text-section test-only TTY reset callback. Current deferred
 VM_NONE+FINALIZE HUP retry PASSes, while the old-behavior negative
 control fails as expected (exit 010). This is not yet a booted v991
 EXIT preflight fault-injection test. Both existing OOM P0 gates remain open.
+
+## v993: owner EXIT preflight refusal
+
+The native PDP-6 testkit v993 executes the production v991 EXIT branch,
+with test-only FILE/HUP helpers. The first HUP refusal returns -1 without
+entering the permanent-stack exit path; a second attempt reaches normal
+exit handoff. This control-flow proof passes, but does not certify the
+full-system provider/VM cleanup path or activate automatic OOM termination.
