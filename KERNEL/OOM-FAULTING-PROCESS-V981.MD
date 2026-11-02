@@ -79,3 +79,14 @@ foreign waiters sleep and retry acquisition, and owner-private fatal FILE
 retry neither forces an unlock nor releases the u-area. This is containment,
 not proof of a quiescence/cancellation protocol for indefinitely stalled
 providers. Automatic OOM termination remains OFF.
+
+## v988: pre-VM owner-exit safety boundary
+
+Full-system PDP-6 v978 mixed fatal retry passes, including two failed FILE
+closes and one u-area MM refusal with successful retry. A separate v988
+source-linked test confirms that the current ordinary owner EXIT has a
+specific limitation for OOM: `proc_exit_finish` detaches the current slot
+on the idle stack; post-VM MM refusal is deferred, but earlier HUP or VM
+refusal returns failure and leads to diagnostic HALT 1. Do not connect
+ordinary exhausted-user-allocation handling to this exit path until its
+recoverable pre-VM failures have a safe owner-preserving completion route.
