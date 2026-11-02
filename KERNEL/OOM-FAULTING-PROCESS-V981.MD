@@ -23,3 +23,19 @@ The v981 256K PDP-6 image builds and links. The source-linked policy,
 provider and teardown audits pass. Historical tests written for the removed
 largest-process selector are superseded by the v981 policy and must not be
 used as current acceptance for OOM killing.
+
+## v982: RUN and BRK have different failure owners
+
+For failed growth of an existing process's address space (BRK), the
+requester is the only potential fatal OOM candidate. The current BRK
+allocator returns an error after normal reclaim fails; automatic killing
+remains disabled.
+
+SYS_RUN allocates resources for a not-yet-published child. A failed child
+VM or u-area allocation discards that child through `proc_slot_discard`
+and returns an error to its parent. Do not kill the parent merely because
+it requested creation of a child that cannot fit. Never publish an
+incompletely initialized child.
+
+Testkit v982 source checks assert these existing paths. They are not
+substitutes for booted exhausted-RAM failure and teardown acceptance.
