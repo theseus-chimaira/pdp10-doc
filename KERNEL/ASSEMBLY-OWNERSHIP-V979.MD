@@ -35,3 +35,20 @@ to deletion without a measured before-and-after binary comparison.
 
 New test cases belong in `daimos-testkit`, while this document records
 long-lived kernel policy rather than a temporary work handoff.
+
+## v980: Remove obsolete source-only C implementations
+
+In addition to the guarded bodies removed in v979, the entire obsolete
+`system/kernel/mm/mm.c`, `system/kernel/fs/memfs.c`, and
+`system/kernel/fs/d6fs_provider.c` files are deleted. Their authoritative
+implementations are the PDP-6 `mm_pdp6.s`, `memfs_runtime.s`, and
+`d6fs_provider_namespace_pdp6.s` plus `d6fs_provider_mutation.s`.
+No remaining production build rule should reference these C files.
+
+The alternate, disabled C `dtfs_resize` implementation was deleted from
+`dtfs.c`; `dtfs_resize.s` owns that operation. Other functions in `dtfs.c`
+remain because they implement distinct filesystem services.
+
+Native source tests in `daimos-testkit` must inspect the authoritative
+assembly sources. Never retain a second algorithm solely as a readable
+reference: use comments and documentation to explain the actual routine.
