@@ -70,3 +70,12 @@ resources on refusal and sleeps between retries with an interval capped at
 provider refusal can prevent reclamation indefinitely. The owner-private
 teardown, provider recovery and allocation-free closure graph must be proved
 before any automatic OOM termination is activated.
+
+## v987: permanent-provider containment
+
+The source-linked v987 test verifies that the serialized provider lease is
+only released by the normal owner return path. Recursive acquisition refuses,
+foreign waiters sleep and retry acquisition, and owner-private fatal FILE
+retry neither forces an unlock nor releases the u-area. This is containment,
+not proof of a quiescence/cancellation protocol for indefinitely stalled
+providers. Automatic OOM termination remains OFF.
