@@ -174,3 +174,16 @@ This adds no permanent RAM and changes no syscall ABI. Source gate v998
 (updated for v999) and the booted BRK/sbrk growth, data and shrink test
 pass. Automatic OOM killing remains disabled pending a full-system
 physical-OOM requester termination and reclamation test.
+
+## v1000: default-off requester termination branch
+
+PDP-6 BRK now retains its existing syscall ABI, with an optional
+compile-time branch (`PROC_OOM_BRK_ENABLED_V1000`, default 0) that enters
+the already-established fatal-owner cleanup only when both AC1 and AC2
+are -1 (failed BRK and MM_ERR_NOMEM). The isolated native v1000 test
+activates this branch and verifies successes, invalid and fragmented
+failures return normally, while simulated physical shortage enters the
+owner fatal path. The unchanged full-system BRK growth/data/shrink test
+passes with production behavior disabled. Genuine physical shortage,
+whole-process cleanup and unrelated-process survival are not yet proven
+in one booted test; the automatic OOM path remains off.
