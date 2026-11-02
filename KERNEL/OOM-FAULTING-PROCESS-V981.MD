@@ -60,3 +60,13 @@ break, VM size, data and RUN rollback/recovery. This provides a genuine
 physical-pressure test distinct from the unclassified v984 repeated-growth
 failure. It still does not authorize automatic termination; allocation-free,
 bounded owner-side teardown is not yet certified.
+
+## v986: owner-private fatal FILE retry audit
+
+Native PDP-6 v926 validates fatal TERM owner-return FILE retries; current
+v986 static test verifies that the owner stack performs FILE close, preserves
+resources on refusal and sleeps between retries with an interval capped at
+01000 octal ticks. A capped interval is not a cap on retry count. Permanent
+provider refusal can prevent reclamation indefinitely. The owner-private
+teardown, provider recovery and allocation-free closure graph must be proved
+before any automatic OOM termination is activated.
