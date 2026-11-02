@@ -127,3 +127,13 @@ with test-only FILE/HUP helpers. The first HUP refusal returns -1 without
 entering the permanent-stack exit path; a second attempt reaches normal
 exit handoff. This control-flow proof passes, but does not certify the
 full-system provider/VM cleanup path or activate automatic OOM termination.
+
+## v995: fatal owner-side HUP retries
+
+The APR/EXEC fatal exit performs session-HUP cleanup on the live private
+stack following successful FILE close. A temporary HUP refusal retains the
+owner continuation, sleeps with the pre-existing backoff, and retries.
+Native PDP-6 v970 and fault-injected v995 regressions pass. No additional
+resident state was introduced. VM-destroy failure after the permanent-stack
+handoff still prevents automatic requester OOM termination; both existing
+OOM P0 tasks remain open.
