@@ -150,3 +150,15 @@ kernel stack is introduced. Full-system v997 injected VM rejection then
 MM u-area refusal, plus unmodified v978, and native v881/v869 PASS. These
 are teardown tests, not full physical-OOM requester-killing acceptance;
 automatic OOM termination remains disabled until that proof is complete.
+
+## v998: classify failed BRK before requesting termination
+
+The allocator distinguishes insufficient total free words after reclaim
+(-1) from fragmented free space (-2), descriptor exhaustion (-3),
+invalid arguments (-4), and busy/pinned extents (-5). Current BRK merges
+all allocation and validation rejections into its ordinary -1 return;
+this is not sufficient evidence to kill its caller. Source contract v998
+PASSes and booted v985 RUN/BRK failure-and-recovery regression PASSes on
+the v997 kernel. The next isolated test must preserve the allocator cause
+at the failed BRK call and terminate only for real physical shortage.
+The production killer remains off and the two existing P0 gates remain.
