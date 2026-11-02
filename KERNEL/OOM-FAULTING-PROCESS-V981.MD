@@ -100,3 +100,14 @@ source-linked testkit v989 protects this boundary. A safe requester OOM
 exit needs a valid owner continuation through any sleeping work, followed
 by the current non-sleeping final MM release after leaving its stack.
 No OOM killing is enabled by v989.
+
+## v991: live-owner HUP stage
+
+Ordinary EXIT now completes the potentially sleeping session-HUP preflight
+on its existing private kernel stack after FILE closure and before switching
+to slot zero. On refusal it returns -1 without discarding the owner's VM or
+stack. The existing finalizer continues to recheck session state. A full
+256K PDP-6 BRK runtime and the v991 source guard pass. The older v905
+standalone HUP fixture failed to link (missing `proc_tty_line_try_reset_v897`)
+and is not counted as a passing HUP test. VM destruction is not yet staged;
+OOM termination remains disabled pending fault-injected exit acceptance.
