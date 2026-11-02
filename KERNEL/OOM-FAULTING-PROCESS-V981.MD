@@ -137,3 +137,16 @@ Native PDP-6 v970 and fault-injected v995 regressions pass. No additional
 resident state was introduced. VM-destroy failure after the permanent-stack
 handoff still prevents automatic requester OOM termination; both existing
 OOM P0 tasks remain open.
+
+## v997: pre-VM EXIT release retry
+
+Production EXIT now distinguishes pending pre-VM release from the existing
+post-VM u-area finalizer using bit 33 of the otherwise-used finalizer
+u-area word. A failed VM release retains TRANSITION, identity, and saved
+exit status; slot zero retries only this marked, non-sleeping release path.
+After VM destruction succeeds the PREVM mark is cleared and existing
+u-area release/finalization resumes. No permanent retry table or extra
+kernel stack is introduced. Full-system v997 injected VM rejection then
+MM u-area refusal, plus unmodified v978, and native v881/v869 PASS. These
+are teardown tests, not full physical-OOM requester-killing acceptance;
+automatic OOM termination remains disabled until that proof is complete.
