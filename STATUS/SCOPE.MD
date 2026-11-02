@@ -1,5 +1,18 @@
 # DAIMOS V0.9 CURRENT SCOPE
 
+## Storage feature scope clarification (2026-10-29 v661)
+
+Release 0.9 includes the online D6FS packer and agreed storage/admin
+extensions. The storage architecture uses DEVICE, optional multi-member
+VOLUME, bounded REGION, shared temporary BACKING (swap/MEMFS), independent
+persistent LOG, and discardable CACHE. AUXST1 is a media-layout descriptor,
+not a required permanent I/O-dispatch layer. The v661 LOG bootstrap path
+uses the bounded REGION service directly; the legacy root-backed LOG path
+remains compatible. DTFS/TSFS work is temporarily deferred in implementation
+order, not dropped from release scope. Historical descriptions below should
+be interpreted in light of this current update.
+
+
 DATE: 2026-09-24
 
 THIS FILE SUMMARIZES CURRENT V0.9 SCOPE.  DAIMOS/PROJECT-STATE.MD IS THE

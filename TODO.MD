@@ -1,4 +1,74 @@
+### Storage vocabulary and 0.9 feature acceptance (v661)
+
+The current source terminology is DEVICE (physical unit), VOLUME
+(optional multi-device mapping), REGION (bounded physical range),
+BACKING (temporary authoritative swap/MEMFS blocks), LOG (durable
+records), and CACHE (discardable copies). AUXST1 parsing is boot-time
+configuration, not a new permanent dispatch layer. Direct LOG REGION
+bootstrap routing landed v661. Remaining runtime feature integration,
+failure recovery, CACHESTORE L2 and the online D6FS packer are
+version 0.9 scope. DTFS/TSFS implementation is temporarily deferred,
+not removed from release scope. No KCORE size sweep is underway.
+
 # PDP10-DOC TODO
+
+## 2026-10-27 DAIMOS v512 documentation synchronization
+
+V521 GRANULARITY AUDIT (2026-10-27): The general DAIMOS MM allocator
+already supports exact word counts and one-word alignment. The PDP-6 APR
+process VM still requires 02000-octal (1024 decimal) word mapping
+alignment. The P0 objective is to find and remove avoidable rounding in
+software-managed allocations, never to claim unsupported 512-word APR
+process mappings. Source-audit evidence is recorded in DAIMOS
+`design/mm-granularity-audit-20261027-v521.md`; update implementation
+claims in `KERNEL/MEMORY-MANAGEMENT.MD` only after native tests pass.
+
+DECISION 5 (2026-10-27): opt-in compressed process swapping for explicitly
+approved executables (e.g. shell) is required before the final KCORE sweep.
+Unapproved executables retain raw swapping; the executable eligibility bit
+and actual compressed swap-record bit remain separate. Require raw fallback,
+no net permanent RAM growth and native performance/rollback acceptance.
+This is a release-scope decision, not a completed implementation.
+
+DECISION 4 (2026-10-27): production privileged, strictly non-writing
+MEMFS XIP EXEC/RUN and native lifecycle validation are required before
+the final KCORE optimization and the DAIMOS 0.9 release. Current isolated
+pin/admission/VM tests are not production process launch acceptance.
+
+DECISION 3 (2026-10-27): finish remaining BSTORE shared backing,
+BCACHE and LOGSTORE migration before the final KCORE optimization and
+DAIMOS 0.9 release. Document tested implementation changes in
+KERNEL/BSTORE.MD and related filesystem/device documents; distinguish
+accepted AUXST1/BACKSTORE support from genuinely unfinished work.
+
+DECISION 2 (2026-10-27): TSFS v1.2 sharded metadata is required before
+DAIMOS 0.9 release but scheduled after the final KCORE optimization. Keep
+TSFS-specific implementation in removable filesystem MRES and host image
+tools, retaining existing generic KCORE/VFS interfaces where possible;
+validate any necessary kernel/boot ABI changes separately. This is a
+schedule decision only, not evidence that v1.2 is implemented.
+
+P0 UPDATE (2026-10-27): memory allocation granularity reduction to
+512 decimal words is a pre-final-KCORE prerequisite, not post-release
+research. Document the exact octal/decimal unit conventions and the
+PDP-6 APR 1024-word hardware process-map alignment separately from
+software MM allocation granularity. Update MEMORY-MANAGEMENT.MD with
+measured, tested behavior after implementation; do not claim native
+512-word PDP-6 protected process mappings without hardware evidence.
+
+DAIMOS/TODO.MD now owns the consolidated pre-final-KCORE functional freeze
+inventory. This document tracks only design/current-state documentation,
+not a second implementation queue. Keep clock/DATE/SETTIME, explicit
+MKSWAP/AUXSTORE, mixed-device/BLOCKSET inventories, swapped MonitorFS
+process metadata and scheduler acceptance synchronized when implemented.
+Before declaring the KCORE ABI frozen, record explicit release-scope decisions
+for D6 streaming codec cutover, TSFS v1.2, remaining BSTORE migration,
+production MEMFS XIP and compressed process swap. Do not mark these complete
+based on design documents or isolated component tests. Accepted v508-v511
+32K AUXST1 results supersede earlier provisional failures; avoid a new raw
+AUXSTORE D6FS superblock requirement. Post-0.9 overlays and runtime module
+movement remain deferred. Update subject documents only after tested changes.
+
 
 DATE: 2026-09-30
 
@@ -10,8 +80,6 @@ WORK BELONGS IN THE SUBJECT DOCUMENT OR GIT HISTORY, NOT IN THIS TODO LIST.
 
 - KEEP THE 32K-WORD PDP-6 MINIMUM TARGET EXPLICIT WHERE MACHINE ASSUMPTIONS
   MATTER.
-- KEEP THE BELOW-040000 FIXED RESIDENT/IRREDUCIBLE-SCRATCH LIMIT AS THE HARD
-  PERMANENT-MEMORY RULE.  EXACT KCC SIZE RESULTS ARE DATED MEASUREMENTS.
 - RECORD KCC/DAS AS THE NORMAL DAIMOS COMPILER/ASSEMBLER PATH.  GCC IS A
   COMPARISON AND PORTING TOOL, NOT THE DAIMOS ACCEPTANCE COMPILER.
 - KEEP INIT -> LOGIN -> CONFIGURED SHELL AS THE NORMAL MULTIUSER BOOT MODEL.
@@ -102,9 +170,6 @@ CORRESPONDING IMPLEMENTATION OR TEST RESULTS CHANGE.
 
 ## 6. TEST/DOCUMENTATION MAINTENANCE
 
-- KEEP PERMANENT KCC RESIDENT-SIZE REPORTING AND THE 32K INIT -> LOGIN -> DSH
-  ACCEPTANCE CONTRACT DOCUMENTED; DO NOT COPY OLD EXACT SIZE CHECKPOINTS INTO
-  CURRENT-STATE SECTIONS.
 - ADD OR UPDATE DURABLE DESIGN DOCUMENTATION WHEN AN IMPLEMENTED ABI OR FORMAT
   CHANGES.  DO NOT ADD TRANSIENT HANDOFF DOCUMENTS TO PDP10-DOC.
 - REMOVE ORPHANED DOCUMENTS WHOSE REFERENCED SOURCE, TOOL, AND BUILD TARGET NO

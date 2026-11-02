@@ -1,4 +1,49 @@
+## v664 — native mapper-absence execution test
+
+The daimos-testkit v664 PDP-6 instruction test executes the real
+`fs_mres.s` BACKING gateway. With a VOLUME configured and its mapper
+uninstalled, read returns -1 without calling the physical driver.
+With a direct DEVICE region configured, read succeeds through the
+physical driver. The native test passes; the prior v659 source-only
+check now has instruction-level coverage. Full-system in-flight
+controller/mapper failure testing remains open.
+
+## v663 — native multi-member VOLUME regression (2026-10-29)
+
+Following the v658-v662 DEVICE/VOLUME/BACKING source interface changes,
+the existing native PDP-6 D6FS HDD v582 multi-member suite PASSed on
+two- and four-member volumes, including normal file operations and
+rejection of unequal/missing member sets. A first attempt was blocked
+by old x86-64 host PTY/TCP relay executables on an AArch64 host;
+rebuilding those helpers resolved the test harness incompatibility.
+Testkit v663 uses versioned, host-native helper binaries on each run.
+
+The v659 missing-mapper path is only source-checked; live mapper-loss
+fault injection remains outstanding. No media format or KCORE
+optimization change is associated with this acceptance milestone.
+
+## v662 — BACKING is not a BLOCKSET-specific resource
+
+Resident BACKING capacity is now queried by both swap boot and
+MonitorFS through `backing_region_blocks()`. BLOCKSET remains only
+the optional mapper for a multi-member VOLUME; ordinary DEVICE
+REGION I/O never depends on it. The old tail-count function is a
+compatibility alias, not a second allocator or transfer path.
+
 # CURRENT BLOCKSET IMPLEMENTATION STATE (2026-09-24)
+
+## Current routing terminology — 2026-10-29 v661
+
+The historical BLOCKSET description below remains relevant only to
+multi-member VOLUME mapping. Single-device REGION access uses the
+direct DEVICE selector and physical base, without invoking the
+BLOCKSET mapper. Direct and mapped BACKING I/O share one physical
+DSK270/DRM236 transfer path. A configured multi-member VOLUME fails
+closed if its mapper is unavailable (v659). The old external symbols
+remain ABI aliases; v660 renamed the three underlying configuration
+words without adding resident storage. AUXST1 is a boot-time layout
+descriptor, not a general-purpose runtime storage layer.
+
 
 BLOCKSET IS THE COMMON LOGICAL BLOCK-SET ABSTRACTION.  A SINGLE D6FS DSK ROOT
 BYPASSES BLOCKSET COMPLETELY.  A MULTI-MEMBER DSK ROOT INSTALLS A COMPACT

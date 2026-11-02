@@ -1,3 +1,229 @@
+# v670 — D6FS mount-stage evidence
+
+Native PDP-6 breakpoint tracing of the v669 scheduler-pressure boot
+shows BLOCKSET discovery, repeated physical block reads, and entry to
+`d6fs_super_select` before `?RT`. Neither `vfs_mount` nor `vfs_stat`
+is reached. Testkit v670 reproduces that failure-stage classification
+using linked KINIT symbols. The exact failing superblock or pre-VFS
+check remains unproven. Full-system scheduler rollback is still blocked.
+
+# v669 diagnostic refinement — meaning of ?RT
+
+`?RT` is `KINIT_ERR_RT` in `kinit_boot()`: root mount failed or
+`root_has_init()` did not find a regular `/SYSTEM/INIT`. The failure
+occurs before scheduler pressure begins; it is not evidence that
+BACKING rollback itself failed. Testkit v669 now has a root-media
+preflight, but which of these two root checks failed remains unknown.
+
+# v669 — full-system swap acceptance still blocked
+
+Isolated native PDP-6 BACKING/MM rollback tests v664-v668 PASS, but the
+historic full-system testkit v298 has a stale assumption that
+`proc_swap_out` is an absolute KCORE symbol. It now resides in the
+loadable SWAP MRES. The corrected testkit v669 runner reaches simulator
+execution; without high-volume tracing, the guest prints `?RT` and
+halts at `065206` before completion of the pressure workload. A
+traced run timed out after repeated breakpoints. These are **not**
+full-system rollback acceptance passes. Diagnose boot/startup before
+resuming scheduler fault injection. No production code changed.
+
+# v668 — verified recoverable MM-free rollback
+
+An isolated native PDP-6 test now executes the production swap-out
+late rollback branch with `mm_unpin` successful and `mm_free` failing.
+It confirms the process remains resident, the original swap record is
+unchanged, the temporary BACKING allocation is freed, and TRANSITION
+and the provisional u-area backing field are cleared. Testkit v668
+PASS. This is not a full scheduler-level injected fault or an assertion
+of physical multi-block I/O atomicity. No production code changed.
+
+# v667 — unsafe late swap-out unpin cleanup fixed
+
+The v666 audit did not establish safe behavior when `mm_unpin` itself
+failed: the prior rollback could clear TRANSITION and resume a process
+with unresolved physical pin ownership. The PDP-6 swap-out assembly now
+routes either failed unpin (normal postwrite path or error cleanup)
+to the existing storage/MM invariant handler, rather than silently
+resuming. A successful unpin followed by failed `mm_free` retains its
+existing recoverable prepublication rollback.
+
+Testkit v667 source and isolated native PDP-6 fault branches PASS,
+the adjusted v666 regression PASSes, and a fresh GCC 32K disk-root
+image boots through `proc_boot_init` with BSET/D6FS loaded. Full-system
+fault/scheduler testing is not implied. This is a correctness fix,
+not KCORE size optimization.
+
+# v666 — swap late-memory-release rollback audit
+
+The PDP-6 `proc_swap_out` implementation writes a provisional BACKING
+span, then attempts `mm_unpin` and `mm_free`. Failure of either takes
+the prepublication rollback path: release provisional BACKING, clear
+the temporary u-area backing field and TRANSITION. Only successful
+memory release leads to DISK mode publication. A new testkit v666
+source control-flow regression PASSes, as does the earlier native v665
+partial-write test. Live fault-injected MM unpin/free and scheduler
+recovery remain unverified; no production change was required.
+
+# v665 — multi-block BACKING failure contract
+
+Native PDP-6 instruction test of the production BACKING transfer
+routine confirms that a failing second block of a three-block write
+returns an error and never writes the third. Separate source checks
+confirm swap-out and MEMFS eviction publish their new backing records
+only after successful writes, freeing abandoned allocations on the
+write-error branch. Both testkit v665 checks PASS.
+
+This is **failure atomicity of publication**, not physical atomicity
+of multi-block storage: earlier blocks can already have been written.
+Full-system in-flight controller faults, late MM rollback paths and
+persistent snapshot recovery still need acceptance tests. No change
+to production code, media layout or KCORE size optimization.
+
+# v664 — isolated native BACKING failure coverage
+
+Native PDP-6 execution verifies that an unavailable multi-device
+VOLUME mapper cannot silently fall back to direct DEVICE addressing.
+The direct-device path remains operational. This test uses the real
+BACKING transfer assembly with instrumented device entry points;
+production KCORE and AUXST1 formats are unchanged. Full-system
+partial-transfer recovery remains pending.
+
+# v663 — VOLUME compatibility evidence
+
+The existing native multi-member D6FS suite PASSed on two/four-member
+HDD volumes after the DEVICE/VOLUME split. Backing-mapper fault-injection
+is still open; see KERNEL/BLOCKSET.MD. The testkit v663 launcher avoids
+host relay binaries inherited from a different CPU architecture.
+
+# v662 — BACKING runtime consumers
+
+Process swap initialization and MonitorFS SWAP statistics both query
+`backing_region_blocks()` for the logical capacity. The historical
+`blockset_tail_blocks()` symbol remains a binary-compatible alias;
+the linked map places both at octal `005071`. The internal shared
+transfer entry is named `backing_region_io` while preserving the
+existing `backstore_read/write` and legacy BLOCKSET entry labels.
+The change retains a single DEVICE/VOLUME I/O path, no extra resident
+state or dispatch layer, and unchanged AUXST1/BLOCKSET formats.
+
+Testkit v662, v660, v659 PASS. The fresh GCC 32K image builds and
+boots on PDP-6 SIMH to `proc_boot_init` with BSET/D6FS loaded; D6FS
+checks CLEAN. Native multi-member mapper-loss injection remains open.
+
+# v661 — LOG boot REGION routing
+
+LOG bootstrap reads and writes now call the bounded AUXST1 REGION
+operations directly. The intermediate `auxstore_boot_log_read/write`
+wrappers have been deleted. The preexisting root-backed BLOCKSET LOG
+fallback is retained. LOG is a durable record ring, BACKING owns the
+temporary swap/MEMFS allocation bitmap, and CACHE contains only
+discardable copies; these are independent policies sharing only
+physical addressing. No persistent KCORE dispatch layer was added.
+
+# v660 — DEVICE/VOLUME/REGION resident state names
+
+The backing bridge retains its existing three resident configuration
+words, now named `device_region_map`, `volume_data_blocks` and
+`backing_region_count`. The historical `blockset_direct_*` names remain
+compatibility aliases on the **same addresses**; the old tail-count
+function is likewise aliased by `backing_region_blocks()`. Process swap
+boot calls the latter. These are semantic source names only: no new
+storage dispatch layer or persistent metadata format is introduced.
+
+Source regressions v658-v660 PASS, fresh native GCC 32K disk build
+PASS, D6FS checker CLEAN, and PDP-6 SIMH reaches `proc_boot_init` with
+BSET/D6FS loaded. Multi-member mapper-loss fault injection remains
+open. No KCORE size optimization is part of this change.
+
+# v659 — VOLUME mapper-unavailable behavior
+
+The permanent BACKING transfer service now fails closed when a
+multi-device VOLUME is configured but its BLOCKSET mapper is absent.
+Previously it fell through to direct DEVICE arithmetic, potentially
+addressing the wrong sectors. A direct DEVICE range still bypasses
+the VOLUME mapper. This changes neither AUXST1 media layout nor
+BLOCKSET binary service ABI.
+
+The v659 fail-closed source test and v658 routing test PASS. The
+fresh native 32K GCC D6FS/disk image builds and boots through
+`proc_boot_init` with BSET/D6FS loaded. Native mapper-loss fault
+injection remains outstanding. No code-size optimization was run.
+
+# v658 — separate direct DEVICE regions from VOLUME tail mapping
+
+The permanent storage bridge now exposes `device_range_configure` for
+single physical DSK/DRM regions and `volume_tail_configure` for
+multi-member root tails translated by the existing BLOCKSET MRES.
+`blockset_direct_configure` remains an ABI-compatible symbol alias.
+Both I/O paths use one common physical DSK270/DRM236 dispatcher;
+neither AUXST1 nor BLOCKSET on-media formats change.
+
+The intended nomenclature is DEVICE (one physical drive), VOLUME
+(optional multi-device block mapping), REGION (bounded block range),
+BACKING (shared authoritative swap/MEMFS space), LOG (persistent records)
+and CACHE (discardable copies). This terminology is a staged source
+migration, not a new stack of generic runtime storage layers.
+
+Fresh 32K lowmem GCC PDP-6 SIMH D6FS disk boot reached
+`proc_boot_init` with BSET and D6FS loaded. Testkit direct/volume
+routing inspection PASS. Multi-member and fault-path integration
+remain open; DTFS/TSFS features are deferred for now.
+
+# v657 — shared AUXSTORE raw-region I/O (first production feature increment)
+
+Production AUXSTORE bootstrap exports `auxstore_boot_region_read` and
+`auxstore_boot_region_write` for BACKSTORE, LOGSTORE and CACHESTORE,
+using partition-relative block addresses. The region selector and
+block offset must be valid; no request may escape into an adjacent
+partition. LOGSTORE bootstrap read/write now uses this shared
+interface. Existing raw BACKSTORE allocation and physical I/O are
+preserved pending migration and rollback/recovery validation.
+
+Host testkit v657 region bounds PASS; existing AUXSTORE choice v492
+and D6FS overlap v507 PASS. This is feature implementation, not a
+KCORE optimization, and does not close the remaining BSTORE migration.
+
+The online D6FS packer and agreed storage/admin extensions are in
+version 0.9 release scope. DTFS/TSFS features are temporarily deferred
+while KCORE feature implementation proceeds.
+
+### v484: BACKSTORE allocator resident split (2026-10-27)
+
+The authoritative bitmap and four associated state words stay in KCORE,
+shared by process swap and MEMFS. The allocator TEXT has moved into the
+permanently installed SWAP/shared MRES. KCORE exposes the original four
+`backstore_*` functions through one-word JRST entries patched by SWAP
+MINIT. Neither the API nor the single-bitmap ownership changes; this
+MRES is installed on the existing boot path and is not a removable
+optional module while its clients are active.
+
+On the PDP-6 full GCC lowmem link KCORE shrank 8652 -> 8548 words, and
+shared SWAP MRES grew 308 -> 412 words, giving no change in combined
+permanent occupancy (disk 13415, tape 13339 words). The corrected build
+puts `kcore_end.dobj` last: backing state occupies 020620..020623,
+`__kcore_low_end` and dynamically allocated MM extents begin at 020624.
+The earlier experimental KINIT failure resulted from this boundary
+overlap, not a need for another allocator or a change in storage ABI.
+Native 32K swap-wait and swap-stress and the standalone PDP-6 BACKSTORE
+fixture pass. The boundary regression lives in daimos-testkit.
+
+### v481 KCORE reduction boundary (2026-10-27)
+
+The process swap *transfer/reclaim* implementation now resides in a pinned
+SWAP MRES. This does **not** transfer ownership of the common BACKSTORE
+bitmap. `backstore.s` is still KCORE (108 pre-link TEXT, 4 BSS words):
+MEMFS uses the same allocation/free interface and backing I/O paths.
+Its migration must use a shared service and preserve one authoritative
+bitmap; adding a second allocator or moving it behind an optional SWAP
+package would violate this contract.
+
+During KINIT, `proc_swap_boot_init` currently allocates one process swap
+record per slot, the bitmap (`ceil(backstore_blocks/36)` words), and a
+two-bit-per-slot process storage-state map together. Zero backing capacity
+does not imply the executable-backing records are unnecessary. Consider
+splitting their lifetimes only after validating all PROC, MEMFS and VM
+consumers and measuring runtime MM occupation, not merely static KCORE.
+
 # DAIMOS BSTORE / BCACHE DESIGN AND IMPLEMENTATION PLAN
 
 STATUS: STORAGE CONSOLIDATION IMPLEMENTED; AUXSTORE MEDIA TOOLING/LAYOUT
@@ -206,6 +432,13 @@ CACHESTORE DATA
 ```
 
 THE DESCRIPTOR RECORDS START/COUNT FOR LOGSTORE, BACKSTORE, AND CACHESTORE.
+AS OF V638, HOST `MKAUXSTORE` REQUIRES EXPLICIT DESTRUCTIVE CONFIRMATION;
+DRY-RUN AND HOST SAFETY TESTS REFUSE UNKNOWN OR NONEMPTY TARGET REGIONS.
+THE NORMAL PDP-6 BUILD CONVERTS ONLY AN EXACTLY VERIFIED ONE-MEMBER CLEAN
+DBOOT HEADER TO AUXST1 VIA EXPLICIT `--CONVERT-DBOOT`, CHECKING THE D6FS
+BASE/COUNT, SUPERBLOCK OFFSETS, AND RESERVED TAIL BEFORE WRITING. THE
+NON-ROOT D6FS PARTITION IS PRESERVED BYTE FOR BYTE. THESE ARE IMAGE-BUILD
+OPERATIONS, NOT AUTOMATIC FORMATTING AT DAIMOS BOOT.
 THE CACHE TAG/DATA SPLIT IS DERIVED FROM CACHESTORE SIZE.  AUXSTORE PREFERS DRM
 WHEN PRESENT, THEN DSK.  IT DOES NOT REQUIRE D6FS ON THE AUXILIARY DEVICE.
 
@@ -220,15 +453,27 @@ THIS DESCRIPTOR.  THE NORMAL DEFAULT GEOMETRY IS:
 
 ```TEXT
 BLOCK 0             AUXSTORE DESCRIPTOR
-1..                 NON-ROOT D6FS, 011367 BLOCKS
-11370..11767        LOGSTORE, 0400 BLOCKS
-11770..15767        BACKSTORE, 04000 BLOCKS
+1..5367             NON-ROOT D6FS, 05367 BLOCKS
+5370..5767          LOGSTORE, 0400 BLOCKS
+5770..15767         BACKSTORE, 010000 BLOCKS
 15770..17777        CACHESTORE, 02010 BLOCKS
 ```
 
 DRM0 THEREFORE USES THE FULL TYPE-236 020000-BLOCK CAPACITY.  DRM1-3 ARE
 BLANK IN THE NORMAL BOOT PROFILE.  AN EXPLICIT DRM BOOT CONTINUES TO USE THE
 SEPARATE BOOTABLE DRUM-SET PATH.
+
+THE 2026-10-31 V852 DEFAULT INCREASES BACKSTORE FROM 04000 TO 010000
+SECTORS WITHOUT CHANGING THE TOTAL DRUM GEOMETRY OR CACHESTORE SIZE.
+THE NON-ROOT D6FS AUXILIARY REGION IS CORRESPONDINGLY SMALLER.  THE
+FORMER 04000-SECTOR DEFAULT DID NOT ADMIT THE LAST CHILD OF THE FULL
+16-CHILD PDP-6 SWAP-PRESSURE WORKLOAD (EXEC_LOAD_NOMEM).  THE LARGER
+BACKSTORE CONFIGURATION ALLOWED ALL 17 RUN CALLS IN V851.  THE SCHEDULER
+ALSO REQUIRES A ONE-SHOT DISPATCH HINT AFTER SUCCESSFUL SWAP-IN TO KEEP
+THE RUNNABLE RESTORED PROCESS FROM BEING SKIPPED IN FAVOR OF THE NEXT
+SWAPPED CANDIDATE.  V851 PASSED THE 16-CHILD FULL-SYSTEM REGRESSION
+WITH THE LARGER CAPACITY.  THE DEFAULT-CONFIGURATION V852 REGRESSION
+MUST BE VERIFIED SEPARATELY.
 
 OLD D6FS/BLOCKSET SWAP/LOGSTORE RESERVATIONS MAY REMAIN READ-COMPATIBLE DURING
 MIGRATION, BUT NEWLY FORMATTED AUXILIARY MEDIA SHOULD PREFER AUXSTORE.

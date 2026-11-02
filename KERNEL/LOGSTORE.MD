@@ -1,5 +1,19 @@
 # DAIMOS LOGSTORE V1
 
+## Current implementation note — 2026-10-29 v661
+
+LOG is an independent **persistent record ring**, not a cache and not
+an allocated BACKING object. The v1 historical VFS/BLOCKSET diagram
+below describes the earlier root-backed layout. In current builds,
+KINIT can select a validated AUXST1 LOG REGION, or retain the legacy
+root BLOCKSET LOG range as fallback. `logstore_boot_read/write` now
+call the existing bounded `auxstore_boot_region_read/write` interface
+directly for AUXST1; the unused LOG-only wrappers were deleted in
+v661. Runtime LOGSTORE remains an independent MRES with its existing
+append, sequence, recovery, and draining semantics. The physical
+REGION interface is not an extra resident runtime layer.
+
+
 *SMALL RAW-DISK DURABLE LOG QUEUE WITH SEQUENTIAL MAGTAPE DRAIN*
 
 ## DOCUMENT METADATA
