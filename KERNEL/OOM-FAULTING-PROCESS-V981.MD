@@ -90,3 +90,13 @@ on the idle stack; post-VM MM refusal is deferred, but earlier HUP or VM
 refusal returns failure and leads to diagnostic HALT 1. Do not connect
 ordinary exhausted-user-allocation handling to this exit path until its
 recoverable pre-VM failures have a safe owner-preserving completion route.
+
+## v989: pre-VM work must retain a schedulable continuation
+
+The existing slot-zero retry is a post-VM MM finalizer; its scheduler
+context inhibits PI6. Pre-VM session HUP and VM/provider callbacks may
+sleep and therefore cannot simply be moved to that retry path. Native
+source-linked testkit v989 protects this boundary. A safe requester OOM
+exit needs a valid owner continuation through any sleeping work, followed
+by the current non-sleeping final MM release after leaving its stack.
+No OOM killing is enabled by v989.
