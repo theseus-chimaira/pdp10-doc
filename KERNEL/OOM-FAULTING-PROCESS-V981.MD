@@ -162,3 +162,15 @@ PASSes and booted v985 RUN/BRK failure-and-recovery regression PASSes on
 the v997 kernel. The next isolated test must preserve the allocator cause
 at the failed BRK call and terminate only for real physical shortage.
 The production killer remains off and the two existing P0 gates remain.
+
+## v999: retain the BRK allocator cause
+
+On failed PDP-6 BRK growth, the VM helper now preserves the internal MM
+failure code in AC2 while retaining the existing user-visible AC1=-1.
+Local validation failures are -4, and old-extent release refusal is -5.
+Only MM -1 indicates insufficient aggregate free memory after reclaim;
+fragmentation, descriptor capacity and busy failures remain distinct.
+This adds no permanent RAM and changes no syscall ABI. Source gate v998
+(updated for v999) and the booted BRK/sbrk growth, data and shrink test
+pass. Automatic OOM killing remains disabled pending a full-system
+physical-OOM requester termination and reclamation test.
