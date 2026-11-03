@@ -1,3 +1,34 @@
+## v1083: allocation-free direct fatal-release leaves, not the full chain
+
+`daimos-testkit` now provides the executable
+`test-daimos-fatal-release-scope-v1083` source contract. It checks that
+FILE's dispatch through VFS SYNC, PIPE/FIFO final close, DPY raw-list
+STOP, checked TTY canonical-buffer/session release, U-area release,
+VM destroy, MEMFS XIP unpin and actual C swap-detach do not call an MM
+or backing allocator. It also guards MM-error branches and verifies
+the DPY zero-word STOP is reached before the allocating replacement
+branch. This is deliberately a direct-leaf audit, not an OOM policy
+switch or a proof for transitively invoked HUP callbacks.
+
+Native PDP-6 v870 PIPE failed-MM retry, v904 DPY physical-pin and
+wrong-owner STOP retry, v912 DPY two-extent MM refusal/retry, and the
+actual C v957 VM swap-detach and bitmap verification contract PASS.
+The current source needs no kernel modification; KCORE/MRES, permanent
+RAM and ABI changes are all zero.
+
+The audit separately detects an unresolved provisional ownership
+case: `pipe_fifo_open_intr` invokes `pipe_close_ref` but discards a
+failed last-reference MM free; `file_open` then discards its provisional
+FD. This can strand a named FIFO object if the transient allocation
+is somehow pinned or fails ownership validation. Ordinary FILE close
+remains retry-safe. Whether a physical pin is reachable on the still
+unpublished FIFO needs a dedicated dynamic fault test and a correct
+ownership design, not an unconditional free.
+
+Foreign in-flight provider leases, session HUP cascades and retry
+liveness under clock/device failure remain open P0s. Production
+automatic OOM termination remains disabled.
+
 ## v1082: refuse NEWSESSION before orphaning the previous TTY MM owner
 
 A process could previously change session/pgrp/TTY state before the

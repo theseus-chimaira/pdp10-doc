@@ -1,3 +1,16 @@
+## v1083: audited direct fatal teardown without allocator recursion
+
+The PDP-6 direct release leaves used by fatal FILE/VM/TTY cleanup
+contain no call to `mm_alloc`, `mm_alloc_aligned` or `backstore_alloc`.
+The check covers checked PIPE final free, DPY zero-length STOP (not
+the positive-length replacement allocator), TTY canonical line,
+stable process U-area, MEMFS XIP unpin, and `proc_swap_detach` after
+bitmap verification. v870, v904, v912 and v957 regressions PASS.
+Source contract and test grouping live in daimos-testkit v1083; no
+production RAM words changed. This does not certify transitive HUP
+cleanup, provider liveness or the rare provisional FIFO-OPEN abort on
+refused `mm_free` as safe. OOM auto-kill stays disabled.
+
 ## 2026-11-03 V1065: FINAL KCORE BRANCH-TIP RECONCILIATION
 
 THE LAST DIVERGENT DAIMOS KCORE BRANCH TIPS, `B2F92FD8` (SELECTIVE
