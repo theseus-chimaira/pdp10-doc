@@ -1,3 +1,22 @@
+## v1099: typed PIPE/FIFO final-close stage
+
+P0-D now propagates the actual allocator error on a final PIPE/FIFO
+close: -5 means a pinned extent (busy), while -4 means an invalid MM
+type or owner. Previously both returned -1 despite correctly retaining
+the descriptor, counts and named FIFO list. The named list reinsertion
+now uses AC3, so its original `mm_free` status survives in AC1 through
+`file_close_entry_v865` and the fatal FILE owner diagnostic.
+
+Failure cannot clear a FILE, decrement the final PIPE reference,
+discard the FIFO list owner, publish an EXIT or free a foreign extent.
+The original successful close path and owner-side retry remain intact.
+Native source-linked PDP-6 v1099 verifies both typed failures,
+subsequent recovery, exactly-once free, and four rejected unsafe
+variants. Updated v1096 component release matrix and v1087 allocation
+closure with eleven unsafe source variants PASS. The full 256K KCC
+image has unchanged KCORE endpoint `023162` octal and no new permanent
+data or process fields. P0-D/E/F are OPEN; production OOM kill OFF.
+
 ## v1096-v1098: typed u-area errors and first PREVM retry-clock repair
 
 P0-D now preserves the exact allocator refusal at the final u-area

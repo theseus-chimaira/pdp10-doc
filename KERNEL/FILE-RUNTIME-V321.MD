@@ -1,3 +1,34 @@
+## 2026-11-04 v1099: typed final PIPE/FIFO close rejection
+
+The final PIPE/FIFO `file_close_entry_v865` delegates to
+`pipe_close_ref`, which must not remove a descriptor, publish the
+reader/writer reference decrement or lose a named FIFO when the last
+owned MM extent cannot be freed. The preexisting v870/v899/v900
+transaction already retained those owners after a failed `mm_free`.
+The failure return, however, was collapsed to generic -1.
+
+v1099 preserves the actual `MM_ERR_BUSY` (-5, physical pin) or
+`MM_ERR_INVAL` (-4, invalid type/owner) through PIPE -> FILE close.
+Anonymous PIPE failure returns without changing its counts. Named
+FIFO failure reinserts the same object into the active list using
+scratch AC3, leaving the original MM return in AC1. Invalid *PIPE
+arguments* still take the generic error path; successful last and
+nonfinal close publication and hardware behavior are unchanged.
+Neither failure classification grants permission to free another
+owner's extent, recycle an FD or fabricate a successful close.
+
+Native PDP-6 v1099 links the actual production FILE entry, PIPE close
+and FIFO unlink against deterministic typed failure returns. Both
+failed descriptor/reference/list owners survive and are subsequently
+released exactly once. Four deliberately unsafe variants are rejected:
+collapsing either error, losing FIFO list ownership and publishing
+references before final MM free. The v1096 P0-D component matrix and
+v1087 transitive no-allocation plus 11 negative mutations PASS. The
+full 256K production KCC image builds at unchanged KCORE endpoint
+`023162` octal; no new static state or ABI fields are introduced.
+The real-MM v899 and v900 booted pin/unpin acceptance tests remain
+independent evidence for the underlying physical ownership protocol.
+
 ## 2026-11-01 v902: legacy PIPE integration acceptance
 
 THE UNCHANGED HISTORICAL ANONYMOUS-PIPE GUEST TEST NOW PASSES AFTER
