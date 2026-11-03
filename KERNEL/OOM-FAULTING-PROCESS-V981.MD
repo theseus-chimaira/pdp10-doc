@@ -13,9 +13,12 @@ accounting return to their initial values. The full guest outputs `<KWP`
 and a controlled HALT without any failure marker.
 
 The separately built default-off guest runs the same program. Its BRK
-call returns -1 rather than killing the child, which prints `D`; the
-parent observes the non-OOM exit status and prints `!S`. This negative
-control confirms the test would detect a missing OOM-kill branch.
+call returns -1 rather than killing the child, which prints `D` and
+exits normally. The parent confirms the non-OOM exit status, releases
+the independent PIPE-blocked witness, checks memory accounting and
+prints the complete successful sequence `<DNWP`. This negative control
+confirms the test would detect a missing OOM-kill branch without using
+an intentional assertion failure as its expected result.
 
 Both variants are isolated build/test images, not production flags.
 Neither variant injects an indefinitely failing FILE/MM provider.
