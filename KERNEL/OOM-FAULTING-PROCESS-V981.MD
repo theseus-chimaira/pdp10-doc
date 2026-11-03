@@ -1,5 +1,37 @@
 # OOM policy: terminate only the faulting process (v981)
 
+## v1079: complete in-flight DRM236 requests after hardware stalls
+
+The DRM236 block driver was found to have only an early-boot bounded
+polling timeout; normal process-context transfers slept on private
+stack-owned PI2 completion descriptors indefinitely. The driver now
+packs a 300-qualified-tick (five seconds at 60 Hz) countdown into the
+LH of the existing active request word, retaining its RH descriptor.
+KINIT patches a second storage-clock trampoline after the DSK watchdog
+to its new DRM MRES export. No extra permanent state word is needed.
+
+On timeout, the driver clears Type-167/236 hardware and uses the
+ordinary PI2 completion path to mark precisely that request's
+descriptor as failed (-1) and wake its live owner. The single queued
+request is then promoted with a fresh 300-tick deadline. The FILE
+provider still owns its lock and must release it itself after the
+underlying device call returns; no forced unlock, stolen buffer or
+synthetic provider completion occurs.
+
+Native PDP-6 v1079 exact-deadline/queue/error accounting tests and
+the disabled-watchdog negative control PASS. Normal real-SIMH DRM
+read/write/queued I/O, direct DRM-root Stage1 boot to LOGIN with DSK0
+unattached, and the full 256K physical-OOM FILE/MM v1077 guest all
+PASS on the new clock/DRM integration. One additional KCORE code word
+and 17 additional DRM MRES words yield 18 more resident words;
+no additional persistent data words.
+
+This is a bounded **device** completion under continued qualified
+clock ticks, not a general quiescence/cancellation mechanism. A
+provider stuck outside DRM I/O, permanent refusal, disabled PI6
+clock progress or transitive memory allocation during fatal teardown
+remain separate open problems. Production OOM killing is still OFF.
+
 ## v1078: do not sleep on a foreign provider from fatal FILE close
 
 The shared DTFS/D6FS/TSFS register gateway formerly sent every
