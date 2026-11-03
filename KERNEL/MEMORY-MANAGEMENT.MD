@@ -1,3 +1,21 @@
+## v1087: bounded transitive fatal teardown (P0-A closed)
+
+The source-linked fatal-release graph now verifies FILE/VFS-SYNC,
+PIPE/FIFO and DPY close, session HUP and deferred fatal event delivery,
+TTY canonical line, VM/XIP, disk-swap bitmap, stable u-area and parent
+CHLD notification as a single nonallocating cleanup path. D6FS SYNC
+is currently a no-op; DTFS SYNC validates the vnode; other providers
+do not enter CLOSE-SYNC. Failure to close leaves the actual FILE owner
+until retry, and all later MM/backing error stages preserve a marked
+process owner rather than silently clearing the descriptor or extent.
+Eleven negative source mutations are rejected, native PDP-6 leaf/HUP/
+provider/MM retry tests PASS, and v1077 full physical 256K guest PASS.
+No production source, KCORE, MRES or permanent data changed (KCORE
+low end remains `023126` octal). P0-A closed, P0-B/D/E/F remain open.
+P0-B still requires the foreign in-flight provider lifetime contract:
+this audit does not promise recovery from a provider which never
+returns. The production OOM gate stays off.
+
 ## v1086: PI6-safe slot-0 finalizer boundary
 
 The P0-C audit found that private-stack session HUP preparation could

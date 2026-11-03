@@ -1,3 +1,46 @@
+## v1087: P0-A CLOSED -- transitive fatal-release graph
+
+The v1087 testkit source-linked audit completes the bounded fatal
+teardown call graph in the current PDP-6 kernel. It follows user BRK
+classification, APR and post-commit EXEC fatal entry, normal EXIT,
+self/foreign fatal event delivery, and deferred HUP through private
+`file_close_all`/`file_close_all_at_v865`, `file_close_entry_v865`,
+VFS SYNC, PIPE/FIFO and DPY STOP, then session HUP, checked TTY release,
+VM/MEMFS-XIP/MM detach, swap/backstore bitmap free, u-area release,
+process table ownership and final CHLD/WAIT notification.
+
+No new MM/backstore allocation is reachable in this existing graph:
+the only VFS SYNC providers enabled for FILE close are DTFS (vnode
+validation) and D6FS (no-op), with other providers bypassed. The
+serialized register-provider bridge keeps a process-private stack
+through sleeps, or returns BUSY to a fatal caller behind a foreign
+lease; it never forcibly releases that lease. An unsuccessful CLOSE
+preserves the actual FILE descriptor, an unsuccessful member HUP or
+TTY MM free preserves the leader's session owner, and unsuccessful
+VM/XIP/TTY/U-area retirement keeps the explicit PREVM/post-VM or SIDL
+retry owner. Last-ref PIPE and DPY MM failures keep their FILE owners.
+Committed HUP members in TRANSITION+VM_NONE+FINALIZE are not delivered
+twice, while ordinary live/unfinished members must still be retried.
+
+The source contract checks direct edges, no new allocations, guards
+before destructive steps and existing retry handoffs. Eleven negative
+mutations are rejected (FILE last clear, HUP allocation, remote-close
+error inversion, VFS/D6FS allocations, PIPE/DPY allocation, TTY/VM
+failure inversion, failed RUN discard and private owner backoff).
+Native PDP-6 v870/v904/v912/v957/v905/v922/v995/v1078/v1081/v1085
+PASS, and the v1077 256K guest with combined D6FS/MM injection PASS.
+The existing v922 test fixture gained the zero-return TTY line-reset
+stub required by the checked v897 ABI; production code was untouched.
+No KCORE or MRES change, no extra permanent RAM: KCORE low end remains
+`023126` octal.
+
+**P0-A is closed for the actual current graph, not future arbitrary
+provider implementations.** The proof of how an already in-flight
+foreign provider terminates or remains safely owned if it never
+returns is explicitly P0-B. Detailed exact-once fault-stage tests are
+P0-D, mixed complete-system acceptance P0-E, production enable P0-F.
+The default OOM gate remains OFF.
+
 ## v1086: P0-C CLOSED -- PI6-masked slot-0 finalization
 
 The v1086 reachability audit found a real duplicate session HUP under
@@ -72,12 +115,11 @@ word (`023116` -> `023117` octal), zero new persistent words.
 
 ## Current production OOM activation gates after v1085
 
-G1 - TRANSITIVE RECLAIM: Inventory every reachable fatal-termination
-edge from BRK, APR and committed EXEC through FILE close, VFS/provider
-SYNC, HUP/deferred signals, TTY, MEMFS XIP, PIPE/DPY, process VM,
-swap backing, u-area and parent notification. Establish absence of
-new MM/backing allocations or failure-atomic owner retention through
-the whole path, not just individual destructor leaves.
+G1 - TRANSITIVE RECLAIM: CLOSED by v1087 for current BRK, APR, EXEC,
+normal EXIT and self/foreign HUP source graphs. All required closure,
+MRES SYNC and error-owner edges are checked by an executable source
+contract with native PDP-6 fault/retry regressions. Already in-flight
+foreign provider completion is reserved for G2, not inferred here.
 
 G2 - PROVIDER OWNER: Finish foreign held-lease and in-flight completion
 proof. A returning provider may fail; its owner and FILE descriptor
