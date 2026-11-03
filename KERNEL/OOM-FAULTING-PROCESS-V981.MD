@@ -1,3 +1,55 @@
+## v1086: P0-C CLOSED -- PI6-masked slot-0 finalization
+
+The v1086 reachability audit found a real duplicate session HUP under
+disabled scheduler PI6. An ordinary EXIT or the APR/EXEC fatal-owner
+retry first completed FILE close and HUP on its private executive
+stack. It then entered `proc_exit_current`, switched to the permanent
+idle stack and inhibited PI6. Without an explicit completion marker,
+`proc_exit_finish` called `proc_finish_slot_owner_v932`, which could
+execute `proc_session_teardown` a second time. A foreign member's HUP
+may close another FILE and sleep on a provider while PI6 is inhibited.
+Immediate self-delivered fatal events also bypassed the private HUP
+preflight and entered the idle-stack exit directly.
+
+v1086 reuses the existing transition and PREVM+FINALIZE marker:
+`proc_exit_current` stores the exit status in the marker and sets
+TRANSITION under disabled global PI *before* switching stacks. The
+marked `proc_finish_slot_owner_v932` then dispatches directly to the
+non-sleeping PREVM or post-VM stages and never reenters HUP. Immediate
+self-fatal event delivery is routed into the existing process-owned
+FILE/HUP retry path. No new resident owner record or timer is needed.
+
+P0-C covers both PI6-masked slot-0 entries. The periodic idle retry
+only visits marked PREVM/post-VM EXIT or SIDL RUN rollback. Its
+qualified-clock backoff runs before PI6 inhibition, and disk-backed
+swap-in is dispatched only after PI6 is restored. The only VM provider
+operation reachable from either teardown is MEMFS XIP release, using
+provider 4 and opcode 026. It bypasses the serialized DTFS/D6FS/TSFS
+lock entirely: MEMFS's dispatcher checks XIP ownership and performs
+an MM unpin. Actual TTY canonical cleanup is a checked MM free, and
+swap detach only verifies/updates the in-memory backing bitmap.
+Parent adoption, notification and runnable-queue edits are resident
+table operations. No reachable callback in these marked paths sleeps
+on a process stack, performs device I/O or waits for PI6 progress.
+
+Executable daimos-testkit v1086 contract verifies all these edges and
+rejects seven negative code mutations (masked swap, gateway route,
+sleeping XIP/TTY, lost premark, direct self-fatal exit, swap I/O).
+Source-linked PDP-6 tests cover the actual exit handoff plus old-code
+negative result, the marked `proc_finish_slot` with a HUP-refusal
+trap, and actual MEMFS reg dispatch/XIP/MM unpin with a foreign-held
+serialized lease (which remains owned). Full 256K physical OOM
+requester/provider/MM v1077, process-events and session-teardown
+guests PASS; native v970/v974/v995 fatal/HUP, v926 owner return and
+v993 EXIT preflight also PASS.
+
+Matched KCC KCORE low end is `023117` -> `023126` octal (+7 words);
+permanent data, MRES vectors and ABI are unchanged. P0-C is CLOSED.
+P0-A transitive allocation/owner safety, P0-B in-flight provider
+policy, P0-D error-stage idempotence, and P0-E/F full activation
+coverage remain OPEN. Hardware APR clock failure is out of scope.
+Production OOM termination stays disabled.
+
 ## v1085: SIDL RUN rollback releases final TTY before VM retirement
 
 An unpublished RUN child in SIDL/TRANSITION can outlive its parent's
@@ -35,12 +87,12 @@ provider-specific completion/quiescence contract. Define explicit
 fail-closed quarantine versus demonstrable subsystem recovery. A
 capped delay between retries does not bound total teardown time.
 
-G3 - PI6/IDLE SAFETY: Prove the permanently resident slot-0 finalizer
-cannot sleep or start a device operation needing the scheduler PI6
-ticks while PI6 is inhibited. The current service dispatches only
-marked PREVM/post-VM and SIDL rollback; HUP occurs on the live private
-stack, and swap-in service follows PI6 restoration. Indirect MRES
-callbacks still require exhaustive verification and fault acceptance.
+G3 - PI6/IDLE SAFETY: CLOSED by v1086. The real duplicate-HUP path
+was repaired by an explicit PREVM handoff marker, and all direct and
+transitive slot-0 teardown callbacks were audited with negative
+mutation tests. The only MRES access is MEMFS XIP direct/unpin;
+disk-backed swap-in is outside the PI6 mask. Hardware clock failure
+is not part of OOM recovery.
 
 G4 - ERROR/OWNER ATOMICITY: Verify idempotent retries and exact-once
 commit at HUP, TTY, XIP/VM, disk swap, PIPE/DPY, and u-area boundaries.

@@ -1,3 +1,24 @@
+## v1086: PI6-safe slot-0 finalizer boundary
+
+The P0-C audit found that private-stack session HUP preparation could
+be repeated after `proc_exit_current` disabled PI6 and entered the
+permanent idle stack. v1086 publishes the existing PREVM+FINALIZE
+marker and TRANSITION bit atomically under disabled global PI before
+switching stacks; the marked finalizer skips HUP. Immediate self-fatal
+signals use the existing private owner FILE/HUP retry instead of
+calling idle-stack EXIT without a preflight.
+
+Both periodic SIDL/PREVM and immediate EXIT slot-0 callbacks now have
+an executable, fail-closed source contract: checked TTY MM free,
+MEMFS direct XIP/MM unpin, `vm_space_destroy`/MM free, in-memory swap
+bitmap verifier/detach, u-area MM free and resident process-table
+notifications. No sleeping provider, device I/O or clock wait is
+reachable with PI6 inhibited. Real PDP-6 native and booted 256K OOM,
+session/HUP and process-events acceptance PASS; seven deliberately
+unsafe source mutations are rejected. KCORE +7 instruction words
+(`023117` to `023126` octal), no permanent memory growth. P0-C closed;
+the other OOM safety gates remain open.
+
 ## v1085: uncommitted RUN TTY/MM refusal before VM destruction
 
 PDP-6 `proc_slot_discard` now checks `proc_tty_release_session` before

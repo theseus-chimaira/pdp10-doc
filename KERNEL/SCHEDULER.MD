@@ -1,3 +1,17 @@
+## v1086: slot-0 PI6-masked teardown safety
+
+The periodic idle retry services only explicitly marked PREVM,
+post-VM or unpublished SIDL owners. Its tick backoff is evaluated
+before inhibiting PI6, and swap-in remains after PI6 re-enable.
+v1086 also marks immediate EXIT as PREVM+FINALIZE under global PI
+disable before the permanent idle-stack handoff. This prevents the
+old second HUP during PI6 masking; the HUP and all possibly sleeping
+FILE-provider work stay on the live process-private stack. Fatal self
+delivery now enters that private retry path too. The source-linked
+PDP-6 P0-C contract, direct MEMFS-XIP/foreign lease native test and
+256K full guest tests PASS. No new scheduler timer, queue or RAM word
+was needed; the exit handoff costs seven extra KCORE instructions.
+
 # DAIMOS PROCESS SCHEDULER
 
 STATUS: NORMAL SCHEDULER AND MINIMAL SINGLE-OWNER REAL-TIME MODE IMPLEMENTED
