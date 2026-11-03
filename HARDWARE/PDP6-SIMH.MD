@@ -7,9 +7,12 @@ The CPU `PC` register must be first in the SIMH register table for
 the instruction-histogram `OPCOUNT` entries before `PC` caused these
 commands to write a histogram entry instead.  The historical v155
 minimal HALT-at-001000 test isolated this simulator-command failure
-from guest-code failures.  The later Type-551 regression also records
-restoring `PC` ordering; neither statement constitutes a new emulator
-build or runtime acceptance in this consolidation pass.
+from guest-code failures. The later Type-551 regression also records
+restoring `PC` ordering. During the 2026-11-03 v1024 consolidation,
+`daimos-testkit` restored `test-simh-pdp6-go-pc-v155` and executed it
+against the installed PDP-6 SIMH: PASS (HALT at 001000, `PC` reads
+001000). This is a standalone simulator command regression, not a
+new DAIMOS system boot, emulator rebuild, or 32K acceptance test.
 
 DATE: 2026-09-18
 STATUS: CURRENT VERIFIED HARDWARE CONTRACT AND DEFERRED ITEMS
