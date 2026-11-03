@@ -1,6 +1,16 @@
 # DAIMOS RESIDENT-SIZE STATUS
 
-## 2026-10-23 CURRENT KCC FULL/AUTO PERMANENT SIZE V188
+## Historical source inventory (consolidated 2026-11-03)
+
+`STATUS/DAIMOS-KCORE-FUNCTION-INVENTORY-20261021-V87.MD` and its TSV
+preserve a measured 2026-10-21 KCC linked-symbol inventory and two
+source/caller classification passes. It is a dated optimization research
+reference, **not** current symbol sizes or a list of removable routines.
+The reports below are also dated checkpoints; consult DAIMOS
+`PROJECT-STATE.MD` and regenerate linked measurements before making a
+new RAM claim. No 32K testing was performed during this recovery.
+
+## 2026-10-23 HISTORICAL KCC FULL/AUTO PERMANENT SIZE V188
 
 The current DAIMOS `make -C system/boot/pdp6 permanent-size` using the
 default full/auto KCC profile and the installed PDP-6 assembler/linker

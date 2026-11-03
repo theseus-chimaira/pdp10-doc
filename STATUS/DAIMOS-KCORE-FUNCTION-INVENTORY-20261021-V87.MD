@@ -1,0 +1,451 @@
+# DAIMOS V87 — KCORE linked symbol inventory, smallest first
+
+**Archived linked-symbol snapshot (2026-10-21).** Recovered during the
+2026-11-03 branch consolidation because its source/caller classification
+is useful for subsequent RAM optimization. Addresses, function spans,
+reference counts and size targets are historical; do not infer present
+KCORE residency or dead-code candidates without rebuilding and checking
+the current KCORE and MRES dependency graph. This is analysis, not a
+current size report or a fresh 32K acceptance run.
+
+V86 KCC full-profile 256K disk-root baseline, `MONITORFS_MRES_ENABLED=1`, linker map `__kcore_low_end=023002` octal. KCORE is **9682 words**, and 1490 words must be saved to reach 8192 (1491 to get strictly below). Corrected in V94 after accounting for base `060` octal instead of `070`. No 32K testing.
+
+**Measurement caveat:** Table includes every exported defined symbol mapped into KCORE, including data, aliases, service entries and non-functions. `span≤` is the distance to the next *exported symbol in the same input object and section*, or section end. It is an **upper bound on the entry region**, not a proven exclusive function size: internal labels, alignment, aliases and folding can change true spans. Zero means an alias at another symbol address. Relocation references are static references in the KCORE input objects and the available MRES/KINIT package objects, not dynamic call counts; locally resolved branches and indirect calls are not counted. Do not remove functions on zero references alone.
+
+Listed 381 defined linked records from 32 KCORE input objects; .text 9374, .data 37, .bss 331 raw words before folding.
+
+## First bottom-up classification
+
+### V88: first source-and-caller review (2026-10-21)
+
+### V89: TTY, scheduler, and VFS small-function review
+
+`proc_tty_pending_take` and `proc_tty_pending_store` are required KCORE
+interfaces called by both DCS and GE MRES. Their shared packed record is
+process/session state, not dedicated hardware-driver state. The output-route
+get/set pair also maintains packed-state and sentinel semantics, so merging
+the two entrypoints is not an evident saving. `proc_sched_resched_select`
+and `proc_sched_tick_select` already tail-enter the common runnable process
+scanner, but have distinct elapsed-tick behavior. `proc_sched_resched_current`
+requests deferred scheduling using the PI path, so it is not KINIT-only.
+
+VFS `chmod` and `chown`/`utime` already dispatch through common mutation
+and setattr handlers. `vfs_readdir_raw` also distinguishes MonitorFS from
+regular MRES filesystem providers. These are live interfaces, not duplicate
+full implementations. Candidate investigation should now proceed into
+`vfs_readonly` and its mutation callers, syscall marshaling and the
+TTY pending-byte encoding, with measured KCORE deltas and >32K tests.
+
+
+No changes are accepted in this first pass. `mm_pin` and `mm_unpin` are
+two-word wrappers sharing `mm_pin_adjust`. `file_unlink` and `file_rmdir`
+share `file_remove`; `vfs_create` and `vfs_mount` likewise enter shared
+implementations. `vfs_name_is6` is a four-word check used for dot and
+dot-dot names. `proc_slot_ptr` has process and EXEC callers, so it is
+not an unused helper. `fs_copy_words`, `fs_move_words` and
+`fs_zero_words` serve filesystem providers as well as resident VM/MM
+and module operations; relocating them to detachable filesystem MRES
+would introduce lifetime/dependency concerns. TTY packed halfword
+base getters/setters are already compact and serve TTY and canonical
+input paths. No deletion or forced inline transformation is justified
+from these observations alone.
+
+The relocation-reference counts in this inventory are incomplete for
+boot-time patching and for internal branch labels: treat them only as
+hints, not as evidence of dead code. The next pass should evaluate
+larger TTY/scheduler entries and measure any candidate by a fresh linked
+KCORE delta before acceptance.
+
+
+Of 315 exported text entries, 72 have a one-word interval to the next exported entry, 61 have two through eight words, and 51 have nine through sixteen words. These numbers are not independent function sizes: dispatch/PI vectors, return constants, aliases, and trampoline entrypoints dominate the short intervals. Linked text entries occupy 296 distinct absolute addresses.
+
+* **Retain/inspect as dispatch infrastructure:** KCORE `dsk270`/`drm236` two-word drivers, MonitorFS nine-word jump table, `fs_mres` provider entries, and the `storage_router` service jumps must be cross-checked with MINIT patching before any modification. Their relocations can be zero even when hardware interrupt or boot-time code consumes them.
+* **Likely already economical wrappers:** `mm_pin` and `mm_unpin` are separate two-word setup-and-tail-branch entries sharing `mm_pin_adjust`; `vfs_create` selects FS_MRES_OP_CREATE then enters its common handler, `vfs_mount` dispatches to a common implementation, and `file_unlink` selects a flag before tail-branching into `file_remove`. Inlining such wrappers into multiple call sites is likely counterproductive unless their total callers and branch footprints show a net shrink.
+* **Candidates for deeper bottom-up source review:** VFS name comparisons and access wrappers, file path helpers, `fs_copy_words`/`fs_move_words`/`fs_zero_words`, TTY line-state getters/setters, and small scheduler selectors. Check source semantics, exact local call/branch labels, KINIT boot-only call sites, MRES provider callers, and fold relocation constraints individually before changing them.
+* **Potential phase-lifetime boundary:** KINIT owns hardware discovery and module patching; KCORE entries patched or called at initialization must not be removed merely because normal runtime relocation tables show no consumers. Only truly boot-once KCORE logic with no persistent references is a candidate for KINIT.
+
+**Status:** analysis/inventory only. No routine was proved dead and no deletion, inlining or relocation is accepted from this table. The underlying object symbol tables expose global linked entries, not all private assembly labels or unnamed internal code blocks; full function-level control-flow analysis must additionally inspect their source and internal branches.
+
+| Symbol | Linked addr (oct) | Object | Section | Span≤ words | Ref K | Ref M | Ref I |
+|---|---:|---|---|---:|---:|---:|---:|
+| `__kcore_low_init_end` | `022267` | `kcore_end` | data | 0 | 0 | 0 | 1 |
+| `__kcore_low_end` | `023002` | `kcore_end` | bss | 0 | 0 | 0 | 3 |
+| `proc_swap_storage_invariant_v30` | `003462` | `proc_swap` | text | 1 | 1 | 0 | 0 |
+| `kconst_1_1` | `005111` | `ret` | text | 1 | 32 | 0 | 0 |
+| `kconst_2_2` | `005112` | `ret` | text | 1 | 25 | 0 | 0 |
+| `kconst_3_3` | `005113` | `ret` | text | 1 | 11 | 0 | 0 |
+| `kconst_4_4` | `005114` | `ret` | text | 1 | 8 | 0 | 0 |
+| `kconst_5_5` | `005115` | `ret` | text | 1 | 7 | 0 | 0 |
+| `kconst_6_6` | `005116` | `ret` | text | 1 | 10 | 0 | 0 |
+| `kconst_7_7` | `005117` | `ret` | text | 1 | 36 | 0 | 0 |
+| `kconst_10_10` | `005120` | `ret` | text | 1 | 6 | 0 | 0 |
+| `kconst_13_13` | `005121` | `ret` | text | 1 | 4 | 0 | 0 |
+| `kconst_14_14` | `005122` | `ret` | text | 1 | 2 | 0 | 0 |
+| `kconst_15_15` | `005123` | `ret` | text | 1 | 0 | 0 | 0 |
+| `dsk270_read_jump` | `005124` | `dsk270` | text | 1 | 0 | 0 | 0 |
+| `dsk270_read_sector` | `005124` | `dsk270` | text | 1 | 1 | 0 | 0 |
+| `dsk270_write_jump` | `005125` | `dsk270` | text | 1 | 0 | 0 | 0 |
+| `dsk270_write_sector` | `005125` | `dsk270` | text | 1 | 1 | 0 | 0 |
+| `drm236_read_block` | `005126` | `drm236` | text | 1 | 1 | 0 | 0 |
+| `drm236_read_jump` | `005126` | `drm236` | text | 1 | 0 | 0 | 0 |
+| `drm236_write_block` | `005127` | `drm236` | text | 1 | 1 | 0 | 0 |
+| `drm236_write_jump` | `005127` | `drm236` | text | 1 | 0 | 0 | 0 |
+| `blockset_runtime_service_jump` | `006602` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `fs_memfs_service_jump` | `006757` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `fs_dtfs_service_jump` | `006760` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `fs_d6fs_service_jump` | `006761` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `fs_tsfs_service_jump` | `006762` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `memfs_reclaim_jump` | `006771` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `memfs_shutdown_jump` | `006776` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `fs_mres_no_service` | `006777` | `fs_mres` | text | 1 | 0 | 0 | 0 |
+| `tty_write_s6rec_jump` | `010406` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `tty_read_s6rec_jump` | `010407` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `ptr_read_words_jump` | `010410` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `ptp_write_words_jump` | `010411` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `cr_read_words_jump` | `010412` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `cp_write_words_jump` | `010413` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `lpt_putchar_jump` | `010414` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `lpt_write_s6rec_jump` | `010415` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `ttydpy_putchar_jump` | `010416` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `ttydpy_getchar_jump` | `010417` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `dpy_write_words_jump` | `010420` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `wcnsls_read_words_jump` | `010421` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `wcnsls_write_words_jump` | `010422` | `file_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsdev_lookup` | `012045` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsdev_lookup_entry_v16` | `012045` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsdev_readdir` | `012046` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsdev_readdir_entry_v16` | `012046` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsdev_stat` | `012047` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsdev_stat_entry_v16` | `012047` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsdev_readchar` | `012050` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsdev_readchar_entry_v16` | `012050` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsproc_lookup` | `012051` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsproc_lookup_entry_v16` | `012051` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsproc_readdir` | `012052` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsproc_readdir_entry_v16` | `012052` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsproc_stat` | `012053` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsproc_stat_entry_v16` | `012053` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsproc_read_words` | `012054` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsproc_read_words_entry_v16` | `012054` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `mfsproc_format_slot` | `012055` | `monitorfs_runtime` | text | 1 | 1 | 0 | 0 |
+| `mfsproc_format_slot_entry_v16` | `012055` | `monitorfs_runtime` | text | 1 | 0 | 0 | 0 |
+| `sys_logstore_service_jump` | `020227` | `syscall_dispatch_pdp6` | text | 1 | 0 | 0 | 0 |
+| `mach_syscall_save` | `020541` | `mach_user_pdp6` | text | 1 | 2 | 0 | 1 |
+| `pdp10_pi_level1_dispatch_jump` | `021711` | `kcore_pi_pdp6` | text | 1 | 0 | 0 | 0 |
+| `pdp10_pi_level2_dispatch_jump` | `021723` | `kcore_pi_pdp6` | text | 1 | 0 | 0 | 0 |
+| `pdp10_pi_level3_dispatch_jump` | `021735` | `kcore_pi_pdp6` | text | 1 | 0 | 0 | 0 |
+| `pdp10_pi_level4_dispatch_jump` | `021747` | `kcore_pi_pdp6` | text | 1 | 0 | 0 | 0 |
+| `pdp10_pi_level5_dispatch_jump` | `021761` | `kcore_pi_pdp6` | text | 1 | 0 | 0 | 0 |
+| `pdp10_pi_level6_dispatch_jump` | `021773` | `kcore_pi_pdp6` | text | 1 | 0 | 0 | 0 |
+| `pdp10_pi_level7_dispatch_jump` | `022005` | `kcore_pi_pdp6` | text | 1 | 0 | 0 | 0 |
+| `storage_pi_dsk_jump` | `022204` | `storage_router` | text | 1 | 0 | 0 | 0 |
+| `storage_pi_tape_jump` | `022205` | `storage_router` | text | 1 | 0 | 0 | 0 |
+| `storage_dct_dsk_jump` | `022214` | `storage_router` | text | 1 | 0 | 0 | 0 |
+| `storage_dct_tape_jump` | `022215` | `storage_router` | text | 1 | 0 | 0 | 0 |
+| `vfs_mount_target_base` | `022222` | `vfs` | data | 1 | 1 | 0 | 1 |
+| `vfs_mount_root_base` | `022223` | `vfs` | data | 1 | 2 | 0 | 1 |
+| `vfs_mount_limit` | `022224` | `vfs` | data | 1 | 3 | 0 | 1 |
+| `d6fs_reader_slots_base` | `022256` | `fs_mres` | data | 1 | 0 | 0 | 1 |
+| `dtfs_media_base` | `022257` | `fs_mres` | data | 1 | 0 | 0 | 1 |
+| `tsfs_file_shape_base` | `022260` | `fs_mres` | data | 1 | 0 | 0 | 1 |
+| `tsfs_extent_media_base` | `022261` | `fs_mres` | data | 1 | 0 | 0 | 1 |
+| `mach_invalid_uuo_word` | `022265` | `mach_user_pdp6` | data | 1 | 0 | 0 | 0 |
+| `mach_invalid_uuo_pc` | `022266` | `mach_user_pdp6` | data | 1 | 0 | 0 | 0 |
+| `mm_core_words` | `022372` | `mm` | bss | 1 | 1 | 0 | 1 |
+| `mm_extent_count` | `022373` | `mm` | bss | 1 | 2 | 0 | 0 |
+| `mm_arena_count` | `022374` | `mm` | bss | 1 | 1 | 0 | 0 |
+| `proc_sched_age_phase` | `022375` | `proc` | bss | 1 | 3 | 0 | 0 |
+| `backstore_bitmap` | `022436` | `backstore` | bss | 1 | 0 | 0 | 0 |
+| `backstore_blocks` | `022437` | `backstore` | bss | 1 | 2 | 0 | 0 |
+| `backstore_blocks_used` | `022440` | `backstore` | bss | 1 | 0 | 0 | 0 |
+| `backstore_enabled` | `022441` | `backstore` | bss | 1 | 1 | 0 | 0 |
+| `proc_swap_records` | `022442` | `proc_swap` | bss | 1 | 6 | 0 | 0 |
+| `proc_swap_blocks_used` | `022443` | `proc_swap` | bss | 1 | 0 | 0 | 0 |
+| `proc_snap_words_v72` | `022446` | `proc_startup_snapshot_v72` | bss | 1 | 1 | 0 | 0 |
+| `blockset_direct_blocks` | `022651` | `fs_mres` | bss | 1 | 0 | 0 | 0 |
+| `blockset_direct_tail` | `022652` | `fs_mres` | bss | 1 | 0 | 0 | 0 |
+| `proc_timer_clock` | `022654` | `proc_pdp6` | bss | 1 | 0 | 0 | 0 |
+| `proc_timer_next` | `022655` | `proc_pdp6` | bss | 1 | 0 | 0 | 0 |
+| `mach_kernel_stack_base` | `022656` | `proc_pdp6` | bss | 1 | 0 | 0 | 1 |
+| `mfsdev_io_in` | `022703` | `device_state` | bss | 1 | 0 | 0 | 0 |
+| `vfs_namespace_root` | `022713` | `device_state` | bss | 1 | 17 | 0 | 1 |
+| `drm236_active_request` | `022722` | `device_state` | bss | 1 | 0 | 0 | 0 |
+| `mfsdev_d6set_reads` | `022723` | `device_state` | bss | 1 | 0 | 0 | 0 |
+| `mfsdev_drm_reads` | `022724` | `device_state` | bss | 1 | 0 | 0 | 0 |
+| `mfsdev_io_out` | `022725` | `device_state` | bss | 1 | 0 | 0 | 0 |
+| `mach_kernel_sp` | `022726` | `device_state` | bss | 1 | 17 | 0 | 0 |
+| `drm236_pending_request` | `022744` | `device_state` | bss | 1 | 0 | 0 | 0 |
+| `mfsdev_d6set_writes` | `022745` | `device_state` | bss | 1 | 0 | 0 | 0 |
+| `pdp10_pi_sp_save` | `022757` | `kcore_pi_pdp6` | bss | 1 | 3 | 0 | 0 |
+| `proc_sched_deferred_ticks` | `022774` | `kcore_pi_pdp6` | bss | 1 | 7 | 0 | 0 |
+| `proc_runq_head` | `022775` | `kcore_pi_pdp6` | bss | 1 | 6 | 0 | 0 |
+| `proc_rt_owner` | `022776` | `kcore_pi_pdp6` | bss | 1 | 24 | 0 | 0 |
+| `proc_current_ptr` | `022777` | `kcore_pi_pdp6` | bss | 1 | 19 | 0 | 1 |
+| `mm_pin` | `002074` | `mm` | text | 2 | 2 | 0 | 1 |
+| `kret_ok` | `005073` | `ret` | text | 2 | 0 | 0 | 0 |
+| `kret_zero` | `005073` | `ret` | text | 2 | 74 | 0 | 0 |
+| `kret_one` | `005075` | `ret` | text | 2 | 15 | 0 | 0 |
+| `kret_arg` | `005077` | `ret` | text | 2 | 0 | 0 | 0 |
+| `kret_neg1` | `005077` | `ret` | text | 2 | 230 | 0 | 0 |
+| `kret_busy` | `005101` | `ret` | text | 2 | 1 | 0 | 0 |
+| `kret_neg3` | `005101` | `ret` | text | 2 | 5 | 0 | 0 |
+| `kret_neg2` | `005103` | `ret` | text | 2 | 3 | 0 | 0 |
+| `kret_neg4` | `005105` | `ret` | text | 2 | 0 | 0 | 0 |
+| `kret_neg5` | `005107` | `ret` | text | 2 | 0 | 0 | 0 |
+| `vfs_create` | `005611` | `vfs` | text | 2 | 1 | 0 | 0 |
+| `vfs_unlink` | `006064` | `vfs` | text | 2 | 1 | 0 | 0 |
+| `vfs_mount` | `006267` | `vfs` | text | 2 | 0 | 0 | 0 |
+| `backstore_read` | `006612` | `fs_mres` | text | 2 | 1 | 0 | 0 |
+| `blockset_tail_blocks` | `006707` | `fs_mres` | text | 2 | 0 | 0 | 0 |
+| `file_unlink` | `011052` | `file_runtime` | text | 2 | 1 | 0 | 0 |
+| `sys_dtc_read_block_jump` | `020304` | `syscall_dispatch_pdp6` | text | 2 | 0 | 0 | 0 |
+| `mach_return_to_kernel_request` | `020637` | `mach_user_pdp6` | text | 2 | 0 | 0 | 0 |
+| `pdp10_pi_return_level7` | `022030` | `kcore_pi_pdp6` | text | 2 | 0 | 0 | 0 |
+| `storage_clock_tick` | `022216` | `storage_router` | text | 2 | 0 | 0 | 0 |
+| `storage_clock_dsk_jump` | `022220` | `storage_router` | text | 2 | 0 | 0 | 0 |
+| `proc_storage_runtime_v29` | `022444` | `proc_swap` | bss | 2 | 0 | 0 | 0 |
+| `d6fs_active_reader` | `022647` | `fs_mres` | bss | 2 | 0 | 0 | 1 |
+| `mfsdev_d6set_members` | `022704` | `device_state` | bss | 2 | 0 | 0 | 0 |
+| `mach_user_sp` | `022706` | `device_state` | bss | 2 | 6 | 0 | 0 |
+| `storage_state` | `022727` | `device_state` | bss | 2 | 2 | 0 | 0 |
+| `mfsdev_drm_writes` | `022746` | `device_state` | bss | 2 | 0 | 0 | 0 |
+| `proc_table` | `022760` | `kcore_pi_pdp6` | bss | 2 | 49 | 0 | 6 |
+| `proc_slots` | `022762` | `kcore_pi_pdp6` | bss | 2 | 7 | 0 | 0 |
+| `proc_high_slot` | `022764` | `kcore_pi_pdp6` | bss | 2 | 22 | 0 | 0 |
+| `proc_current_slot` | `022766` | `kcore_pi_pdp6` | bss | 2 | 43 | 0 | 1 |
+| `proc_sched_cursor` | `022770` | `kcore_pi_pdp6` | bss | 2 | 13 | 0 | 1 |
+| `proc_sched_kick` | `022772` | `kcore_pi_pdp6` | bss | 2 | 6 | 0 | 0 |
+| `backstore_bitmap_words` | `002431` | `backstore` | text | 3 | 0 | 0 | 0 |
+| `file_lookup_path` | `004474` | `file` | text | 3 | 6 | 0 | 0 |
+| `vfs_remount` | `006436` | `vfs` | text | 3 | 0 | 0 | 0 |
+| `file_mkdir` | `011020` | `file_runtime` | text | 3 | 1 | 0 | 0 |
+| `proc_sched_resched_select` | `012056` | `proc_pdp6` | text | 3 | 0 | 0 | 0 |
+| `proc_sched_resched_current` | `015347` | `proc_pdp6` | text | 3 | 0 | 0 | 0 |
+| `native_sys_getchar_call` | `020515` | `syscall_dispatch_pdp6` | text | 3 | 0 | 0 | 0 |
+| `mach_pi_disable` | `022032` | `kcore_pi_pdp6` | text | 3 | 2 | 0 | 0 |
+| `mach_pi_restore` | `022035` | `kcore_pi_pdp6` | text | 3 | 1 | 0 | 0 |
+| `bcache_workspace_invalidate` | `022175` | `bcache_pdp6` | text | 3 | 1 | 0 | 0 |
+| `proc_comm_words` | `022262` | `proc_pdp6` | data | 3 | 3 | 0 | 0 |
+| `mm_arenas` | `022367` | `mm` | bss | 3 | 1 | 0 | 0 |
+| `file_table` | `022710` | `device_state` | bss | 3 | 49 | 0 | 0 |
+| `vfs_name_is6` | `006020` | `vfs` | text | 4 | 2 | 0 | 0 |
+| `fs_memfs_shutdown` | `006772` | `fs_mres` | text | 4 | 1 | 0 | 0 |
+| `file_check_root` | `007441` | `file_runtime` | text | 4 | 12 | 0 | 0 |
+| `storage_pi_handler` | `022200` | `storage_router` | text | 4 | 0 | 0 | 0 |
+| `storage_count` | `022740` | `device_state` | bss | 4 | 2 | 0 | 0 |
+| `backstore_init` | `002434` | `backstore` | text | 5 | 0 | 0 | 0 |
+| `vfs_readchar` | `006206` | `vfs` | text | 5 | 1 | 0 | 0 |
+| `file_read_words` | `010177` | `file_runtime` | text | 5 | 2 | 0 | 0 |
+| `file_getcwd` | `010541` | `file_runtime` | text | 5 | 1 | 0 | 0 |
+| `pipe_fifo_detach` | `011547` | `pipe` | text | 5 | 1 | 0 | 0 |
+| `proc_slot_ptr` | `012605` | `proc_pdp6` | text | 5 | 1 | 0 | 0 |
+| `storage_request_init` | `016640` | `device_state` | text | 5 | 0 | 0 | 0 |
+| `vfs_name_valid` | `005765` | `vfs` | text | 6 | 0 | 0 | 0 |
+| `vfs_sync` | `006200` | `vfs` | text | 6 | 1 | 0 | 0 |
+| `fs_memory_reclaim` | `006763` | `fs_mres` | text | 6 | 1 | 0 | 0 |
+| `vm_activate_current` | `020703` | `vm_backend_pdp6` | text | 6 | 2 | 0 | 0 |
+| `storage_dct_handler` | `022206` | `storage_router` | text | 6 | 0 | 0 | 0 |
+| `vfs_mount_policy` | `022714` | `device_state` | bss | 6 | 7 | 0 | 0 |
+| `mfsdev_storage_errors` | `022750` | `device_state` | bss | 6 | 0 | 0 | 0 |
+| `vfs_mkfifo` | `005613` | `vfs` | text | 7 | 1 | 0 | 0 |
+| `vfs_readdir_raw` | `006043` | `vfs` | text | 7 | 0 | 0 | 0 |
+| `vfs_writechar` | `006213` | `vfs` | text | 7 | 1 | 0 | 0 |
+| `blockset_direct_configure` | `006603` | `fs_mres` | text | 7 | 0 | 0 | 0 |
+| `fs_copy_words` | `007000` | `fs_mres` | text | 7 | 6 | 0 | 0 |
+| `fs_mres_vector_dispatch` | `007067` | `fs_mres` | text | 7 | 0 | 0 | 0 |
+| `storage_iowd` | `022731` | `device_state` | bss | 7 | 0 | 0 | 0 |
+| `vfs_name_words_equal` | `005773` | `vfs` | text | 8 | 0 | 0 | 0 |
+| `vfs_chown` | `006116` | `vfs` | text | 8 | 1 | 0 | 0 |
+| `vfs_read_words` | `006145` | `vfs` | text | 8 | 8 | 0 | 0 |
+| `vfs_current_owner` | `007431` | `file_runtime` | text | 8 | 0 | 0 | 0 |
+| `file_find` | `011167` | `file_runtime` | text | 8 | 3 | 0 | 0 |
+| `proc_tty_output_route_get` | `015140` | `proc_pdp6` | text | 8 | 1 | 0 | 0 |
+| `sys_resident_words_immediate` | `016762` | `syscall_info` | text | 8 | 0 | 0 | 2 |
+| `mm_alloc` | `001700` | `mm` | text | 9 | 3 | 0 | 2 |
+| `proc_tty_echo` | `002271` | `proc` | text | 9 | 4 | 0 | 0 |
+| `fs_zero_words` | `007027` | `fs_mres` | text | 9 | 7 | 0 | 0 |
+| `proc_tty_line_base_get` | `014410` | `proc_pdp6` | text | 9 | 3 | 0 | 0 |
+| `proc_tty_line_base_set` | `014421` | `proc_pdp6` | text | 9 | 2 | 0 | 0 |
+| `pdp10_pi_level1` | `021700` | `kcore_pi_pdp6` | text | 9 | 0 | 0 | 0 |
+| `pdp10_pi_level2` | `021712` | `kcore_pi_pdp6` | text | 9 | 0 | 0 | 0 |
+| `pdp10_pi_level3` | `021724` | `kcore_pi_pdp6` | text | 9 | 0 | 0 | 0 |
+| `pdp10_pi_level4` | `021736` | `kcore_pi_pdp6` | text | 9 | 0 | 0 | 0 |
+| `pdp10_pi_level5` | `021750` | `kcore_pi_pdp6` | text | 9 | 0 | 0 | 0 |
+| `pdp10_pi_level6` | `021762` | `kcore_pi_pdp6` | text | 9 | 8 | 0 | 0 |
+| `pdp10_pi_level7` | `021774` | `kcore_pi_pdp6` | text | 9 | 0 | 0 | 0 |
+| `vfs_stat` | `006052` | `vfs` | text | 10 | 11 | 0 | 1 |
+| `proc_has_live_user` | `013611` | `proc_pdp6` | text | 10 | 1 | 0 | 0 |
+| `proc_wait_event_intr` | `015264` | `proc_pdp6` | text | 10 | 1 | 0 | 0 |
+| `vm_user_words` | `020641` | `vm_backend_pdp6` | text | 10 | 5 | 0 | 0 |
+| `mm_unpin` | `002076` | `mm` | text | 11 | 4 | 0 | 0 |
+| `proc_tty_line_bases` | `022423` | `proc` | bss | 11 | 3 | 0 | 0 |
+| `vfs_chmod` | `006102` | `vfs` | text | 12 | 1 | 0 | 0 |
+| `fs_mres_context_vector_dispatch` | `007076` | `fs_mres` | text | 12 | 0 | 0 | 0 |
+| `file_check_owner` | `007445` | `file_runtime` | text | 12 | 2 | 0 | 0 |
+| `pipe_fifo_mount_busy` | `011554` | `pipe` | text | 12 | 1 | 0 | 0 |
+| `pipe_add_ref` | `011727` | `pipe` | text | 12 | 2 | 0 | 0 |
+| `proc_record_kernel_sp` | `013056` | `proc_pdp6` | text | 12 | 1 | 0 | 0 |
+| `proc_tty_output_route_set` | `015150` | `proc_pdp6` | text | 12 | 1 | 0 | 0 |
+| `proc_tty_pending_take` | `015164` | `proc_pdp6` | text | 12 | 0 | 0 | 0 |
+| `sys_meminfo` | `016746` | `syscall_info` | text | 12 | 1 | 0 | 0 |
+| `vm_user_mapping_hold` | `020653` | `vm_backend_pdp6` | text | 12 | 3 | 0 | 0 |
+| `vm_user_mapping_release` | `020667` | `vm_backend_pdp6` | text | 12 | 22 | 0 | 0 |
+| `vm_space_load_file` | `021352` | `vm_backend_pdp6` | text | 12 | 1 | 0 | 0 |
+| `sixbit_record_words` | `000562` | `exec` | text | 13 | 3 | 0 | 0 |
+| `file_parent_path` | `004477` | `file` | text | 13 | 6 | 0 | 0 |
+| `vfs_mkdir` | `005622` | `vfs` | text | 13 | 1 | 0 | 0 |
+| `vfs_name_from_words` | `006003` | `vfs` | text | 13 | 0 | 0 | 0 |
+| `file_node_from_fd` | `007112` | `file_runtime` | text | 13 | 3 | 0 | 0 |
+| `file_path_char` | `007461` | `file_runtime` | text | 13 | 1 | 0 | 0 |
+| `vfs_name_char` | `007461` | `file_runtime` | text | 13 | 0 | 0 | 0 |
+| `file_truncate` | `011135` | `file_runtime` | text | 13 | 1 | 0 | 0 |
+| `file_stat_path` | `011152` | `file_runtime` | text | 13 | 1 | 0 | 0 |
+| `pipe_fifo_unlink_object` | `011402` | `pipe` | text | 13 | 0 | 0 | 0 |
+| `proc_trim_high` | `012570` | `proc_pdp6` | text | 13 | 1 | 0 | 0 |
+| `proc_tty_line_get` | `014453` | `proc_pdp6` | text | 13 | 0 | 0 | 0 |
+| `vfs_truncate` | `006066` | `vfs` | text | 14 | 2 | 0 | 0 |
+| `vfs_readonly` | `006222` | `vfs` | text | 14 | 0 | 0 | 0 |
+| `proc_tty_pending_store` | `015200` | `proc_pdp6` | text | 14 | 0 | 0 | 0 |
+| `proc_tty_echo_erase` | `002302` | `proc` | text | 15 | 2 | 0 | 0 |
+| `vfs_sixbit_name_chars` | `006024` | `vfs` | text | 15 | 0 | 0 | 0 |
+| `vfs_utime` | `006126` | `vfs` | text | 15 | 1 | 0 | 0 |
+| `file_close_all` | `010160` | `file_runtime` | text | 15 | 3 | 0 | 0 |
+| `proc_scope_id` | `013662` | `proc_pdp6` | text | 15 | 2 | 0 | 0 |
+| `bcache_reclaim` | `022161` | `bcache_pdp6` | text | 15 | 1 | 0 | 0 |
+| `fs_move_words` | `007007` | `fs_mres` | text | 16 | 2 | 0 | 0 |
+| `vfs_shutdown_root` | `006441` | `vfs` | text | 17 | 1 | 0 | 0 |
+| `file_check_access` | `007165` | `file_runtime` | text | 17 | 2 | 0 | 0 |
+| `file_path_setchar` | `007476` | `file_runtime` | text | 17 | 0 | 0 | 0 |
+| `vfs_name_setchar` | `007476` | `file_runtime` | text | 17 | 0 | 0 | 0 |
+| `proc_tty_line_put` | `014432` | `proc_pdp6` | text | 17 | 0 | 0 | 0 |
+| `proc_sched_pi_resched` | `015602` | `proc_pdp6` | text | 17 | 0 | 0 | 0 |
+| `native_sys_putchar_call` | `020520` | `syscall_dispatch_pdp6` | text | 17 | 1 | 0 | 0 |
+| `pdp10_pi_dispatch_done` | `022006` | `kcore_pi_pdp6` | text | 18 | 5 | 0 | 0 |
+| `pdp10_pi_handler_return` | `022006` | `kcore_pi_pdp6` | text | 18 | 0 | 0 | 0 |
+| `d6lz36_decode_buffer` | `001123` | `d6lz` | text | 20 | 0 | 0 | 0 |
+| `s6rec_text_validate` | `005160` | `s6rec` | text | 20 | 0 | 0 | 0 |
+| `proc_uarea_release` | `012516` | `proc_pdp6` | text | 20 | 1 | 0 | 0 |
+| `proc_runq_add` | `012612` | `proc_pdp6` | text | 20 | 2 | 0 | 1 |
+| `proc_wait_child` | `015352` | `proc_pdp6` | text | 20 | 0 | 0 | 0 |
+| `mfsdev_names` | `022657` | `device_state` | bss | 20 | 2 | 0 | 0 |
+| `proc_storage_expect_v30` | `004045` | `proc_swap` | text | 21 | 2 | 0 | 0 |
+| `vfs_parent` | `005442` | `vfs` | text | 21 | 1 | 0 | 0 |
+| `vfs_write_words` | `006155` | `vfs` | text | 21 | 1 | 0 | 0 |
+| `proc_rt_control` | `013072` | `proc_pdp6` | text | 21 | 2 | 0 | 0 |
+| `proc_tty_records` | `022376` | `proc` | bss | 21 | 26 | 0 | 0 |
+| `proc_swap_reclaim` | `003534` | `proc_swap` | text | 22 | 2 | 0 | 0 |
+| `file_unlock_mount` | `010132` | `file_runtime` | text | 22 | 1 | 0 | 0 |
+| `proc_nice_current` | `013117` | `proc_pdp6` | text | 22 | 2 | 0 | 0 |
+| `proc_tty_output` | `015112` | `proc_pdp6` | text | 22 | 1 | 0 | 0 |
+| `vfs_symlink` | `005707` | `vfs` | text | 23 | 1 | 0 | 0 |
+| `vfs_storage_release` | `006240` | `vfs` | text | 23 | 0 | 0 | 0 |
+| `fs_zero_block_workspace` | `007040` | `fs_mres` | text | 23 | 0 | 0 | 0 |
+| `file_readdir` | `010423` | `file_runtime` | text | 23 | 1 | 0 | 0 |
+| `file_chdir` | `010771` | `file_runtime` | text | 23 | 1 | 0 | 0 |
+| `file_mkfifo` | `011023` | `file_runtime` | text | 23 | 1 | 0 | 0 |
+| `pipe_add_refs` | `011743` | `pipe` | text | 23 | 1 | 0 | 0 |
+| `proc_exit_current` | `013027` | `proc_pdp6` | text | 23 | 2 | 0 | 0 |
+| `proc_exec_enter` | `021651` | `vm_backend_pdp6` | text | 23 | 1 | 0 | 0 |
+| `kfmt_u18_sixbit` | `005130` | `kfmt_pdp6` | text | 24 | 0 | 0 | 0 |
+| `proc_tty_release_session` | `012540` | `proc_pdp6` | text | 24 | 1 | 0 | 0 |
+| `proc_runq_remove` | `012636` | `proc_pdp6` | text | 24 | 2 | 0 | 0 |
+| `pclk_time36` | `017037` | `pclk` | text | 24 | 1 | 0 | 0 |
+| `monitorfs_names` | `022225` | `vfs` | data | 24 | 0 | 0 | 0 |
+| `proc_exit_finish` | `002400` | `proc` | text | 25 | 1 | 0 | 0 |
+| `vfs_rename` | `005736` | `vfs` | text | 25 | 1 | 0 | 0 |
+| `proc_tty_line_reset` | `002116` | `proc` | text | 26 | 5 | 0 | 0 |
+| `proc_tty_read_enter` | `014772` | `proc_pdp6` | text | 26 | 1 | 0 | 0 |
+| `file_dup` | `007677` | `file_runtime` | text | 27 | 1 | 0 | 0 |
+| `file_symlink` | `010701` | `file_runtime` | text | 27 | 1 | 0 | 0 |
+| `file_rename` | `010734` | `file_runtime` | text | 29 | 1 | 0 | 0 |
+| `proc_tty_session_has` | `013145` | `proc_pdp6` | text | 29 | 0 | 0 | 0 |
+| `vm_enter_initial_user` | `021614` | `vm_backend_pdp6` | text | 29 | 0 | 0 | 1 |
+| `file_mount_ext_store` | `007127` | `file_runtime` | text | 30 | 0 | 0 | 0 |
+| `file_close` | `007641` | `file_runtime` | text | 30 | 1 | 0 | 0 |
+| `vm_space_destroy` | `021314` | `vm_backend_pdp6` | text | 30 | 8 | 0 | 0 |
+| `file_access_stat` | `007206` | `file_runtime` | text | 31 | 0 | 0 | 0 |
+| `proc_notify_parent` | `013623` | `proc_pdp6` | text | 31 | 0 | 0 | 0 |
+| `proc_tty_line_ensure` | `002231` | `proc` | text | 32 | 1 | 0 | 0 |
+| `backstore_free` | `002545` | `backstore` | text | 32 | 3 | 0 | 0 |
+| `proc_storage_publish_v30` | `004072` | `proc_swap` | text | 32 | 0 | 0 | 0 |
+| `file_new_fd` | `011177` | `file_runtime` | text | 33 | 2 | 0 | 0 |
+| `vm_space_create` | `021253` | `vm_backend_pdp6` | text | 33 | 1 | 0 | 0 |
+| `pipe_create` | `011417` | `pipe` | text | 34 | 1 | 0 | 0 |
+| `d6lz36_decode_vfs` | `001056` | `d6lz` | text | 37 | 2 | 0 | 0 |
+| `mm_extent_insert` | `001167` | `mm` | text | 37 | 0 | 0 | 0 |
+| `sys_memfs_usage_call` | `016772` | `syscall_info` | text | 37 | 0 | 0 | 0 |
+| `proc_swap_unpack_backing` | `003562` | `proc_swap` | text | 38 | 0 | 0 | 0 |
+| `fs_provider_reg_call` | `006711` | `fs_mres` | text | 38 | 19 | 0 | 0 |
+| `proc_sleep_ticks` | `015216` | `proc_pdp6` | text | 38 | 1 | 0 | 0 |
+| `bcache_fetch` | `022040` | `bcache_pdp6` | text | 38 | 0 | 0 | 0 |
+| `d6lz36_decode_core` | `000060` | `d6lz_fixed` | text | 40 | 1 | 0 | 0 |
+| `proc_swap_mount_busy` | `003775` | `proc_swap` | text | 40 | 1 | 0 | 0 |
+| `proc_swap_service_one` | `003463` | `proc_swap` | text | 41 | 1 | 0 | 0 |
+| `proc_wait_event` | `015276` | `proc_pdp6` | text | 41 | 1 | 0 | 0 |
+| `vfs_create_op` | `005637` | `vfs` | text | 42 | 0 | 0 | 0 |
+| `file_readchar` | `007517` | `file_runtime` | text | 43 | 1 | 0 | 0 |
+| `file_writechar` | `007570` | `file_runtime` | text | 43 | 1 | 0 | 0 |
+| `file_dup2` | `007732` | `file_runtime` | text | 43 | 1 | 0 | 0 |
+| `pipe_close_ref` | `011772` | `pipe` | text | 43 | 1 | 0 | 0 |
+| `bcache_store` | `022106` | `bcache_pdp6` | text | 43 | 0 | 0 | 0 |
+| `proc_session_teardown` | `013202` | `proc_pdp6` | text | 44 | 0 | 0 | 0 |
+| `sys_mtc_service_jump` | `020230` | `syscall_dispatch_pdp6` | text | 44 | 0 | 0 | 0 |
+| `pipe_read_words` | `011564` | `pipe` | text | 46 | 1 | 0 | 0 |
+| `proc_slot_discard` | `002321` | `proc` | text | 47 | 1 | 0 | 0 |
+| `proc_tty_mode_set` | `002150` | `proc` | text | 49 | 1 | 0 | 0 |
+| `proc_swap_reload_pure` | `003630` | `proc_swap` | text | 49 | 0 | 0 | 0 |
+| `mm_free` | `002012` | `mm` | text | 50 | 13 | 0 | 1 |
+| `proc_snap_drop_v72` | `005010` | `proc_startup_snapshot_v72` | text | 51 | 3 | 0 | 0 |
+| `file_rmdir` | `011054` | `file_runtime` | text | 51 | 1 | 0 | 0 |
+| `proc_swap_backing_busy` | `003711` | `proc_swap` | text | 52 | 3 | 0 | 0 |
+| `pipe_write_words` | `011642` | `pipe` | text | 53 | 1 | 0 | 0 |
+| `pipe_fifo_open` | `011461` | `pipe` | text | 54 | 1 | 0 | 0 |
+| `file_component` | `010452` | `file_runtime` | text | 55 | 1 | 0 | 0 |
+| `proc_tty_input` | `015024` | `proc_pdp6` | text | 56 | 1 | 0 | 0 |
+| `proc_swap_detach` | `002605` | `proc_swap` | text | 57 | 1 | 0 | 0 |
+| `mm_compact` | `001605` | `mm` | text | 59 | 1 | 0 | 0 |
+| `backstore_write` | `006614` | `fs_mres` | text | 59 | 1 | 0 | 0 |
+| `file_seek` | `011240` | `file_runtime` | text | 59 | 1 | 0 | 0 |
+| `proc_tty_line_take` | `014470` | `proc_pdp6` | text | 61 | 1 | 0 | 0 |
+| `mach_syscall` | `020542` | `mach_user_pdp6` | text | 61 | 0 | 0 | 0 |
+| `vfs_lookup` | `005204` | `vfs` | text | 64 | 2 | 0 | 2 |
+| `mm_extents` | `022267` | `mm` | bss | 64 | 5 | 0 | 0 |
+| `mm_alloc_aligned` | `001711` | `mm` | text | 65 | 4 | 0 | 0 |
+| `sys_procinfo` | `016645` | `syscall_info` | text | 65 | 1 | 0 | 0 |
+| `vm_space_startup` | `021366` | `vm_backend_pdp6` | text | 65 | 3 | 0 | 1 |
+| `backstore_alloc` | `002441` | `backstore` | text | 68 | 1 | 0 | 0 |
+| `proc_child_hierarchy` | `013701` | `proc_pdp6` | text | 69 | 1 | 0 | 0 |
+| `proc_finish_slot` | `012400` | `proc_pdp6` | text | 78 | 1 | 0 | 0 |
+| `vfs_unmount` | `006462` | `vfs` | text | 82 | 1 | 0 | 0 |
+| `vfs_parent_name` | `005467` | `vfs` | text | 84 | 1 | 0 | 0 |
+| `file_lock` | `010005` | `file_runtime` | text | 85 | 1 | 0 | 0 |
+| `vm_extent_move` | `021467` | `vm_backend_pdp6` | text | 85 | 1 | 0 | 0 |
+| `exec_replace_current_lowmem` | `000430` | `exec` | text | 90 | 0 | 0 | 0 |
+| `file_getpath` | `010546` | `file_runtime` | text | 91 | 1 | 0 | 0 |
+| `vfs_readdir` | `005304` | `vfs` | text | 94 | 1 | 0 | 0 |
+| `proc_wait_status` | `012666` | `proc_pdp6` | text | 97 | 1 | 0 | 0 |
+| `mm_is_pinned` | `001234` | `mm` | text | 98 | 3 | 0 | 0 |
+| `vfs_mount_prevalidated` | `006271` | `vfs` | text | 101 | 0 | 0 | 0 |
+| `proc_event_send` | `013443` | `proc_pdp6` | text | 102 | 0 | 0 | 0 |
+| `proc_swap_out` | `003074` | `proc_swap` | text | 116 | 0 | 0 | 0 |
+| `file_open` | `007245` | `file_runtime` | text | 116 | 1 | 0 | 0 |
+| `proc_event_apply` | `013256` | `proc_pdp6` | text | 122 | 2 | 0 | 0 |
+| `proc_sched_pi_tick` | `015623` | `proc_pdp6` | text | 123 | 0 | 0 | 0 |
+| `proc_swap_attach` | `002676` | `proc_swap` | text | 126 | 1 | 0 | 0 |
+| `fs_block_workspace` | `022447` | `vfs` | bss | 128 | 7 | 0 | 0 |
+| `proc_swap_in` | `003260` | `proc_swap` | text | 130 | 0 | 0 | 0 |
+| `file_write_words` | `010204` | `file_runtime` | text | 130 | 3 | 0 | 0 |
+| `proc_swap_victim` | `016016` | `proc_pdp6` | text | 130 | 1 | 0 | 0 |
+| `proc_wakeup_event` | `015376` | `proc_pdp6` | text | 132 | 2 | 0 | 0 |
+| `mm_alloc_aligned_noreclaim` | `001376` | `mm` | text | 135 | 2 | 0 | 0 |
+| `proc_tty_canon_input` | `014563` | `proc_pdp6` | text | 140 | 0 | 0 | 0 |
+| `sys_dtc_write_block_jump` | `020306` | `syscall_dispatch_pdp6` | text | 145 | 0 | 0 | 0 |
+| `exec_load_process` | `000577` | `exec` | text | 175 | 1 | 0 | 1 |
+| `proc_snap_take_v72` | `004514` | `proc_startup_snapshot_v72` | text | 188 | 1 | 0 | 0 |
+| `exec_replace_current` | `000130` | `exec` | text | 192 | 1 | 0 | 0 |
+| `proc_sched_tick_select` | `012061` | `proc_pdp6` | text | 207 | 0 | 0 | 0 |
+| `vm_space_brk_current` | `020711` | `vm_backend_pdp6` | text | 226 | 1 | 0 | 0 |
+| `proc_control` | `014006` | `proc_pdp6` | text | 260 | 1 | 0 | 0 |
+| `proc_run_block` | `016220` | `proc_run` | text | 272 | 1 | 0 | 0 |
+| `sys_dtfs_mount_jump` | `017562` | `syscall_dispatch_pdp6` | text | 298 | 0 | 0 | 0 |
+| `exec_native_syscall` | `017067` | `syscall_dispatch_pdp6` | text | 317 | 2 | 0 | 0 |
