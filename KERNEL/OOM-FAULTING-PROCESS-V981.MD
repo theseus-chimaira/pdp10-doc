@@ -1,3 +1,40 @@
+## v1090-v1091: fatal event aborts an undispatched FS lease waiter
+
+P0-B now distinguishes two live private-stack owners. A process already
+inside the serialized DTFS/D6FS/TSFS provider retains the lease and
+cannot safely be canceled from another process. A different process
+sleeping on the gateway's lease event has not entered the provider and
+can safely abandon its saved request on its own stack.
+
+After a remote INT/TERM/HUP/PIPE is recorded, the event path wakes only
+a target in exact SLEEP/WAIT_EVENT state with the existing FS gateway
+wait-event address. STOP, WAIT_CHILD, WAIT_INTR and unrelated kernel
+waiters remain untouched. The resumed waiter checks its existing u-area
+fatal event bitmap and refuses the request before acquiring a lease;
+the normal user-return fatal handler owns resource cleanup and WAIT
+notification. An already established fatal FILE-close owner bypasses
+this refusal so it can retry a free provider. No foreign stack, shared
+filesystem workspace, or active provider lock is freed or unlocked.
+
+Native PDP-6 source-linked v1090 verifies the exact wake and refusal,
+other wait classes, surviving lock owner, cleanup-owner reentry and
+four deliberately unsafe variants. Booted v1091 disposable 256K PDP-6
+holds a provider owner indefinitely, then sends TERM to a blocked
+gateway waiter; the waiter exits and is reaped with correct WAIT status
+while owner lease `4,,0` is unchanged, an independent user runs for
+73 cycles, and no errors are reported. Updated v1087 no-allocation
+closure and production KCC image build PASS. KCORE low end grows from
+`023127` to `023161` octal (+26 words), without any persistent data.
+The independent booted 256K v1077 physical-OOM requester/D6FS/MM
+fault guest also PASSes with two D6FS SYNC and one MM_BUSY refusals;
+the unrelated witness survives and production OOM remains disabled.
+
+This resolves *pre-dispatch* waiter termination, not recovery from
+arbitrary provider software loops or permanent FILE/MM refusal. Such
+owners must remain quarantined until genuine provider-specific safe
+completion is established. P0-B/D/E/F still open and production OOM
+killing remains OFF.
+
 ## v1088-v1089: P0-B provider-lifetime progress, not final closure
 
 PDP-6 native v1088 tests the actual serialized FS register gateway with
