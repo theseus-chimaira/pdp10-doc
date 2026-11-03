@@ -1,5 +1,24 @@
 # OOM policy: terminate only the faulting process (v981)
 
+## v1080: prevent full DRM236 FIFO from busy-spinning
+
+The v1079 packed watchdog exposed a third-request contention bug:
+after RH extraction from `drm236_active_request`, the full-queue
+code unconditionally jumped to retry. That branch could keep a
+process spinning in its private kernel stack while another request
+remained active and the single pending slot was occupied, preventing
+the waiting owner from making progress.
+
+v1080 replaces the unconditional branch with JUMPE, retaining the
+wait on the active owner's event when a descriptor exists. The
+private event cannot be discarded before its owner completes. Native
+source-linked three-request test PASS, original v1079 negative
+control FAIL, normal online Type-167/236 and v1079 watchdog tests
+PASS. The full 256K physical-OOM test continues to pass.
+Memory delta is zero code/data words; automatic production OOM
+termination remains OFF because other provider and slot-0 liveness
+gates are unresolved.
+
 ## v1079: complete in-flight DRM236 requests after hardware stalls
 
 The DRM236 block driver was found to have only an early-boot bounded
