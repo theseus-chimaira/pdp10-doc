@@ -1,3 +1,78 @@
+## v1085: SIDL RUN rollback releases final TTY before VM retirement
+
+An unpublished RUN child in SIDL/TRANSITION can outlive its parent's
+membership in the inherited session while its VM rollback is pending.
+The old `proc_slot_discard` first destroyed its VM and then called
+`proc_tty_release_session` without inspecting the checked MM result.
+A final pinned/misowned canonical input buffer could therefore keep
+its TTY session but lose the only remaining retry process and u-area.
+
+v1085 moves the checked TTY call ahead of VM destruction. A refusal
+arms the existing SIDL VM retry marker/backoff and leaves the child's
+VM, u-area, and session ownership intact. Only on TTY success may VM
+and u-area retirement proceed. Already committed post-VM retries do
+not reenter the TTY stage. Source-linked native PDP-6 positive and
+pre-v1085 negative tests PASS; v892/v894 RUN rollback and v1081 final
+TTY-owner finalizer regressions PASS. The full 256K v1077 physical OOM
+with D6FS/MM refusals and v969 actual MM-pinned final-session TTY exit
+also PASS. Comparable KCORE end increases by just one instruction
+word (`023116` -> `023117` octal), zero new persistent words.
+
+## Current production OOM activation gates after v1085
+
+G1 - TRANSITIVE RECLAIM: Inventory every reachable fatal-termination
+edge from BRK, APR and committed EXEC through FILE close, VFS/provider
+SYNC, HUP/deferred signals, TTY, MEMFS XIP, PIPE/DPY, process VM,
+swap backing, u-area and parent notification. Establish absence of
+new MM/backing allocations or failure-atomic owner retention through
+the whole path, not just individual destructor leaves.
+
+G2 - PROVIDER OWNER: Finish foreign held-lease and in-flight completion
+proof. A returning provider may fail; its owner and FILE descriptor
+must remain available for retry. A call that never returns cannot be
+unlocked, canceled or have its private stack reclaimed without a
+provider-specific completion/quiescence contract. Define explicit
+fail-closed quarantine versus demonstrable subsystem recovery. A
+capped delay between retries does not bound total teardown time.
+
+G3 - PI6/IDLE SAFETY: Prove the permanently resident slot-0 finalizer
+cannot sleep or start a device operation needing the scheduler PI6
+ticks while PI6 is inhibited. The current service dispatches only
+marked PREVM/post-VM and SIDL rollback; HUP occurs on the live private
+stack, and swap-in service follows PI6 restoration. Indirect MRES
+callbacks still require exhaustive verification and fault acceptance.
+
+G4 - ERROR/OWNER ATOMICITY: Verify idempotent retries and exact-once
+commit at HUP, TTY, XIP/VM, disk swap, PIPE/DPY, and u-area boundaries.
+An MM pin/BUSY may later recover; a wrong type, wrong owner or missing
+extent must not be force-freed or reported as a successful rollback.
+No live continuation, lock, FILE, PID or MM extent is retired early.
+
+G5 - SYSTEM ACCEPTANCE: Booted PDP-6 fault combinations with actual
+memory exhaustion, HUP and FILE/MM refusals, APR/EXEC fatal events,
+RUN admission rollback, physical TTY/XIP pins, shared-provider lock
+contention, and sustained independent runnable processes. Verify
+correct WAIT status, no unrelated kill, no leaked owner, and progress
+without PI6 deadlock. The v1075/v1077/v969 guests and many isolated
+leaf tests already pass but do not prove all combinations.
+
+G6 - ACTIVATION GATE: Preserve ordinary failures for invalid BRK,
+address limits, fragmentation, MM descriptor shortage, and failed
+child RUN. Only the *requester's* genuine MM_ERR_NOMEM BRK enters the
+OOM fatal path. After G1-G5, rerun disabled/enabled full-guest negative
+and positive tests and check KCORE/MRES/16K resource limits before
+changing `PROC_OOM_BRK_ENABLED_V1000` from zero in production.
+
+HARDWARE ASSUMPTION: a working APR hardware line clock and normal
+interrupt delivery are required for any scheduled system. Physical
+clock failure is outside DAIMOS OOM recovery scope and does not need
+a fallback timer. A *software*-inhibited PI6 clock, a spinning kernel
+loop or a blocked clock-dependent driver remains a correctness defect.
+The v1079 DRM236 timeout needs valid APR ticks and is already tested
+for device-specific I/O failure; a universal provider cancellation
+system is not implied by hardware-clock failure. Production automatic
+OOM termination remains disabled until G1-G6 are accepted.
+
 ## v1084: interrupted FIFO OPEN preserves the last PIPE/MM owner
 
 The `pipe_fifo_open` rendezvous is interruptible. Before sleeping,

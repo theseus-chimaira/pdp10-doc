@@ -1,3 +1,22 @@
+## v1085: uncommitted RUN TTY/MM refusal before VM destruction
+
+PDP-6 `proc_slot_discard` now checks `proc_tty_release_session` before
+destroying VM of a SIDL/unpublished RUN child. A failed canonical-line
+MM release preserves its process descriptor, executable VM and u-area
+in the existing SIDL rollback retry stage. Once the TTY release is
+accepted, VM and u-area are released once, with no session EXIT/HUP
+or child WAIT publication. Native source-linked v1085 positive and
+old-source negative regression, v892/v894 RUN teardown, v1081 TTY
+pre-VM owner, and full v969 pinned TTY guest PASS. KCORE +1 word,
+no new permanent data or reaper state.
+
+The hardware APR clock is assumed operational. Software-induced PI6
+inhibition during a callback that needs clock progress remains an
+OOM readiness P0. Permanent provider refusal requires retained live
+ownership or explicit verified subsystem recovery, never a blind MM
+force-free. Full transitive teardown and concurrency coverage remain
+incomplete; automatic OOM kill stays disabled.
+
 ## v1084: failure-atomic interrupted FIFO OPEN on MM refusal
 
 A named FIFO waiting for its peer may be interrupted while its FILE
