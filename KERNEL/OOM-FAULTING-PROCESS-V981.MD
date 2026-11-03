@@ -1,3 +1,67 @@
+## v1092: P0-B fail-closed provider lifetime contract CLOSED
+
+P0-B is closed **for memory and resource ownership safety**, not for
+eventual completion. The accepted response to a provider that never
+returns or permanently rejects CLOSE is **fail-closed quarantine**.
+This is not a new MRES module, process table, or discretionary killer:
+it uses the exact provider, FILE, process and kernel-stack owners
+already present in KCore. Unknown provider completion cannot be
+inferred from elapsed time or a capped retry interval.
+
+The shared DTFS/D6FS/TSFS register gateway retains the encoded owner
+slot+1 in the LH of `fs_provider_ready` while its RH is zero. Its
+shared block workspace and owner's stable private kernel continuation
+remain live until the real provider returns and releases that lease.
+Another process waiting before provider dispatch may respond to a
+fatal event on its own saved stack (v1090/v1091); it cannot terminate
+or unlock the provider owner. Ordinary blocked callers may have no
+completion until service resumes. An in-flight owner must never have
+its PID reused, FILE/MM buffers freed, event fabricated or lock reset.
+
+A provider that *returns an error* during fatal FILE closure is a
+different case. The original fatal owner retains its descriptor,
+process/u-area, provider error witness and private retry continuation.
+Backoff reaches 01000 octal ticks, then stays bounded in frequency;
+it does NOT guarantee eventual reclamation. The existing read-only
+`SYS_PROCCTL_GETTEARDOWN` and `PS` fields expose stage 1 FILE and the
+actual ERR class, while MM stage diagnostics belong to P0-D.
+
+Administrative diagnosis may inspect the `fs_provider_ready` address
+from the KCC `kcore.map` using a read-only simulator console EXAMINE.
+RH nonzero means the gateway is free. RH=0 and nonzero LH means owner
+slot = LH - 1; an owner with a live continuation must not be deleted.
+Do not use DEPOSIT to release the lease, manually signal its event,
+free its MM extent or recycle its slot. Repair a faulty media/provider
+subsystem and let its original caller return, or perform a controlled
+system restart if no positive quiescence proof exists. Any future
+online recovery needs a specific provider's verified completion and
+resource-lifetime protocol. A reproducible infinite loop is a bug
+to fix in its originating provider, not a reason to weaken ownership.
+
+daimos-testkit v1092 enforces the exact owner publication, foreign and
+recursive refusal, pre-dispatch fatal wake, private FILE retry, and
+absence of premature allocation/exit or forced lock release. It PASSes
+and rejects 14 unsafe source mutations; the v954 and v1087 owner/
+no-allocation contracts plus native v1088/v1090 also PASS. Full-system
+PDP-6 v891 tests 11 permanently failed -5 CLOSE returns, held FILE/
+error owner, capped retry and an independent running process, with
+zero premature exits; v953 tests the same eleven errors followed by
+a successful twelfth close and exactly one final EXIT. The v1091
+booted nonreturning provider owner and fatal pre-dispatch waiter test
+also PASSes. All these contracts use unchanged production routines.
+No DAIMOS code, resident data, MRES or ABI modification was necessary
+at v1092; KCORE low-end remains `023161` octal.
+
+P0-D/E/F are still required before an OOM production enable decision.
+Requester-only automatic OOM killing remains OFF, because a genuinely
+quarantined requester cannot be promised bounded memory reclamation.
+
+The complementary booted v914 256K PDP-6 permanent invalid-provider
+case also PASSes: eleven returned -4 CLOSE refusals, eleven private
+owner sleeps, intact FILE/error witness and an independent bystander;
+zero premature FD clears or exits. This is a returned invalid result,
+not a recoverable MM_BUSY result and not permission to force-free.
+
 ## v1090-v1091: fatal event aborts an undispatched FS lease waiter
 
 P0-B now distinguishes two live private-stack owners. A process already
