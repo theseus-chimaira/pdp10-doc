@@ -1,5 +1,25 @@
 # OOM policy: terminate only the faulting process (v981)
 
+## v1077: combined provider and MM refusal under real physical OOM
+
+An isolated full-system 256K PDP-6 guest uses the existing default-OFF
+OOM BRK branch with the option enabled only in a test-kernel copy. The
+requesting process opens `/SYSTEM/INIT` via the real D6FS provider before
+physical-memory exhaustion. Two test-injected D6FS SYNC refusals leave
+its FILE descriptor owned; the third SYNC succeeds. The real FILE/VFS
+boundary records three close attempts and two errors. A test-injected
+u-area MM_BUSY then defers finalization; the idle-stack MM retry succeeds
+on its second call. Counters: FILE 3/2, MM 2/1.
+
+The parent receives only the requester OOM exit status and verifies that
+a separately blocked PIPE reader survives and resumes and that process
+memory accounting returns to baseline. Guest output `<KWP`, controlled
+HALT: PASS. This covers simultaneous finite provider/MM refusals in a
+genuine OOM termination. It does **not** establish safe cancellation of
+a truly nonreturning provider, guaranteed reclamation under permanent
+refusal, or complete transitive allocation-freedom. Production OOM
+termination remains DISABLED. No production code or ABI changes.
+
 ## v1075: full PDP-6 physical-OOM requester-only test
 
 The testkit builds a disposable 256K PDP-6 kernel image with the
