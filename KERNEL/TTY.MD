@@ -341,6 +341,17 @@ RESIDENT+IRREDUCIBLE-SCRATCH LIMIT, RE-MEASURED FROM THE CURRENT KCC BUILD.
 
 ## 8. IMPLEMENTATION STATE
 
+### HISTORICAL DCS CARRIER-FIRST BOOT TEST (V145)
+
+The Type-630 DCS simulator need not retain output directed at a
+disconnected line.  A LOGIN prompt sent before the network client attaches
+can be lost even when LOGIN is working.  The v145 acceptance procedure
+therefore stopped the CPU at INIT's first wait, attached the DCS0 client,
+then resumed and checked LOGIN, root authentication, DSH, and MEMSTAT.
+At that time the 64K and 128K disk-root configurations passed.  This
+describes the historical test boundary rather than a new target run;
+32K boot and shell tests remain deferred.
+
 IMPLEMENTED IN DAIMOS V0.9 DEVELOPMENT: CANONICAL/ECHO/SIGNALS FLAGS, RAW
 MODE, CR/LF TERMINATION, PRINTABLE ECHO, BS/DEL ERASE, CTRL-U KILL, CTRL-D EOF,
 120-CHARACTER BOUNDED INPUT, MODE-RESET LINE DISCARD, AND FOREGROUND CTRL-C/

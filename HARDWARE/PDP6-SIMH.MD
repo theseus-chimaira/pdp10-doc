@@ -1,5 +1,16 @@
 # PDP-6 SIMH HARDWARE INTEGRATION NOTES
 
+## HISTORICAL GO/RUN PROGRAM-COUNTER REGRESSION (V155)
+
+The CPU `PC` register must be first in the SIMH register table for
+`GO ADDRESS` and `RUN ADDRESS` to select the intended address.  Placing
+the instruction-histogram `OPCOUNT` entries before `PC` caused these
+commands to write a histogram entry instead.  The historical v155
+minimal HALT-at-001000 test isolated this simulator-command failure
+from guest-code failures.  The later Type-551 regression also records
+restoring `PC` ordering; neither statement constitutes a new emulator
+build or runtime acceptance in this consolidation pass.
+
 DATE: 2026-09-18
 STATUS: CURRENT VERIFIED HARDWARE CONTRACT AND DEFERRED ITEMS
 

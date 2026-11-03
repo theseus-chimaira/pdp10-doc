@@ -1838,6 +1838,28 @@ GOOD SWAP CANDIDATES INCLUDE LONG-SLEEPING, TERMINAL-WAITING, CHILD-WAITING,
 AND LOW-PRIORITY BACKGROUND PROCESSES.  A RAW RESERVED SWAP REGION IS PREFERRED
 FOR THE FIRST IMPLEMENTATION TO A FILESYSTEM SWAP FILE.
 
+### HISTORICAL PDP-6 EXEC REPLACEMENT LIFETIME CONTRACT (V145-V151)
+
+The October 2026 PDP-6 EXEC regressions established that the process
+transition flag excludes a live process from background swap-victim
+selection while its old VM is being retired.  Normal replacement must
+hold `PROC_TRANSITION` across the destructive VM handoff and release it
+on complete commit or recoverable rollback; this is not an extra process
+descriptor word and must not be replaced with an enduring VM pin.
+
+The later destructive low-memory retry has a different blocking boundary:
+after retiring the old VM it must clear the transition flag before any
+blocking executable I/O, then reacquire the transition exclusion for the
+short final publication step.  Otherwise the scheduler can exclude the
+sleeping process indefinitely.  The historical v151 regression exercised
+this on a 64K PDP-6 and checked PID, credentials, session, working directory,
+TTY and descriptors.  This is historical acceptance, not a current test run;
+32K-specific testing remains deferred.
+
+The current `proc_pdp6.s` swap-victim logic still excludes transition
+owners.  Changes to packed-VM state publication must preserve this
+contract and be tested against the current implementation.
+
 ## 8. BOOT-IMAGE MODULE STORAGE
 
 DRIVER AND OPTIONAL-SUBSYSTEM MODULE PAYLOADS SHOULD REMAIN PRESENT IN THE BOOT
