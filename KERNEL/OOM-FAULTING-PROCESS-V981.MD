@@ -1,3 +1,25 @@
+## v1074: provisional BRK extent double-release invariant
+
+The nonadjacent PDP-6 BRK growth path can temporarily hold both the old
+running image and an uncommitted larger replacement image. Previously,
+if `mm_free(old)` refused, the rollback called `mm_free(new)` but did
+not inspect its result. A second refusal could leak the replacement
+without a process-VM reference. The kernel now preserves the exact
+old MM error in an existing stack local and checks `mm_free(new)`.
+If the new extent also cannot be released, execution enters the existing
+resident storage-invariant HALT rather than returning with an orphaned
+allocation. This is fail-closed containment of an internal MM ownership
+invariant, not an OOM termination policy or a new recovery allocator.
+
+Native PDP-6 source-linked tests accept successful -4/-5 rollback and
+the double-refusal guard. Pre-fix and deliberately unguarded controls
+fail. GCC KCORE and full KCC boot-image builds pass; the latter reaches
+LOGIN under SIMH. Full native `daimos-brk-v1` KCC 256K guest regression
+PASSes BRK/SBRK growth, heap data preservation and shrink.
+Provider quiescence, fatal teardown liveness and
+whole-process physical-OOM acceptance remain open. Production OOM
+termination stays disabled.
+
 # OOM policy: terminate only the faulting process (v981)
 
 DAIMOS uses a simple OpenBSD-style OOM decision: only the process whose
