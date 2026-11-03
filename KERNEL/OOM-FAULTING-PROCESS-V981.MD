@@ -1,3 +1,24 @@
+## v1082: refuse NEWSESSION before orphaning the previous TTY MM owner
+
+A process could previously change session/pgrp/TTY state before the
+checked retirement of the old session's last canonical-input buffer.
+If MM refused that free, the TTY allocation retained its former
+session but its last process had left, preventing normal owner-side
+retry. v1082 moves the existing last-member checked release before
+the identity change. MM refusal returns -1 without altering the
+process, and the process remains able to retry. A peer still in the
+old session prevents TTY retirement, as before. No extra retry
+state or persistent memory is needed.
+
+Source-linked native positive/negative acceptance passes, as does
+the full controlling-TTY process guest. KCORE `023112` to `023116`
+octal (+4 words, no new BSS). The other transitive fatal-teardown
+provider P0s are not waived and automatic production OOM termination
+is still disabled.
+The full TTY session and session leader/HUP guests PASS. The v1077
+physical-OOM guest also PASSes two D6FS SYNC and one MM_BUSY refusal,
+owner retries and an independent process witness.
+
 ## v1081: final non-leader TTY MM refusal retains a PREVM owner
 
 An ordinary session leader's HUP teardown already refuses to clear

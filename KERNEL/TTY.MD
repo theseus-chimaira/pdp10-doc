@@ -1,3 +1,33 @@
+## v1082: transactional NEWSESSION across TTY MM refusal
+
+`PROCCTL_NEWSESSION` must not orphan the old session's canonical
+input line. Earlier code committed the new group/session/TTY identity
+*before* invoking `proc_tty_release_session`. If this process was the
+last session member and the TTY line was physically pinned or had
+the wrong MM owner, checked TTY retirement retained the old TTY
+record and line allocation but the process no longer belonged to
+that session. No normal owner remained to retry release; the syscall
+had incorrectly reported success.
+
+v1082 invokes the existing checked release before changing process
+identity, excluding the calling slot in `proc_tty_session_has`. A
+failed MM free returns -1 and leaves the old session, process group
+and attached TTY untouched. The caller can retry after the original
+MM owner releases the pin. When another old-session process exists,
+the routine leaves its TTY intact and `NEWSESSION` proceeds normally.
+The checked release does not sleep or allocate; on success the native
+PDP-6 entry reloads caller-scratch process registers from existing
+current-process state rather than adding stack state.
+
+The new source-linked PDP-6 test verifies all three cases and fails
+on the pre-v1082 source as a negative control. Full process/TTY guest
+is passing. Noninstrumented KCC KCORE grows by four words
+(`023112` to `023116`, octal), with no additional permanent data.
+The full booted session-teardown and TTY-session-state guests both
+PASS, as does the physical 256K v1077 OOM retry test.
+This does not establish OOM teardown allocation-freedom generally;
+production OOM termination remains off.
+
 ## v1081: last-session MM refusal and finalizer ownership
 
 The checked canonical-line reset routine already returns failure if
