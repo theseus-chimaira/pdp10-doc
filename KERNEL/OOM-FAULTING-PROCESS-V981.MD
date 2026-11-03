@@ -1,3 +1,74 @@
+## v1096-v1098: typed u-area errors and first PREVM retry-clock repair
+
+P0-D now preserves the exact allocator refusal at the final u-area
+release boundary. `proc_uarea_release` returns zero only when the
+stable u-area was successfully freed or is genuinely absent, -5
+(`MM_ERR_BUSY`) if the original extent is pinned, and -4
+(`MM_ERR_INVAL`) for bad type, owner, missing extent or a descriptor
+whose u-area flag is still set but whose base has become zero. It
+does not clear its process flag/base, free another owner's extent,
+publish FREE/ZOMB or abandon its retry continuation after a refusal.
+Existing `proc_finish_slot` and `proc_slot_discard` interpret any
+nonzero return as incomplete and retain the original owner for a
+later retry. A permanent invalid-owner result remains quarantined;
+it must not be misreported as a successfully released u-area or as
+a mere transient pin. `GETTEARDOWN` MM details expose the current
+physical extent ownership, not a past `mm_free` error history.
+
+Native PDP-6 v1097 executes the real `proc_uarea_release` and MM
+leaves: wrong type and owner produce -4, a pin produces -5, an
+inconsistent zero-base/owned descriptor produces -4, a repaired
+extent frees exactly once, and a repeated release does nothing.
+Three unsafe mutations (generic error collapse, clearing before
+successful free, wrong invalid-base status) are rejected.
+
+The expanded v1096 component matrix verifies the preceding PIPE
+last-close and DPY replacement rollback, VFS/HUP committed child
+handling, TTY PREVM and unpublished RUN rollback, VM/XIP and disk
+backing detach, exact u-area free, and the transitive allocation-
+free fatal graph. It does not by itself prove all possible cross-
+product faults in a single guest. P0-D remains open for those cases.
+
+The combined full-system acceptance exposed a separate **real**
+preexisting progress bug, now fixed as v1098. As part of the safe
+PI6-masked EXIT stack handoff (v1086), `proc_exit_current` publishes
+the process's FINALIZE+PREVM owner marker *before* destruction. This
+marks ownership but does not arm a clock. On its first refused
+`vm_space_destroy`, the old `proc_finish_mark_pending_v892` mistook
+that prepublished marker for evidence that retry timing was already
+initialized. It set the shared pending bit without a valid delay;
+the idle reaper correctly rejected the zero delay and never retried.
+The guest exhibited one VM attempt, zero u-area attempts, correct
+CHLD and hundreds of independent bystander cycles, then timed out.
+
+v1098 tests both the per-owner marker and the shared pending-clock
+state. A premarked EXIT owner without an armed shared timer now starts
+the existing 020-octal (16-tick) first retry using the current APR
+clock epoch. A genuinely pending owner keeps its existing exponential
+backoff; a newly marked owner can reset the first delay. The
+zero-delay rejection remains intact, and no process-private stack,
+PI6 exclusion rule or MM ownership changes. The existing timer word
+is reused without additional permanent state.
+
+Source-linked PDP-6 v1098 tests the prepublished first failure,
+existing capped backoff, a new owner and a stale prior epoch;
+three unsafe mutations are rejected. The previously failing **booted
+v997 256K PDP-6 regression now PASSes**: two VM attempts, two final
+u-area attempts including a refused MM_BUSY, three FILE close calls
+with two refusals, a correct CHLD and owner EXIT, an intact foreign
+provider lease and 36 independent bystander cycles without an
+ownership or finalization error. The v1077 disposable physical-OOM
+guest also PASSes with two D6FS SYNC refusals, one MM_BUSY, correct
+requester recovery and a surviving independent process. The booted
+injection is restricted to a disposable copy; the production OOM
+option remains OFF.
+
+Matched KCC KCORE low-end measurements are `023154` octal at v1094,
+`023156` after typed u-area errors (+2 code words), and `023162`
+after the retry-clock fix (+4 further code words). There is no new
+resident owner table, MM descriptor, MRES state, timer word, syscall
+or process ABI. P0-B containment is closed; P0-D/E/F remain OPEN.
+
 ## v1093-v1094: P0-D release-stage error typing and VM/XIP ownership
 
 The checked canonical TTY line reset now propagates the exact physical
