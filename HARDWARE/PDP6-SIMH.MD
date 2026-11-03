@@ -2,6 +2,16 @@
 
 ## HISTORICAL GO/RUN PROGRAM-COUNTER REGRESSION (V155)
 
+The independent October 21 SIMH interactive-console PC regression
+was restored to testkit main in v1048. It verifies that reading a
+second console command cannot overwrite the guest PC, then checks
+the breakpoint/step PC sequence on a minimal PDP-6 program. The
+restored `test-daimos-simh-console-pc-v1048` and the existing v155
+GO-PC test both pass with the installed emulator. This is standalone
+simulator validation, not a new DAIMOS boot or 32K test. The original
+historical v115 branch still has a dirty worktree with untracked DTFS
+diagnostics; that local worktree has not been deleted.
+
 The CPU `PC` register must be first in the SIMH register table for
 `GO ADDRESS` and `RUN ADDRESS` to select the intended address.  Placing
 the instruction-histogram `OPCOUNT` entries before `PC` caused these
