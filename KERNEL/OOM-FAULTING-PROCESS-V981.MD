@@ -1,3 +1,28 @@
+# OOM policy: terminate only the faulting process (v981)
+
+## v1075: full PDP-6 physical-OOM requester-only test
+
+The testkit builds a disposable 256K PDP-6 kernel image with the
+already-existing default-off `PROC_OOM_BRK_ENABLED_V1000` branch enabled.
+A child requests BRK 0776000 octal, a valid address but too large to
+allocate after normal memory reclamation. The child is terminated with
+OOM exit status 1 through the real fatal-owner teardown path. The parent
+waits for this result, then releases an unrelated child blocked on PIPE
+input; that child finishes normally. Process-slot and process-word
+accounting return to their initial values. The full guest outputs `<KWP`
+and a controlled HALT without any failure marker.
+
+The separately built default-off guest runs the same program. Its BRK
+call returns -1 rather than killing the child, which prints `D`; the
+parent observes the non-OOM exit status and prints `!S`. This negative
+control confirms the test would detect a missing OOM-kill branch.
+
+Both variants are isolated build/test images, not production flags.
+Neither variant injects an indefinitely failing FILE/MM provider.
+Bounded provider cancellation and a transitive no-allocation proof
+through all teardown callbacks remain required before enabling the
+production OOM killer.
+
 ## v1074: provisional BRK extent double-release invariant
 
 The nonadjacent PDP-6 BRK growth path can temporarily hold both the old
@@ -19,8 +44,6 @@ PASSes BRK/SBRK growth, heap data preservation and shrink.
 Provider quiescence, fatal teardown liveness and
 whole-process physical-OOM acceptance remain open. Production OOM
 termination stays disabled.
-
-# OOM policy: terminate only the faulting process (v981)
 
 DAIMOS uses a simple OpenBSD-style OOM decision: only the process whose
 user-space memory allocation cannot be satisfied is a possible termination
