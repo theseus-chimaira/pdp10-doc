@@ -1,3 +1,26 @@
+## v1094: XIP release failure must retain its VM owner
+
+VM teardown distinguishes an unloaded MEMFS MRES entry from a loaded
+provider that *owns* the physical XIP extent and refuses to unpin it.
+Previously both conditions could return -1, allowing the VM destroy
+caller to fall through to a process-type MM free even for an owned
+MEMFS extent. The owned XIP pin-release error now returns -4; status 1
+still means a successful XIP release, status 0 a non-XIP extent, and
+-1 is reserved for the missing-provider trampoline. Only 0 and -1
+permit an MM_TYPE_PROCESS fallback.
+
+An owned negative XIP result prevents MM_TYPE_PROCESS free, swap-bitmap
+detach and `VM_SPACE_NONE` publication. The original physical XIP ref,
+stable process/u-area and PREVM retry owner remain intact. There is no
+new MRES vector or permanent reference table. Native PDP-6 v1094 tests
+exercise failed owned unpin and repair, normal process fallback,
+absent-provider fallback, MM -4/-5, failed swap detach and retry, plus
+four unsafe mutations. v1086 slot-0 PI6, v880 swap-detach and v1081
+finalizer tests PASS. The matched KCC full-image endpoint decreases
+five resident words across the combined v1093/v1094 release changes.
+P0-D remains open for integrated multi-owner fault stages, and the
+production OOM requester-kill option stays OFF.
+
 # MEMFS FILE WRITE AND O_APPEND SEMANTICS
 
 MEMFS IS THE VOLATILE FILESYSTEM USED BY `/TEMP` IN THE STANDARD DAIMOS

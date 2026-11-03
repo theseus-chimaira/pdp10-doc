@@ -1,3 +1,31 @@
+## v1093-v1094: P0-D release-stage error typing and VM/XIP ownership
+
+The checked canonical TTY line reset now propagates the exact physical
+MM_FREE result: -5 for a pinned busy extent, -4 for invalid type,
+owner or missing extent. Neither error clears the per-TTY base or
+permits a session change; only a successful release commits the free.
+The old void reset uses the same checked implementation without a
+second MM release path. Native tests and the v898 booted pinned-TTY
+release/retry guest PASS, including two rejected unsafe mutations.
+
+MEMFS XIP release now reserves -1 for the absent-provider fallback and
+returns -4 for an *owned* unpin refusal. `vm_space_destroy` passes
+through to MM_TYPE_PROCESS free only for a provider that returned 0
+(not XIP) or -1 (unloaded). An owned negative release prevents process
+MM free, swap detach, and VM_NONE publication; the original VM/XIP
+owner remains available for the existing PREVM retry. Native source-
+linked v1094 VM/MEMFS tests with four unsafe variants PASS, as do the
+previous swap/PI6/finalizer/transitive allocation-graph regressions.
+The booted v1077 disposable 256K physical-OOM fault guest also PASSes
+against the updated production sources: two D6FS SYNC refusals, one
+MM_BUSY refusal, correct requester exit and independent witness survival.
+
+The full 256K KCC production image builds with KCORE end `023154`
+octal versus v1092 `023161`, saving five resident words without new
+fixed memory, MRES state or process fields. P0-D is not closed: the
+integrated HUP, PIPE/DPY, backing, TTY and final u-area fault-stage
+matrix remains open. Production automatic OOM termination stays OFF.
+
 ## v1092: P0-B fail-closed provider lifetime contract CLOSED
 
 P0-B is closed **for memory and resource ownership safety**, not for

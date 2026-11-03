@@ -1,3 +1,28 @@
+## v1093: typed physical-MM errors for canonical TTY release
+
+The checked canonical-line release now returns the actual `mm_free`
+status instead of collapsing all retained allocations to -1. A pinned
+extent returns -5 (MM_BUSY), while a wrong owner/type, missing extent
+or invalid TTY returns -4 (MM_INVAL). Only a successful physical free,
+or an already absent line, returns zero and clears the original line
+base. A failed release leaves the base and the old TTY session intact.
+
+The historical `proc_tty_line_reset` void entry now delegates to the
+same checked free helper, discarding only its return value. Existing
+callers that deliberately offer no failure channel retain their ABI;
+session changes, finalizer PREVM retry and detach continue to use the
+checked result. No new per-TTY, process or MM state is allocated.
+
+The native v1093/v897 tests with the real PDP-6 MM distinguish -5 from
+-4, verify the retained base, and accept exact release only after
+the original pin or ownership error is corrected. Two unsafe variants
+(error collapse and early line-pointer clearing) are rejected. Native
+v968 session MM tests and the booted 256K v898 pinned-session/child
+test PASS. The refactored shared routine is invoked five times in the
+v898 fixture instead of four, with precisely one pin and one unpin,
+one busy refusal and no errors. This is a P0-D leaf-stage result;
+combined teardown acceptance and automatic OOM enable remain open.
+
 ## v1082: transactional NEWSESSION across TTY MM refusal
 
 `PROCCTL_NEWSESSION` must not orphan the old session's canonical
