@@ -1,3 +1,41 @@
+## v1084: interrupted FIFO OPEN preserves the last PIPE/MM owner
+
+The `pipe_fifo_open` rendezvous is interruptible. Before sleeping,
+`file_open` has already allocated a provisional FILE slot, while
+`pipe_fifo_open` has incremented its reader or writer reference.
+On interrupt, `pipe_close_ref` rolls that provisional reference back.
+The final reference cannot be discarded if `mm_free` refuses a pinned
+or misowned PIPE extent: the object and original count must survive.
+Before v1084 the interrupt branch ignored the failure and returned
+zero as though the rollback succeeded. `file_open` therefore cleared
+its provisional descriptor, orphaning an extant MM allocation.
+
+v1084 replaces that unconditional jump with one conditional `JUMPE`.
+A successful rollback still makes `file_open` return -1; a refused
+rollback instead returns the live PIPE vnode, letting `file_open`
+publish its already-reserved FD and return success. This treats an
+irreversible resource acquisition as accepted work, preserving a real
+user-visible owner able to CLOSE/retry. No new owner record, timeout,
+collector, or permanent RAM is necessary.
+
+Real PDP-6 source-linked acceptance covers FILE OPEN/NEWFD and close,
+PIPE FIFO rendezvous/last-close, and actual MM pin, failed free, unpin
+and successful final free. An unpinned interrupted OPEN still fails
+and frees the provisional allocation. The pre-v1084 source exhibits
+the specific lost-FD/still-pinned-MM mismatch in the negative control.
+The full named-FIFO simulator regression passes. Matched KCC KCORE
+low end stays `023116` octal; MRES and permanent data are unchanged.
+The v1077 256K physical-OOM requester guest also PASSes D6FS SYNC
+and MM_BUSY refusal/retry with an independent process witness. The
+old wordfifo-v2 user test now reflects v901's one-word character PIPE
+semantics, and its full simulator regression PASSes.
+The native v901 character stream and the separate full v902 anonymous
+PIPE simulator guest also PASS; the testkit Make target for anonymous
+PIPE now runs the actual v902 test after its word-FIFO prerequisite.
+The pin is injected by the test; this does not establish that normal
+FIFO usage pins its unpublished object. Production OOM termination
+remains disabled pending the remaining transitive P0s.
+
 ## v1083: allocation-free direct fatal-release leaves, not the full chain
 
 `daimos-testkit` now provides the executable

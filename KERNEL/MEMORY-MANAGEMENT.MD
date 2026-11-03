@@ -1,3 +1,17 @@
+## v1084: failure-atomic interrupted FIFO OPEN on MM refusal
+
+A named FIFO waiting for its peer may be interrupted while its FILE
+descriptor is still provisional. `pipe_close_ref` correctly refuses
+to drop the last counted PIPE reference when its MM extent is pinned,
+but `pipe_fifo_open` previously suppressed this refusal and caused
+`file_open` to forget the only FD capable of retrying the free.
+v1084 makes an unrollbackable OPEN commit the original FD instead;
+ordinary successful rollback still reports the interrupt. Source-
+linked PDP-6 real-MM pin/unpin/close acceptance and the old-source
+negative test pass. Only a JRST->JUMPE replacement was needed: no
+KCORE or permanent RAM growth (`023116` octal). No new reaper or
+unsafe force-free policy was introduced. Automatic OOM kill stays off.
+
 ## v1083: audited direct fatal teardown without allocator recursion
 
 The PDP-6 direct release leaves used by fatal FILE/VM/TTY cleanup
