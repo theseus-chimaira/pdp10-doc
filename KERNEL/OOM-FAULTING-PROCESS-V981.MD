@@ -1,3 +1,27 @@
+## v1088-v1089: P0-B provider-lifetime progress, not final closure
+
+PDP-6 native v1088 tests the actual serialized FS register gateway with
+an executing provider frame. Both self-recursion and fatal foreign
+contention fail with -5 without borrowing the shared buffer or forcing
+unlock; only the real provider return releases its lease and wakes
+waiters. Two unsafe blocking mutations are rejected.
+
+The Type-136 DTC/MTC runtime transfer previously had a missing-PI
+liveness gap: after DECtape search or MTC command setup, data transfer
+could wait indefinitely even while APR ticks continued. The v1089 tape
+MRES now bounds these transfers with an existing-word 60-Hz watchdog
+(DTC 300 ticks, MTC 5400 ticks), stops a stalled controller, and wakes
+the original owner with an I/O error. The FS lease is still released
+only by the returning owner. Native/online tape tests, full KCC build
+and full-media INIT/LOGIN boot checkpoint pass. No new permanent data.
+The matched tape MRES resident body grows by 30 words (375 -> 405),
+plus one KCORE clock-call word; BSS and process metadata do not grow.
+
+P0-B remains open for arbitrary software loops and permanently rejecting
+providers. Neither a finite driver timeout nor the private FILE-close
+retry interval authorizes killing or freeing a live provider owner.
+P0-D/E/F remain open; production requester-only OOM termination is OFF.
+
 ## v1087: P0-A CLOSED -- transitive fatal-release graph
 
 The v1087 testkit source-linked audit completes the bounded fatal
