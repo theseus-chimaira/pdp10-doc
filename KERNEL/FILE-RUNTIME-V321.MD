@@ -1,3 +1,16 @@
+## v1100: preserve display-list MM failure through replacement rollback
+
+The DPY FILE close (`WRITE_WORDS` count zero) already preserved the
+allocator's -4/-5 on STOP failure. Replacement with a pinned or
+misowned previous display list was different: after freeing the
+unpublished new list, `dpy_write_words` incorrectly returned generic
+-1. It now saves the original old-list `mm_free` result in an existing
+stack local and restores that exact status after successful rollback.
+All published display-list ownership, refresh state and IOWD remain
+unchanged on refusal. Native source-linked PDP-6 v1100 checks both
+-4 and -5, later recovery and two unsafe failure-path mutations.
+No permanent RAM or additional ownership word is required.
+
 ## 2026-11-04 v1099: typed final PIPE/FIFO close rejection
 
 The final PIPE/FIFO `file_close_entry_v865` delegates to

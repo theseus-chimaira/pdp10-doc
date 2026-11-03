@@ -1,3 +1,23 @@
+## v1100: preserve typed DPY replacement rollback refusal
+
+During a Type-340 display-list replacement, the old published list's
+`mm_free` can reject due to a busy pin (-5) or invalid type/owner
+(-4). Although rollback of the newly allocated replacement kept the
+old list, IOWD, refresh state and FILE descriptor intact, that branch
+discarded the old MM error and returned generic -1. The error now
+survives the second (new-list) MM free in the existing stack-local
+word, and returns unchanged on successful rollback. A failure of
+that second free still retains the separately owned unpublished list
+through `dpy_list_orphan_v912`, without any new owner field or BSS.
+
+Source-linked native PDP-6 v1100 tests both error types and rejects
+two mutations that discard the first error, alongside v874 normal
+replacement failure/recovery. The P0-D component release matrix and
+256K KCC full image PASS; KCore remains `023162` octal with no BSS
+growth. This leaf fix does not prove all simultaneous HUP, PIPE, DPY,
+VM/XIP, swap backing and u-area faults in a booted process. P0-D/E/F
+remain open and requester OOM termination is still production-OFF.
+
 ## v1099: typed PIPE/FIFO final-close stage
 
 P0-D now propagates the actual allocator error on a final PIPE/FIFO
