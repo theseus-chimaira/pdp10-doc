@@ -1,5 +1,41 @@
 # OOM policy: terminate only the faulting process (v981)
 
+## v1078: do not sleep on a foreign provider from fatal FILE close
+
+The shared DTFS/D6FS/TSFS register gateway formerly sent every
+foreign lease contender to `proc_wait_event` until the owner returned.
+That included a process already executing `proc_fatal_close_current_v879`.
+A held foreign provider could therefore prevent the dying process
+from completing one `file_close_all` pass and entering its own capped
+sleep/backoff loop.
+
+With no additional per-process state, the gateway now recognizes the
+existing `PROC_FATAL_CLOSE_BIT` at the stable `file_table[-2]`
+FDCTL offset whenever a *foreign* owner retains the lease. It returns
+busy `-5` before attempting provider dispatch; FILE leaves the
+descriptor owned and fatal cleanup sleeps and retries on its
+owner-private continuation. The lock is **never** stolen or released
+by the waiter, the shared provider workspace stays owned, and a
+normal caller continues sleeping/revalidating. The PDP-6 indexed
+load uses AC1 from the pre-existing saved request frame (AC0 cannot
+index memory). Recursive owners and slot zero retain their earlier
+immediate BUSY policy. Free providers still accept fatal operations.
+
+Native v1078 source-extracted PDP-6 test PASS; pre-change source
+fails the negative control. Existing provider lock, interleave and
+indirect-dispatch native regressions and static lease safeguards PASS.
+The full 256K PDP-6 v1077 D6FS/MM fault-injection requester-OOM
+guest also PASSes on v1078 with its exact FILE/MM refusal counters
+and bystander survival. Extra KCORE code is six words; permanent
+resident data and the user ABI are unchanged.
+
+This provides nonblocking **acquisition** for the fatal owner only.
+The new path cannot cancel a provider that already entered an
+unbounded call, cannot make an indefinitely rejecting provider
+release its resources, and does not prove all fatal callbacks are
+allocation-free. Do not fake completion, force release the lease,
+recycle an active owner slot or enable production OOM termination.
+
 ## v1077: combined provider and MM refusal under real physical OOM
 
 An isolated full-system 256K PDP-6 guest uses the existing default-OFF
