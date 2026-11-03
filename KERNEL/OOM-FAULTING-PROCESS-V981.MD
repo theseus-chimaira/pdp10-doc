@@ -1,3 +1,47 @@
+## v1081: final non-leader TTY MM refusal retains a PREVM owner
+
+An ordinary session leader's HUP teardown already refuses to clear
+the controlling TTY when its canonical input buffer is pinned. But a
+non-leader can become the last session member, and the later
+proc_tty_release_session used to return no status after failed MM
+release. The following process VM/u-area teardown could therefore
+retire the only remaining natural owner capable of retrying the line
+free. The TTY session itself was deliberately retained, causing a
+stranded resource rather than an unsafe reattachment.
+
+v1081 makes proc_tty_release_session return zero on success/no-op and
+-1 if a checked MM line free refuses. proc_finish_slot calls it before
+vm_space_destroy; failure uses the existing PREVM+FINALIZE owner marker
+and slot-0 retry, shared with the VM-destruction failure path. A
+successful TTY free is not revisited after VM commits; subsequent
+u-area MM_BUSY retries preserve the post-VM stage. The routine does
+not allocate, and no additional persistent state word or ABI bit is
+introduced. The API return type is changed from void to int; current
+nonfinalizer callers need not act on the return because they retain
+the session record, but session transitions merit separate audit.
+
+The v1081 source-linked PDP-6 finalizer test verifies refusal before
+VM destruction, successful retry, exactly-once VM release and
+u-area finalization across two more MM refusals. v967/v968 real MM
+TTY pin/owner tests, v881 u-area retry and v969 full guest with a
+test-owned pinned TTY pass. The historical v969 fixture previously
+injected the pin into an already detached TTY; it now explicitly
+establishes a valid session record before that controlled injection.
+The pre-v1081 finalizer fails the v1081 negative control as expected.
+In a matched noninstrumented KCC full-image build the KCORE low-end
+grows only two instruction words (octal 023110 -> 023112), with zero
+new persistent data words.
+The independent 256K v1077 requester-only OOM D6FS/MM regression
+still passes. Production OOM termination remains disabled.
+
+FILE close scope: the current D6FS SYNC routine returns zero without
+media I/O; DTFS SYNC checks vnode shape only; TSFS SYNC is a no-op.
+No generic kernel provider cancellation is justified solely for
+these synchronous close paths. The shared DTFS/D6FS/TSFS gateway lock,
+fatal foreign-owner nonwait and live private stack ownership are
+still required: a concurrent non-close request can own a provider
+lease. Do not forcibly unlock or retire its process.
+
 # OOM policy: terminate only the faulting process (v981)
 
 ## v1080: prevent full DRM236 FIFO from busy-spinning

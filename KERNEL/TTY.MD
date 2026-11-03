@@ -1,3 +1,19 @@
+## v1081: last-session MM refusal and finalizer ownership
+
+The checked canonical-line reset routine already returns failure if
+the underlying MM extent remains pinned or misowned. The last
+session-member path now propagates that refusal via an int return
+from proc_tty_release_session. The process finalizer calls the
+routine before committing VM destruction, so the existing PREVM
+finalizer marker retains the u-area and retries after MM contention.
+No permanent per-TTY owner table or new retry state is needed.
+
+The physical-MM v967/v968 tests, source-linked finalizer v1081 and
+full guest pinned-session v969 validate ownership through refusal and
+eventual release. The session leader's older HUP preflight remains
+separate and already checks the input-line release.
+Matched linked KCORE code grows two words; resident data does not grow.
+
 ## 2026-11-01 V913: BOOTED RAW DPY DOUBLE-REFUSAL ACCEPTANCE
 
 A FULL 256K PDP-6 RUN PHYSICALLY PINS BOTH THE PUBLISHED OLD RAW-LIST
