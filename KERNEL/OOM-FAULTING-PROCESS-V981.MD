@@ -1,3 +1,42 @@
+## v1125: real wrong-owner MM with a distinct held FS lease
+
+The v1125 disposable full 256K PDP-6 guest combines a genuine APR
+protection fault on slot 2 with an independent slot-4 process that
+entered the real DTFS/D6FS/TSFS serialized filesystem gateway.
+That process retains the original private executive continuation
+at `fs_provider_unlock` with the actual `fs_provider_ready` owner
+word `5,,0`, sleeping repeatedly without unlocking or discarding
+the provider's workspace. The injected wrong-owner condition changes
+the MM table's original u-area extent descriptor to owner 01003,
+instead of the real 01002, exactly once. All subsequent releases
+execute the unmodified `mm_free` validation and return -4, never a
+fabricated error code and never an unsafe free of that extent.
+
+The boot records one APR fault, seven `MM_ERR_INVAL` (-4) refusals,
+six clock-driven reaper visits, one deliberately changed owner and
+no successful pinned/unpinned/free operation on the wrong owner.
+The foreign lease is recorded directly at the real MM refusal and
+again at the final HALT, still `5,,0`; the holder advances 80 sleep
+cycles while an unrelated spinner remains runnable. Parent
+`GETTEARDOWN` reports the exact persistent MM stage and wrong-owner
+probe 0402, and NOHANG WAIT reports neither the faulting child nor
+the provider holder nor the spinner as reaped. The terminal test
+also verifies that the original slot-2 process descriptor retains
+its transition/u-area flags and that its u-area address equals the
+saved original MM target, excluding a recycled PID or a different
+resource's retention. All test ownership-error counters remain zero.
+
+The earlier standalone v1101 wrong-owner 256K guest was independently
+rebuilt and rebooted on the modified test generator and PASSed.
+The v1096 source-linked P0-D component matrix and v1123 scope and
+readiness audits also PASS, while the full optional `P0D_FULL=1`
+boot matrix has not been rerun in this verification. D12 is checked:
+34/65 mandatory tasks complete, 31 unfinished, of which 29 block
+pre-activation (F12/F13 are the two post-signoff actions). The
+production `PROC_OOM_BRK_ENABLED_V1000,0` remains disabled. No
+production kernel source, KCORE/MRES resident words or process ABI
+have changed; D13-D16 and P0-E/F remain open.
+
 ## v1124: booted physical canonical TTY, VM and u-area retry
 
 The 256K PDP-6 v1124 full guest PASSes three actual independent
