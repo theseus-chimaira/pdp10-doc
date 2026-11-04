@@ -1,3 +1,40 @@
+## v1122: combined cross-owner physical PIPE/MM and DISK bitmap faults
+
+A complete disposable 256K PDP-6 session-HUP guest now reaches two
+different real checked release refusals across two process owners.
+Session member 3 holds a real private PIPE extent. Its first HUP
+reaches final FILE/PIPE close; a test-only `mm_pin` makes the actual
+physical `mm_free` return MM_BUSY (-5), retaining the original PIPE
+owner and blocking HUP. One later HUP re-enters that exact member,
+unpins and successfully frees that PIPE. The second session member,
+slot 4, independently enters a genuine DISK swap-out and owns a
+physical BACKSTORE bitmap allocation. During its fatal teardown,
+the production bitmap verifier detects one test-cleared allocated
+bit, returning an actual refusal rather than a synthesized failure
+code. Slot 0 preserves its PREVM owner until clock-backed retry,
+when the bit is restored and the exact backing record freed once.
+
+The full guest PASSes PIPE calls=2, one actual pin, busy, unpin and
+free, zero owner errors and one first-member HUP revisit. The real
+DISK verifier runs twice, with one deliberate bitmap corruption,
+one repair and one backing free, zero swap errors, zero terminal
+record and block count. The first member's pinned u-area, the
+intermediate nonwaitable leader, three HUP attempts, terminal WAIT
+statuses and TTY foreground handoff PASS. This directly closes the
+cross-owner PIPE+DISK bitmap case that v1121 could not reach: v1121
+restored its own DPY-holding member before DISK detach.
+
+`daimos-session-hup-pipe-swap-v1122` registers this scenario in
+daimos-testkit without modifying production KCORE, MRES, RAM, ABI or
+OOM policy. Additional booted MEMFS XIP and sustained concurrent
+provider/liveness cross-products remain open under P0-D/E/F, and
+the production requester-only OOM branch stays disabled.
+The original v1104 physical PIPE-only and v1107 real bitmap-only
+full PDP-6 guests were independently rebuilt and run after v1122.
+Both PASS the original checked fault/retry, ownership, WAIT and TTY
+assertions; v1107 still observes exactly two bitmap verifier calls,
+one deliberately missing bit, one restoration and one backing free.
+
 ## v1121: booted physical DPY/MM refusal across genuine DISK restoration
 
 The v1121 256K PDP-6 disposable guest combines a Type-340 raw-list
