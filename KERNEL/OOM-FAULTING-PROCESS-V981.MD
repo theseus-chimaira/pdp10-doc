@@ -1,3 +1,29 @@
+## v1114: booted actual MM descriptor saturation and failed RUN
+
+The full 256K PDP-6 v1114 test builds disposable kernels with a
+private BRK-sentinel extension; ordinary production BRK dispatch is
+unchanged. The test allocates one-word MM_TYPE_KERNEL_DYNAMIC extents
+through the real `mm_alloc_aligned_noreclaim` until the live
+`mm_extent_count` equals `mm_extent_capacity`. A valid RUN request
+for the executable already admitted by v1110 returns -1 under this
+descriptor pressure without terminating its parent. The extension
+records every physical base, then frees each through `mm_free` with
+the original type and owner. Parent process slots and process-memory
+words return to baseline.
+
+Both independent physical PDP-6 simulator boots PASS: OOM disabled
+`<MRILDNWP`, disposable OOM-enabled `<MRILKWP`. Subsequent ordinary
+RUNs, the invalid-BRK children, physical OOM requester and blocked
+bystander complete their expected lifecycles. Only true physical
+exhaustion retires the requester with the test OOM policy enabled.
+The failed RUN's exact internal MM error is not directly observed;
+the allocator descriptor table being full before RUN is verified.
+
+The instrumentation and temporary scratch state exist only in the
+disposable image, not in production KCore, MRES, data or ABI. Default
+OOM remains disabled. Booted BRK fragmentation, explicit failed-RUN
+cause tracing, and complete P0-D/E/F acceptance remain open.
+
 ## v1113: real MM error through VM BRK and opt-in OOM dispatcher
 
 The source-linked native PDP-6 v1113 test now executes the complete
