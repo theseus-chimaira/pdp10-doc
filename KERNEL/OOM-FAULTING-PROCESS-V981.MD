@@ -1,3 +1,47 @@
+## v1101-v1102: permanent invalid u-area owner and bounded MM retries
+
+An isolated booted PDP-6 v1101 guest deliberately changes exactly
+one live u-area MM extent owner (slot 2 owner 01002 -> wrong owner
+01003) after it reaches fatal release. The real `mm_free` then returns
+MM_ERR_INVAL (-4), rather than the MM_ERR_BUSY (-5) used by the old
+v909 permanent-pin guest. The production read-only `GETTEARDOWN`
+reports stage MM and WRONG_OWNER sentinel 0402, while the original
+process descriptor, u-area and unreaped WAIT identity remain owned.
+An independent process continues running; no force-free or ownership
+override is permitted.
+
+The first v1101 guest found a real reaper throttling regression:
+41 invalid frees and 40 idle-reaper scans during the intended bounded
+test. The error is the interaction with v1098, not the new test's
+owner corruption. `proc_finish_mark_pending_v892` was intentionally
+changed in v1098 to arm a first delay for an already prepublished
+FINALIZE+PREVM owner without an active clock. However, the idle loop
+still cleared the global pending bit immediately before scanning,
+so *every* refused -4/-5 release looked like that unarmed first error
+and restarted the backoff at 020 octal ticks.
+
+The v1102 correction retains the existing shared pending bit during
+the entire `proc_finish_service_v881` scan. It uses saved AC11's
+second bit to note any failed owner, then clears the pending bit only
+if no cleanup attempt failed. The historical completion/last-user
+return is restored before leaving. The existing backoff routine now
+doubles delays from 020 to 040 to 0100 up to 01000 octal clock ticks
+without adding per-process fields, global data, MRES or new tables.
+
+Native source-linked PDP-6 v1102 proves the first two retry delays,
+their increase and successful retirement, with four unsafe mutations
+rejected (including restoration of the original premature idle clear).
+Native v881/v1098 and full P0-D source-linked release matrix PASS.
+After the fix, booted v1101 wrong-owner and booted v909 permanent-pin
+guests both PASS, observing seven rejected frees and six bounded
+reaper scans, correct diagnostics, retained WAIT ownership and live
+bystanders. The full 256K KCC production image PASSes, with KCore
+end `023162` -> `023171` octal (+7 code words), no additional BSS.
+
+P0-D still needs simultaneous HUP/PIPE/DPY/VM/XIP/swap/u-area faults
+and additional PID/WAIT controls; P0-E/F remain open. Production
+automatic OOM termination is disabled.
+
 ## v1100: preserve typed DPY replacement rollback refusal
 
 During a Type-340 display-list replacement, the old published list's
