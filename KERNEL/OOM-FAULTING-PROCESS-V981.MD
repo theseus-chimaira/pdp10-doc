@@ -1,3 +1,27 @@
+## v1123: production enablement prerequisites and optional-XIP scope
+
+The active fine-grained acceptance list is now the top v1123 section
+of DAIMOS `TODO.MD`, explained in
+`KERNEL/OOM-ENABLEMENT-CHECKLIST-V1123.MD`. It has 65 mandatory
+S/A/B/C/D/E/F tasks (32 checked, 33 OPEN: 31 pre-enable blockers,
+plus F12/F13 post-signoff actions) and eight separately
+optional raw-XIP tasks (two checked). P0-A v1087, P0-B v1092
+ownership containment, and P0-C v1086 are closed; P0-D/E/F and
+the production switch remain open. Permanent provider quarantine
+is safe against premature resource reuse but does not guarantee
+reclamation or eventual completion.
+
+The v1123 testkit source guard confirms the current default-off
+`PROC_OOM_BRK_ENABLED_V1000,0` and the writing startup calls in
+ordinary RUN and both EXEC paths, with no raw MEMFS XIP admission
+wired. It rejects six unsafe mutations. The checklist auditor
+rejects five invalid/premature-completion mutations and its
+`--require-ready` check correctly fails with 31 pre-enable blockers;
+the other two unfinished actions follow signoff. The full
+source-linked v1096 P0-D matrix PASSes on current
+code. This does not authorize the separate privileged XIP process
+launcher or OOM activation. No production kernel memory/ABI changed.
+
 ## v1122: combined cross-owner physical PIPE/MM and DISK bitmap faults
 
 A complete disposable 256K PDP-6 session-HUP guest now reaches two
