@@ -10,7 +10,9 @@ serialized provider lease untouched without clock waiting.
 Production `mm_pin` repairs the same extent. A second direct XIP
 release consumes the reference and unpins successfully; a third is
 correctly reported as not owned. Original v1086/v1094 source-linked
-tests and v1094 negative mutants PASS. The expanded v1096 native P0-D
+tests and v1094 negative mutants PASS. Two new v1108 negative controls
+also reject the unsafe variants which erase the reference on a failed
+physical unpin or retain it after successful unpin. The expanded v1096 native P0-D
 release-stage matrix PASSes with v1108. Production KCore, MRES and
 persistent state are unchanged. This is not a booted process-VM XIP
 failure test; that P0-D integration, P0-E/F and OOM enablement remain
