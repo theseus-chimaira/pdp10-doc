@@ -1,3 +1,29 @@
+## v1119: physically faulted PIPE and Type-340 DPY in the same HUP
+
+The v1119 disposable 256K PDP-6 session guest now equips the second
+HUP recipient with both a real private PIPE extent (MM owner 5) and
+a published Type-340 display-list extent (MM owner 014). The two
+physical `mm_free` hooks are independently armed at the same actual
+HUP delivery; the combined test generator preserves the original
+entry, MM_BUSY, delete and owner/type paths for both.
+
+Two independently assembled and booted guest images PASS, including
+the final corrected C89 test-source build. Both distinct extents
+report exactly two free attempts, one actual MM pin-induced -5 busy,
+one corresponding MM unpin and one real release, without ownership
+errors. The DPY raw list remains published and PI6 refresh executes
+14 times, eight after MM_BUSY and before unpin. The session's first
+member keeps its pinned u-area through the incomplete HUP; the
+leader and all members complete without duplicate first-member HUP,
+premature WAIT completion or incorrect TTY foreground ownership.
+
+This satisfies a physical PIPE+DPY HUP cross-product. It does not
+test live MEMFS XIP admission with simultaneous VM teardown, combined
+DISK bitmap faults or numeric PID reuse under sustained pressure.
+P0-D/E/F are still OPEN and production requester OOM remains OFF.
+No production KCore/MRES RAM, ABI or kernel code changed; testkit
+commit `42736cd` contains the test-only generator and fixture.
+
 ## v1118: booted real PIPE and process-VM MM_BUSY in one fatal teardown
 
 The v1118 full 256K PDP-6 disposable guest now exercises *both*
