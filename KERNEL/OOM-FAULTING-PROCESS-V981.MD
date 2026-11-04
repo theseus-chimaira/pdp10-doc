@@ -1,3 +1,38 @@
+## v1121: booted physical DPY/MM refusal across genuine DISK restoration
+
+The v1121 256K PDP-6 disposable guest combines a Type-340 raw-list
+MM_BUSY on second-member HUP with a previously completed production
+DISK swap-out of that member. The first integration boot reached
+normal HALT but exposed an invalid old v1107 test expectation:
+the physical DPY FILE-close refusal leaves a private continuation
+which must resume while resident. A second member-HUP delivery was
+therefore legitimate, and the checked DISK bitmap-detach verifier
+was *not* invoked. Those observations do not constitute a bitmap
+fault and were not counted as successful bitmap-refusal coverage.
+
+The accepted version adds test-only counters to the genuine SWAP
+MRES `proc_swap_in` entry and successful return for this slot, with
+the counters living in the disposable KCORE. The full guest PASSes
+one real swap-out, one real successful swap-in, one backing free and
+zero terminal DISK record/blocks. The live display list records two
+release attempts, exactly one pin/MM_BUSY (-5), one unpin, one real
+free, zero owner errors, and 118 PI6 refreshes, 90 after the first
+busy error before unpin. Correct first-member HUP commit, later
+second-member retry, leader/child WAIT and TTY handoff also PASS.
+
+This is verified physical swap-restore/DPY fault integration and
+excludes the unreachable bitmap-detach fault in this configuration.
+An actual simultaneous bitmap-detach refusal and different resource
+fault requires a distinct live owner which can retain DISK storage
+through its checked finalization. Restricted MEMFS-XIP process
+admission and complete P0-D/E/F acceptance remain outstanding.
+Production KCore/MRES code/data, process ABI and disabled requester
+OOM policy remain unchanged.
+The original swap-only v1107 guest was independently rerun after the
+v1121 generator changes and PASSed its actual checked bitmap fault:
+two verifier calls, one deliberate corrupted bit, one restoration,
+one exact backing release and no terminal DISK resource leak.
+
 ## v1120: actual slot/PID reuse after fully reaped physical OOM
 
 Two independent full 256K PDP-6 guest images PASS a new sequential
