@@ -1,3 +1,34 @@
+## v1109: real VM destroy plus physical MEMFS XIP fault, linked PDP-6
+
+The v1109 native PDP-6 fixture links the unchanged production
+`vm_space_destroy` leaf with the direct MEMFS provider gateway,
+`memfs_xip_owns_base`, `memfs_xip_unpin_base` and real MM pin
+adjustment. An existing owned-XIP reference points to a true MM
+extent whose physical pin counter is zero. The real MM unpin rejects
+that state with -4; the provider distinguishes owned failure from an
+absent/non-XIP service. VM destruction then refuses without attempting
+an unrelated MM_TYPE_PROCESS deletion, changing its original mapping
+or executing swap detach.
+
+After repinning the *same* extent through production `mm_pin`, a
+second VM destroy successfully consumes the MEMFS XIP reference,
+performs exactly one physical MM unpin and one backing-detach witness
+call, and publishes VM_SPACE_NONE. Two unsafe mutations (treating
+owned XIP -4 as ordinary MM fallback, and inverting the detach success
+condition) must fail. The foreign filesystem provider's serialized
+lease is neither stolen nor waited upon.
+
+Only the resident-mode and swap-detach responses and the forbidden
+process-MM fallback are test stubs. This test does not claim genuine
+MEMFS executable admission, certified no-write mapping, device
+backing or booted WAIT/PID ownership. The expanded native v1096
+P0-D release matrix PASSes with the new v1109 test; the optional
+booted full matrix was not rerun. `memfs_xip_admit` explicitly
+requires trusted no-write certification before executable use; normal
+DXR loading cannot be substituted for that certification. The booted
+XIP lifecycle remains P0-D OPEN, as do broader P0-D cross-products
+and P0-E/F. No production KCore, MM or MRES change; OOM remains OFF.
+
 ## v1108: source-linked physical MEMFS XIP MM -4 and retry
 
 The v1108 native PDP-6 regression reuses the production MEMFS XIP
