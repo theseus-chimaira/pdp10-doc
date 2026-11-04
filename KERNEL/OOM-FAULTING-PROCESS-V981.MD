@@ -1,3 +1,25 @@
+## v1113: real MM error through VM BRK and opt-in OOM dispatcher
+
+The source-linked native PDP-6 v1113 test now executes the complete
+production allocation-to-BRK failure chain: `mm_find_fit`,
+`mm_extent_insert`, `mm_alloc_aligned_noreclaim`,
+`mm_alloc_aligned`, `mm_compact`, `vm_space_brk_current` and
+`native_sys_brk` with the fatal OOM branch enabled only in the test.
+An adjacent extent blocks in-place process growth. Three separate
+02000-word gaps supply 06000 total words but not one 04000-word
+replacement extent; the real allocator returns fragmented -2 and
+the VM/BRK paths preserve it, returning ordinary failure rather than
+retiring the requester. With a large fitting gap but a full descriptor
+table, the same path preserves real -3. Both failures retain the
+process mapping, logical break and original extent count. Three
+unsafe source mutations which collapse either error to -1 are rejected.
+
+No-progress FS/swap reclaim, refused relocation and fatal selection
+are explicit native fixture observers; they are not booted physical
+resource-pressure events. Full-system BRK/RUN, WAIT/PID, bystander,
+and P0-D/E acceptance remain open. No production code, KCore memory,
+MRES, ABI or OOM policy changes; the default stays disabled.
+
 ## v1112: booted nonfatal failed child RUN under both OOM policies
 
 The v1112 extension of the existing 256K PDP-6 requester/bystander
