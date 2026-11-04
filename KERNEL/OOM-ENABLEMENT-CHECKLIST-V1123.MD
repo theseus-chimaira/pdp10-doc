@@ -1,3 +1,22 @@
+## v1143: D15 completed by explicit unscheduled-XIP exclusion
+
+For the current requester-only BRK OOM activation scope, ordinary
+production EXEC and RUN use writable process startup, not MEMFS XIP
+process admission. The current source-linked v1123 scope/mutant
+verifier PASSes with six unsafe variants rejected. Current PDP-6
+v1108 and v1109 MEMFS MRES XIP physical release/retry tests PASS,
+including unsafe mutation rejection. The kernel supports XIP-owned
+VM/provider release but not scheduled XIP process launch. D15 is
+therefore CLOSED only for the present OOM scope, which EXCLUDES
+scheduled XIP processes. The separate future trusted-XIP process
+launch work X03-X08 is still required before DAIMOS release and
+would require requalifying OOM if subsequently enabled.
+
+Mandatory OOM checklist: **36/65 complete, 29 open** (27 pre-enable
+blockers plus deferred F12/F13). D14/D16, C04, E/F remain open.
+Production `PROC_OOM_BRK_ENABLED_V1000` is still zero; no production
+kernel/resident/MRES/ABI change was made.
+
 ## v1142: physical MM_BUSY completes the D13 nested RUN subcase
 
 The new full-system PDP-6 `daimos-testkit` target
