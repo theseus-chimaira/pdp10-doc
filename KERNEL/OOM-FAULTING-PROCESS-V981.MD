@@ -1,3 +1,38 @@
+## v1103: one booted fatal owner across PIPE/FILE/HUP/VM/MM stages
+
+The optional daimos-testkit v1103 guest adds an integrated 256K PDP-6
+teardown sequence to the existing v997 held-provider/bystander fixture.
+The selected child retains a real anonymous PIPE until fatal FILE
+cleanup. Two test-only FILE close refusals first retain its private
+kernel continuation and descriptors. Next, `pipe_close_ref` reaches
+the production MM allocator: the first final free returns MM_BUSY
+(-5), preserving both the PIPE descriptor and exact pre-free reader/
+writer count; the next succeeds and commits its final release.
+
+In that same guest, a *test-only* refusal of the session-teardown
+entry requires one more private-stack HUP-stage pass before VM release.
+It is not a physical member HUP; the independent booted v907 physical
+session/TTY test covers successful and rejected HUP deliveries. After
+the HUP stage succeeds, the v997 synthetic first VM refusal retains
+the original PREVM owner, and a real MM_BUSY (-5) refusal on final
+u-area free retains the same process until the slot-0 retry commits.
+The PREVM/post-VM markers prevent HUP from running twice after it has
+completed. The foreign provider's original live lease remains intact.
+
+Booted v1103 PASS: FILE attempts 3/refusals 2, PIPE MM frees 2/
+refusals 1, HUP-stage attempts 2/refusals 1, VM attempts 2, stable
+u-area attempts 2/refusals 1, one EXIT/CHLD/finalization, 36
+independent bystander cycles and no ownership errors. The original
+v997 scenario and source-linked component tests remain independent.
+Both the unmodified v997 booted baseline (v1103 option disabled) and
+the complete v1096 native P0-D stage matrix were rerun and PASS.
+
+All new hooks and counters live only in disposable test sources.
+Production DAIMOS source, memory layout, MRES and OOM-disable flag
+are unchanged from v1102 (`__kcore_low_end` `023171` octal).
+P0-D remains open for simultaneous *physical* HUP, PIPE/DPY, XIP
+and swap faults plus further WAIT/PID invariants; P0-E/F remain open.
+
 ## v1101-v1102: permanent invalid u-area owner and bounded MM retries
 
 An isolated booted PDP-6 v1101 guest deliberately changes exactly
