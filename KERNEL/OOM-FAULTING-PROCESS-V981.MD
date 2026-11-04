@@ -1,3 +1,53 @@
+## v1107: live PREVM run-queue alias and allocated DISK bitmap retry
+
+The slot-0 `proc_finish_service_v881` scanner previously tested
+scheduler RH bit `02` as the unpublished-SIDL discard-VM marker before
+decoding the process state. For ordinary live processes the same RH
+field stores a run-queue successor. A PREVM+FINALIZE process whose
+successor was slot 2 was skipped indefinitely instead of retrying
+its checked VM/swap backing release. Production now verifies the SIDL
+state first; only SIDL may interpret this low bit as a discard marker.
+The source-linked PDP-6 test executes both a live PREVM owner with
+runq successor 2 and an actual SIDL rollback. It PASSes; reverting the
+check order fails the unsafe-mutation control.
+
+The 256K booted v1107 test uses the existing two-member session/TTY
+HUP guest. Its special INIT enables actual SWAP through the privileged
+STORAGECTL syscall. An isolated test hook selects the second member
+through the KCore `proc_swap_reclaim` gateway, letting the installed
+SWAP MRES perform its normal swap-out transaction and allocate a real
+16-block DISK extent beginning at legal block zero. The first remote
+HUP delivers the default-fatal event to this member, then calls the
+real `proc_swap_detach`/backstore verifier. The test-only hook clears
+one bit from the actually allocated bitmap run. The first verifier
+rejects the missing bit, so the process retains its original swap
+record and deferred PREVM/FINALIZE ownership. WAIT_NOHANG cannot
+prematurely reap the session leader.
+
+The slot-0 reaper retries the marked member without delivering HUP
+again. The test restores the original bitmap word on the second
+verifier call. Production backing-store release frees the exact run
+once and clears the final DISK record; the allocation count returns
+to baseline. The first member's physically pinned u-area is unpinned
+at successful session commit. All three leader/member HUP/WAIT
+statuses, final TTY handoff and no-duplicate-HUP checks PASS.
+
+Booted counters: one SWAP MRES swap-out, two bitmap-verifier calls,
+one test-only bitmap corruption/restoration, one real backing free,
+five reaper scans, one first-member u-area pin/unpin, no duplicate
+HUP and zero ownership errors. Original v907, PIPE v1104, DPY v1105
+and resident-VM v1106 booted compatibility tests PASS. The source-linked
+native P0-D matrix PASSes. The full production PDP-6 KCC image builds;
+`__kcore_low_end` remains `023171` octal. There is no new resident
+state, no new MRES dependency, and production requester OOM remains
+disabled.
+
+This completes the allocated-DISK *bitmap ownership verification*
+fault leaf, not physical disk-I/O failure injection. A genuine
+MEMFS-owned XIP lifecycle and broader multi-resource, WAIT/PID reuse
+and long-duration leak/liveness acceptance remain OPEN in P0-D.
+P0-E and P0-F also remain OPEN.
+
 ## v1106: booted physical resident VM extent MM_BUSY and slot-0 retry
 
 The v1106 disposable 256K PDP-6 guest is a stricter physical variant
