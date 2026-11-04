@@ -1,3 +1,37 @@
+## v1115: full-system fragmented-core BRK preserves nonfatal -2
+
+Two independently built, booted 256K PDP-6 images now verify actual
+fragmented physical memory rather than a synthetic MM return code.
+In an isolated, disposable syscall-copy test, the real allocator
+reserves aligned 040000-word kernel-dynamic extents, then releases
+alternating blocks. The genuine `mm_find_fit` search, exported solely
+for this fixture, confirms at least 0200000 (64K) aggregate free words
+but no fitting contiguous 64K extent. Real `vm_space_brk_current`
+rejects a 64K resize with AC1=-1 and AC2=-2, observed through a
+test-only AC2 recorder. The requester stays runnable, its original
+logical break remains intact, and all recorded temporary MM extents
+are released through exact `mm_free` base/type/owner checks.
+
+A smaller 40K request had legitimately succeeded by in-place
+delta-only growth despite lacking a full-image gap. The final 64K
+request forces the full-image fallback. During the real BRK retry,
+one unrelated MM descriptor was reclaimed in the observed guest;
+the fixture therefore rejects a growing final descriptor count,
+not legitimate reclamation that reduces it. Exact test extent release
+and unchanged parent process-MM accounting remain required.
+
+The OOM-disabled guest PASSes (`<FRILDNWP`): the later genuine
+physical exhaustion also returns -1. The disposable OOM-enabled
+guest PASSes (`<FRILKWP`): fragmentation never selects the fatal
+requester, but later genuine physical OOM retires only that requester.
+The independent blocked witness, expected WAIT statuses, failed-RUN
+and invalid-BRK controls and final process-MM accounting all PASS.
+
+The instrumentation lives exclusively in disposable test images.
+Production OOM remains OFF, with no permanent KCore or MRES growth.
+Booted direct RUN -3 cause tracing and the P0-D/E cross-product and
+final P0-F gates remain open.
+
 ## v1114: booted actual MM descriptor saturation and failed RUN
 
 The full 256K PDP-6 v1114 test builds disposable kernels with a
