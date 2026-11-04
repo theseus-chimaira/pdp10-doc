@@ -1,3 +1,25 @@
+## v1112: booted nonfatal failed child RUN under both OOM policies
+
+The v1112 extension of the existing 256K PDP-6 requester/bystander
+guest submits a structurally valid RUN V2 request naming a nonexistent
+absolute executable. Its immediate -1 rejection leaves the parent
+alive with the original process-slot and process-memory counts. The
+same parent then runs the v1110 below-floor and address-limit BRK
+negatives and the established real physical-OOM requester plus blocked
+witness. Both separately booted disposable policies PASS:
+
+- Default OOM disabled: `<RILDNWP`; genuine exhaustion also returns -1.
+- OOM enabled only in an isolated copy: `<RILKWP`; only the genuinely
+  exhausted requester is fatally retired.
+
+Expected WAIT outcomes, bystander survival and recovered process MM
+accounting PASS in both images. Ordinary failed RUN never selects a
+fatal requester. No production policy, resident kernel data, code,
+MRES or ABI changes. This verifies missing-executable rejection, not
+yet a RUN failing from actual MM descriptor exhaustion or fragmented
+core. Those physical-pressure cases and P0-D/E remain open before
+production OOM activation.
+
 ## v1111: real MM allocator distinguishes shortage, fragments and slots
 
 The native PDP-6 v1111 regression executes the authoritative
