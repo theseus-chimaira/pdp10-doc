@@ -5,8 +5,8 @@ acceptance specification, not an implementation handoff. The detailed
 action-by-action checklist is the top `v1123` section of DAIMOS
 `TODO.MD`. That section assigns unique IDs S01-S08, A01-A04,
 B01-B07, C01-C04, D01-D16, E01-E13, F01-F13 and X01-X08.
-At this revision, 32 of 65 mandatory items are complete. Of the
-remaining 33, 31 block the *pre-activation decision*; F12 (enable
+At v1124, 33 of 65 mandatory items are complete. Of the
+remaining 32, 30 block the *pre-activation decision*; F12 (enable
 the production switch) and F13 (verify/document/commit that
 enablement) are necessarily performed later.
 
@@ -33,7 +33,7 @@ largest-victim selector is permitted.
 | A: Allocation-free release graph | CLOSED v1087 | Rerun graph and unsafe mutations against final exact code |
 | B: Provider ownership | CLOSED for *fail-closed safety* v1092 | Preserve in-flight private stack/lease; do not require false bounded liveness; recheck under physical pressure |
 | C: PI6/slot-0 finalizers | CLOSED v1086 | No sleeping acquisition or swap-in under PI6; owner retains potentially sleeping pre-VM work |
-| D: Error-stage ownership | OPEN | Complete physical TTY, APR/EXEC, mixed locks/VM/FILE and exact-once multi-resource release |
+| D: Error-stage ownership | OPEN | Physical TTY/VM/u-area now PASS v1124; complete APR/EXEC, mixed locks/VM/FILE and exact-once multi-resource release |
 | E: Full system | OPEN | Sustained reproducible real pressure, spinner fairness, parent WAIT/CHLD, PID recycling and negative scenarios |
 | F: Activation | OPEN | Full matrix, actual resident RAM budget, signoff, only then production enable and repeat |
 | X: Optional raw XIP process launch | EXCLUDED | Not wired into ordinary RUN/EXEC today; adding it requires separate opt-in acceptance |
@@ -74,6 +74,14 @@ replace those stages with a PI6-masked blocking callback.
   actual DISK bitmap corruption/refusal/restore during one session
   teardown, including exact WAIT/TTY and no leak. Standalone v1104
   and v1107 were rebuilt and rerun after harness composition.
+- v1124: a real canonical TTY line pin rejects owner-side EXIT HUP,
+  leaving the original session attached. A second user EXIT unpins
+  TTY, then separate real process-VM and u-area MM_BUSY refusals
+  are recovered by the qualified-clock slot-0 reaper with correct
+  PREVM, VM_NONE, u-area owner and exact final commit. All three
+  distinct busy/pin/unpin counters are 1, and the independently
+  rebuilt legacy v969 TTY-only guest also PASSes after preflight
+  trigger modernization. D11 is checked; D12-D16 remain open.
 
 Remaining D release cases must use actual production MM/FILE/TTY/
 provider error returns on valid owned objects. Synthetic error codes

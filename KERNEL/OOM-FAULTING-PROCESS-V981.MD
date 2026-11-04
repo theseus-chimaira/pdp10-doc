@@ -1,3 +1,32 @@
+## v1124: booted physical canonical TTY, VM and u-area retry
+
+The 256K PDP-6 v1124 full guest PASSes three actual independent
+MM_BUSY (-5) failures during the final INIT process lifetime.
+The first EXIT returns -1 from its genuine private-stack owner-side
+HUP preflight because the original canonical TTY input buffer is
+physically pinned. The session and process remain attached and
+owned. A second user-issued EXIT unpins the same TTY extent and
+commits HUP; its original resident process VM is independently
+pinned and refuses physical release once. The real qualified-clock
+slot-0 PREVM reaper retains the VM owner, unpins it, and pins the
+still-live u-area before its subsequent true MM deletion.
+The u-area's next real MM free refuses once while pinned, leaving
+VM_NONE/FINALIZE and the exact owner intact until the following
+clock-driven retry unpins and frees it exactly once. TTY, VM and
+u-area MM_BUSY count=1 each; pin/unpin count=1 each; retained
+VM/destroyed VM=1, retained u-area=1, terminal commit=1,
+ownership errors=0. No synthetic error, forced reclaim or hand-
+invoked finalizer appears in the accepted instrumentation.
+
+The original v969 TTY-only guest was separately rebuilt/rebooted
+with its arm fixed for the v991 owner-side HUP preflight: PASS,
+one real pin and exact unpin/retry. D11 is checked. The v1123
+readiness inventory now counts 33/65 mandatory complete, 32 open,
+including 30 preenable blockers and two post-signoff actions.
+D12-D16 and remaining full P0-E/F acceptance stay OPEN. Test-only
+instrumentation, production OOM disabled; no production kernel
+code/data, MRES or process ABI changed.
+
 ## v1123: production enablement prerequisites and optional-XIP scope
 
 The active fine-grained acceptance list is now the top v1123 section
