@@ -1,3 +1,35 @@
+## v1106: booted physical resident VM extent MM_BUSY and slot-0 retry
+
+The v1106 disposable 256K PDP-6 guest is a stricter physical variant
+of the original v997 owner/provider/WAIT fixture. It preserves the
+foreign in-flight filesystem lease, two private-stack FILE close
+refusals, one u-area MM_BUSY, a continuously runnable bystander and
+CHLD/EXIT finalization. Instead of synthesizing an early failure at
+`vm_space_destroy`, the test first pins the actual slot-5 process VM
+extent (MM_TYPE_PROCESS, owner 5, base `0752000` octal). The unchanged
+VM destroy follows its normal MEMFS-XIP classification and real MM
+path. Production `mm_free` returns MM_BUSY (-5), leaving the original
+VM base and PREVM+FINALIZE owner live for a safe slot-0 retry.
+
+On that retry the isolated hook unpins precisely the same extent;
+ordinary `mm_free` verifies its type/owner, deletes it exactly once,
+then `proc_swap_detach` runs once and `VM_SPACE_NONE` commits. This
+resident process has no DISK backing allocation. The swap-detach
+execution proves that the VM release stage does not bypass backing
+cleanup on success, but does not validate a refused physical disk-swap
+release; that remains a separate P0-D gate.
+
+Booted v1106 PASS: 2 VM calls, 2 real process-MM free attempts,
+1 physical pin/unpin, 1 MM_BUSY, 1 successful MM deletion, 1 actual
+swap-detach-stage execution, 2 u-area frees with 1 MM_BUSY, 3 FILE
+closes with 2 refusals, 36 independent bystander cycles and no
+ownership errors. Original booted v997 and v1103 multistage guests
+both rerun PASS, as does the native P0-D release matrix. All new fault
+injection/counters live only in daimos-testkit's disposable image;
+production KCore end remains `023171` octal, with no extra BSS/MRES
+and the requester OOM policy disabled. MEMFS-owned XIP and allocated
+disk-swap backing fault integration remain open, alongside P0-E/F.
+
 ## v1105: real HUP / active DPY Type-340 raw-list MM refusal
 
 The v1105 booted 256K PDP-6 test adds a genuine Type-340 display-list
