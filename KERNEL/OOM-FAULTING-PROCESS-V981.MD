@@ -1,3 +1,36 @@
+## v1104: real member HUP concurrent with physical PIPE and u-area pins
+
+The disposable 256K PDP-6 v1104 guest extends the real two-member
+session HUP/TTY transaction from v907. Each member now owns a private
+anonymous PIPE, and actual `file_close_all_at_v865` attempts to retire
+those FILE descriptors during remote HUP delivery. The first member
+has a physically pinned stable u-area; after its HUP it has committed
+VM_NONE+FINALIZE but retains its original slot-0 finalizer owner.
+
+On the second member's first final PIPE close, a narrowly targeted
+test-only hook physically pins that PIPE extent. The original `mm_free`
+therefore returns MM_ERR_BUSY (-5) without decrementing the last
+writer reference, clearing the FILE descriptor or freeing the extent.
+The session leader's first HUP reports incomplete; the original parent
+checks that the leader cannot yet be reaped by nonblocking WAIT.
+
+The second leader HUP skips the first member's irreversible finalizer
+and retries the still-owned second-member PIPE. The test unpins the
+same exact MM extent; the production allocator validates and frees it
+once. The real HUP delivery finishes, its TTY session commit unpins
+the first member's u-area, and the existing guest verifies HUP status,
+WAIT and TTY handoff. Counters: two physical PIPE frees attempted,
+one physical pin/unpin, one -5 busy rejection, one committed free;
+zero repeated HUP for the committed member, zero ownership errors.
+
+The full native P0-D component matrix and the unmodified original v907
+booted physical-HUP scenario also pass. All injection and
+observability state is confined to the testkit's isolated guest;
+production KCORE end remains `023171` octal and OOM stays disabled.
+This verifies real session-member HUP combined with a physical PIPE
+MM refusal, not simultaneous DPY, XIP/VM or swap release combinations.
+P0-D/E/F remain open.
+
 ## v1103: one booted fatal owner across PIPE/FILE/HUP/VM/MM stages
 
 The optional daimos-testkit v1103 guest adds an integrated 256K PDP-6
