@@ -1,3 +1,30 @@
+## v1118: booted real PIPE and process-VM MM_BUSY in one fatal teardown
+
+The v1118 full 256K PDP-6 disposable guest now exercises *both*
+physical MM release paths during the same fatal child retirement.
+The test generator composes the v1103 PIPE MM_TYPE_KERNEL_DYNAMIC
+free hook with the v1106 process-VM MM_TYPE_PROCESS free hook at
+`mm_free`, preserving both owner/type tests; its first attempt
+exposed and corrected a conflicting test-only insertion anchor.
+
+The guest PASSes one physical -5 refusal and later successful free
+for the exact PIPE extent, and one process-VM pin-induced -5 followed
+by the real VM extent unpin/free and one swap detach. The existing
+FILE close (three attempts/two refusals), HUP-stage (two calls/one
+injected refusal), u-area (two calls/one refused release), exactly
+one EXIT/CHLD/finalization, foreign provider lease, and independent
+spinner (37 counted cycles) all PASS. After the child is reaped,
+48 further stale WAIT and PID-directed TERM requests fail normally
+without increased process-slot or process-MM-word accounting.
+
+This is stronger physical cross-stage evidence than v1103 or v1106
+in isolation, but the HUP refusal remains a deliberate stage fault.
+Physical DPY/HUP, MEMFS-XIP admission/lifetime, simultaneous failing
+DISK swap bitmap release, real numeric PID reuse, and complete P0-E
+resource/liveness coverage remain OPEN. Production OOM remains OFF;
+the entire production kernel, ABI and KCore/MRES footprint are
+unchanged. Testkit: `daimos-oom-physical-mixed-v1118` (`7df48f0`).
+
 ## v1117: booted mixed fatal release and repeated stale PID/WAIT checks
 
 The v1117 disposable 256K PDP-6 integration guest reuses the v1103
