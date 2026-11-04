@@ -1,3 +1,28 @@
+## v1144: D14 combined real MM/provider acceptance
+
+The 256K PDP-6 `daimos-testkit` integrated v1144 guest PASSes one
+real physical pin/MM_BUSY/unpin/free each for four distinct owned
+extents: PIPE, Type-340 DPY raw list, process VM and executive
+u-area. The original fatal owner retains its real filesystem-provider
+lock and sleeping waiter through FILE/HUP retries. A pre-commit
+WAIT(NO-HANG) returns zero, and a publication witness checks that
+PIPE/DPY/FILE release precedes VM destruction and VM/u-area release
+precedes zombie publication. The final parent WAIT/CHLD is correct;
+one swap detach, 48 stale WAIT/PID/event checks and independent
+spinner progress PASS. All witness errors are zero.
+
+The original separately rebuilt v1118 mixed PIPE/VM/FILE/HUP guest
+remains PASS after this testkit extension. The v1087 transitive
+release suite and its native regression/mutation controls also
+PASS; an indefinitely in-flight foreign provider remains subject
+to the existing fail-closed lifetime policy, not bounded completion.
+
+D14 is CLOSED for this release scope. Mandatory OOM checklist:
+**37/65 complete; 28 open** (26 pre-enable blockers plus deferred
+F12/F13). D16, C04, sustained E/F and size/signoff remain pending.
+Only the disposable test image contains the new hooks and counters;
+there is no production kernel, MRES, ABI or OOM switch change.
+
 ## v1143: D15 completed by explicit unscheduled-XIP exclusion
 
 For the current requester-only BRK OOM activation scope, ordinary
