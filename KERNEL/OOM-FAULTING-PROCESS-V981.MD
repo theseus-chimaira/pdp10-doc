@@ -1,3 +1,27 @@
+## v1110: invalid BRK remains nonfatal across both OOM policy modes
+
+The versioned v1110 extension of the 256K PDP-6 v1075 full-system
+guest adds two distinct validation errors: BRK below the original
+image floor (`1`) and the maximum 18-bit logical address (`0777777`
+octal), which cannot be rounded to a legal APR extent. Both calls
+return -1, leave the child's existing break unchanged and permit
+normal EXIT/WAIT and complete process-MM reclamation.
+
+The guest PASSes in both independently booted configurations. Under
+production's disabled OOM setting, subsequent actual physical memory
+exhaustion also returns -1 without killing the requester; an independent
+blocked witness survives and final memory accounting matches baseline.
+Under the enabled OOM policy in a disposable test-only kernel, both
+invalid children still finish normally while the genuinely exhausted
+requester is the only fatal victim. Witness and MM accounting PASS.
+The test's opt-in mode does not alter ordinary v1075 behavior; production
+OOM remains disabled. No production KCore, MRES, ABI or data growth.
+
+This covers only invalid floor/address-limit errors against physical
+exhaustion under P0-F. Fragmentation, exhausted MM descriptors,
+failed child RUN, integrated P0-D/E gates and final OOM enablement
+remain OPEN.
+
 ## v1109: real VM destroy plus physical MEMFS XIP fault, linked PDP-6
 
 The v1109 native PDP-6 fixture links the unchanged production
