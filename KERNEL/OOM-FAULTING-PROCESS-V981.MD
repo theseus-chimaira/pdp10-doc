@@ -1,3 +1,53 @@
+## v1141: formerly broken RUN rollback was a host folding error
+
+DAIMOS's 256K uninstrumented nested APR/EXEC/failed-RUN guest now
+PASSes on the v1141 fixed P10FOLD/DLINK toolchain. The old host tools
+folded an object-local `SETZ/JRST` discard-success branch onto a
+different object's `SETZ/JRST` despite distinct local destinations.
+The v1141 testkit verifies that both corrected analyzer and linker
+reject such a merge, while the previous tools reproduce it.
+
+The previous D13 noncompletion is not evidence of a native MM-free
+or process-exit bug. Historical v890 EXEC/FILE/WAIT and native v1129
+VM_NONE controls also PASS with corrected tools. The separate physical
+MM_BUSY failed-RUN rollback integration and wider OOM activation
+checklist are still pending. Independent v197 RUN rollback and a
+second fresh, uninstrumented v1126 combined guest also PASS.
+Production requester OOM remains OFF.
+
+## v1134-v1137: uninstrumented D13 late RUN discard noncompletion
+
+Four additional independently built 256K PDP-6 diagnostic guests
+continue the nested APR plus postcommit EXEC/FILE plus late failed
+RUN D13 investigation. v1134 shifts only otherwise unreachable
+kernel text by 043 octal words: the guest still prints `<EA`, has
+one real fdmap rejection, no published EXEC-child ZOMB and the same
+unexpected UUO. This does not explain the v1131 fully instrumented
+success; no text-padding workaround is accepted.
+
+v1135 uses only simulator `examine` commands to capture the invalid
+trap and saved return state, without changing source-linked kernel
+instructions. The invalid UUO word is 000000000014, with saved trap
+return 340000774047. This is a PDP-6 saved flags/PC format, *not* an
+ordinary JRST opcode, so 340 alone does not prove corruption.
+
+v1136 finds parent slot 1 and saved return 350000000104 during the
+real late failed RUN; it first catches two prior successful RUN
+epilogues. v1137 instead sequences breakpoint installation after
+the late `proc_run_claimed_bad`: the parent's saved return, user SP
+000053002057 and kernel SP 000000046565 are intact at that point,
+but the corresponding failed RUN never enters its own epilogue.
+The next observed event is invalid UUO followed by HALT. Thus the
+two v1133 epilogue visits are from earlier successfully admitted
+children, and the failing path must be investigated inside the
+`proc_slot_discard` call and its nested release/scheduler operations.
+
+These are diagnostics and cannot close D13. Neither an actual source
+repair nor the combined physical MM_BUSY/rollback lifecycle has yet
+passed. Default requester OOM remains OFF, with no production
+KCORE/MRES/data/ABI change; mandatory OOM checklist remains 34/65
+checked, 29 pre-activation blockers.
+
 ## v1130-v1133: fatal EXEC, APR and unpublished RUN return diagnostics
 
 The v1129 production `VM_SPACE_NONE` destructor repair independently
