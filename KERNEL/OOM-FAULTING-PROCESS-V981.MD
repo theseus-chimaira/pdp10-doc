@@ -1,3 +1,21 @@
+## v1108: source-linked physical MEMFS XIP MM -4 and retry
+
+The v1108 native PDP-6 regression reuses the production MEMFS XIP
+direct dispatch, `memfs_xip_unpin_base` and MM pin adjustment. The
+XIP reference is still owned but the corresponding MM extent's pin
+count is zero. The real `mm_unpin` rejects it with -4; MEMFS retains
+the XIP reference, and the slot-0 direct gateway leaves the foreign
+serialized provider lease untouched without clock waiting.
+
+Production `mm_pin` repairs the same extent. A second direct XIP
+release consumes the reference and unpins successfully; a third is
+correctly reported as not owned. Original v1086/v1094 source-linked
+tests and v1094 negative mutants PASS. The expanded v1096 native P0-D
+release-stage matrix PASSes with v1108. Production KCore, MRES and
+persistent state are unchanged. This is not a booted process-VM XIP
+failure test; that P0-D integration, P0-E/F and OOM enablement remain
+open.
+
 ## v1107: live PREVM run-queue alias and allocated DISK bitmap retry
 
 The slot-0 `proc_finish_service_v881` scanner previously tested
