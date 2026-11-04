@@ -1,3 +1,34 @@
+## v1116: real MM descriptor-cause tracing across child RUN
+
+Both independently booted disposable 256K PDP-6 configurations now
+confirm actual MM descriptor saturation during a valid child RUN.
+Test-only instrumentation records the native allocation result at
+`vm_space_create` and the later child u-area allocation in
+`proc_run_block`, before those layers collapse the result to the
+public RUN ABI -1. The fixture demands exactly one recorded -3
+(descriptor capacity exhausted) at the failing stage and records
+the other as success (0) or not attempted (-7 sentinel). A failed
+RUN retains no child process slot, user VM or u-area, and the
+requester's physical memory accounting is unchanged.
+
+The private test INIT first fills the real MM descriptor table with
+one-word kernel-dynamic allocations, then frees each recorded base
+using the true MM type/owner and continues the existing invalid
+BRK/RUN, physical-OOM, blocked witness and WAIT tests. The
+default-disabled guest PASSes: the exhausted requester receives -1.
+The disposable enabled-policy guest PASSes: the later genuinely
+physical-OOM requester alone is fatally retired. The RUN caller and
+the independent witness survive.
+Native v1111/v1113 MM classification and BRK cause propagation tests
+also PASS, including their unsafe mutation controls.
+
+All fault preparation, cause capture and enabled OOM policy exist
+only in disposable images. Production OOM remains OFF; the kernel
+text/data/MRES/ABI do not grow. The direct RUN -3 cause observation
+is now covered, but P0-D release cross-products, P0-E integrated
+liveness/WAIT/PID leak acceptance and P0-F enable decision remain
+OPEN. These two boots are not a full P0-E matrix.
+
 ## v1115: full-system fragmented-core BRK preserves nonfatal -2
 
 Two independently built, booted 256K PDP-6 images now verify actual
