@@ -1,3 +1,25 @@
+## v1111: real MM allocator distinguishes shortage, fragments and slots
+
+The native PDP-6 v1111 regression executes the authoritative
+`mm_find_fit`, `mm_extent_insert` and `mm_alloc_aligned_noreclaim`
+assembly. Two extents occupy a managed 010000-word arena, leaving
+two disjoint 02000-word gaps. An allocation larger than their total
+free space returns -1 (insufficient physical RAM). A 03000-word
+allocation returns -2 (fragmentation, even though 04000 words are
+free overall). A smaller fitting allocation returns -3 when the
+extent-descriptor table is full. All refusals preserve the original
+extents; increasing only table capacity then permits sorted insertion
+of the smaller allocation. Two unsafe error-code collapses to -1 are
+rejected by the native fixture.
+
+The independent real OOM-BRK dispatch v1000 test also PASSes for
+nonfatal fragmented/invalid causes, distinguishing the allocator's
+error classification from fatal requester selection. This is native
+allocator evidence only; it does not establish booted BRK error
+propagation under descriptor exhaustion or fragmentation. Production
+OOM remains disabled, no KCore/MRES/persistent RAM changes, and P0-F
+remains open alongside failed RUN and P0-D/E integration.
+
 ## v1110: invalid BRK remains nonfatal across both OOM policy modes
 
 The versioned v1110 extension of the 256K PDP-6 v1075 full-system
