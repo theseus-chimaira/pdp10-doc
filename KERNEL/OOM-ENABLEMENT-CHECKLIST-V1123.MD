@@ -1,3 +1,22 @@
+## v1130-v1133: D13 remains blocked by nested syscall-return fault
+
+After the v1129 full-VM_NONE destructor repair, the unchanged v890
+EXEC/FILE/WAIT guest PASSes. Separately, v197 inherited-group and
+v1130 NEW-group full PDP-6 guests each PASS sixteen real post-VM
+fd-map RUN rollbacks with three blocked children and stable process
+accounting. The nested v1126 APR+fatal-EXEC+failed-RUN guest still
+stops before its parent R marker at a simulator UUO; the EXEC child
+is not published as a ZOMB.
+
+Disposable v1131 full rollback tracing changes this to `<EARH` and
+one terminal ZOMB, v1132 unused-BSS-only padding does not, and v1133
+minimal RUN claimed/return counters show the rollback entry and
+return label were reached but do not restore parent R. These
+diagnostics are NOT acceptance. D13 stays OPEN pending a proven
+mapped-user syscall/parent continuation fix plus genuine MM_BUSY
+unpublished-RUN rollback integration. The complete 29-item
+pre-activation gate remains blocked; requester-only OOM stays OFF.
+
 # DAIMOS PDP-6 requester-only OOM: activation gate v1123
 
 Status: **NOT READY** (2026-11-04). This is the persistent OOM
@@ -59,6 +78,14 @@ exit/WAIT status until the checked release truly commits. Never
 replace those stages with a PI6-masked blocking callback.
 
 ### D: already demonstrated resource combinations
+
+- v1129: The exact `VM_SPACE_NONE` (-1) sentinel is now recognized
+  by the production PDP-6 VM destructor before any physical MM/XIP
+  free, while checked backing detach remains active. Native source-
+  linked positive and negative-mutant tests PASS; the previously
+  timed-out *unmodified* full v890 post-commit EXEC guest now PASSes
+  its real FILE retry and parent WAIT. This fixes a D13 prerequisite,
+  but the combined nested APR/EXEC/failed RUN guest is still OPEN.
 
 - v1101: physical wrong-owner -4 failure quarantine and bystander.
 - v1104/v1105/v1106/v1107: independent physical PIPE, DPY, process VM

@@ -1,3 +1,81 @@
+## v1130-v1133: fatal EXEC, APR and unpublished RUN return diagnostics
+
+The v1129 production `VM_SPACE_NONE` destructor repair independently
+restores the original v890 postcommit EXEC/FILE/parent-WAIT full PDP-6
+guest. The native VM sentinel and backing-detach negative-mutant
+regression also PASSes. This resolves that baseline bug, but not the
+separate combined D13 APR/EXEC/failed-RUN scenario.
+
+On a fresh, uninstrumented combined v1126 guest the real late RUN
+fd-map rejection occurs; user output stops at `<EA`, followed by a
+simulator UUO with word `340000774047`, before the parent writes R.
+No final EXEC ZOMB is published. An unchanged v197 late-RUN control
+and new v1130 NEW-process-group variant both independently boot and
+PASS 16 invalid post-VM child RUNs under three blocked children,
+correct accounting and subsequent successful RUN/WAIT. NEW process
+groups alone do not explain the combined failure.
+
+The disposable, non-production v1131-v1133 variants establish:
+
+- v1131: instrumenting thirteen real rollback/return boundaries
+  produces `<EARH`, exact one-time child discard, VM and u-area
+  release, no deferrals/failures, one terminal EXEC-child ZOMB.
+  The extra instructions alter the observed result; this is NOT an
+  accepted D13 guest or evidence for permanent instrumentation.
+- v1132: changing only 13 otherwise unused BSS words, with no
+  additional code, still fails at `<EA` with the same UUO and no ZOMB.
+- v1133: two counters on `proc_run_claimed_bad` and
+  `proc_run_return` observe one claimed-child rollback and two RUN
+  return-label visits (the earlier successful APR-child RUN included).
+  The guest nevertheless reaches only `<EA` and the same UUO,
+  without an EXEC-child ZOMB. A return-label visit is not proof that
+  the parent successfully resumes in user mode.
+
+The next diagnostic must establish the exact syscall mapped-user
+release, restored parent APR/stack/trap continuation and differences
+in text layout or scheduling on fresh simulator boots. Do not mask
+this with NOPs, padding, forced MM success or altered retries. D13
+and the physical MM_BUSY failed-RUN integration remain OPEN. The
+production OOM switch stays OFF. No v1130-v1133 production KCORE,
+MRES, ABI or persistent data changes.
+
+## v1129: fixed VM_NONE destructor after fatal post-commit EXEC
+
+The unmodified v890 full 256K PDP-6 regression for post-commit
+EXEC failure was reproducibly stuck after the VFS owner eventually
+completed FILE close, even with a 180-second host simulator limit.
+The v1128 disposable stage probe isolated the real error: no TTY
+release refusal, one `vm_space_destroy` return of -1, zero VM
+successes, u-area deferrals or ZOMB publications. The old EXEC VM
+had already been destroyed, leaving `VM_SPACE_NONE` as the full
+36-bit value -1. PDP-6 `vm_space_destroy` extracted the nonzero RH
+`0777777` and incorrectly treated it as a physical MM/XIP base.
+The resulting invalid MM release kept PREVM/FINALIZE pending and
+prevented the parent from observing the child's terminal WAIT.
+
+The production VM destroy routine now recognizes the **full-word**
+`VM_SPACE_NONE` sentinel after validating that storage mode is
+supported, skips only the nonexistent physical MM/XIP free, and
+still performs ordinary checked backing detach and final VM_NONE
+publication. The fix uses two additional resident text instructions
+and adds no global data, process word, heap allocation, MRES or ABI.
+
+The new source-linked testkit v1129 PDP-6 regression calls the real
+VM destructor twice on VM_NONE, checks both idempotent successes,
+zero MM/XIP releases and two checked detach calls; it also verifies
+invalid storage-mode rejection. Two unsafe sentinel/detach mutants
+fail. Existing v1109 physical MEMFS-XIP VM and v880 swap-detach
+tests PASS. After the fix, the **unmodified v890 full PDP-6 guest
+PASSes** with two refused VFS closes, third successful close, exact
+FILE release, one final EXIT and correct parent WAIT. Before the
+fix, this same baseline timed out at both 65 and 180 seconds.
+
+The separate v1126 nested concurrent APR+post-commit EXEC+unpublished
+RUN test is still not accepted: it reaches `<EA` and then an
+unresolved simulator UUO before the late RUN marker. D13 remains
+OPEN, as do D14-D16 and complete P0-E/F; the production requester
+OOM switch remains `PROC_OOM_BRK_ENABLED_V1000,0`.
+
 ## v1125: real wrong-owner MM with a distinct held FS lease
 
 The v1125 disposable full 256K PDP-6 guest combines a genuine APR
