@@ -1,3 +1,33 @@
+## v1120: actual slot/PID reuse after fully reaped physical OOM
+
+Two independent full 256K PDP-6 guest images PASS a new sequential
+PID-reuse regression after real physical BRK exhaustion. With
+production OOM disabled in the first disposable image the exhausted
+requester returns -1 normally; with OOM enabled only in the second
+test image the genuine exhausted requester is terminated. The
+independent blocked witness survives in both, and WAIT and SYS_MEMINFO
+show exact recovery of process slots and process words to the parent
+baseline before reuse begins.
+
+Each guest RUNs, waits for and reaps 24 successive children with
+alternating 062 and 063-octal exit statuses. All 23 consecutive pairs
+reuse the same numeric slot/PID. A second WAIT and directed TERM
+issued *after* each reap, before the next RUN, both return -1; the
+parent observes the original process-slot/process-MM-word baseline
+after each iteration. The transcripts end `<DNWQP` for the default
+policy and `<KWQP` for the isolated enabled policy, both with clean
+HALT. The test is `daimos-oom-pid-reuse-v1120` in daimos-testkit.
+
+PIDs in DAIMOS are numeric process slots without generation tags.
+An old PID can legitimately name a different live owner after reuse;
+the test does not promise permanent stale-handle rejection or send
+an event to the newly assigned PID under the old identity. This
+closes sequential actual numeric reuse after OOM, not sustained
+simultaneous HUP/PIPE/DPY/XIP/swap faults. The existing native v1109
+real XIP/VM retry and v1087 allocation-free release audit also PASS.
+Production kernel and MRES RAM, ABI and OOM switch are unchanged;
+P0-D/E/F remain OPEN.
+
 ## v1119: physically faulted PIPE and Type-340 DPY in the same HUP
 
 The v1119 disposable 256K PDP-6 session guest now equips the second
