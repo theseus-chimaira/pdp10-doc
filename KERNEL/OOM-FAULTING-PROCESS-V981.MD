@@ -1,3 +1,40 @@
+## v1105: real HUP / active DPY Type-340 raw-list MM refusal
+
+The v1105 booted 256K PDP-6 test adds a genuine Type-340 display-list
+owner to the v907 two-member physical session/TTY HUP fixture. The first
+member has already received HUP and published VM_NONE+FINALIZE but still
+owns a pinned stable u-area pending slot-0 retry. The second member has
+opened `/DEV/DPY0` and published a 32-word raw program using the real
+PI6-clock/PI7-BLKO driver before its remote HUP.
+
+The production FILE DPY close path calls `dpy_write_words` with zero
+words, quiesces the Type-340, and uses the ordinary `mm_free` for the
+existing list. In the test-only isolated MM implementation, the exact
+MM_TYPE_KERNEL_DYNAMIC / DPY owner 014 extent is physically pinned on
+its first attempted free, causing the original allocator to return
+MM_BUSY (-5). The FILE descriptor and published raw-list/IOWD remain
+owned and valid. The first leader HUP therefore fails, and its parent
+sees no completed WAIT while one member's HUP is still unresolved.
+
+Eight genuine PI6 raw-list refreshes occur during a delay between the
+first HUP and unpin/retry, demonstrating that failed DPY STOP does not
+strand the display program. The second HUP skips the first member's
+irreversible finalization, unpins the exact DPY extent, and frees it
+once through the original MM validation. The session TTY commits and
+releases the first member's u-area pin, then existing WAIT/TTY checks
+confirm the leader and members' HUP statuses and proper handoff.
+
+Booted guest counters PASS: 2 DPY frees, 1 MM_BUSY, 1 successful free,
+1 physical DPY pin/unpin, 14 total raw PI6 refreshes, 8 after refusal,
+0 repeated HUP deliveries and 0 MM/owner errors. The original booted v907
+session HUP guest, v1104 physical PIPE/HUP guest and the complete
+v1096 source-linked native P0-D matrix all independently PASS.
+All new hooks and counters exist only in daimos-testkit's isolated
+guest. The unchanged production KCore endpoint
+is `023171` octal, with OOM requester termination still disabled.
+P0-D/E/F remain OPEN, particularly integrated MEMFS-XIP/VM/swap
+failures and broader WAIT/PID/leak cross-products.
+
 ## v1104: real member HUP concurrent with physical PIPE and u-area pins
 
 The disposable 256K PDP-6 v1104 guest extends the real two-member
