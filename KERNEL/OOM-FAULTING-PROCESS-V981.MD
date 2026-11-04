@@ -1,3 +1,27 @@
+## v1117: booted mixed fatal release and repeated stale PID/WAIT checks
+
+The v1117 disposable 256K PDP-6 integration guest reuses the v1103
+PIPE final-close MM_BUSY, FILE, HUP-stage, process VM and u-area
+fault/retry scenario with a held foreign FS-provider lease and a
+continuously runnable independent spinner. After the exact child
+WAIT completes, the parent makes 48 further WAIT requests and 48
+PID-directed TERM requests for the now-reaped child. Every request
+must return -1. Process-slot and process-MM-word counts may decrease
+through legitimate reclamation but must not increase above their
+post-reap baseline. The original v1103 release-stage counters,
+one EXIT/CHLD/finalization, provider ownership and bystander
+progress also PASS in the booted guest.
+
+A first attempt to create fresh children after this teardown was
+invalid because the scenario intentionally holds the serialized
+provider needed for executable loading. It showed continued spinner
+progress but no new RUN completion; the accepted test instead checks
+stale WAIT/PID/event semantics without requiring that provider.
+This is a narrower P0-E liveness subset, not evidence of numeric
+PID reuse or of complete HUP/PIPE/DPY/XIP/swap fault combinations.
+No production code, KCore/MRES or OOM setting changes; production
+requester OOM remains disabled pending P0-D/E/F acceptance.
+
 ## v1116: real MM descriptor-cause tracing across child RUN
 
 Both independently booted disposable 256K PDP-6 configurations now
