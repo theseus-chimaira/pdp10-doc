@@ -1,3 +1,37 @@
+## v1181: F03 exact-candidate positive/negative matrix CLOSED
+
+Linux/x86-64 Open SIMH V4.1-0 built 14 independent full 256K PDP-6
+disposable guests for physical requester OOM (v1075), invalid/address
+BRK (v1110), failed RUN rollback (v1112), real MM descriptor-table
+exhaustion (v1114), physical fragmentation (v1115), original MM cause
+propagation from failed RUN (v1116), and 24 PID reuse cycles with
+stale WAIT/TERM rejection (v1120). All seven scenarios PASS in
+production-disabled and isolated test-enabled variants on DAIMOS
+`96e6c695`, corrected KCC `b9cd764` and Open SIMH
+`edd19b17`. No production kernel source or OOM policy modification
+was necessary. After the KCC AC10 preservation repair, v1114's
+test-only 32-entry descriptor-base limit was corrected to the actual
+136-descriptor full 256K capacity and both variants PASS.
+
+The complete 14-log archive and compiler/simulator/source hashes are
+preserved on the Linux test host in
+`$HOME/tmp/daimos-f03-verified-evidence-v1181.tar.gz`,
+SHA256 `dab45fce94cd6350bfb32e7b1683010f85bb7d93e4a6fd60b4996d17d49bb6bc`.
+**F03 CLOSED; 52/65 mandatory checks complete, 13 open.** This does
+not close F04-F11 or authorize production OOM. A full Android P0-D
+candidate run is still pending; earlier fresh Linux P0-D boot matrix
+passed. Separate same-source Android/Linux E13 release-media counter
+verification passes, but the remaining required platform/media
+coverage remains outstanding.
+
+The F05/F06 live physical memory audit proves that MINIT-installed
+MRES images are permanent, not runtime-loadable/unloadable OOM
+resources. The current instrumented full DSK/D6FS profile occupies
+19053 words (OOM off) and 19067 (test-enabled); this exceeds the
+separate 16K permanent address budget. The release must not silently
+waive that budget, confuse packaged with installed MRES, or activate
+OOM before F05/F06 are resolved.
+
 ## v1163: E13 second-platform evidence PASS, final signoff still open
 
 Linux/x86_64 Open SIMH PDP-6 build `a6b511e5` ran independent
