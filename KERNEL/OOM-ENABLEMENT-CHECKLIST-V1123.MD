@@ -1,3 +1,28 @@
+## v1155: E08 multiple sessions, stopped groups and PID reuse accepted
+
+Two complete full 256K PDP-6 v1155 guests PASS with two distinct
+live foreign session leaders and two simultaneous independent
+two-member process groups. Each group receives actual TSTP/CONT,
+then terminal TERM/INT; each member has exact STOPPED, CONTINUED
+and EXITED parent WAIT statuses and CHLD notification. The guest
+rejects duplicate status and stale PID event delivery and checks
+that neither foreign session is killed by unrelated group events.
+With both sessions still live, a separate child is RUN/reaped for
+64 additional numeric PID lifetimes. Each has a real ALRM and
+terminal WAIT, then rejects stale WAIT/TERM; the two sessions are
+finally terminated and reaped one at a time. Process slots, process
+words and FILE slots return to baseline. Original v979 parent/group
+regression also passes on a separately rebuilt full guest.
+
+The first in-development v1155 guest timed out before reaching its
+group phase. The completed v1155 r2 and independently rebuilt r3
+both PASS the full sequence; the testkit source is recorded in
+commit `0ac6c83`. No production source or RAM changed.
+
+E08 is CLOSED, with **45/65 mandatory checks complete, 20 open**
+(18 pre-enable plus F12/F13). E09-E13, S07/S08, A04, F02-F11
+and final actual RAM measurements remain open. Production OOM is OFF.
+
 ## v1153-v1154: E07 qualified PI6 and independent user progress accepted
 
 The v1153 full 256K PDP-6 mixed release guest PASSes all original
