@@ -1,3 +1,23 @@
+## v1149: B07 capped backoff does not authorize forced reclamation
+
+The new `test-daimos-oom-unbounded-owner-v1149` source/negative
+contract PASSes against the actual production PDP-6 owner FILE/HUP,
+foreign provider-lock and slot-0 finalization assembly. All eight
+unsafe mutations are rejected, including stopping an owner at the
+01000-tick delay cap, directly freeing its MM, stealing/unlocking a
+foreign provider lease and treating an unsuccessful slot-0 retry as
+committed. Native v885 executes 14 failed FILE close requests with
+multiple capped delays before one legitimate successful EXIT; native
+v1102 covers shared reaper backoff and four negative mutations.
+
+B07 is CLOSED as a fail-closed ownership contract, not a bounded
+provider-liveness guarantee. A provider that never returns may keep
+its owner indefinitely and requires a separate recovery policy.
+Mandatory checklist: **40/65 complete, 25 open** (23 pre-enable plus
+F12/F13). B06 real OOM with held/in-flight providers, E05-E13 and
+F02-F11 including RAM/diagnostic signoff remain open. Production
+requester OOM is OFF and no resident KCORE/MRES/ABI change occurred.
+
 ## v1148: C04 integrated private-owner HUP and real PI6 closure
 
 Two independently rebuilt 256K PDP-6 v1148 guests PASS the combined
