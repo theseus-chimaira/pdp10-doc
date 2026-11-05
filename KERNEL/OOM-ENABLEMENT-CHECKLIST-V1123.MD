@@ -1,3 +1,24 @@
+## v1202: A04/F02 exact-revision P0-D release matrix accepted
+
+DAIMOS `5db15ecf` with daimos-testkit `122c61f` completed one
+uninterrupted `P0D_FULL=1` v1096 run (exit 0) on the supported
+256K KCC DSK/D6FS PDP-6 profile. All 18 component/source-linked
+release checks, v1083 direct fatal-release scope, v1087 transitive
+no-new-MM/backing-allocation graph, and all 17 full booted guest
+invocations PASS. This covers physical TTY/PIPE/DPY/VM/u-area
+MM_BUSY, owner-invalid -4 quarantine, held FS leases, genuine
+swap-out/in and bitmap rollback, PID reuse and stale WAIT/event
+rejection, and both disposable OOM policy variants. See
+DAIMOS `design/A04-F02-FULL-MATRIX-ACCEPTANCE-V1202.md` for full
+log provenance and SHA256 evidence.
+
+A04 and F02 are now CLOSED, leaving **59/64 completed**, with
+E13/F07/F11 pre-enable and F12/F13 deferred. This closure proves
+the defined resource-release graph on this exact candidate;
+it does not certify remaining cross-simulator/media coverage,
+combined dynamic peak MM/APR/provider buffer budgets or F11
+integration. Production requester OOM is still disabled.
+
 ## v1190: F10 four-profile build diagnostic audit accepted
 
 The testkit v1190 release-build log audit PASSes Android/aarch64
