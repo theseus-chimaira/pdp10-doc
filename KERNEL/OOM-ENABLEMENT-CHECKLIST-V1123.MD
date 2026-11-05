@@ -1,3 +1,30 @@
+## v1160: first release profile frozen; E13 DSK/D6FS evidence PASS
+
+S07/S08 freeze the first bounded requester-OOM profile, described
+in `OOM-RELEASE-PROFILE-V1160.MD`: 256K full KCC PDP-6, DSK270
+Stage 1, four-member D6FS disk root, DRM236 AUXSTORE available,
+60 Hz PCLK, CTY headless. Normal RUN/EXEC uses writable VM;
+root-only raw MEMFS XIP admission and 32K/alternate-media/GUI
+profiles are excluded from *this* OOM activation scope, not removed
+from DAIMOS. v1123 source/mutation scope guard PASSes again.
+
+Two fresh 256K full-system v1160 guests PASS genuine physical BRK
+OOM while a foreign gateway holds its original lease: enabled policy
+selects only the requester and disabled returns -1 without killing.
+Each has 160 independent spinner advances, exactly one original
+provider return, correct WAIT/process/MM counters and zero integrity
+errors. Actual generated DSK/D6FS media were attached; full build
+logs, SIMH/counter transcripts, boot.ini, maps and hashes are archived
+in `$TMPDIR/daimos-e13-release-media-v1160.qel3Zm.tar.gz`.
+This is **one local Android aarch64 Open SIMH PDP-6 target**. E13
+remains OPEN pending other required simulator/release-media variants.
+The guest uses a test-only INIT, so ordinary userland swap activation
+is not asserted. No production kernel change or OOM activation.
+
+S07/S08 CLOSED for this explicitly bounded profile: 51/65 mandatory
+checks complete, 14 open (12 pre-enable plus F12/F13). E13, A04,
+and F02-F11 remain. Production requester OOM OFF.
+
 ## v1159: E12 protected live critical/nonrequester processes PASS
 
 Fresh full 256K PDP-6 testkit v1159 regressions PASS in both
