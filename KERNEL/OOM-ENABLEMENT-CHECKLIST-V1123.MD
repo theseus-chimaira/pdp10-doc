@@ -1,3 +1,22 @@
+## v1157: E10 APR/EXEC/RUN during held foreign provider accepted
+
+Fresh full-system 256K PDP-6 `test-daimos-fatal-exec-provider-v1157`
+PASS against DAIMOS `a7b721b4`, testkit `436552f`. The disposable
+guest holds a real foreign filesystem gateway lease while an
+asynchronous APR fault occurs in post-commit EXEC FILE cleanup and
+an unpublished RUN rolls back its physically pinned u-area.
+Provider-backed FD3 survives staging until real foreign-lock refusal.
+The original owner later resumes/unlocks and final private-owner
+FILE, VM/u-area and WAIT accounting PASS. Counters: six VFS calls,
+five refusals, seven FILE passes, six sleeps, one physical
+pin/busy/unpin cycle, zero integrity errors. This is a real held
+provider and actual physical MM refusal in a test-only copied guest,
+not a change to the production OOM policy or permanent memory.
+
+E10 CLOSED for supported writable-process scope: 47/65 mandatory
+checks complete, 18 open (16 pre-enable plus F12/F13). E11-E13,
+S07/S08, A04 and F02-F11 remain. Production requester OOM OFF.
+
 ## v1156: E09 real physical MM versus backing exhaustion accepted
 
 The frozen `test-daimos-oom-error-matrix-v1156` nine-case suite
