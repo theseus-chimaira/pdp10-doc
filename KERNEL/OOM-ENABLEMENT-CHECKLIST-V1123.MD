@@ -1,3 +1,27 @@
+## v1146r3: D16 exact-once matrix closed on frozen candidate
+
+The nine-stage `daimos-testkit` target
+`test-daimos-oom-exact-once-matrix-v1146` PASSes completely against
+DAIMOS `2e12c1da` and testkit `253a813`, using the fixed installed
+P10FOLD, DLINK, DAS and PDP-6 simulator checksums recorded alongside
+the retained test logs. Its cases cover the transitive fatal-release
+graph and mutants, physical PIPE/DPY/VM/u-area pin/BUSY/unpin/free,
+canonical TTY, FILE/HUP refusal and foreign provider-lock retention,
+swap-out/in and bitmap-corruption/refusal recovery, the nested
+APR/EXEC/unpublished-RUN rollback, exact owner/ZOMB/WAIT publication,
+bystander progress, and stable PID/MM/slot accounting. Both normal
+OOM-disabled and disposable requester-OOM-enabled variants complete
+24 PID-reuse lifetimes and distinguish the original requester from
+unrelated processes. D16 is CLOSED for the current writable-process
+scope; scheduled XIP launch is still explicitly excluded.
+
+Mandatory OOM checklist: **38/65 complete, 27 open** (25 pre-enable
+blockers plus F12/F13). The remaining C04, B06/B07, E05-E13, F02-F11
+and full actual RAM/release signoff remain mandatory. A full-image KCC
+build emits known identifier-truncation and unused-static diagnostic
+notes; F10 has not been accepted. The production OOM flag remains
+disabled, with no resident kernel/MRES code/data or ABI change.
+
 ## v1144: D14 combined real MM/provider acceptance
 
 The 256K PDP-6 `daimos-testkit` integrated v1144 guest PASSes one
