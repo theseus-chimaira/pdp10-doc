@@ -1,3 +1,31 @@
+## v1153-v1154: E07 qualified PI6 and independent user progress accepted
+
+The v1153 full 256K PDP-6 mixed release guest PASSes all original
+v1144 physical PIPE, Type-340 DPY, VM, u-area and foreign-provider
+ownership assertions, plus additional real PI6 and unrelated-user
+witnesses. From the first genuine PIPE MM_BUSY to final ZOMB
+publication, PI6 advances 1297 -> 1352 (55 ticks) and the bystander
+executes three real sleep/wakeup operations, with one exact release
+per resource and zero errors.
+
+The v1154 independently built guest extends the v1122 physical PIPE
+and checked DISK bitmap refusal/restoration scenario with a distinct
+user session. From the first failed real bitmap verification to the
+second successful verification, PI6 advances 1015 -> 1032 (17 ticks)
+and that unrelated user executes eight real sleep/wakeup syscalls.
+The two physical bitmap calls, one corruption/restore, original
+DISK backing record, exact PIPE release, parent WAIT and TTY ownership
+all PASS without errors. Both tests change only disposable guests;
+there is no synthetic clock, allocation result or production code.
+
+The independently booted v1148 TTY/HUP/VM/u-area case additionally
+PASSes 32 PI6 ticks and 48 bystander sleeps through pinned TTY and
+deferred owner continuation. Together these accept E07 for all
+currently supported writable-process resource classes. Mandatory
+checks: **44/65 complete, 21 open** (19 pre-enable plus F12/F13).
+E08-E13, S07/S08, A04, F02-F11 and actual permanent/peak RAM proof
+remain mandatory. Production requester OOM remains disabled.
+
 ## v1151r1: E05/E06 sustained physical-OOM endurance accepted
 
 Both independent 256K PDP-6 full disk-root v1151 guests PASS with
