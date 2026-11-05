@@ -1,3 +1,17 @@
+### AUXSTORE conversion of explicit-zero DBOOT (v1194)
+
+The one-member disposable auxiliary-drum precursor uses a clean
+DBOOT D6FS descriptor with no bootstream, LOGSTORE or BADMAP blocks.
+When `mkdsk` produces the v1192 explicit flag `1` in octal word
+`020`, `mkauxstore --convert-dboot` now recognizes it alongside
+historical flag `0`, but retains its strict exact-header check.
+All other DBOOT metadata words must be zero before destructive
+conversion. Unknown or high-bit flags, unrecognized layout metadata
+and an incorrect D6FS base/size/superblock/tail are refused without
+modifying the image. The original D6FS partition data survives a
+successful AUXST1 conversion. Testkit v638/v636 cover positive,
+legacy, dry-run, negative and immutable-failure cases.
+
 ## D6FSR2 explicit reserved-layout presence (v1192)
 
 The historical SIXBIT `D6FSR2` DBOOT extension is retained for

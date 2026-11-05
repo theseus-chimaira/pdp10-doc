@@ -1,3 +1,14 @@
+## AUXSTORE DBOOT conversion compatibility (v1194)
+
+The auxiliary-drum image builder first creates a disposable DBOOT
+D6FS descriptor, then `mkauxstore --convert-dboot` replaces its
+block-zero descriptor with AUXST1 while keeping the D6FS region.
+The converter accepts both historical marker `0` and the v1192
+explicit-reservations marker `1` at DBOOT octal word `020`, only
+with the exact otherwise empty precursor header. Other metadata
+and unknown 36-bit flags remain a hard refusal; no destructive
+fallback is allowed. Testkit v638 and v636 PASS.
+
 ## DBOOT reserved-layout marker (v1192)
 
 New `mkdsk --d6fs-layout` media sets DBOOT extension word `020` to
