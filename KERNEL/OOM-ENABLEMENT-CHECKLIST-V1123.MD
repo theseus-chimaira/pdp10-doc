@@ -1,3 +1,36 @@
+## v1190: F10 four-profile build diagnostic audit accepted
+
+The testkit v1190 release-build log audit PASSes Android/aarch64
+and Linux/x86-64 full DSK/D6FS release media under both disposable
+OOM policies: the same 13 precisely cataloged diagnostic classes,
+zero unexplained compiler/assembler warnings or errors, and three
+injected unexpected-diagnostic mutants rejected. Known KCC notes
+and the legacy D6FSR2 warning remain visible, with actual D6FS
+superblock CLEAN verification. F10 is CLOSED for this evidence;
+the exact final-candidate recheck remains part of A04/F02/F11.
+
+After retiring F05 as a non-OOM memory-size goal, **57/64 OOM
+gates complete, 7 open**: A04, E13, F02, F07, F11 pre-enable;
+F12/F13 deferred. Production requester OOM remains disabled.
+
+## v1189: F05 removed from requester-only OOM acceptance
+
+F05 (static 16K permanent KCORE/MRES fit) is **not an OOM target**
+and is retired from this checklist, not marked as passed. The
+measured instrumented 256K full-profile 2717-word permanent
+address-budget overflow remains a separate KCORE/MRES optimization
+problem, not a reason to block requester-only OOM signoff. Historical
+v1188 and earlier F05 references below record the prior scope and
+are superseded by this explicit decision.
+
+OOM acceptance now has **64 gates: 56 complete, 8 open**. The six
+pre-enable gates are A04, E13, F02, F07, F10 and F11; F12 and F13
+remain deferred activation/post-activation steps. In particular,
+F07 still requires real *dynamic* peak MM/descriptor, APR/alignment,
+stack and provider-buffer accounting and cannot be waived with F05.
+The selected 256K KCC/full DSK/D6FS profile and all failure-safety
+tests remain unchanged. Production requester OOM remains disabled.
+
 ## v1188: F06 boot-installed MRES footprint reconciled; F05 still fails
 
 The Android aarch64 and Linux x86-64 v1174-v1176 256K full
