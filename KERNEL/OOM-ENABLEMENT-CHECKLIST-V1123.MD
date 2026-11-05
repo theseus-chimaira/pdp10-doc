@@ -1,3 +1,24 @@
+## v1156: E09 real physical MM versus backing exhaustion accepted
+
+The frozen `test-daimos-oom-error-matrix-v1156` nine-case suite
+PASSes actual 256K PDP-6 and native cases against DAIMOS
+`9f51326e`, testkit `81f40eb` and frozen host-tool checksums;
+logs are preserved under
+`$TMPDIR/daimos-oom-error-matrix-v1156.gzw27g`.
+The tests distinguish true physical BRK shortage (-1), fragmented
+free extents (-2), MM descriptor exhaustion (-3), invalid or
+wrong-owner (-4), and pinned MM_BUSY (-5). A new disposable guest
+exhausts the real production backing bitmap and checks the next
+allocation fails atomically, without killing the process; it then
+successfully grows and shrinks ordinary BRK and releases backing.
+Production-disabled and disposable requester-OOM-enabled tests
+both PASS, and native backing allocator mutants are rejected.
+
+E09 is CLOSED: 46/65 mandatory checks complete, 19 open (17
+pre-enable plus F12/F13). E10-E13, S07/S08, A04 and F02-F11
+remain mandatory. No production KCORE/MRES/RAM or ABI change and
+`PROC_OOM_BRK_ENABLED_V1000` remains zero.
+
 ## v1155: E08 multiple sessions, stopped groups and PID reuse accepted
 
 Two complete full 256K PDP-6 v1155 guests PASS with two distinct
