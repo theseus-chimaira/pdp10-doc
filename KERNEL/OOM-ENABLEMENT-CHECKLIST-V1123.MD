@@ -1,3 +1,23 @@
+## v1158: E11 distinct RUN parent survives genuine BRK OOM
+
+Fresh full 256K PDP-6 guests PASS
+`test-daimos-oom-run-parent-v1158` in both default-off and
+disposable requester-OOM-on configurations. A separate live RUN
+parent fills the production MM descriptor pool using a test-only
+probe, encounters genuine -3 while admitting a child, verifies
+no published child process slot or leaked process RAM, restores
+the original MM descriptors, and acknowledges INIT through a pipe.
+INIT then starts a distinct child which experiences actual physical
+BRK exhaustion. The RUN parent remains alive until the latter's
+terminal WAIT: requester-only fatal retirement occurs only with OOM
+enabled, while default-off returns -1. The original RUN parent is
+then released and reaped with exact process accounting. No new
+production KCORE, MRES, permanent data or ABI changes.
+
+E11 CLOSED: 48/65 mandatory checks complete, 17 open (15 pre-enable
+plus F12/F13). E12/E13, S07/S08, A04 and F02-F11 remain open;
+the production OOM policy is still disabled.
+
 ## v1157: E10 APR/EXEC/RUN during held foreign provider accepted
 
 Fresh full-system 256K PDP-6 `test-daimos-fatal-exec-provider-v1157`
