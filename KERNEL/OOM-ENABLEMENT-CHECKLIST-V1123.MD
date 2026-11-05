@@ -1,3 +1,33 @@
+## v1150: B06 physical OOM under live foreign provider
+
+Both `test-daimos-oom-provider-held-v1150` and
+`test-daimos-oom-provider-held-disabled-v1150` PASS independently
+rebuilt disposable full 256K PDP-6 guests. The requester owns a
+genuine open FILE before an unrelated process obtains the serialized
+filesystem provider lease (slot 6, encoded `7,,0`). A third process
+sleeps on the real pre-dispatch gateway wait event while the holder
+remains suspended on its own in-flight private executive stack.
+An unrelated user remains runnable.
+
+At the genuine BRK failure with physical-MM cause -1, the holder
+lease still belongs to slot 6, the pre-dispatch waiter is still
+sleeping, and no wrong-owner release has occurred. With requester
+OOM opt-in enabled only in the disposable guest, the requester alone
+is terminated; seven real foreign-provider FILE-close attempts retain
+the provider and the owner's FILE until it resumes and unlocks from
+the original continuation. In the default-off guest, BRK returns -1
+and ordinary EXIT instead sleeps on the provider event once. Both
+variants record one in-flight holder entry/return, one physical
+exhaustion event, 160 independent spinner advances, final WAIT and
+surviving witness, zero instrumentation errors and recovered MM/slot
+accounting. No synthetic MM allocation return was used.
+
+B06 is CLOSED for the current writable-process scope. Mandatory
+checklist: **41/65 complete, 24 open** (22 pre-enable blockers plus
+F12/F13). S07/S08, A04, E05-E13 and F02-F11 remain open. The
+production OOM switch remains disabled and no KCORE/MRES/RAM/ABI
+change was made.
+
 ## v1149: B07 capped backoff does not authorize forced reclamation
 
 The new `test-daimos-oom-unbounded-owner-v1149` source/negative
