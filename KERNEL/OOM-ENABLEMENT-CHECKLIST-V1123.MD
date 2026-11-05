@@ -1,3 +1,46 @@
+## v1187: F08 strict 32K profile remains a separate deferred goal
+
+F08 is CLOSED as a scope/documentation boundary, not because a
+32K GCC/DSH build has passed. The initial requester-only OOM
+acceptance uses only 256K PDP-6 KCC/full DSK/D6FS as explicitly
+frozen in `OOM-RELEASE-PROFILE-V1160.MD`. A successful 256K boot
+cannot be counted as 32K resident-kernel/DSH acceptance. The
+strict 32K KCORE/DSH image optimization remains deferred until
+after OOM release work. The independent permanent executive/MRES
+16K address budget is *not* waived or deferred by this decision;
+F05/F06 must still resolve it. With F03/F04/F08/F09 closed,
+**55/65 mandatory tasks complete, 10 open**, production OOM OFF.
+
+## v1185: F04 negative/error-cause and F09 recovery policy CLOSED
+
+On DAIMOS `96e6c695`, KCC `b9cd764`, Linux/x86-64 PDP-6,
+the completed F03 two-policy matrix plus eight further booted or
+source-linked tests establish the bounded *writable-process*
+cause/owner contract: v1113 real MM -2/-3 with unsafe mutations
+rejected, v1156 real backing bitmap exhaustion in both OOM policies,
+v1158 separate failed RUN parent and OOM BRK requester in both
+policies, v1157 APR/postcommit EXEC while an independent FS provider
+retains its original lease, v1106 physical pinned VM/u-area retry,
+and v1077 physical held D6FS provider with MM_BUSY. All PASS.
+The eight new logs are archived on Linux as
+`$HOME/tmp/daimos-f04-cause-evidence-v1184.tar.gz`, SHA256
+`5c12dce02fe1877a47c19afa9e9339e1a466a39f79526d1960617a048ee69096`.
+F04 is CLOSED for the first release scope, not optional raw XIP.
+
+The completed operator policy `OOM-FAIL-CLOSED-RECOVERY-V1185.MD`
+enumerates known permanent or retryable teardown refusals and
+permitted operator interventions. A retained original provider
+or invalid MM owner must never be force-unlocked, force-freed or
+reported as successfully reaped merely to finish an OOM kill.
+KINIT MRES installation failures are boot failures, not runtime OOM.
+F09 is CLOSED as a documented noncompletion/restart policy, not
+as a bounded-liveness guarantee.
+
+**54/65 mandatory gates complete, 11 open**, including F05/F06
+resident-memory requirements, F02 corrected-toolchain P0-D final
+run, E13 additional platform/media coverage, F07/F08/F10/F11,
+and post-enablement F12/F13. The production policy remains OFF.
+
 ## v1181: F03 exact-candidate positive/negative matrix CLOSED
 
 Linux/x86-64 Open SIMH V4.1-0 built 14 independent full 256K PDP-6
