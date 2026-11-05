@@ -1,3 +1,33 @@
+## v1151r1: E05/E06 sustained physical-OOM endurance accepted
+
+Both independent 256K PDP-6 full disk-root v1151 guests PASS with
+production-requester OOM disabled and test-only requester OOM
+enabled. Each completes the initial real physical BRK exhaustion,
+32 additional physical-OOM waves, 32 subsequent successful RUN and
+BRK growth/shrink operations, 256 numerical PID-reuse lifetimes,
+512 rejected stale WAIT/event requests and a minimum 1024 real
+qualified PI6 clock ticks. Every wave checks exact process slots,
+process words, FILE slots, non-cache MM descriptors and disk swap
+backing, including the correct victim and real MM shortage cause.
+
+The initial v1151 raw MM extent-count equality failed after the
+first successful recovery RUN because the real BCACHE allocated its
+normal single clean `0201`-word, kernel-dynamic owner-6 slab at
+physical `0777577`. Inspection of the preserved halted guest shows
+this is intentional reclaimable cache residency, NOT a stranded
+process/u-area allocation. The corrected disposable kernel exposes
+the real cache base read-only. All non-cache MM extents must match
+the baseline exactly, the cache is bounded to one slab and a later
+true physical OOM must reclaim it. The disabled guest correctly
+prints a `D` on each normal BRK `-1` return; the corrected wrapper
+requires exactly 32 extra such markers. Both final full guests PASS.
+
+Mandatory checklist: **43/65 complete, 22 open** (20 pre-enable
+plus F12/F13). E05/E06 are CLOSED, but E07-E13, the final release
+configuration, full F02-F11 matrix, warnings and real RAM budgets
+remain open. The production requester-OOM switch is still OFF;
+there is no production KCORE, MRES, process ABI or static-RAM change.
+
 ## v1150: B06 physical OOM under live foreign provider
 
 Both `test-daimos-oom-provider-held-v1150` and
