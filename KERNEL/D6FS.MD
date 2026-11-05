@@ -1,3 +1,15 @@
+## DBOOT reserved-layout marker (v1192)
+
+New `mkdsk --d6fs-layout` media sets DBOOT extension word `020` to
+`1` to assert that the reserved-range fields are explicit, even
+when bootstream, LOGSTORE and BADMAP reservations are all zero.
+Previous zero-marker D6FSR2 images retain legacy decoding; marker
+values other than 0 or 1 (including high 36-bit flags) are rejected.
+All members of a root set must agree. This corrects the misleading
+legacy-format warning on an intentionally empty auxiliary-drum
+filesystem before AUXSTORE conversion. See `BOOT/DBOOT.MD` for the
+full word layout; v1192 regression coverage lives in daimos-testkit.
+
 # MOUNT-CAPACITY DISPATCH NOTE (2026-10-16 V21)
 
 THE D6FS MRES DISPATCH USES THE KINIT-PUBLISHED `VFS_MOUNT_LIMIT` WHEN

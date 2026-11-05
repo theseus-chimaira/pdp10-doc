@@ -1,3 +1,30 @@
+## D6FSR2 explicit reserved-layout presence (v1192)
+
+The historical SIXBIT `D6FSR2` DBOOT extension is retained for
+existing disk images. Its reserved-region data uses octal words
+`006` (magic), `007` (base/usable blocks), `010`/`011` (superblocks),
+`012` (swap tail), `013` (bootstream blocks), `014`/`015`
+(LOGSTORE start/blocks), and `016`/`017` (BADMAP start/blocks).
+**Word `020` now carries the reserved-layout presence flag:**
+
+- `0`: historical descriptor. Nonzero range fields retain the old
+  explicit-layout interpretation; if all bootstream/LOGSTORE/BADMAP
+  fields are zero, host readers retain the legacy inferred ranges.
+- `1`: all ranges are explicitly encoded, including the valid case
+  where the bootstream, LOGSTORE and BADMAP reservations are zero.
+- All other 36-bit values are invalid; mixed flag values between
+  members of the same root set are rejected.
+
+`mkdsk --d6fs-layout` emits flag 1 for all newly created sets.
+`mkd6fs`, `d6fsck`, and the KINIT BLOCKSET DBOOT decoder accept the
+explicit-zero encoding without confusing it with a legacy image.
+The old zero-flag image remains readable and the legacy warning is
+retained for that historical case. This avoids unnecessary warnings
+when formatting the transient auxiliary-drum D6FS precursor prior
+to AUXSTORE conversion; AUXSTORE itself remains the filesystem-
+independent backing layout. The v1192 daimos-testkit regression
+checks explicit-zero, legacy, unknown/high-bit and mixed-member flags.
+
 # PDP-6 STAGE1 COMPRESSED BOOT AND DSK/DRM DBOOT V1
 
 STATUS: CURRENT IMPLEMENTATION SUMMARY.  SOURCE OF TRUTH:
