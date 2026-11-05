@@ -1,3 +1,28 @@
+## v1159: E12 protected live critical/nonrequester processes PASS
+
+Fresh full 256K PDP-6 testkit v1159 regressions PASS in both
+isolated requester-OOM-enabled and production-disabled modes. A
+disposable guest extends the original real v1150 held-provider
+physical BRK OOM scenario with read-only actual process-table
+snapshots and fatal-branch counters at the genuine -1 MM decision.
+Requesting slot 3 is the only fatal selection in the enabled guest
+(one call); the disabled guest returns BRK -1 and records zero fatal
+selections. INIT slot 1, blocked witness slot 2, provider waiter
+slot 4, runnable/sleeping spinner slot 5, and original in-flight
+gateway owner slot 6 all remain active at the shortage. The original
+provider lease `7,,0` remains held through the OOM and is released
+later on the original owner's private continuation. Both guests
+PASS 160 independent spinner advances, exact existing WAIT/MM/FILE
+cleanup and zero integrity errors; the enabled mode records seven
+fatal FILE close BUSY retries.
+
+E12 proves *nonrequester* protection: it does not establish an INIT
+exemption if INIT itself invokes failing BRK. No permanent code,
+data, process state or ABI changed and production OOM remains OFF.
+E12 CLOSED for supported writable-process requester-only scope:
+49/65 mandatory checks complete, 16 open (14 pre-enable plus
+F12/F13). E13, S07/S08, A04 and F02-F11 remain outstanding.
+
 ## v1158: E11 distinct RUN parent survives genuine BRK OOM
 
 Fresh full 256K PDP-6 guests PASS
