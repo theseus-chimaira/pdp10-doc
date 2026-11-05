@@ -1,3 +1,26 @@
+## v1148: C04 integrated private-owner HUP and real PI6 closure
+
+Two independently rebuilt 256K PDP-6 v1148 guests PASS the combined
+C04 scenario. The original session leader's first EXIT broadcasts a
+remote HUP while the attached canonical TTY MM extent is physically
+pinned and returns genuine MM_BUSY. One child records exactly one HUP
+deferral on its private executive continuation and exactly one HUP
+delivery at its user-return boundary; parent WAIT checks the actual
+HUP exit status. The original session is retained until the retry.
+The second leader EXIT then encounters actual pinned process VM and
+u-area MM_BUSY and completes through the normal slot-0 retry clock.
+Each guest observes one pin/refusal/unpin for TTY, VM and u-area, one
+final commit and no hook errors. PI6 advances 32 actual ticks after
+the refusal phases, with 48 sleeps of an unrelated session process.
+The existing v1098 clock/backoff source contract passes all three
+negative mutations. No fake timer tick or allocator return is used.
+
+C04 is CLOSED for the current writable-process OOM scope. Mandatory
+checks: **39/65 complete, 26 open** (24 pre-enable plus F12/F13).
+B06/B07, E05-E13, F02-F11 and real RAM/diagnostics signoff remain
+open. Production requester OOM remains disabled; no kernel, MRES,
+persistent RAM or ABI change was made.
+
 ## v1146r3: D16 exact-once matrix closed on frozen candidate
 
 The nine-stage `daimos-testkit` target
