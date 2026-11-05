@@ -1,3 +1,25 @@
+## v1163: E13 second-platform evidence PASS, final signoff still open
+
+Linux/x86_64 Open SIMH PDP-6 build `a6b511e5` ran independent
+256K KCC/DSK/D6FS `v1160` actual-release-media guests with physical
+BRK OOM default-disabled and test-enabled. Both PASS held foreign
+provider lease, requester-only victim selection, protected INIT and
+bystanders, correct original-owner return, 160 runnable spinner
+advances and exact WAIT/MM/FILE cleanup with zero integrity errors.
+The Linux evidence archive SHA256 is
+`b80eb98991845b89fb56344cb621c22eb3e8fd79aff185912163c5406f3e86fd`.
+New testkit `v1163` cross-platform checker confirms both Linux and
+Android/aarch64 archives, distinct simulator binaries, actual
+process/lease counters and matching instrumented KCORE low ends
+`023410`/`023426` for disabled/enabled.
+
+Original Android v1160 used DAIMOS `27acb950`, Linux used `90dfc8d0`
+(strict-C99 host-tool repair), so final E13 same-revision coverage
+remains outstanding. The Linux toolchain's older AUXSTORE formatter
+was updated and v636/v638 safety tests passed on both systems.
+Other required simulator/media targets and F05/F06/F10 budgets and
+diagnostics remain open. **51/65 checks complete, 14 open**, OOM OFF.
+
 ## v1160: first release profile frozen; E13 DSK/D6FS evidence PASS
 
 S07/S08 freeze the first bounded requester-OOM profile, described

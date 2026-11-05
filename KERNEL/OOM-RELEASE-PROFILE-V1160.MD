@@ -1,3 +1,48 @@
+## v1163: independent Linux/x86_64 PDP-6 target (partial E13)
+
+The same 256K KCC/DSK/D6FS/CTY release-media configuration was
+independently built and tested on Linux x86_64 Open SIMH PDP-6
+V4.1-0 build `a6b511e5`, with both production-disabled and isolated
+requester-OOM-enabled physical BRK exhaustion PASSing. The source
+revision was DAIMOS `90dfc8d0`, testkit `4e7dd86`. One physical
+failure, exact slot-3-only fatal selection when enabled, zero fatal
+selection when disabled, unchanged INIT/blocked witness/gateway waiter/
+independent spinner/held filesystem owner, 160 spinner advances and
+original-owner FILE/WAIT/MM cleanup passed without integrity errors.
+
+The Linux archive at
+`/home/theseus/tmp/daimos-e13-release-media-v1160.wPB6WE.tar.gz`
+has SHA256 `b80eb98991845b89fb56344cb621c22eb3e8fd79aff185912163c5406f3e86fd`.
+It was copied to the Android test host as
+`$TMPDIR/daimos-e13-linux-x86_64-v1163.tar.gz`, with SHA256 verified.
+Testkit `test-daimos-oom-cross-platform-v1163` parses both independent
+archives, confirms different simulator binary hashes, identical DSK
+boot/media profiles and actual process/provider counters. It PASSes
+both states, and measures identical *test-instrumented* KCORE low
+endpoints across architectures: off `023410`, on `023426` (octal).
+
+The earlier Android archive contains DAIMOS `27acb950`, before the
+Linux host-formatter POSIX declaration fix in `90dfc8d0`.
+This version mismatch is explicitly reported by the testkit and is
+not final E13 evidence on an identical release revision. A normal
+production KCORE/MRES residency audit remains F05/F06 work.
+
+The Linux installer initially had an obsolete `mkauxstore` lacking
+the current safety and DBOOT conversion options. Rebuilding the
+current canonical formatter under strict C99 revealed undeclared
+`fileno`, `fdopen` and `lstat`; `90dfc8d0` sets POSIX 2008 feature
+visibility before headers. The correct formatter passes v636/v638
+host safety tests on Android and Linux and is installed on Linux,
+with the earlier executable backed up. No production kernel code
+or ABI changed.
+
+**E13 still OPEN** pending exact-revision and required additional
+simulator/media targets (OpenBSD host unavailable during this run).
+Linux build logs also contain KCC unused-symbol/identifier-truncation
+notes and a legacy D6FS layout warning, for explicit F10 review.
+S07/S08 profile freeze and the 51/65 mandatory acceptance count
+remain unchanged; production OOM remains OFF.
+
 # Requester-only BRK OOM: frozen first release-candidate profile v1160
 
 Date: 2026-11-05. Scope gate: S07/S08 of the v1123 OOM checklist.
