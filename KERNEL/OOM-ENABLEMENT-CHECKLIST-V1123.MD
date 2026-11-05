@@ -1,3 +1,33 @@
+## v1188: F06 boot-installed MRES footprint reconciled; F05 still fails
+
+The Android aarch64 and Linux x86-64 v1174-v1176 256K full
+DSK/D6FS physical-OOM guests, both built from DAIMOS
+`96e6c695` with corrected KCC `b9cd764`, each reconcile
+the live SYS_MEMINFO resident words, a separate SIMH inspection
+of KINIT's patched resident immediate, the KCORE map boundaries,
+actual 136-slot MM descriptor capacity (272 permanent words), and
+all 22 MRES objects installed by the MINIT boot sequence. The
+installed MRES sum is 8837 Android or 8839 Linux words. A linked
+but uninstalled package is NOT resident, but an *installed* MRES
+is permanently reserved: runtime OOM never loads, unloads or
+reclaims MRES.
+
+The Android disabled instrumented guest occupies 19053 words
+(9944 KCORE + 272 MM table + 8837 MRES). Including the low-core
+start at octal `060`, its exclusive end is `045235`, which
+exceeds octal `040000` by 2717 words. The enabled test guest
+is 14 KCORE words larger and exceeds by 2731. These are direct,
+boot-observed *instrumented* figures; they cannot be relabelled
+an uninstrumented production-size certificate.
+
+**F06 is closed only as the required live-vs-packaged inventory
+and overflow investigation. F05 remains OPEN and the mandatory
+16K permanent-memory acceptance FAILS for the measured profile.**
+The booted 256K system works but does not meet this independent
+memory-budget condition. With F03/F04/F06/F08/F09 closed,
+**56/65 checks complete, 9 open**, and production requester OOM
+is still disabled.
+
 ## v1187: F08 strict 32K profile remains a separate deferred goal
 
 F08 is CLOSED as a scope/documentation boundary, not because a
