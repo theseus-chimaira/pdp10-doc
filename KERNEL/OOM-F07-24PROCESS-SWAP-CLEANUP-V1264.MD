@@ -57,18 +57,18 @@ mutations. The rebuilt guest then passed without increasing its
 
 ## Reproducibility and acceptance boundary
 
-- DAIMOS source: `b6db5372`, with unrelated experimental changes in
-  the current source tree kept separate.
-- Testkit source: v1263 `4eaa329`, v1264 `bb2d35d`; the full guest
-  includes the still-uncommitted v1207/v1262 test-runner work.
+- DAIMOS source: `b6db5372` plus uncommitted experimental v1208/v1211
+  swap changes; this is not a clean-tree production qualification.
+- Testkit source: v1263 `4eaa329`, v1264 `bb2d35d`. The v1207/v1262
+  runner was committed after the full guest as v1265 `5881961`.
 - Evidence archive: `$TMPDIR/daimos-f07-v1264-acceptance-r1.tar.gz`.
 - Archive SHA256:
   `0fc008be42997a81138f4513d603bb828a0a978903ef60d1c761dd08e2068fea`.
 
 This is a successful 24-process stress run, not a release gate
 closure. The complete F07 gate still requires its configured 64-slot
-and combined high-descriptor-pressure acceptance coverage, along with
-acceptance of the remaining test-runner changes. F07/E13/F11 remain
+and combined high-descriptor-pressure acceptance coverage on an
+accepted production-source candidate. F07/E13/F11 remain
 OPEN, the OOM gate count remains 59/64, and production requester OOM
 must remain OFF. Do not substitute this partial result for the full
 release matrix.
