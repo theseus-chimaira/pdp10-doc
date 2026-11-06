@@ -1,3 +1,24 @@
+## v1276: E13 dual-host exact-source release profile PASS
+
+The frozen 256K KCC Open SIMH PDP-6 DSK/D6FS release profile was
+rebuilt with the identical DAIMOS `226e7a5f` and testkit `ee9d92b`
+source on Android aarch64 and independent Linux x86_64 hosts. Both
+normal disabled and disposable requester-OOM-enabled guests PASS
+physical OOM, held foreign FS provider, protected process identities
+and exact WAIT/FILE/MM cleanup. Simulator SHA256 hashes are distinct,
+while KCORE low endpoints match on both hosts in both modes.
+All original archives have verified SHA256 checksums. Four complete
+F10 build logs contain zero unexplained diagnostics: the only
+cross-host difference is the previously approved optional legacy
+D6FSR2 media-layout warning. See
+`OOM-E13-EXACT-DUAL-HOST-ACCEPTANCE-V1276.MD` for provenance.
+
+E13 is CLOSED for the bounded S07/S08 first-release profile; alternate
+media/emulators/OpenBSD are not claimed. F11 remains OPEN, pending
+resolution of a Linux-specific failed-RUN regression before final
+release signoff. F12/F13 are unstarted post-approval actions.
+Mandatory readiness 61/64. Production requester OOM OFF.
+
 ## v1274: F07 full maximum-load process/MM gate CLOSED
 
 The frozen 256K KCC DSK/D6FS PDP-6 guest completed 57 additional
