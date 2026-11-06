@@ -19,11 +19,19 @@ becomes RUN and is queued before selection, an undued timer remains
 unchanged, and an old-path negative mutant leaves the sleeper blocked.
 The standalone timer-frontier and reaper-scheduler tests also PASS.
 
-**This is not F07 acceptance.** Full simultaneous 18-additional-RUN
-swap/provider/WAIT/MM lifecycle evidence is still required; the current
-stress guest has not yet completed. The v1208/v1211 reclaim experiments
-are separate and unaccepted. E13/F07/F11 remain OPEN, F12/F13 deferred,
-59/64 OOM checks complete, and production requester OOM OFF.
+**This is not F07 acceptance.** The v1252-r1 256K stress guest admitted
+all 18 additional RUN children and reached `^@%*`, including the timed
+sleep stages. After about 14.5 minutes it had still not reached the
+requester WAIT checkpoint or any child reap. A controlled stop preserved
+the snapshot: the timer frontier was clear, with 32 successful swap-outs,
+20 ordinary swap-ins, 32 exchanges, no recorded swap transaction failure
+and no genuine BRK-OOM sample. The remaining issue is to distinguish
+heavy swap traffic from requester scheduling starvation. This diagnostic
+guest included the separate, unaccepted v1208/v1211 reclaim experiments
+and was built before the final DUE-bit fast guard, so it does not certify
+the exact committed candidate. Full simultaneous RUN/swap/WAIT/MM
+lifecycle evidence is still required. E13/F07/F11 remain OPEN,
+F12/F13 deferred, 59/64 OOM checks, production requester OOM OFF.
 
 ## v1205: real concurrent process/APR/BRK accounting under OOM (partial F07)
 
