@@ -1,3 +1,24 @@
+## v1270 final disposition: experimental fallback dropped from production
+
+The clean-source F07 test and the experimental v1208/v1211 test both
+PASS. The experiment exercises additional pressure and fallback paths,
+but no independent clean-source failure without an equal-size swap
+partner has been demonstrated. It adds 16 words to SWAP MRES and has a
+separate reclaim/restore fault graph requiring proof. Therefore the
+experimental runtime changes are **not merged**. DAIMOS `226e7a5f`
+restores committed production swap code and preserves the exact
+reversible source patch at
+`design/f07-swap-fallback-experiment-v1208-v1211-r1.patch.gz`.
+It is an archive only, not linked into the kernel. Its source can be
+restored with `gzip -dc FILE | git apply -` against the frozen baseline.
+The 27 historically untracked F07 diagnostic fixtures were added to
+daimos-testkit in `77f156a`; they remain opt-in diagnostics, not an
+assertion of present-day standalone acceptance for every old probe.
+
+This decision leaves F07 OPEN for 64-slot/high-descriptor combined
+pressure and full exact-candidate integration. Production requester
+OOM remains disabled and KCORE/MRES footprint limits are separate.
+
 # F07 v1264: 24-process PDP-6 swap/OOM/cleanup regression
 
 ## v1269: same workload PASS on clean committed production source
