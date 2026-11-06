@@ -1,3 +1,40 @@
+## 2026-11-06 v1260: physical APR arena-capacity preflight
+
+PDP-6 process APR extents must be contiguous and satisfy their requested
+alignment *within one managed MM arena*.  Reclaiming every sleeping
+process cannot make an extent larger than the maximum aligned interval
+of every arena.  The F07 256K guest exposed this overlooked limit:
+its single arena had physical base `047445` and length `0730333`
+octal words, allowing no more than `0730000` octal words from a
+`02000`-aligned start.  The real requester asked BRK for `0776000`
+octal words.  Before v1260 this could trigger expensive filesystem
+reclamation, process swaps and compaction despite having no possible
+success state.  The extended earlier guest visibly entered BRK but
+did not return before its diagnostic cutoff.
+
+`mm_arena_fits_v1260(words, alignment)` inspects each arena's first
+aligned base and exclusive end without allocating or changing MM state.
+`mm_alloc_aligned` uses the predicate after normal typed allocator
+validation and before any pressure-induced reclamation.  The PDP-6
+BRK implementation also checks before its earlier adjacent-gap reclaim,
+which precedes the general allocator.  An impossible request returns
+`MM_ERR_NOMEM` (`-1`) immediately; invalid requests and descriptor
+exhaustion retain their existing typed causes.  Valid but temporarily
+blocked allocations still use normal bounded reclaim.  No permanent
+data fields or queues were added.
+
+Both native PDP-6 source-linked tests pass, covering the original
+arena, exact alignment boundaries, additional feasible arenas, the
+full BRK call preserving the VM descriptor and saved break, the
+physical `-1/-1` result, and rejection of negative mutants.  Existing
+native MM descriptor-capacity, exhaustion-class, VM_NONE and swap
+transaction tests also pass.  The fresh v1260 256K guest has admitted
+all 18 additional RUN children and printed `&=D`: actual requester
+BRK entry, successful return, and the expected disabled-OOM result.
+Full WAIT/reap and post-release MM acceptance is still pending.
+Production OOM therefore stays OFF; F07/E13/F11 are not closed by
+the BRK fix alone.
+
 ## v1087: bounded transitive fatal teardown (P0-A closed)
 
 The source-linked fatal-release graph now verifies FILE/VFS-SYNC,
