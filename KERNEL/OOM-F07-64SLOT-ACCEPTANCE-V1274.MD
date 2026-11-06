@@ -1,5 +1,16 @@
 # F07 v1274: full 64-slot physical OOM and descriptor-pressure acceptance
 
+## v1275: bounded timeout for subsequent 64-slot regressions
+
+The accepted v1274 guest completed within the original 900-second
+deadline. Subsequent full 64-slot F07 tests now allow 1800 seconds
+(`daimos-testkit` v1275 `4a6a3c0`). This setting applies only when
+`V1271_TEST_FULL_SLOTS=1`; the 24-process F07 and smaller standalone
+guests retain their earlier timeout limits. The extended deadline does
+not change admission markers, physical OOM classification, snapshot
+checks, negative mutants, or cleanup/reap requirements. A longer
+deadline alone cannot turn a stalled guest into accepted evidence.
+
 ## Release scope and result
 
 The fresh 256K KCC PDP-6, DSK Stage 1, four-member D6FS/disk-root
