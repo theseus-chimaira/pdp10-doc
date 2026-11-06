@@ -1,3 +1,18 @@
+## v1269: clean DAIMOS F07 24-process guest PASS (F07 still OPEN)
+
+The 256K full KCC DSK/D6FS 18-child, real-swap, requester-only
+physical-OOM and foreign-provider regression now passes on unmodified,
+committed DAIMOS `9a841363`, with individual child TERM/WAIT/reap and
+all v1150/v1159/v1203/v1205/v1207 evidence verifiers successful.
+The same 900-second deadline was retained. This removes the v1208/
+v1211 experimental swap dependency for the 24-process milestone.
+Those experiments remain uncommitted, pending a distinct pathological
+swap test and RAM/rollback analysis. The full 64-slot/combined
+high-descriptor F07 qualification has NOT passed. E13/F07/F11 OPEN,
+59/64 active gates; production OOM remains OFF. Evidence and the
+clean-versus-experimental counters are recorded in
+`OOM-F07-24PROCESS-SWAP-CLEANUP-V1264.MD`.
+
 ## v1264: 24-process physical OOM and swap cleanup PASS (F07 OPEN)
 
 A fresh 256K PDP-6 guest completed 18 extra RUN admissions, actual

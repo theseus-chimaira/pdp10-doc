@@ -1,5 +1,57 @@
 # F07 v1264: 24-process PDP-6 swap/OOM/cleanup regression
 
+## v1269: same workload PASS on clean committed production source
+
+On 2026-11-07, the same fresh 256K KCC DSK/D6FS full F07 workload
+completed on committed DAIMOS `9a841363`, WITHOUT the experimental
+v1208/v1211 swap modifications. This was an isolated, clean checkout,
+not a copy of the locally modified assembler. The same opt-in v1262
+batch-TERM fixture, 18 additional RUN children, foreign provider,
+physical requester BRK OOM and 900-second timeout were used. The
+normal OOM production policy remains disabled: OOM was enabled only
+in the disposable guest.
+
+The complete output was:
+
+```
+<++++++++++++++++++^@%&*?{}|~~~~~~~~~~~~~~~~~~KWP
+HALT instruction, PC: 021377 (HALT 21377)
+```
+
+The v1150/v1159 provider/protected-process probes, v1203 physical MM,
+v1205 24-process APR/BRK accounting, v1207 real swap/stack accounting,
+all child WAIT/reap statuses, and every evidence SHA256 check PASS.
+The clean guest produced 41 successful swap-outs and 41 swap-ins,
+zero service-level allocation pressure, no exchanges and no fallback.
+There were zero swap failures or cooldown entries.
+
+The earlier v1264 experimental guest produced 33 successful swap-out/
+swap-in transfers, eight exchanges, 18 service-level pressure events,
+ten actual v1208 fallback invocations and zero swap failures. v1268
+testkit evidence verification accepts these exact observed paths and
+rejects five invalid counter mutations. The same instrumented link
+places SWAP MRES symbols 020 octal (16 decimal) words later with
+v1208/v1211, while the KCORE low endpoint is unchanged. This is not
+a production-profile residency optimization result.
+
+**Conclusion:** v1208/v1211 are unnecessary for this successful F07
+workload. Keep the uncommitted experiment separate; accept it only
+if an independent no-eligible-exchange failure test and rollback/
+memory/performance evaluation establish a benefit. The 24-process
+F07 milestone is now backed by clean committed production source,
+but the complete 64-slot and high-descriptor combined stress matrix
+is still missing. F07/E13/F11 OPEN; 59/64 OOM gates, production OOM OFF.
+
+Clean evidence archive:
+`$TMPDIR/daimos-f07-clean-v1269-acceptance-r1.tar.gz`
+
+SHA256:
+`b0883d79d0a7baacb007690f62be6234a458c927afabf08ad1aac2d57510dde2`
+
+The clean-run harness was not modified between its launch and the
+creation of evidence. Comparison tooling and its negative controls
+are in daimos-testkit `218bd7e`, `e8c9667`, and `11e6cc9`.
+
 ## Verified result (2026-11-06)
 
 The fresh 256K KCC DSK/D6FS PDP-6 full-profile test completed
