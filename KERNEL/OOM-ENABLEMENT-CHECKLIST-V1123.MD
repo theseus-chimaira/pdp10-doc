@@ -1,3 +1,16 @@
+## v1264: 24-process physical OOM and swap cleanup PASS (F07 OPEN)
+
+A fresh 256K PDP-6 guest completed 18 extra RUN admissions, actual
+disk swapping, physical requester-only OOM, foreign FS lease cleanup,
+and all 18 TERM/WAIT/reap operations within the 900-second limit.
+Both v1150 and v1159 protection probes now account for a runnable
+gateway during the long F07 workload without relaxing the standalone
+six-process tests. The independent MM/BRK/process/swap/stack verifiers
+passed. See `OOM-F07-24PROCESS-SWAP-CLEANUP-V1264.MD` for exact evidence.
+
+This does not close F07: 64-slot and high-descriptor combined coverage
+remain necessary. F07/E13/F11 OPEN, 59/64, production OOM OFF.
+
 ## v1252: software PI6 must service deferred process timers (F07 OPEN)
 
 Under real 256K PDP-6 RUN/swap load, slot 0 can spend many clock
