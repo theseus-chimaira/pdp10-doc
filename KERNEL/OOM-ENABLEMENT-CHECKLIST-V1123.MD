@@ -1,3 +1,30 @@
+## v1205: real concurrent process/APR/BRK accounting under OOM (partial F07)
+
+The DAIMOS `684d4504` and testkit `f2222e2` exact-frozen 256K
+KCC DSK/D6FS PDP-6 release-media boots PASS both disposable OOM
+policies. Unlike v1204's MM_TYPE_KERNEL_DYNAMIC-only stress, v1205
+RUNs six extra independent user processes (twelve resident users)
+before the foreign filesystem-provider lease is held, then captures
+their actual process descriptors, stable u-area logical BRKs and
+MM_TYPE_PROCESS owners at genuine physical BRK OOM.
+
+Every live process's physical base and APR-rounded VM length matches
+the MM table. Actual summed logical BRK/APR padding is **5499 words**,
+not an assumed 1023-word maximum per process. Both policies show
+231012 managed physical words allocated (95.3 percent) and 31/136
+MM descriptors; enabled/disabled have 11415/11429 words free (the
+14-word delta is the test-enabled OOM policy code). Child TERM/WAIT,
+independent scheduler bystanders and original foreign FS owner
+and private u-area teardown all PASS. Evidence is recorded in
+DAIMOS `design/F07-REAL-PROCESS-BRK-ACCEPTANCE-V1205.md`.
+
+The whole F07 gate remains OPEN: 12 real process images do not
+exercise all 64 configured process slots or near-full descriptor
+occupancy simultaneously. v1206 will combine the 12 real processes
+with high descriptor occupancy; wider swap and stack concurrency
+remain separately required. E13/F11 OPEN; F12/F13 deferred;
+59/64 completed and production requester OOM OFF.
+
 ## v1204: high concurrent physical-MM/descriptor F07 pressure (partial)
 
 The DAIMOS `75ccef85` / daimos-testkit `aa7cb86` independent
