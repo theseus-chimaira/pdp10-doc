@@ -11,9 +11,12 @@ The v1256 selector ranks eligible resident work before ordinary disk-backed
 work **only when nice plus recent CPU is equal**.  Strictly better primary
 priority still wins even if swapped, equal-residency candidates retain the
 same cyclic order, and a fatal-close private executive continuation with
-VM zero is exempt from the disk penalty.  The implementation adds nine
-instructions to KCORE but no data words or queues.  Native PDP-6 tests
-verify all four rules and reject the earlier rank-only selector.  The full
+VM zero is exempt from the disk penalty.  v1257 also verifies that the
+stable u-area exists before reading its fatal-close control word, so an
+invalid disk descriptor cannot redirect the check to unrelated low memory.
+The implementation adds twelve instructions to KCORE but no data words or
+queues.  Native PDP-6 tests verify all four scheduling rules and reject
+both the rank-only and missing-u-area-guard variants.  The full
 18-child F07/OOM RUN/WAIT acceptance remains open; this note does not close
 that separate test.
 
