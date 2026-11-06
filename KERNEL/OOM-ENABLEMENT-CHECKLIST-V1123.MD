@@ -1,3 +1,37 @@
+## v1204: high concurrent physical-MM/descriptor F07 pressure (partial)
+
+The DAIMOS `75ccef85` / daimos-testkit `aa7cb86` independent
+256K PDP-6 KCC DSK/D6FS guests PASS real physical BRK OOM with
+a held foreign FS provider under **both** disposable enabled and
+production-disabled OOM policies. A test-only, owner-tagged allocator
+creates twelve APR-02000-word-aligned 8192-word blocks plus 96
+single-word blocks after all six real processes are active and
+the provider is leased; all 108 are later released exactly once.
+
+At physical OOM, 211092/242518 managed words (87 percent) and
+127/136 descriptors (93 percent) are occupied in the enabled guest;
+the disabled build differs by 14 permanent test-code words only.
+Six actual APR process extents, 121 kernel-dynamic extents, three
+free gaps, 128-word shared filesystem workspace, and the original
+foreign gateway owner are all accounted for. Protected processes,
+exact FILE/u-area/MM cleanup and the provider waiter's identity
+survive. Test-only host checks reject 17 invalid-snapshot mutations
+across v1203/v1204. No production KCORE or ABI change is involved.
+
+The earlier v1203 F07 verifier used the incorrect 511-word APR
+alignment-loss bound. APR quantum is `02000` octal = 1024 words;
+the corrected maximal per-gap and per-process rounding bound is
+1023 words. Old v1203 observed gap lengths are unchanged, but old
+**derived** upper-bound fields are superseded by v1204. Full exact
+logs, checksums and method:
+DAIMOS `design/F07-HIGH-PRESSURE-MM-ACCEPTANCE-V1204.md`.
+
+This does **not** close F07. Pressure extents are genuine allocator
+objects but are not actual concurrent user process slots; the full
+64-slot profile and individual process logical BRK values/rounding
+remain to be measured under high concurrency. E13 and F11 are also
+OPEN, F12/F13 deferred, **59/64 completed**, production OOM OFF.
+
 ## v1202: A04/F02 exact-revision P0-D release matrix accepted
 
 DAIMOS `5db15ecf` with daimos-testkit `122c61f` completed one
