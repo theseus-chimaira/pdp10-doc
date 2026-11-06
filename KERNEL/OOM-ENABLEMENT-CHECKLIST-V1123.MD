@@ -1,3 +1,22 @@
+## v1274: F07 full maximum-load process/MM gate CLOSED
+
+The frozen 256K KCC DSK/D6FS PDP-6 guest completed 57 additional
+real RUN/BRK admissions and individual TERM/WAIT/reaps, with all 63
+user slots live at the same physical requester-OOM snapshot. The
+snapshot records 55 resident and eight swapped process extents,
+127/136 MM descriptors, 239576/242085 managed words allocated,
+31642 exact BRK/APR rounding words, a real 128-word held provider
+workspace and safe private/idle stack watermarks. Only requester PID 3
+was selected; final VM/FILE/MM/swap resources were released and the
+guest reached expected HALT within the original 900-second limit.
+Both the saved evidence manifest and 13 unsafe mutation controls PASS.
+See `OOM-F07-64SLOT-ACCEPTANCE-V1274.MD` for exact source revisions,
+metrics and SHA256 evidence.
+
+F07 is CLOSED for S07/S08. **E13/F11 remain open** before activation,
+followed by F12/F13. OOM readiness is 60/64; production requester OOM
+remains OFF. This does not assert permanent KCORE/MRES 16K fit.
+
 ## v1269: clean DAIMOS F07 24-process guest PASS (F07 still OPEN)
 
 The 256K full KCC DSK/D6FS 18-child, real-swap, requester-only
