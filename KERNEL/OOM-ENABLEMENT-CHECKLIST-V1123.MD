@@ -1,3 +1,30 @@
+## v1252: software PI6 must service deferred process timers (F07 OPEN)
+
+Under real 256K PDP-6 RUN/swap load, slot 0 can spend many clock
+ticks executing synchronous disk transactions. Clock PI6 still advances
+the timer epoch and marks an expired frontier DUE, but it cannot switch
+the slot-0 process while that transaction is active. The subsequent
+software PI6 reschedule used to select another process without calling
+`proc_timer_service`, so a due sleep could remain blocked across repeated
+swap requests. This is a scheduler correctness defect, not an OOM or
+memory-size optimization.
+
+DAIMOS `00fb8ecb` makes `proc_sched_resched_choose` service the timer
+frontier **before** selection, only when the DUE bit is set. The normal
+clock-quantum path already services the frontier. The production fix
+does not alter the timer state format, resource ownership or OOM policy.
+The native PDP-6 testkit `b07202f`/`8959bfd` executes the real
+software-reschedule, timer and run-queue leaves: an expired sleeper
+becomes RUN and is queued before selection, an undued timer remains
+unchanged, and an old-path negative mutant leaves the sleeper blocked.
+The standalone timer-frontier and reaper-scheduler tests also PASS.
+
+**This is not F07 acceptance.** Full simultaneous 18-additional-RUN
+swap/provider/WAIT/MM lifecycle evidence is still required; the current
+stress guest has not yet completed. The v1208/v1211 reclaim experiments
+are separate and unaccepted. E13/F07/F11 remain OPEN, F12/F13 deferred,
+59/64 OOM checks complete, and production requester OOM OFF.
+
 ## v1205: real concurrent process/APR/BRK accounting under OOM (partial F07)
 
 The DAIMOS `684d4504` and testkit `f2222e2` exact-frozen 256K
