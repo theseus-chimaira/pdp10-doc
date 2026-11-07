@@ -1,3 +1,43 @@
+## v1277: Linux installed-tool regression repaired (2026-11-07)
+
+The source-level v1141 correction described below was committed,
+but the independent Linux x86_64 build host still had `p10fold` and
+`dlink` binaries installed on 2026-10-13, before that correction.
+The Android tools were current. With the same byte-identical test
+INIT executable and DAIMOS `226e7a5f`, the Linux v1112 failed-RUN
+guest halted after `<` at PC 0 while Android passed `<RILDNWP`.
+An isolated 37-commit source bisect found that v1257 added the code
+layout which exposed the old folder. Running the actual v1141 native
+LOCAL relocation test on the old Linux `p10fold` reproduced the
+wrong cross-object fold; it was not a regression in v1257's
+stable-u-area scheduler protection.
+
+Rebuilding the clean committed tools exposed an undeclared POSIX
+`strtok_r` use under the strict C99/-Werror tool Makefile. The v1277
+source update `daimos-tools` `61dcb15` replaces that dependency with
+explicit bounded six-tab-field parsing in `p10fold`/`dlink`, rejecting
+empty, missing and extra columns. `p10run` examines delimited numeric
+words without a reentrant tokenizer dependency. The code paths are
+portable and avoid introducing guest resident code or RAM overhead.
+
+Both Android aarch64 and Linux x86_64 now pass the native v1141
+object-identity regression and the `daimos-testkit` v1277 test
+(`ce5c266`) covering an accepted empty plan and seven malformed plan
+mutations. Linux also passed the native v1257 resident/fatal u-area
+selector test. The corrected binary package was staged and installed
+into `$PDP10_PREFIX` as
+`$HOME/tmp/daimos-tools-v1277-clean-r1/local.tar.gz`, SHA256
+`938caf5c4e72433a470504c8ee10526abe8707c4724db52601c863566f76d37d`.
+Previous Linux binaries were preserved in the same versioned staging
+tree under `previous-bin/` for rollback.
+
+The exact current Linux v1112 full PDP-6 guest now passes its
+original failed-RUN, invalid BRK, witness and cleanup checkpoints,
+and the linked KCORE low endpoint `023267` octal matches Android
+exactly. **No production DAIMOS kernel code was reverted or changed**
+to work around the linker bug. A fresh corrected-toolchain OOM F11
+full acceptance matrix must still pass before production OOM enablement.
+
 # P10FOLD/DLINK local relocation identity (v1141)
 
 ## Failure and invariant
