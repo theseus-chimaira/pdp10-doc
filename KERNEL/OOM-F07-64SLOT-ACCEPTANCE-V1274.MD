@@ -1,5 +1,56 @@
 # F07 v1274: full 64-slot physical OOM and descriptor-pressure acceptance
 
+## v1280: both policy modes pass with a real held-provider barrier
+
+The complete 64-slot F07 workload now passes in *both* disposable
+requester-OOM policies using the v1280 `daimos-testkit` provider
+contention barrier (commit `26d0e39`). The test-only syscall reads
+the original provider-holder entry, foreign waiter contention, and
+independent spinner counters; INIT must observe all three before
+releasing the requester. This is a bounded read-only observation in a
+disposable kernel, not a production syscall or production KCORE change.
+The 64-slot barrier is mandatory; ordinary smaller guest behavior is
+unchanged. Both complete guests boot, perform 57 distinct RUN/BRK
+admissions, encounter genuine physical requester OOM with the original
+filesystem provider lease held, individually TERM/WAIT/reap all 57
+children, and HALT with exact resource cleanup.
+
+| Independent observation | Disabled policy | Enabled policy |
+| --- | ---: | ---: |
+| Process slots, including kernel slot 0 | 64 | 64 |
+| Actual live user slots | 63 | 63 |
+| Real MM descriptors | 127/136 | 127/136 |
+| Resident / nonresident process extents | 55 / 8 | 55 / 8 |
+| Managed allocated words | 239576 | 239576 |
+| Foreign waiter contention observations | 1 | 1 |
+| Independent spinner advances | 11 | 38 |
+| Integrity errors | 0 | 0 |
+| Selected requester for fatal OOM | None | PID 3 only |
+
+The disabled guest reaches `NWP`; the disposable-enabled guest reaches
+`KWP`. Both preserve the independent v1150/v1159/v1203/v1205/v1207
+assertions, pass the v1274 13 negative evidence mutations, and verify
+every SHA256 manifest entry. Reproducible archives:
+
+- Disabled `$TMPDIR/daimos-f07-v1280-64slot-disabled-frozen-r1.tar.gz`,
+  SHA256 `68c719c5901e3874acaeabe2cef6f309df0566bf99619d89dae2f53380994cd7`.
+- Enabled `$TMPDIR/daimos-f07-v1280-64slot-enabled-frozen-r1.tar.gz`,
+  SHA256 `bb0173c726d4e243edec0a09c977b0e4bb68147a4117f90ab932df2e0936b253`.
+
+The DAIMOS provenance differs between the two archives (`3978b50a`
+versus `67fd397f`) solely because of an intervening documentation
+commit; `system/kernel` and `system/boot` are byte-identical. The
+instrumented KCORE low endpoints are `025015` and `025033` octal,
+the expected 14-word policy change.
+
+An earlier disabled 64-slot diagnostic stopped after 38 admissions,
+before physical OOM or swap use, and has **not** been attributed to a
+verified kernel root cause. Subsequent unbarriered disabled runs
+reached HALT but skipped the provider-waiter and spinner stages; the
+new barrier corrects this verified *test ordering* race, not an
+unproven generic scheduler defect. F11 final integration remains
+open, and production requester OOM is still disabled.
+
 ## v1275: bounded timeout for subsequent 64-slot regressions
 
 The accepted v1274 guest completed within the original 900-second
