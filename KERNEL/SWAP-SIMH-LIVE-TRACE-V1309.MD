@@ -73,3 +73,40 @@ physical guest. New source/testkit commits: `5e23ff0`, `3fa4792`.
 The first v1308 long 24K guest was still in progress at the
 documentation checkpoint. It must not be represented as accepted
 until the full guest and final memory-accounting checks complete.
+
+## 2026-11-07 v1312: completed traced guest and replay verification
+
+The original v1308 24K-word-BSS, 256K KCC PDP-6 guest finished all
+18 additional RUN admissions and 18 TERM/WAIT reaps, requester-only
+BRK OOM, witness/provider milestones and the expected HALT. All 15
+live read-only snapshots completed. At the final linked after-HALT
+snapshot it had 51 successful swap-outs, 51 swap-ins, zero resource
+allocation failures, zero exchanges and zero no-partner cooldowns.
+The original v1308 runner returned nonzero **after** the requester
+OOM milestone because the in-flight earlier sampler revision wrote
+interactive `sim> ` prefixes into its final address/examine records.
+The v1150 verifier could not recognize its `armed` address. This
+was a simulator/trace formatting failure, not a demonstrated kernel
+owner or MM failure.
+
+Testkit v1311 `9ddb748` extracts the unchanged original v1075
+postflight validation block, makes a separate copy of the original
+captured console with only line-leading monitor prompts stripped,
+then replays the **same original** F07 checks. The recorded guest
+passes provider ownership/retry (v1150), protected processes (v1159),
+physical MM (v1203), actual process APR/BRK accounting (v1205),
+real swap/stack watermarks (v1207), and release-media/E13 evidence
+(v1160), including internal SHA256 manifests. A negative fixture
+altering exactly the provider armed counter from -1 to 0 is rejected.
+The immutable original and replayed logs are both retained. This is
+**offline postflight verification**, not a new direct full-guest run.
+
+Evidence archive on the Termux host:
+`$TMPDIR/daimos-swap-no-partner-evidence-v1312-r1.tar.gz`, SHA256
+`e5224db0e4266bea68c7e953c22f49c6074443ea930a5b360665725ab8a1b669`.
+The outer 28-file and inner 9-file SHA256 manifests both verify.
+There is still no observed real swap-in allocator pressure or
+no-equal-exchange-partner retry on this current production kernel;
+full-system no-partner forward-progress acceptance stays OPEN. Do
+not merge the historical v1208/v1211 experimental fallback without
+an actual failing workload, independent cleanup and memory costing.
