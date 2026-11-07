@@ -1,5 +1,12 @@
 # DAIMOS PDP-6 KCORE feature status v1269
 
+**Historical snapshot; superseded for current release gates by
+`KERNEL/KCORE-CONSOLIDATED-STATUS-V1286.MD`.** In particular, the
+F07/E13/F11 OPEN statements below are the original v1269 status,
+not current blockers: v1284 closed those gates (62/64 accepted), with
+only F12/F13 OOM activation/signoff outstanding. Keep the older
+measurements and chronology unchanged for reproducibility.
+
 Status date: 2026-11-07. DAIMOS source baseline: `1e528f2a`.
 The VERSION file remains `0.5`. The current release work targets
 version 0.9. This report distinguishes implementation, native test
