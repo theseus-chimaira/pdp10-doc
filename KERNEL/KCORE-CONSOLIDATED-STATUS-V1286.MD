@@ -1,3 +1,13 @@
+**2026-11-07 v1298 status update:** Requester-only BRK physical-OOM
+F12 production activation and F13 post-enable signoff are now
+accepted for the strict 256K KCC DSK/D6FS release profile, closing
+64/64 mandatory OOM gates. See
+`KERNEL/OOM-F13-PRODUCTION-ACCEPTANCE-V1298.MD` for full source,
+guest, independent Android/Linux media and SHA256 evidence. The
+v1286 source audit below remains a historical default-OFF snapshot;
+its F12/F13 OPEN assertions are superseded, not current blockers.
+The four pre-optimization functional feature tracks remain OPEN.
+
 # KCORE consolidated source/status audit v1286
 
 Date: 2026-11-07. DAIMOS checkout `e6993a76` on `main`; documentation

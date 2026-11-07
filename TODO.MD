@@ -1,3 +1,18 @@
+### 2026-11-07 v1298 F12/F13 production OOM signoff
+
+The requester-only BRK physical-OOM production policy is now enabled
+and accepted in the strict 256K KCC PDP-6 DSK/D6FS release profile:
+64/64 OOM gates CLOSED. F03 14/14, P0-D native 18/18, physical
+17/17 individually and full-slot F07 both policies pass; archived
+independent Android/Linux post-activation E13 release media and strict
+F10 diagnostics verify against the same one-switch candidate.
+`KERNEL/OOM-F13-PRODUCTION-ACCEPTANCE-V1298.MD` contains authoritative
+source revisions, scoped acceptance and evidence SHA256s. Supersede
+older F12/F13-OPEN pointers, but do not mark the four pre-KCORE-sweep
+functional tracks complete: D6CODEC, BSTORE, restricted MEMFS XIP and
+compressed process swapping. DTFS/TSFS rewrite and final RAM
+optimization remain separate scope.
+
 ### Storage vocabulary and 0.9 feature acceptance (v661)
 
 The current source terminology is DEVICE (physical unit), VOLUME
