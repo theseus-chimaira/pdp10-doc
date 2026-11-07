@@ -1,3 +1,25 @@
+## v1284: F11 exact-release candidate integration signoff CLOSED
+
+F11 is CLOSED for the frozen 256K KCC DSK/D6FS S07/S08 scope.
+Both Android and Linux full F03 suites pass all 14 disabled/enabled
+OOM guests on byte-identical production `system/kernel` and `system/boot`.
+Android `P0D_FULL=1` passes all 18 native and 17 booted physical
+release/ownership stages in one uninterrupted run. Linux reached nine
+physical stages before an external v1121 SIGKILL/exit137; that run is
+not falsely counted as uninterrupted, and its v1121 plus seven
+subsequent guests passed independently. Every evidence archive has a
+verified SHA256 manifest. F07 64-slot two-policy provider/descriptor
+proof, E13 dual-host disk media, F04/F10 cause/diagnostic checks and
+v1087/v1092/v1123 source safety guards remain PASS. Full provenance,
+exact physical counters, all archive SHA256 and retained constraints:
+`OOM-F11-RELEASE-ACCEPTANCE-V1284.MD`.
+
+Active OOM gates **62/64 complete**. F12 (production default enable)
+and F13 (post-enable verification/rollback) remain OPEN, and the
+production requester-OOM switch is still 0. This approval does not
+claim static 16K KCORE+MRES fit, 32K low-memory, alternate media or
+raw-MEMFS XIP admission.
+
 ## v1276: E13 dual-host exact-source release profile PASS
 
 The frozen 256K KCC Open SIMH PDP-6 DSK/D6FS release profile was
