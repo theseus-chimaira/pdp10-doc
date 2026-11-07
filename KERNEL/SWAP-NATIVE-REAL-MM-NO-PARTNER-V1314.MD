@@ -72,3 +72,35 @@ backstore restore and complete release/rollback accounting. All
 claims must be backed by observed MM and swap counters rather
 than synthetic service status or the mere successful termination
 of an ordinary-swapping guest.
+
+## v1315 addition: clock aging and scheduler gate, native PDP-6
+
+Testkit commit `bfb629ae` adds the unmodified production PI6
+timekeeping prefix from `proc_sched_pi_tick` and the actual
+`proc_select_rt_normal_swap_v879` gate to the previous native
+real-MM/slot-0 service fixture. After the genuine MM_ERR_NOMEM
+and no-partner cooldown 0100, 63 clock-prefix calls leave one
+tick outstanding. The real scheduler gate selects the independent
+runnable path without publishing another swap request.
+
+The independent owner is released using production `mm_free`.
+After the 64th clock-prefix call, the gate itself sets the swap
+request cursor 0402. The unchanged slot-0 swap-service code then
+allocates process memory, returns READY_ONCE and retains correct
+ownership. Six native executable negative mutants are rejected:
+collapsed NOMEM, skipped FS reclaim, skipped process reclaim,
+lost cooldown, disabled clock decrement and bypassed scheduler gate.
+Neighboring v1300/v1301/v1303/v756/v1111/v1260 tests remain PASS.
+
+The test deliberately returns immediately after PI6 timekeeping
+instead of executing the hardware interrupt/scheduling half, and
+still models the physical disk read/restore and exchange admission.
+It is a native producer/consumer integration verification, **not**
+booted full-system forward-progress acceptance or a timer-rate test.
+Kernel source is unchanged, and no additional resident words are
+required by the production implementation.
+
+Evidence: `$TMPDIR/daimos-swap-native-clock-gate-v1315-evidence-r1.tar.gz`.
+SHA256: `17f4d19c56b7776c608cfc88a0e94f0c3674cb62ce2d09094e503193ebb87134`.
+The enclosed positive report and six negative traces have a verified
+SHA256 manifest. The full-system no-partner gate is still OPEN.
