@@ -64,3 +64,11 @@ stack depth, establish exact PURE/TSFS/EXEC caller handling, link a
 temporary KCORE and execute a synchronized grouped host/media/runtime
 format migration. All production decoders and boot images remain
 on D6LZ36 until those gates PASS; no permanent dual-codec fallback.
+
+## v1367 RAM reduction
+
+The versioned grouped v1367 implementation reduces the staged engine
+and adapter from 333 to 317 text words, and the per-call VFS frame
+from 68 to 67 words. The remaining +220 permanent-code cost relative
+to D6LZ36 remains a cutover blocker. Details are in
+`KERNEL/D6CODEC-STAGED-RAM-OPTIMIZATION-V1367.MD`.
