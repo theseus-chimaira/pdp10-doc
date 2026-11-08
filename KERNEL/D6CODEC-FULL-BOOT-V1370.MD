@@ -105,3 +105,12 @@ filesystem/provider stack watermarking, and injected device/media
 failures. The single DXR compressed flag does not identify D6LZ36
 versus grouped D6CODEC, so the eventual production media/host/runtime
 cutover must be atomic. No permanently installed dual-codec mode.
+
+## v1371 subsequent full standard distribution
+
+The full normal D6FS Makefile root (237 files, 29 directories, 89
+DXRs, 71 grouped compressed) now boots the same grouped KCORE to
+INIT, LOGIN and DSH, and executes and checks real installed grouped
+ECHO, LS, CAT, GREP, WC and STAT before LOGIN respawn. The test
+root passes d6fsck CLEAN with 336 FCBs. See
+`KERNEL/D6CODEC-FULL-DISTRIBUTION-V1371.MD`.
