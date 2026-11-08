@@ -93,3 +93,15 @@ stack words including the CRT's initial PUSHJ, the wrapper frame and
 both codec engine calls. This is not a proven maximum for malformed
 data, capacity faults or nested kernel consumers. Production D6LZ36
 and KCORE remain unchanged.
+
+## v1357: staged malformed/capacity failure-path stack
+
+The independent `d6codec-stack-fail-v1357` PDP-6 native test uses
+the same 512-word canary CRT and v055 saved-register ABI to check
+malformed/truncated decoder control input, input address-wrap refusal,
+encoder short-capacity literal/zero-run errors, and capacity exhaustion
+after a repeated-word encoder match-search. Every call returns -1 as
+expected. The measured canary depth is 016 octal (14 decimal) stack
+words, including the CRT main call. This matches the full-DXR v1356
+measurement but is not an absolute upper bound for linked, nested
+VFS/EXEC/TSFS call chains. No production KCORE or stored image changed.
