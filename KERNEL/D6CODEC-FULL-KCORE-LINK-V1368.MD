@@ -60,3 +60,12 @@ release blocker. Next work must validate low-core ownership,
 decrease codec size, measure real provider/caller stack depth,
 exercise grouped EXEC/PURE/TSFS and perform an atomic host and
 runtime format cutover without a permanent dual-codec fallback.
+
+## v1369 functional runtime acceptance
+
+The actual EXEC loader, PURE compressed reload body and TSFS
+read/copy/free routine now pass native grouped-data tests under
+deterministic VFS/VM stubs, including compiled marker execution and
+malformed/provider-error rollback. Full cold boot and real provider
+nesting remain outstanding. See
+`KERNEL/D6CODEC-FUNCTIONAL-RUNTIME-V1369.MD`.
