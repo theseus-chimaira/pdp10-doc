@@ -53,3 +53,12 @@ filesystem media and failure handling in a single format cutover.
 Next validation should verify more reconstructed KINIT words,
 truncated or damaged media on every controller, KINIT runtime
 behavior, and the resource costs of the resident grouped decoder.
+
+## v1366 runtime continuation checkpoint
+
+A separate staged grouped VFS decoder now passes native fake-provider
+and exact/trusted backing tests. It is **not** linked into KCORE.
+It saves four temporary stack-frame words but adds 236 text words
+relative to the D6LZ36 engine/adapter. Real provider stack and
+RAM-first residency acceptance remain open. Details are in
+`KERNEL/D6CODEC-STAGED-VFS-RUNTIME-V1366.MD`.
