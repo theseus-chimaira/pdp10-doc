@@ -1,3 +1,20 @@
+## V1373: native compiler nested GCC-ABI argument correctness
+
+The cross-hosted KCC was emitting invalid native KGEN pseudo-opcodes
+because a direct function call with nested argument evaluation failed
+to preserve live incoming AC1/AC3 argument values. KCC now uses
+tracked virtual-register snapshots for register-bound arguments
+whenever another argument can have side effects; simple calls retain
+direct register forwarding. The patched host KCC rebuilds all five
+PDP-6 native compiler phases. A real grouped KCORE/D6FS boot passes
+nine native phase/codegen/ABI checks, including exact host/native
+assembly-stream comparison and executing a nested-call program.
+
+However, multi-function/global-symbol KIR1 reconstruction still
+reports `gaddress: bad Sclass 0` in native KGEN, and standalone
+KGEN `-N` still faults with exit 126. Those remain higher-priority
+native self-hosting blockers. Details `TOOLS/KCC-NATIVE-ABI-V1373.MD`.
+
 # DAIMOS SELF-HOSTING USERLAND TOOL SET
 
 THIS DOCUMENT LISTS THE USERLAND TOOLS NEEDED FOR AN EARLY SELF-HOSTING DAIMOS SYSTEM.
@@ -212,8 +229,11 @@ THE ISOLATED NATIVE `CSIX INPUT.ASCII7 OUTPUT.S6REC` CONVERTER USES
 THE SAME RULE WITHOUT MODIFYING RESIDENT DAS. PDP-6 HOST/NATIVE
 ROUNDTRIP AND NATIVE 36-BIT CMP ACCEPTANCE PASS. SEE
 `TOOLS/CSIX-PACKED7-V1372.MD`. NATIVE KCC'S ASSEMBLY EMITTER STILL
-HAS A SEPARATE CORRECTNESS DEFECT; A SUCCESSFUL KCC EXIT DOES NOT
-YET ESTABLISH NATIVE KCC->DAS->RUN SELF-HOSTING.
+HAD A SEPARATE CORRECTNESS DEFECT AT V1372. V1373 FIXED THE
+NESTED-ARGUMENT ABI BUG FOR SINGLE-FUNCTION NATIVE COMPILATION,
+BUT MULTI-FUNCTION KIR GLOBALS AND UNOPTIMIZED KGEN REMAIN OPEN;
+A SUCCESSFUL KCC EXIT ALONE DOES NOT YET ESTABLISH FULL
+NATIVE KCC->DAS->RUN SELF-HOSTING.
 
 ### 'CPP'
 
