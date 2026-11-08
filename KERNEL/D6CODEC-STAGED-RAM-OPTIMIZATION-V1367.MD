@@ -52,3 +52,13 @@ production, reduce the remaining code increase, measure a temporary
 full KCORE link and its folding, run provider failure and partial
 output rollback tests, and migrate host producers plus all consumers
 in one atomic format cutover without an installed D6LZ36 fallback.
+
+## v1368 actual linked measurements
+
+The full KCORE object set and renewed p10fold plan have now been
+linked in isolation. Minimum grouped-only text growth measures
+**+216** words if the old 40-word low-core slot can be reclaimed;
+reserving that slot costs **+256**. Five relocatable MRES packages
+link against both new maps at unchanged residency. This does not
+establish cold boot or nested provider stack safety. Details are in
+`KERNEL/D6CODEC-FULL-KCORE-LINK-V1368.MD`.
