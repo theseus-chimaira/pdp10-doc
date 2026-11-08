@@ -105,3 +105,15 @@ expected. The measured canary depth is 016 octal (14 decimal) stack
 words, including the CRT main call. This matches the full-DXR v1356
 measurement but is not an absolute upper bound for linked, nested
 VFS/EXEC/TSFS call chains. No production KCORE or stored image changed.
+
+## v1358: independent host-reference golden stream comparisons
+
+The native `d6codec-parity-v1358` test uses three original v045
+host-generated 128-word real-DXR compressed golden fixtures:
+configctl, darc, and d6lz. Their source and expected stream data are
+unchanged; only the staged v053/v055 assembler entry names differ.
+All three PDP-6 tests PASS byte-for-byte equivalent 36-bit encoded
+words and exact native decoded roundtrips. This verifies those
+specific independent host reference samples, not full producer
+migration or a recreated 81-DXR corpus: the older manifest refers to
+unavailable absolute build paths. No production format was changed.
