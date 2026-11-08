@@ -53,3 +53,13 @@ D6FS, MonitorFS, SWAP and tape DXRs at 1-, 7- and 64-word input
 windows. Each reconstructs the exact 128 original 36-bit words.
 The current staged 230-word engine still has no accepted relocation
 or fixed-low-core boot placement. No production format changed.
+
+## v1363 design correction: continuation is a runtime requirement
+
+The earlier Stage-1 continuation assumption was too broad. A full
+audit finds every current Stage-1 already stages all compressed
+KINIT words before decoding. The v1363 testkit proves a direct-linked
+complete-buffer native decoder handoff for all five staged loaders.
+The v1361 resumable engine remains relevant for runtime VFS/provider
+streaming, not for the Stage-1 handoff. Details are in
+`KERNEL/D6CODEC-STAGE1-INLINE-V1363.MD`.
