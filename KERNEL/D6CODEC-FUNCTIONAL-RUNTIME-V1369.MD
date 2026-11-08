@@ -67,3 +67,12 @@ with grouped streams. The v1368 +216/+256-word KCORE RAM overhead
 is unchanged. The next gate is a coherent isolated grouped runtime
 image and full cold boot, with nested provider stack measurements
 and rollback, before considering any production format switch.
+
+## v1370 subsequent full minimal-system cold boot
+
+The complete grouped KCORE, all 27 re-linked MRES packages and an
+actual DSK270/D6FS root now boot past KINIT into INIT, grouped
+LOGIN and DSH. A grouped ECHO executable runs through the real
+VFS/EXEC path and DSH exit returns to LOGIN. The test root has
+15 nodes, not the full distribution. See
+`KERNEL/D6CODEC-FULL-BOOT-V1370.MD`.
