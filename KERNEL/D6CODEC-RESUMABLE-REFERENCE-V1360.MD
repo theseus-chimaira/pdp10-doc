@@ -44,3 +44,12 @@ words, zero data/BSS, 82 relocations. It is **not** installed at
 octal 000060 and does not yet establish low-core placement, real
 VFS-provider nested stack, full native error handling or any boot
 loader integration. Production remains D6LZ36.
+
+## v1362 native current-DXR refill matrix
+
+Fifteen native PDP-6 staged-stream decoding checks PASS using
+independent host-generated compressed prefixes of current KCORE,
+D6FS, MonitorFS, SWAP and tape DXRs at 1-, 7- and 64-word input
+windows. Each reconstructs the exact 128 original 36-bit words.
+The current staged 230-word engine still has no accepted relocation
+or fixed-low-core boot placement. No production format changed.
