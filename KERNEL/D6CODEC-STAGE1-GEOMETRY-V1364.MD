@@ -64,3 +64,13 @@ boot using grouped KINIT, no production codec migration, and no
 addition to permanently resident KCORE. Further acceptance requires
 device read failures, actual boot/rollback tests, and the atomic
 KINIT/VFS/EXEC/PURE/TSFS/host-producer format conversion.
+
+## v1365: subsequent actual device boots
+
+The staged grouped v1364 guarded loader and real linked full KINIT
+image now PASS all five PDP-6 Stage-0/Stage-1 virtual-controller
+boots to KINIT entry. The Type-136 tests also verify refusal of
+an oversized header and malformed grouped control without entering
+KINIT or writing 030000. See
+`KERNEL/D6CODEC-STAGED-BOOT-ACCEPTANCE-V1365.MD` for these results.
+This is not production runtime activation.
