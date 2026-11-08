@@ -59,3 +59,26 @@ the previous staged encoder. The full-DXR `d6codec-kcore-abi-v055`
 roundtrip remains PASS. No KCORE linkage or compressed-image format
 has changed, and maximum encoded-capacity arithmetic is not yet an
 accepted production contract.
+
+## v1355: native conservative encoded-buffer sizing
+
+The staged assembler encoder now exports
+`d6codec_v053_max_encoded_words`, an allocation-free helper accepting
+the uncompressed word count in AC1. It returns AC1=0 for an empty
+stream, otherwise a safe encoded capacity `N + ceil(N/30)`, or -1
+when the count is invalid or the bound exceeds the 18-bit physical
+address space. AC0, AC2 and AC3 are volatile; there is no stack or BSS.
+The group payload is bounded by the source words consumed, while
+each nonfinal group consumes 30 tokens, establishing the formula.
+
+The last allowable input count under this conservative bound is
+253687 decimal (0757367 octal), yielding 262144 decimal words;
+253688 produces an unrepresentable bound and is rejected. This is
+a capacity contract, not a requirement to allocate 262144 words.
+
+Native testkit `d6codec-capacity-v1355` checks exact and short
+capacities for 30/31 distinct literals and a one-word zero-run,
+input/output preservation and helper boundary cases. Combined native
+v1355/v1353/v1354/v055 regressions PASS. No production image,
+resident code or packed-process behavior has changed. Caller-specific
+stack and actual physical-memory high-water remain to be measured.
