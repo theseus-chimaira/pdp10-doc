@@ -44,3 +44,18 @@ EXEC/PURE and TSFS consumers still use D6LZ36. Continue from DAIMOS
 `system/kernel/core/D6CODEC-INTEGRATION-TODO-v054.md` and
 `design/d6codec-cutover-entry-v1352.md` in the isolated branch, with
 no mixed-format production images or fallback codec.
+
+## v1354: staged encoder geometry verification
+
+The matching inactive v053 encoder now checks both 18-bit physical
+source and maximum destination extents, rejects nonzero upper pointer
+bits and overlapping nonempty source/output ranges before writing its
+control header. Nonempty input with zero capacity fails without a
+destination write; empty input with zero capacity returns zero.
+
+Testkit `1d2b15c` adds native PDP-6 `d6codec-encode-bounds-v1354`:
+PASS for the hardened encoder, expected negative witness code 1 for
+the previous staged encoder. The full-DXR `d6codec-kcore-abi-v055`
+roundtrip remains PASS. No KCORE linkage or compressed-image format
+has changed, and maximum encoded-capacity arithmetic is not yet an
+accepted production contract.
