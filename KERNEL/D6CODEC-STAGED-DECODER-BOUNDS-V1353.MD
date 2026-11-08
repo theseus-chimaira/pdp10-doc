@@ -82,3 +82,14 @@ input/output preservation and helper boundary cases. Combined native
 v1355/v1353/v1354/v055 regressions PASS. No production image,
 resident code or packed-process behavior has changed. Caller-specific
 stack and actual physical-memory high-water remain to be measured.
+
+## v1356: staged codec ABI frame stack measurement
+
+The v051 native full-darc DXR and stack-canary fixture was rerun with
+the v055 register-saving kernel ABI adapter and current staged v1355
+codec sources. The `d6codec-stack-v1356` test PASSes: `__test_exit=0`
+and `__v051_first_changed=016` octal. The latter measures 14 decimal
+stack words including the CRT's initial PUSHJ, the wrapper frame and
+both codec engine calls. This is not a proven maximum for malformed
+data, capacity faults or nested kernel consumers. Production D6LZ36
+and KCORE remain unchanged.
