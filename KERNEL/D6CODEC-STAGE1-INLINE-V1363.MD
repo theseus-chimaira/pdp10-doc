@@ -51,3 +51,13 @@ writes; all grouped KINIT/host producers, runtime VFS/EXEC/PURE/TSFS
 consumers and five real Stage-0 boot paths need a synchronized
 rebuild and regression acceptance. The production fixed D6LZ36
 decoder, compressed images and permanent KCORE size remain unchanged.
+
+## v1364 staged physical-memory preflight
+
+The generated Stage-1 variants now enforce image plus stack reserve
+and image plus compressed staging bounds against the configured
+physical memory size **before writing payload words**. They add
+zero BSS. Twelve native loader-guard tests plus the dedicated
+geometry helper regression PASS. PTR also validates Tape 1's first
+segment against the declared compressed total before the copy.
+Details: `KERNEL/D6CODEC-STAGE1-GEOMETRY-V1364.MD`.
