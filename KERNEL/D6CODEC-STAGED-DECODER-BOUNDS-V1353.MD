@@ -117,3 +117,17 @@ words and exact native decoded roundtrips. This verifies those
 specific independent host reference samples, not full producer
 migration or a recreated 81-DXR corpus: the older manifest refers to
 unavailable absolute build paths. No production format was changed.
+
+## v1359: source-authentic current linked DXR corpus
+
+Rather than guessing replacements for the historical 81 userland DXR
+paths, the versioned testkit v1359 enumerates real DXR files from the
+current DAIMOS disk-root linked KCORE/MRES build. In the accepted
+checkpoint, all 27 DXRs parsed and passed an independent host grouped
+codec full-stream encode/decode roundtrip: 19,270 input and 17,899
+compressed words. The host-generated golden streams for 128-word
+prefixes from KCORE, D6FS, MonitorFS, SWAP and tape also matched the
+staged v053/v055 native PDP-6 encoder bit-for-bit and roundtripped
+through its decoder (5/5 PASS). These checks do not establish full
+native parity of all 27 streams or a new 81-userland-DXR result.
+Production D6LZ36 boot/runtime and permanent KCORE RAM remain intact.
