@@ -1,16 +1,119 @@
-# DECtape filesystems: DTFS and TSFS
+# DECtape filesystem: unified TSFS
 
-**Documentation consolidation: 2026-11-09.** This is the single
-filesystem-specific design reference for DAIMOS DECtape. It preserves the
-implemented V1 contract, proposed TSFS V1.2 architecture and dated evidence;
-it does **not** claim that the V1.2 redesign is implemented.
+**Design direction: 2026-11-09.** This is the single filesystem-specific
+reference for DAIMOS DECtape. The target is one TSFS format, provider and
+common reader. One-member media may be writable; two through eight members
+are always read-only. This is a redesign proposal, NOT an implemented format.
+Earlier implementation and design evidence is preserved below as history.
+
+## Unified design: established constraints
+
+- Optimize TWO costs: elapsed tape mechanics/transfer time AND resident
+  code/data/stack/scratch consumption. Resident memory is a hard limit;
+  optimize tape latency within the verified budget, not at any RAM cost.
+- The main tape-root deployment is a 32K-64K-word PDP-6/KA10. Fixed resident
+  kernel plus irreducible scratch must still fit below 16K words; measure
+  the complete root link, not merely the FS object or source line count.
+- One on-media namespace and extent/read representation serves every member
+  count. One-member mounts may be RO or RW; multi-member mounts are RO only.
+- No old TSFS/DTFS media-format compatibility, no foreign TENEX/ITS read
+  compatibility, and no second resident legacy-format decoder is required.
+- Use the new grouped **D6codec** for compressed immutable file payloads.
+  Single-member mutable files should normally use raw stored extents;
+  compress only when verified net elapsed time improves. The codec must be
+  shared with other kernel users, not privately linked into TSFS.
+- Keep physical metadata pages at one 128-word DECtape block; do NOT require
+  all metadata for a writable single member to fit in one such page.
+- Prefer host-side layout search, near-file metadata, selectively duplicated
+  metadata pages, long sequential payload extents and coarse cross-member
+  placement. No round-robin block striping with one shared Type-136 channel.
+- No per-member 128-word data buffers, resident full directory or bulk
+  preloaded file table. Use the existing shared filesystem workspace/cache
+  and small per-member motion/locator state. Boot/mount verification is
+  transient; the resident provider trusts a validated compact handoff.
+- Independent mechanical prepositioning is a speed goal, not a presently
+  validated controller capability. Verify Type-551/555 command semantics,
+  reliable stopping/reselection and per-unit motion in the AAP emulator
+  before claiming overlap; actual Type-136 transfers remain serialized.
+- Prefer one physical provider and one read/lookup/stat implementation.
+  Writable allocator and metadata-commit code may be omitted from the
+  tape-root-only removable-module link entirely.
+- New active identifiers, files, utilities and test entrypoints must have
+  stable, unversioned names. Historical revision identifiers and evidence
+  paths below describe past artifacts, NOT suggested current API names.
+
+## Proposed lean media and permission model
+
+Shared records are: volume descriptor, compact directory/file entry, optional
+extent indirection, and independently checksummed physical metadata page.
+The usual small-file case should resolve its directory entry and data locator
+with no more than one metadata transfer; an inline-small-file encoding is
+worth measuring against the extra decoder words it costs. Arbitrarily large
+directories need an extension-page path, not a hard one-block upper bound.
+
+Store a mount-level UID9/GID9, not per-file Unix ownership. A root/system
+mount uses owner 0:0; a writable user mount uses the mounting user's identity
+for its lifetime. A tiny per-file access class (public/private, executable,
+and possibly immutable) can synthesize ordinary Unix mode bits for the
+existing FILE/VFS access checks. Keep the shared permission checker; do not
+fork it into the tape provider. File-level CHOWN is unsupported. A global
+mount RO flag always overrides any synthesized write permission.
+
+Metadata relocation, replication and placement hints are optional layout
+strategies, not different on-media filesystem formats. RW updates should
+modify the same logical entry/extent representation without requiring a
+second immutable-filesystem namespace. Avoid extra seeks for synchronous
+metadata commits unless the chosen durability guarantee requires them.
+
+## Decisions still requiring explicit closure
+
+1. **RW durability:** guaranteed crash-consistent namespace through an
+   on-tape commit scheme, or a smaller buffered-update format repaired by
+   offline fsck after interruption? Measure both extra seeks and code words.
+2. **Timestamps:** omit for RO root; do writable volumes need a per-file
+   modification time for `MAKE`, `TOUCH` and reproducible tool workflows?
+3. **Access classes:** confirm that public/private and executable, plus an
+   optional immutable bit, cover root and user mounts. Group-specific and
+   per-file chown semantics would require more metadata and code.
+4. **File types:** begin with regular files and directories. Confirm whether
+   symlinks, hard links or special files are essential to a tape-only root;
+   do not carry extra encodings on speculation.
+5. **RW allocation:** choose the minimum acceptable fragmentation and
+   recovery policy. A compact free-extent representation and preferential
+   near-head/near-file placement are candidates; measure scattered writes.
+6. **Resource ceiling:** set measured limits for resident FS code, persistent
+   per-volume/per-drive state, maximum transient allocation, and deepest
+   nested kernel stack after a real D6codec boot. No permanent expansion
+   without a same-profile before/after report.
+7. **Mechanical scheduler:** prove what independent transports can do while
+   unselected, including stop-at-target behavior, then choose between simple
+   sequential service and small bounded look-ahead/prepositioning.
+8. **Tape root mutability:** may a one-member boot root be writable, or may
+   it be mounted RO with an optional separate one-member RW user volume?
+   RO-root-only builds can omit write/allocator/commit code and may be
+   essential to the minimum-RAM PDP-6 profile.
+9. **Degraded sets:** choose fail-closed mounting when a required RO member
+   is missing unless deliberate fully redundant placement is actually needed;
+   parity, reconstruction and degraded runtime add disproportionate code.
+
+## Performance acceptance
+
+Compare on the same 32K and 64K profiles: resident words (KCORE and MRES),
+static words, peak temporary words, maximum kernel stack depth, boot-to-login
+elapsed tape time, total distance moved, reversals, Type-136 transfers,
+metadata transfer count and application read/write latency. First establish
+a no-regression mechanical baseline and a zero-net-permanent-growth target;
+improvements must be proven on native PDP-6 and corrected AAP timing, not
+estimated from source size or unconstrained simulator acceleration alone.
+
+The historical notes following this section do not supersede the target.
 
 ## Reading guide and authority
 
 - **Implemented:** the existing native DTFS engine and TSFS V1.1 media,
   subject to current DAIMOS source and `PROJECT-STATE.MD`.
-- **Proposed:** TSFS V1.2 metadata sharding, offline placement and independent
-  tape prepositioning; retain V1.1 compatibility until verified otherwise.
+- **Historical proposal:** sharded metadata, offline placement and independent
+  tape prepositioning; its backward-compatibility requirement is superseded.
 - **Deferred:** parity/striping, trace optimizer and optional TENEX/ITS DTFS
   personalities; no claim of activation.
 - **Hardware:** `../HARDWARE/dectape.md` remains the hardware/emulator timing

@@ -36,8 +36,10 @@ THAN KEPT AS A CONTRADICTORY SECOND AUTHORITY.
 
 ## DECtape documentation
 
-`KERNEL/DECTAPE.MD` is the consolidated DTFS/TSFS specification, including
-V1 behavior, proposed TSFS V1.2 layout and dated tape-specific test records.
+`KERNEL/DECTAPE.MD` is the unified TSFS redesign authority: one-member RW,
+multi-member RO, mechanical-latency and 32K-root memory constraints, D6codec,
+and open format/durability decisions. Earlier DTFS/TSFS specifications and
+dated tape-specific test records remain preserved there as historical evidence.
 `HARDWARE/dectape.md` retains pure controller, transport and emulator timing
 material. Boot, VFS and block-cache documents retain only their integration
 contracts and refer to the consolidated filesystem reference.

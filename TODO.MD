@@ -56,12 +56,18 @@ DAIMOS 0.9 release. Document tested implementation changes in
 KERNEL/BSTORE.MD and related filesystem/device documents; distinguish
 accepted AUXST1/BACKSTORE support from genuinely unfinished work.
 
-DECISION 2 (2026-10-27): TSFS v1.2 sharded metadata is required before
-DAIMOS 0.9 release but scheduled after the final KCORE optimization. Keep
-TSFS-specific implementation in removable filesystem MRES and host image
-tools, retaining existing generic KCORE/VFS interfaces where possible;
-validate any necessary kernel/boot ABI changes separately. This is a
-schedule decision only, not evidence that v1.2 is implemented.
+DECISION 2 (revised 2026-11-09): The target is one TSFS format and resident
+read engine for single-member RW and multi-member RO tape volumes; neither
+the old TSFS/DTFS media formats nor foreign OS personalities need to remain
+readable. Use D6codec for immutable compressed file payloads, with RW payloads
+normally stored uncompressed. Tape-mechanical latency and permanent RAM/code
+consumption are both acceptance criteria, with the 32K-word tape root's memory
+budget a hard constraint. The sharded-metadata proposal is historical input,
+not an independently mandated format. Keep the implementation in removable
+filesystem MRES and host image tools; preserve generic KCORE/VFS interfaces
+where possible. See `KERNEL/DECTAPE.MD` for open format/durability decisions.
+This remains scheduled after the final KCORE optimization. This is a
+schedule decision only, not evidence that the unified format is implemented.
 
 P0 UPDATE (2026-10-27): memory allocation granularity reduction to
 512 decimal words is a pre-final-KCORE prerequisite, not post-release
@@ -77,7 +83,7 @@ not a second implementation queue. Keep clock/DATE/SETTIME, explicit
 MKSWAP/AUXSTORE, mixed-device/BLOCKSET inventories, swapped MonitorFS
 process metadata and scheduler acceptance synchronized when implemented.
 Before declaring the KCORE ABI frozen, record explicit release-scope decisions
-for D6 streaming codec cutover, TSFS v1.2, remaining BSTORE migration,
+for D6 streaming codec cutover, unified TSFS, remaining BSTORE migration,
 production MEMFS XIP and compressed process swap. Do not mark these complete
 based on design documents or isolated component tests. Accepted v508-v511
 32K AUXST1 results supersede earlier provisional failures; avoid a new raw
@@ -143,15 +149,17 @@ CORRESPONDING IMPLEMENTATION OR TEST RESULTS CHANGE.
 - DOCUMENT A CRASH-SAFE ONLINE BAD-MEDIA REMAP/PUBLICATION PROTOCOL ONLY WHEN
   IT IS IMPLEMENTED.  UNTIL THEN, NEW MEDIA DEFECTS REMAIN MAINTENANCE EVENTS
   AFTER ERROR REPORTING.
-- KEEP TSFS MEMBER SCANNING/CHECKSUM VALIDATION TRANSIENT.  KEEP KERNEL/DECTAPE.MD
-  ALIGNED WITH THE IMPLEMENTED READ-ONLY TSFS V1 FORMAT, MANIFEST-CAPABLE
-  MKTSFS, D6LZ36/STORED RESTART EXTENTS, AND NATIVE DTFS SUPPORT.  TENEX/ITS
-  DTFS COMPATIBILITY IS DISABLED.
-- IMPLEMENT THE TSFS V1.2 SHARDED-METADATA/LAYOUT DESIGN IN `KERNEL/DECTAPE.MD`:
-  ONE-BLOCK PHYSICAL SHARDS, MEMBER-COUNT-ADAPTIVE SHARD WIDTH, STAGGERED
-  REPLICAS, PARALLEL DECTAPE PREPOSITIONING WITH SERIAL TYPE-136 TRANSFERS,
-  OFFLINE HOST LAYOUT OPTIMIZATION, AND A SMALL RESIDENT SHARD READ PATH USING
-  THE EXISTING COMPACT MOUNT HANDOFF.
+- KEEP CURRENT SOURCE STATUS DISTINCT FROM THE UNIFIED TSFS TARGET IN
+  `KERNEL/DECTAPE.MD`: THE CURRENT RESIDENT TSFS STILL USES D6LZ36 AND THE
+  CURRENT DTFS/TSFS FORMATS ARE DIFFERENT. NEW DESIGN AND MEDIA MUST USE THE
+  GROUPED D6CODEC, WITH NO SECOND TAPE-SPECIFIC DECODER OR FOREIGN PERSONALITY.
+- PROTOTYPE PACKED ONE-BLOCK METADATA PAGES, SIMPLE RW EXTENTS, SPARSE
+  REPLICATION FOR RO MEDIA, AND OFFLINE LOCALITY OPTIMIZATION. PROVE REAL
+  PARALLEL TRANSPORT MOTION BEFORE ADDING RESIDENT PREPOSITIONING COMPLEXITY;
+  SERIALIZE TYPE-136 TRANSFERS AND REUSE THE SHARED BLOCK WORKSPACE.
+- CLOSE THE RW CRASH-DURABILITY, MTIME, PERMISSION-CLASS AND PERMANENT-RAM
+  LIMIT DECISIONS BEFORE LOCKING THE FORMAT. NEW SOURCE AND TEST NAMES SHOULD
+  BE UNVERSIONED; UPDATE ABI REFERENCES TOGETHER WHEN THE CODE CUTOVER LANDS.
 - KEEP TRUE DSK270 MULTI-SECTOR STREAMING, TSFS PARITY/STRIPING, AND TRACE-
   DRIVEN PLACEMENT CLEARLY MARKED DEFERRED UNTIL MEASUREMENTS JUSTIFY THEM.
 - KEEP BOOT/RESCUE.MD ON CURRENT DAS/DXR, MKDSK, MKD6FS, AND DEVICE-SPECIFIC
