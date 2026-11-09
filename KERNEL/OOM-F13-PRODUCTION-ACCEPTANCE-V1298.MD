@@ -80,4 +80,6 @@ unloading, or the separate 16K permanent-resident/KCORE size targets.
 DTFS/TSFS implementation tests remain excluded pending the rewrite.
 The next KCORE functional freeze work is D6CODEC streaming integration,
 shared BSTORE consumer migration, restricted MEMFS XIP RUN/EXEC, and
-executable-opt-in compressed process swap. Optimization is deferred.
+swapless-only PURE dropping and opt-in mutable-RAM compression (v1375).
+The former compressed **disk**-swap requirement is cancelled; raw swap
+and the accepted OOM evidence are unaffected. Optimization is deferred.

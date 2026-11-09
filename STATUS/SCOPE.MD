@@ -1,5 +1,17 @@
 # DAIMOS V0.9 CURRENT SCOPE
 
+## 2026-11-09 v1375 swapless process-memory policy
+
+Compressed records in disk/drum swap are no longer planned. Production
+raw swap and its executable PURE omission remain supported. On a
+strictly swapless system, the new separate feature plan is to drop
+reconstructible PURE text for inactive processes and optionally
+compress their mutable state **within RAM**. The whole PDP-6 APR
+process mapping must be reconstructed before a process resumes.
+This requires implementation and native acceptance; see
+`KERNEL/SWAPLESS-MEMORY.MD`. Do not confuse an in-RAM inactive
+representation with BACKSTORE, process disk swap or MEMFS XIP.
+
 ## Storage feature scope clarification (2026-10-29 v661)
 
 Release 0.9 includes the online D6FS packer and agreed storage/admin

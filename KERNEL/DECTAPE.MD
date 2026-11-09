@@ -1,5 +1,14 @@
 # DECtape filesystem: unified TSFS
 
+**2026-11-09 v1375 memory-policy note:** A swapless tape-root build may
+eventually support in-RAM process reclamation by dropping reconstructible
+PURE executable text and optionally compressing mutable process RAM.
+Neither mechanism is implemented yet. They are not process disk swap,
+BACKSTORE, AUXSTORE, LOGSTORE or a temporary RAM filesystem, and do not
+relax this document's minimal link/exclusion rules. Read the separate
+`KERNEL/SWAPLESS-MEMORY.MD` specification; compare added code, stacks,
+scratch and restore headroom before enabling on a 32K machine.
+
 **Design direction: 2026-11-09.** This is the single filesystem-specific
 reference for DAIMOS DECtape. The target is one TSFS format, provider and
 common reader. A TSFS root is always read-only. Without a separately

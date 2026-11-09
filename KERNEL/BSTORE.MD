@@ -1,5 +1,12 @@
 # Root-profile boundary for unified TSFS
 
+**2026-11-09 v1375:** The old compressed process disk-swap feature
+is cancelled; ordinary raw swap remains available on configured
+backing. A swapless-only option for discarding PURE text and
+compressing mutable state *in managed RAM* does not create BACKSTORE
+blocks or implicit disk service. Its implementation is not yet
+active; see `SWAPLESS-MEMORY.MD`.
+
 The planned minimal unified TSFS root (`ROOT=tape TAPE_AUX=none
 TAPE_TMPFS=0`) has **no** process swapping, BACKSTORE, LOGSTORE,
 backed MEMFS eviction or RAM-only temporary filesystem. These facilities

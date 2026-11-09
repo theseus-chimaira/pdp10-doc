@@ -1,3 +1,13 @@
+**2026-11-09 v1375 policy supersession:** The former fourth pre-sweep
+track, opt-in compressed process **disk swap**, is CANCELLED. Raw disk
+swap is retained. Its replacement is swapless-only PURE executable-text
+dropping and opt-in in-RAM compression of mutable process memory. This
+requires a new inactive process transaction, full APR reconstitution
+and end-to-end acceptance. No production implementation is claimed.
+See `KERNEL/SWAPLESS-MEMORY.MD`. The v1286 compressed-disk-swap
+requirement below is historical, not current work. This does not affect
+the separate, already-closed OOM test group named P0-D.
+
 **2026-11-07 v1298 status update:** Requester-only BRK physical-OOM
 F12 production activation and F13 post-enable signoff are now
 accepted for the strict 256K KCC DSK/D6FS release profile, closing
@@ -35,7 +45,7 @@ The historical dated sections of `PROJECT-STATE.MD`, `KCORE.MD`, and
 | Writable EXEC/RUN | `system/kernel/proc/exec_lowmem_pdp6.s`, `system/kernel/proc/proc_run.s` | Both still call `vm_space_startup`; raw MEMFS XIP is not connected as a normal production process admission path. |
 | MEMFS XIP primitives | `system/kernel/fs/memfs_runtime.s`, `system/kernel/proc/vm_pdp6.s` | MRES op `027` admission and `026` release exist; owned-XIP unpin errors are not misclassified as ordinary process-MM releases. Complete scheduled non-writing process lifetime is not demonstrated by these primitives. |
 | Compression cutover | `system/kernel/proc/exec_load.s`, `system/kernel/fs/tsfs_runtime.s`, `system/kernel/core/D6CODEC-INTEGRATION-TODO-v054.md` | Active consumers still reference `d6lz36_decode_vfs` / `d6lz36_decode_buffer`. Grouped D6CODEC v053/v055 remains staged, not a production format cutover. |
-| Process swap | `system/kernel/proc/proc_swap_pdp6.s` | Raw swap service, allocation-pressure handling, and fatal service failure paths exist. This does not establish production opt-in compressed-process swap. |
+| Process swap | `system/kernel/proc/proc_swap_pdp6.s` | Raw swap service, allocation-pressure handling, and fatal service failure paths exist. The older proposed compressed **disk**-swap records are cancelled by v1375. |
 | Packed-process experiments | `system/kernel/proc/proc_packed_lifetime_v33.h`, `proc_packed_mm_registry_v35.h` | Prototype registry explicitly not enabled at boot; do not count as shipped process compression. |
 | Mount policy | `system/kernel/fs/vfs_mount_access_v5.s` | Slot accessor validates at most octal `032` (26) slots; this is **capacity/interface**, not evidence of 26 live mounts. |
 | Software clock | `system/kernel/Makefile`, `system/kernel/drivers/wall_clock.c`, `system/kernel/proc/syscall.h` | `WALL_CLOCK_HZ` selectable 50/60, SETTIME extension `037`; physical 50-Hz device qualification is separate. |
@@ -68,10 +78,12 @@ Raw XIP admission and 32K DSH are outside this first OOM profile.
 3. **Root-only MEMFS raw XIP:** no-user-write/trusted-image validation,
    restricted RUN/EXEC, nonwriting startup, swap/BRK exclusion, robust
    pin/unpin and rollback, scheduled PDP-6 lifecycle and security tests.
-4. **Opt-in compressed process swap:** trusted executable eligibility,
-   separately recorded actual encoding, mixed raw/compressed rollback,
-   genuine pressure/error tests, PDP-6 CPU and total permanent-RAM
-   benchmarks; do not accept net permanent memory growth.
+4. **Superseded (v1375):** This snapshot's opt-in compressed-disk-swap
+   requirement has been retired. Current fourth track: swapless-only
+   PURE prefix omission and explicitly admitted mutable-RAM compression,
+   with MM ownership, source immutability, safe restore and native tests.
+   The staged RLE codec v1376 passes host/PDP-6 component tests but is
+   not linked into production or evidence of process-lifecycle acceptance.
 
 ## Other open correctness, integration, and documentation tasks
 
@@ -102,7 +114,7 @@ KCORE below-octal-`020000` target and full 16K permanent-residency
 target remain separate from the first 256K requester-OOM release.
 MRES are boot-installed and not runtime unloadable/reclaimable.
 
-After the four functional tracks and relevant regressions, remeasure
+After the four **revised** functional tracks and relevant regressions, remeasure
 the exact current installed-MRES and linked endpoints, dynamic physical
 high-water and APR slack, then apply only source-backed RAM-saving
 changes. Cold-path JRST cross-domain folding must exceed approximately
@@ -122,8 +134,8 @@ active gate without reviewing the latest accepted scope.
    positive/negative acceptance without widening the release profile.
 2. Reproduce or close the remaining swap-pressure and provider-lifetime
    issues against current source; distinguish old experiments from bugs.
-3. Complete D6 codec, shared storage, restricted XIP and compressed swap,
-   while holding persistent RAM and execution-time constraints.
+3. Complete D6 codec, shared storage, restricted XIP and swapless-only
+   PURE/RAM reclamation, while holding RAM and execution-time constraints.
 4. Complete the grouped non-DTFS regressions, freeze KCORE interfaces,
    then perform and verify the final KCORE/MRES footprint reduction.
 

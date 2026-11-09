@@ -7,6 +7,12 @@ not current blockers: v1284 closed those gates (62/64 accepted), with
 only F12/F13 OOM activation/signoff outstanding. Keep the older
 measurements and chronology unchanged for reproducibility.
 
+**2026-11-09 v1375 decision:** The fourth compressed-disk-swap feature
+track below is now CANCELLED. It has been replaced by swapless-only
+PURE-text dropping and opt-in compression of mutable RAM; see
+`KERNEL/SWAPLESS-MEMORY.MD`. Historical acceptance and sizing
+measurements remain unchanged.
+
 Status date: 2026-11-07. DAIMOS source baseline: `1e528f2a`.
 The VERSION file remains `0.5`. The current release work targets
 version 0.9. This report distinguishes implementation, native test
@@ -51,10 +57,9 @@ The four accepted active decisions are authoritative in DAIMOS
    low-level instruction fetch and VM release primitives exist.
    Production restricted no-writing EXEC/RUN, complete scheduled
    process lifetime, swap/BRK exclusion and rollback are not accepted.
-4. Opt-in compressed process swap: design and packed-process prototype
-   code exist but production integration, trusted eligibility,
-   mixed-encoding rollback and PDP-6 CPU/RAM benchmarks are open.
-   Raw swap must remain supported; permanent RAM must not increase net.
+4. Superseded: compressed disk swap is cancelled as of v1375.
+   Swapless-only PURE omission and opt-in mutable RAM compression
+   replace it; neither is production integrated yet.
 
 TSFS v1.2 sharded-metadata development is explicitly POST-KCORE, but
 before 0.9 release. Existing TSFS boot/interface regression remains
@@ -127,8 +132,8 @@ Use exact same-profile linked images and native daimos-testkit tests.
    in a distinct no-eligible-exchange case before accepting +16 words.
 2. Complete 64-slot/high-descriptor F07 and E13/F11 release matrices,
    without enabling OOM prematurely.
-3. Finish D6 codec, shared storage and XIP, and measure the compressed
-   swap opt-in against its net-RAM/CPU limits.
+3. Finish D6 codec, shared storage, XIP and the swapless-only
+   PURE/RAM-reclamation track with RAM/CPU benchmarks.
 4. Freeze kernel interfaces and resident feature set; measure current
    32K/48K/256K RAM peaks and perform the final code/data sweep.
 5. Work on deferred TSFS v1.2 after KCORE completion and optimization.

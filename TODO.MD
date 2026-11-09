@@ -9,9 +9,10 @@ F10 diagnostics verify against the same one-switch candidate.
 `KERNEL/OOM-F13-PRODUCTION-ACCEPTANCE-V1298.MD` contains authoritative
 source revisions, scoped acceptance and evidence SHA256s. Supersede
 older F12/F13-OPEN pointers, but do not mark the four pre-KCORE-sweep
-functional tracks complete: D6CODEC, BSTORE, restricted MEMFS XIP and
-compressed process swapping. DTFS/TSFS rewrite and final RAM
-optimization remain separate scope.
+functional tracks complete: D6CODEC, BSTORE, restricted MEMFS XIP
+and (since v1375) swapless-only PURE text dropping / opt-in
+mutable-RAM compression. Compressed disk swapping is cancelled.
+Unified TSFS and final RAM optimization remain separate scope.
 
 ### Storage vocabulary and 0.9 feature acceptance (v661)
 
@@ -38,12 +39,15 @@ process mappings. Source-audit evidence is recorded in DAIMOS
 `design/mm-granularity-audit-20261027-v521.md`; update implementation
 claims in `KERNEL/MEMORY-MANAGEMENT.MD` only after native tests pass.
 
-DECISION 5 (2026-10-27): opt-in compressed process swapping for explicitly
-approved executables (e.g. shell) is required before the final KCORE sweep.
-Unapproved executables retain raw swapping; the executable eligibility bit
-and actual compressed swap-record bit remain separate. Require raw fallback,
-no net permanent RAM growth and native performance/rollback acceptance.
-This is a release-scope decision, not a completed implementation.
+DECISION 5 (REPLACED 2026-11-09 v1375): opt-in compression of **disk
+swap records** is cancelled. Existing raw process swapping remains
+unchanged. The replacement is **swapless-only** PURE executable-text
+dropping and, independently, opt-in compression of **mutable process
+memory in RAM**, with explicit admission and no net RAM penalty. Both
+are currently unimplemented and require native scheduler/VM/rollback
+acceptance before final KCORE optimization. The PDP-6 APR cannot map
+text and data independently: reconstruct one complete physical
+process extent before running. See `KERNEL/SWAPLESS-MEMORY.MD`.
 
 DECISION 4 (2026-10-27): production privileged, strictly non-writing
 MEMFS XIP EXEC/RUN and native lifecycle validation are required before
@@ -89,7 +93,7 @@ MKSWAP/AUXSTORE, mixed-device/BLOCKSET inventories, swapped MonitorFS
 process metadata and scheduler acceptance synchronized when implemented.
 Before declaring the KCORE ABI frozen, record explicit release-scope decisions
 for D6 streaming codec cutover, unified TSFS, remaining BSTORE migration,
-production MEMFS XIP and compressed process swap. Do not mark these complete
+production MEMFS XIP and swapless memory reclamation. Do not mark these complete
 based on design documents or isolated component tests. Accepted v508-v511
 32K AUXST1 results supersede earlier provisional failures; avoid a new raw
 AUXSTORE D6FS superblock requirement. Post-0.9 overlays and runtime module

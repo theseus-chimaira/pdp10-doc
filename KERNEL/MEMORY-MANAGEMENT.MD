@@ -1,3 +1,29 @@
+## 2026-11-09 v1375: swapless-only process-memory reclamation plan
+
+The old opt-in compressed **disk-swap** design (decision 5) is
+retired; keep raw disk/drum swapping and PURE-sector omission exactly
+as implemented. The replacement is limited to systems with no swap
+backing: dropping reconstructible PURE text while retaining mutable
+state in RAM, and independently permitting opt-in lossless in-RAM
+compression of that mutable state. Neither new mode is implemented.
+
+On PDP-6 the APR maps a single 02000-octal aligned process extent,
+with no independent shared-text/private-data mapping or text
+write-protection. A quiesced process must move to a guarded inactive
+RAM representation; on wake it must restore a complete contiguous APR
+extent, reload PURE from the original immutable executable and restore
+every mutable word before being made runnable. Preserve source vnode
+holds, MM ownership, PID/WAIT and rollback across failure. A RAM
+compressed image is not disk swap, and an opt-in flag is not evidence
+that a compressed representation was successfully published.
+
+The current `proc_swap_reload_pure` disk-swap loader may be reused after
+validation, but it is not a working swapless lifecycle. Legacy
+`proc_packed_*` files are inactive experiments, not new production
+integration. Authoritative requirements and native acceptance:
+`KERNEL/SWAPLESS-MEMORY.MD`. The remaining historical sections below
+describe their original implementations and test results.
+
 ## 2026-11-06 v1260: physical APR arena-capacity preflight
 
 PDP-6 process APR extents must be contiguous and satisfy their requested
@@ -2059,7 +2085,8 @@ BEFORE THE CHILD'S SRUN RUN-QUEUE LINK IS PUBLISHED. TRANSACTIONAL EXEC SAVES
 OLD AND NEW BACKING EXTENSIONS IN TRANSIENT STACK LOCALS AND RESTORES THE
 MATCHING BIT ON FAILURE OR COMMIT. DETACH CLEARS THE BIT; PURE BUSY CHECKS
 SKIP PROCESS SLOTS WITHOUT A VALID U-AREA. PDP-6 TESTS COVER THE FULL RAW
-AND COMPRESSED SWAP TRANSACTION AT MOUNT 26 AND THE EXEC/RUN LIFECYCLE.
+AND RAW DISK SWAP WITH COMPRESSED EXECUTABLE BACKING AT MOUNT 26 AND
+THE EXEC/RUN LIFECYCLE. THIS IS NOT COMPRESSED DISK-SWAP DATA.
 
 THIS IS A BACKING-FORMAT CAPABILITY, NOT PROOF THAT 26 VOLUMES CAN BE
 SIMULTANEOUSLY MOUNTED WITH ANY GIVEN BOOT IMAGE. THE 2026-10-16 V22 KINIT

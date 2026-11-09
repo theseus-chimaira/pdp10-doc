@@ -67,7 +67,8 @@ reproduction test sources and a verified per-file hash manifest.
 **Acceptance boundary:** This closes booted 256K KCC PDP-6 DSK/D6FS
 raw swap no-partner recovery, independent physical MM release and
 held-provider recovery in the tested profile. It does not test
-every hardware machine or future compressed swap format. No
+every hardware machine or new swapless in-RAM representation (v1375).
+The old compressed disk-swap feature is cancelled. No
 production KCORE, MRES, PI6, MM, FS or swap source or permanent
 memory footprint changed; the speculative old +16-word swap
 fallback is not justified by the accepted workload.
