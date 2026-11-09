@@ -1,3 +1,19 @@
+## V1405: native DAS1/DAS2 global symbol metadata
+
+The resident assembler now records DOBJ1 global declarations in the
+existing on-disk symbol table, not a newly allocated symbol-name
+array.  Declarations of `.globl`, `.extern`, `.entry` and public
+`.comm` use stable 1-based indices; repeated declarations reuse
+their index.  DASIR2 carries the global count and entry index, and
+DAS2 validates the original index order on deserialization.
+
+The v1405 testkit passed 5/5 strict PDP-6 cases, including one
+KCC-generated global and a separate duplicate/external/common
+fixture whose three globals and entry index 1 survive the split.
+Object emission is still disabled until the relocation and DOBJ1
+writer can be verified.  See `TOOLS/DAS-NATIVE-GLOBALS-V1405.MD`.
+KCORE size-only work remains deferred to the last KCORE stage.
+
 ## V1403: native DOBJ1 linker and C89 execution acceptance
 
 The resident DLINK independently links host-produced DOBJ1 inputs
