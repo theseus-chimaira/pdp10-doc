@@ -1,12 +1,92 @@
 # Swapless process-memory reclamation
 
-Status: accepted KCORE direction, 2026-11-09 v1375. **Not implemented or
-native-accepted.** This document supersedes the earlier production proposal
+Status: accepted KCORE direction, 2026-11-09 v1375. **Staged PURE-only
+transaction tests pass as of v1377; no production scheduler or full
+swapless guest acceptance.** This document supersedes the earlier proposal
 for executable-opt-in *compressed disk swap* (old decision 5/P0-D). Raw
 disk/drum process swapping is unchanged. Compression of disk-swap records is
 not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
+
+## v1377: staged PURE-only inactive process lifetime
+
+DAIMOS adds `system/kernel/proc/proc_pure_ram_v1377.[ch]`. This is
+new, standalone, **unlinked** transaction code. It is not a production
+KCORE or scheduler integration.
+
+The three entry points are `proc_pure_ram_drop_v1377(slot)`,
+`proc_pure_ram_restore_v1377(slot, reload)`, and
+`proc_pure_ram_discard_v1377(slot)`. They reuse the existing
+`proc_storage_runtime_v29` two-bit mode map, the inactive dense/sparse
+`proc_packed_runtime_v38` descriptor layout and MM-authoritative
+slot/type/owner checks. These are only storage primitives: their
+historical PACKED names do not mean the new payload is compressed.
+The retained image is **raw**, containing exactly the writable suffix
+after the omitted complete 0200-octal-word PURE sectors. An initially
+running process must first be quiesced, have its user AC state saved in
+the stable u-area and hold its lifecycle transition.
+
+Drop requires valid PURE text backing, a sleeping/stopped process,
+transient source exclusion, a nonpinned process extent, and an available
+registry slot. It pins the old APR mapping, reserves and pins a new
+unaligned managed-RAM extent, copies every mutable suffix word, reserves
+the registry layout, and frees the old process extent before publishing
+the inactive storage state. Only then may TRANSITION be cleared. An
+owner-checked failed operation before the MM free does not publish a
+partial image. The stable u-area stores the exact backing key to
+support the existing nonresident vnode/mount exclusion contract.
+
+Restore verifies the same owner, backing, original word count, PURE
+boundary and raw saved suffix length before allocating the complete
+APR-aligned process extent without recursive reclaim. It initializes
+omitted words, calls the validated executable reloader (which may
+decode an entire compressed DXR payload), then overlays every saved
+mutable word, before freeing the inactive MM extent. Failed image
+reconstruction preserves the saved RAM extent. A successful restore
+publishes one complete resident process extent. Discard releases
+validated inactive RAM on terminal teardown (including ZOMB), clears
+the backing record and the high mount-slot credential bit, and keeps
+the process's broader EXIT transition under caller control.
+
+**Build isolation:** the translation unit deliberately refuses
+compilation without `DAIMOS_SWAPLESS_PURE_RAM_V1377=1`. It references
+no BACKSTORE variables or services and cannot be accidentally pulled
+into a normal swap-enabled build. The flag is only enabled by focused
+tests today. Future minimal `TAPE_AUX=none` wiring must explicitly
+select the source and its proven runtime dependencies.
+
+The testkit host suite executes the actual transaction C and
+storage-layout/owner C against instrumented MM and immutable-provider
+stubs. Dense and sparse layouts, three consecutive cycles, allocation
+refusals, provider reload failure, destination/source MM release
+failure and ZOMB discard pass. It revealed a missing source unpin on
+failed restore allocation; the production candidate now releases it
+before returning. The same source compiled with PDP-6 KCC executes
+on SIMH; the target test covers raw drop, a failed full-image allocation
+and retry, correct mutable-data overlay after mock DXR reloading, second
+drop and terminal discard. Both suites PASS.
+
+The isolated KCC object is 672 text words and zero DATA/BSS.
+The previously staged C support objects linked in the focused test are
+121 words (storage map), 310 (layout) and 273 (ownership): **1376 text
+words pre-fold total**, not the live KCORE increase. The test's own
+533 words and fixture data are not production costs. Some layout/planning
+code belongs only in KINIT, and the real kernel already has assembler
+storage-mode operations; a future production split must account for that
+before declaring these prototype costs irreducible. The historical
+header interfaces emit nonfatal KCC identifier-truncation notes.
+
+**Still open:** actual VFS executable write/unlink/truncate/unmount
+serialization across drop publication, exact 32K/48K boot-time registry
+allocation, real MM and scheduler wake/retry, process EXIT/EXEC/WAIT/PID
+reuse, saved AC restoration and provider failure tests. No production
+activation, full boot, RAM peak, size benefit or time benefit has been
+measured or claimed. With a single typical 02000-octal process and
+0400-octal omitted prefix, the data reduction is only 256 words before
+descriptor/codec/code costs; this alone cannot justify adding 1376
+resident text words. The v1376 RAM compressor remains optional and
+unlinked. No disk swap behavior was changed.
 
 ## v1376: first staged codec component accepted (not a process feature)
 
