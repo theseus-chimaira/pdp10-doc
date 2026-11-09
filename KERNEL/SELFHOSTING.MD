@@ -1,3 +1,30 @@
+## V1405: native DAS1/DAS2 DOBJ1 generation and on-target link/RUN
+
+The resident DAS now implements `-A -C` for KCC packed ASCII7
+source to DOBJ1 without host conversion.  DAS1 serializes global
+symbol declarations through an object-only extension of DASIR2;
+DAS2 streams scratch-backed global and relocation records into
+the standard DOBJ1 format using the existing bounded output queue.
+The normal DXR path keeps its old phase layout.  See
+`TOOLS/DAS-NATIVE-DOBJ-V1405.MD` for the format and acceptance.
+
+An independent v1405 full D6FS PDP-6 run passed 29/29 strict
+tests: native KCC, host-identical native DOBJ objects, DLINK for
+external function/data and local data, exact host DXR equality,
+and three executable C89 programs exiting 7.  The existing
+v1402 native DAS compatibility suite also passed 17/17 on the
+final source.  Production binaries and boot media were unchanged.
+
+**Release qualification still open:** a second full-sequence run
+stalled at the 17th probe, inside native KCC after 16 successful
+probes, although the identical local-data test passed 7/7 from a
+clean boot.  This is a sustained-workload reliability problem,
+not an accepted permanent workaround.  Guest process, swap and
+filesystem lifetime must be inspected before self-hosting claim.
+Relocatable `.set` cases, independent -N output equality, exact
+96K peak-memory and broad media failures remain to be tested.
+KCORE code/RAM size-only optimization stays LAST.
+
 ## V1403: native DOBJ1 linker and C89 execution acceptance
 
 The resident DLINK independently links host-produced DOBJ1 inputs
