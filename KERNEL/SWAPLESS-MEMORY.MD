@@ -1,13 +1,84 @@
 # Swapless process-memory reclamation
 
 Status: accepted KCORE direction, 2026-11-09 v1375. **Staged PURE-only
-transaction tests pass as of v1377; no production scheduler or full
+and registry-free transactions pass through v1380; no production scheduler or full
 swapless guest acceptance.** This document supersedes the earlier proposal
 for executable-opt-in *compressed disk swap* (old decision 5/P0-D). Raw
 disk/drum process swapping is unchanged. Compression of disk-swap records is
 not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
+
+## v1379/v1380: registry-free RAW PURE staging (not production)
+
+The v1377 dense/sparse inactive-process layout registry is **not
+necessary for the raw PURE-only case**. In the new, still unlinked
+`system/kernel/proc/proc_pure_ram_v1379.[ch]`, the already authoritative
+MM_TYPE_PACKED_PROCESS extent contains exactly the saved mutable
+suffix and its process-slot owner. The original logical process size
+is preserved in `vm_state`; the PURE sector-rounded omission is
+derived from the validated executable backing record. Exact MM
+type/owner/count checks reject duplicate or mismatched extents.
+This avoids both extra per-slot metadata and lookup through an
+independently allocated registry. The existing resident
+`proc_storage_expect_v30` and `proc_storage_publish_v30` assembler
+operations still own the two-bit process mode transition.
+
+The source is compiled only with `DAIMOS_SWAPLESS_PURE_RAM_V1379=1`;
+no production KCORE build selects it, and the v1377/v1376 prototypes
+remain unlinked. Both host and native KCC/PDP-6 v1379 tests PASS
+repeated drop/restore, original mutable memory preservation, raw
+fallback/no-codec behavior, source/destination MM ownership and
+failure rollback, and ZOMB discard. The PDP-6 test links the real
+assembler process mode service rather than the staged C map helper.
+
+The v1380 native test also links the *actual* existing
+`proc_swap_backing_busy` and `proc_swap_mount_busy` assembler
+code. It proves that a PURE process's vnode and mount remain busy
+while resident, across the old APR free, while stored as an inactive
+raw RAM suffix, during the full reload, across inactive suffix free,
+and after the second drop. The saved backing record in the stable
+u-area supplies nonresident immutability; after terminal discard
+the guards no longer report busy. The high public mount-id 18 is
+tested with the separate credential extension bit and negative
+checks for aliasing lower mount IDs. Ordinary resident RAW/COMPRESSED
+swap and previously accepted OOM guards are unchanged.
+
+### Resource measurement and remaining risk
+
+| Isolated PDP-6 KCC text | Words |
+| --- | ---: |
+| Previous v1377 transaction alone | 672 |
+| Revised v1379 transaction alone | **567** |
+| Staged C storage-map/layout/owner dependencies removed | 121+310+273 |
+
+The **704 removed words** are only an isolated test-link difference:
+the production kernel already owns assembler mode handling, and the
+old C registry never shipped. Neither number is a production
+linked-size delta. v1379 has zero static data/BSS. Source-protection
+acceptance is limited to the tested VFS busy scanners and controlled
+MM/provider transitions, not arbitrary concurrent provider mutation
+or a booted guest process.
+
+The present drop still needs a **separate temporary copy of the raw
+suffix** before freeing the old APR extent. This makes peak memory
+pressure an explicit unsolved blocker for a 32K swapless machine.
+The current `mm_process_shrink_pinned` demands 02000-octal-word
+process extent granularity and cannot retag a live PROCESS extent
+as a compact PACKED_PROCESS extent. Investigate a properly serialized
+in-place MM conversion with a validated no-fallible-step-after-overwrite
+contract. Never simply copy into the original extent and shrink
+afterward without rollback, or publish released tail words while the
+copy still uses them.
+
+This work does not complete KINIT capacity setup, actual scheduler
+admission, full PROCESS/EXEC/EXIT/WAIT teardown, physical 32K/48K
+tape-root boot, or the required peak-RAM/high-water measurements.
+Those remain open before production activation.
+Fault tests currently cover allocation refusal, failed executable
+reload and MM free refusal, not every ambiguous MM pin/unpin outcome.
+If unpin fails with uncertain ownership, TRANSITION remains held and
+an explicit owner-recovery path is required before production use.
 
 ## v1377: staged PURE-only inactive process lifetime
 
