@@ -1,3 +1,33 @@
+## V1410: KCC nested outgoing ABI stack lifetime and DAS symbol reuse
+
+KCC's direct GCC ABI code generator has been corrected for one-word
+stack-only arguments when another argument evaluates a nested call.
+The compiler now reserves outgoing ABI stack slots first and stores
+their values relative to the current stack depth, accounting for
+temporary virtual-register spills.  This fixes a real five/six-
+argument C89 failure without allocating heap storage or changing the
+runtime call ABI.  The v1407 testkit fixture, extended in v1410,
+executes the old and corrected optimized binaries plus the corrected
+`-n` unoptimized binary on PDP-6: exit statuses 5, 7 and 7 respectively,
+**3/3 PASS**.  All five native compiler phases rebuilt and passed
+the original v1401 **16/16** KIR1/KGEN/KOPT acceptance tests.
+
+Native DAS now shares its spill-backed record lookup/insertion code
+across distinct symbol-marker hash namespaces.  This correct-code
+refactor requires the v1410 KCC fix when compiled for PDP-6; with
+it, v1405 global transport tests pass **5/5** and v1402 normal
+assembly tests pass **17/17**.  Linked DAS1 image is octal 034474
+versus 034552 on v1405 built with the same host KCC, saving octal
+056 (46 decimal) words without changing BSS.  See
+`TOOLS/KCC-GCCABI-STACK-V1410.MD` and the existing v1405 DAS notes.
+
+This does not finish native DAS `-C` DOBJ1 relocation/write support.
+The native KCC -> DAS -A -C -> DLINK -> RUN release gate, independent
+unoptimized host/native equality and exact 96K self-hosting remain
+OPEN.  No production compiler, assembler or boot media was installed.
+Final KCORE RAM/code-size optimization remains LAST, after full
+functional and integration acceptance.
+
 ## V1405: native DAS1/DAS2 global symbol metadata
 
 The resident assembler now records DOBJ1 global declarations in the
