@@ -368,6 +368,11 @@ THE REMAINING SCHEDULER PASS SHOULD EXPLOIT CROSS-SPINDLE MECHANICAL OVERLAP
 BEFORE CHOOSING THE NEXT SHARED TRANSFER.
 
 A dedicated TSFS-root build (`ROOT=tape`) omits the BLOCKSET MINIT/MRES
-package and its BADMAP companion altogether.  A single auxiliary DSK/DRM
-unit still supports swap, LOGSTORE, and MEMFS through direct AUXSTORE raw
-block callbacks.  No striped, mirrored, or multi-member backing is needed.
+package and its BADMAP companion altogether. A single physical DSK/DRM
+unit may serve an explicitly configured auxiliary backing profile through
+direct raw AUXSTORE callbacks; it does not require BLOCKSET/BADMAP. The new
+minimal `TAPE_AUX=none` tape-root profile omits swap, BACKSTORE, LOGSTORE,
+and their state at link time, irrespective of detected hardware. Explicit
+`TAPE_AUX=drum|disk` may retain those facilities, but never enables them
+automatically when a device is found. Temporary RAM FS is omitted by default
+(`TAPE_TMPFS=0`) for the 32K-64K tape-only configuration. See `DECTAPE.MD`.

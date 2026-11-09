@@ -2,8 +2,11 @@
 
 **Design direction: 2026-11-09.** This is the single filesystem-specific
 reference for DAIMOS DECtape. The target is one TSFS format, provider and
-common reader. One-member media may be writable; two through eight members
-are always read-only. This is a redesign proposal, NOT an implemented format.
+common reader. A TSFS root is always read-only. Without a separately
+configured disk/drum backing device, the tape-root build has no process
+swap, backingstore or logstore. Only a non-root one-member volume may be
+writable; two through eight members are always read-only. This is a redesign
+proposal, NOT an implemented format.
 Earlier implementation and design evidence is preserved below as history.
 
 ## Unified design: established constraints
@@ -15,7 +18,28 @@ Earlier implementation and design evidence is preserved below as history.
   kernel plus irreducible scratch must still fit below 16K words; measure
   the complete root link, not merely the FS object or source line count.
 - One on-media namespace and extent/read representation serves every member
-  count. One-member mounts may be RO or RW; multi-member mounts are RO only.
+  count. A TSFS root mount is unconditionally RO, including one-member roots.
+  Only non-root one-member mounts may be RW; multi-member mounts are RO.
+  Neither mount flags nor remount operations may make a TSFS root writable.
+- **Build-time auxiliary profile, never hardware auto-detection:** for a
+  tape root, select `TAPE_AUX=none|drum|disk` when building the image.
+  `none` is the required minimal-machine default; it links no process-swap,
+  BACKSTORE, LOGSTORE or AUXSTORE facilities, media reservations, service
+  tables, or associated initialization. A `drum` or `disk` profile may
+  explicitly include these facilities, independently of whether the TSFS
+  root is read-only. The boot code must reject missing configured backing,
+  not silently activate other detected hardware or invent RAM backing.
+- **Temporary RAM filesystem:** default `TAPE_TMPFS=0`, especially for
+  32K-64K machines with `TAPE_AUX=none`. Omit its removable module and
+  metadata/storage allocations, not merely its mount command. With a
+  configured disk/drum backend, temporary storage may be enabled explicitly;
+  it is not a prerequisite for booting or using TSFS. A secondary one-member
+  RW tape mount remains independently selectable for persistent user files.
+- Prefer `ROOT=tape` for the minimum-memory profile. In a mixed `ROOT=auto`
+  image, the set of auxiliary capabilities is still fixed at build time:
+  selecting TSFS at runtime may not implicitly enable or disable swap,
+  BACKSTORE, LOGSTORE or TMPFS based on device probing. Mixed images must
+  account for all compiled-in modules in their resident memory budget.
 - No old TSFS/DTFS media-format compatibility, no foreign TENEX/ITS read
   compatibility, and no second resident legacy-format decoder is required.
 - Use the new grouped **D6codec** for compressed immutable file payloads.
@@ -36,8 +60,10 @@ Earlier implementation and design evidence is preserved below as history.
   reliable stopping/reselection and per-unit motion in the AAP emulator
   before claiming overlap; actual Type-136 transfers remain serialized.
 - Prefer one physical provider and one read/lookup/stat implementation.
-  Writable allocator and metadata-commit code may be omitted from the
-  tape-root-only removable-module link entirely.
+  A dedicated RO-only tape-root image must exclude writable allocator,
+  mutation and metadata-commit code. If that image explicitly supports a
+  secondary one-member RW TSFS mount, only then include its write engine;
+  the TSFS root itself still cannot write.
 - New active identifiers, files, utilities and test entrypoints must have
   stable, unversioned names. Historical revision identifiers and evidence
   paths below describe past artifacts, NOT suggested current API names.
@@ -52,7 +78,7 @@ worth measuring against the extra decoder words it costs. Arbitrarily large
 directories need an extension-page path, not a hard one-block upper bound.
 
 Store a mount-level UID9/GID9, not per-file Unix ownership. A root/system
-mount uses owner 0:0; a writable user mount uses the mounting user's identity
+mount uses owner 0:0; a writable *non-root* user mount uses the mounting user's identity
 for its lifetime. A tiny per-file access class (public/private, executable,
 and possibly immutable) can synthesize ordinary Unix mode bits for the
 existing FILE/VFS access checks. Keep the shared permission checker; do not
@@ -88,13 +114,27 @@ metadata commits unless the chosen durability guarantee requires them.
 7. **Mechanical scheduler:** prove what independent transports can do while
    unselected, including stop-at-target behavior, then choose between simple
    sequential service and small bounded look-ahead/prepositioning.
-8. **Tape root mutability:** may a one-member boot root be writable, or may
-   it be mounted RO with an optional separate one-member RW user volume?
-   RO-root-only builds can omit write/allocator/commit code and may be
-   essential to the minimum-RAM PDP-6 profile.
-9. **Degraded sets:** choose fail-closed mounting when a required RO member
+8. **Degraded sets:** choose fail-closed mounting when a required RO member
    is missing unless deliberate fully redundant placement is actually needed;
    parity, reconstruction and degraded runtime add disproportionate code.
+
+## TSFS-root acceptance gates
+
+- A one-member or multi-member TSFS root is mounted RO, with RW remount
+  rejected and no root mutation path reachable.
+- For `ROOT=tape TAPE_AUX=none TAPE_TMPFS=0`, neither the final linked
+  image nor the boot initialization includes swap, BACKSTORE, LOGSTORE,
+  AUXSTORE provisioning or MEMFS/TMPFS modules. A 32K-word root boots without
+  disk or drum, and without hidden fallback storage or backed eviction.
+- For an explicitly configured `TAPE_AUX=drum` or `TAPE_AUX=disk`, verify
+  correct backing initialization, and verify missing configured hardware
+  fails clearly rather than changing the selected auxiliary profile.
+- With `TAPE_AUX=none`, discovered-but-unconfigured disk/drum hardware must
+  not change module selection or available services.
+- A separate one-member RW TSFS volume, if configured, uses the common
+  namespace/read engine without requiring swap, BACKSTORE or LOGSTORE.
+- Compare same-profile permanent code/BSS, scratch, and stack size, including
+  any explicitly selected auxiliary, temporary FS, or secondary RW support.
 
 ## Performance acceptance
 

@@ -36,7 +36,9 @@ THAN KEPT AS A CONTRADICTORY SECOND AUTHORITY.
 
 ## DECtape documentation
 
-`KERNEL/DECTAPE.MD` is the unified TSFS redesign authority: one-member RW,
+`KERNEL/DECTAPE.MD` is the unified TSFS redesign authority: always-RO root,
+build-time `TAPE_AUX=none|drum|disk` selection, minimal tape-only build with
+no auxiliary or RAM temporary filesystem, optional non-root one-member RW,
 multi-member RO, mechanical-latency and 32K-root memory constraints, D6codec,
 and open format/durability decisions. Earlier DTFS/TSFS specifications and
 dated tape-specific test records remain preserved there as historical evidence.

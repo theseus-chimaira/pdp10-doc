@@ -1,3 +1,14 @@
+# Root-profile boundary for unified TSFS
+
+The planned minimal unified TSFS root (`ROOT=tape TAPE_AUX=none
+TAPE_TMPFS=0`) has **no** process swapping, BACKSTORE, LOGSTORE,
+backed MEMFS eviction or RAM-only temporary filesystem. These facilities
+are excluded at build/link time, not conditionally enabled by probing a
+device. An explicitly configured `TAPE_AUX=drum|disk` tape-root build may
+instead provide backing, while its root filesystem remains read-only. The
+policies and experiments below concern such configured auxiliary builds,
+other roots, or historical implementation behavior. See `DECTAPE.MD`.
+
 # v670 — D6FS mount-stage evidence
 
 Native PDP-6 breakpoint tracing of the v669 scheduler-pressure boot

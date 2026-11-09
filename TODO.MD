@@ -57,7 +57,12 @@ KERNEL/BSTORE.MD and related filesystem/device documents; distinguish
 accepted AUXST1/BACKSTORE support from genuinely unfinished work.
 
 DECISION 2 (revised 2026-11-09): The target is one TSFS format and resident
-read engine for single-member RW and multi-member RO tape volumes; neither
+read engine for optional non-root single-member RW and multi-member RO tape
+volumes. A TSFS root is ALWAYS RO. The minimal `ROOT=tape TAPE_AUX=none
+TAPE_TMPFS=0` profile has no swap, BACKSTORE, LOGSTORE or temporary RAM
+filesystem at link time, even if unconfigured devices are detected. An
+explicit build-time `TAPE_AUX=drum|disk` configuration permits auxiliary
+backing; detecting hardware alone never activates it. Neither
 the old TSFS/DTFS media formats nor foreign OS personalities need to remain
 readable. Use D6codec for immutable compressed file payloads, with RW payloads
 normally stored uncompressed. Tape-mechanical latency and permanent RAM/code
@@ -160,6 +165,13 @@ CORRESPONDING IMPLEMENTATION OR TEST RESULTS CHANGE.
 - CLOSE THE RW CRASH-DURABILITY, MTIME, PERMISSION-CLASS AND PERMANENT-RAM
   LIMIT DECISIONS BEFORE LOCKING THE FORMAT. NEW SOURCE AND TEST NAMES SHOULD
   BE UNVERSIONED; UPDATE ABI REFERENCES TOGETHER WHEN THE CODE CUTOVER LANDS.
+- MAKE TSFS ROOT UNCONDITIONALLY RO. SUPPORT EXPLICIT BUILD-TIME
+  `TAPE_AUX=none|drum|disk` AND `TAPE_TMPFS=0|1` SELECTION. THE 32K-64K
+  `ROOT=tape TAPE_AUX=none TAPE_TMPFS=0` PROFILE EXCLUDES SWAP, BACKSTORE,
+  LOGSTORE, AUXSTORE AND MEMFS/TMPFS MODULES AND ASSOCIATED STATE/INIT FROM
+  THE LINK. DO NOT AUTO-ENABLE SERVICES FROM DISCOVERED DISK/DRUM DEVICES;
+  IF CONFIGURED BACKING IS MISSING, FAIL EXPLICITLY. A SECONDARY SINGLE-TAPE
+  RW TSFS MOUNT MUST NOT IMPLICITLY ACTIVATE ANY AUXILIARY SERVICE.
 - KEEP TRUE DSK270 MULTI-SECTOR STREAMING, TSFS PARITY/STRIPING, AND TRACE-
   DRIVEN PLACEMENT CLEARLY MARKED DEFERRED UNTIL MEASUREMENTS JUSTIFY THEM.
 - KEEP BOOT/RESCUE.MD ON CURRENT DAS/DXR, MKDSK, MKD6FS, AND DEVICE-SPECIFIC
