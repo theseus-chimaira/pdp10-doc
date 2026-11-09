@@ -34,6 +34,14 @@ ROOT-LEVEL OPEN DOCUMENTATION WORK IS IN TODO.MD.  HISTORICAL MATERIAL THAT IS
 NO LONGER PART OF THE ACTIVE DESIGN SHOULD BE RECOVERED FROM GIT HISTORY RATHER
 THAN KEPT AS A CONTRADICTORY SECOND AUTHORITY.
 
+## DECtape documentation
+
+`KERNEL/DECTAPE.MD` is the consolidated DTFS/TSFS specification, including
+V1 behavior, proposed TSFS V1.2 layout and dated tape-specific test records.
+`HARDWARE/dectape.md` retains pure controller, transport and emulator timing
+material. Boot, VFS and block-cache documents retain only their integration
+contracts and refer to the consolidated filesystem reference.
+
 ## CURRENT DAIMOS BOUNDARIES
 
 THE INITIAL/MINIMUM MACHINE IS A 32K-WORD PDP-6.  THE HARD ARCHITECTURAL KERNEL
