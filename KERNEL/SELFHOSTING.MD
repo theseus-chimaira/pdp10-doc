@@ -1,3 +1,28 @@
+## V1401: native KGEN KIR1 stack-lifetime correction
+
+The v1395 host-KCC call-safe induction-pointer correction fixed the
+multi-function `gaddress: bad Sclass 0` failure.  The separate native
+KGEN UUO/exit 126 remained reproducible even with one function.
+KIR1's `kir_read_next()` and nested `readgraph()` each reserved a
+512-word record buffer on the limited PDP-6 startup stack.  KCC
+v1401 now reuses the caller's buffer and preserves only the 24-word
+graph header before reading new records.  It adds no heap allocation
+or serialization-format change.
+
+The DAIMOS testkit `kcc-kgen-stack-lifetime-v1401` builds the host
+compiler and all five native phases, constructs a CLEAN complete
+237-file grouped D6FS root, and passes 16/16 strict native PDP-6
+compiler tests.  Optimized and -N KGEN/KOPT replay succeeds for
+minimal and multi-function C89.  Optimized replay and integrated
+KCC output match the host's packed 36-bit assembly words exactly.
+See `TOOLS/KCC-NATIVE-KIR1-V1401.MD` for reproduction and limits.
+
+Native KCC -> canonical SIXBIT assembler -> native DAS/DLINK ->
+execution, independently generated -N goldens and full 96K
+self-hosting remain unaccepted.  Do not install the new compiler
+bootstrap yet.  KCORE code-size work is the last KCORE development
+stage, after functional and integration acceptance.
+
 ## V1373: native compiler nested GCC-ABI argument correctness
 
 The cross-hosted KCC was emitting invalid native KGEN pseudo-opcodes
@@ -10,10 +35,10 @@ PDP-6 native compiler phases. A real grouped KCORE/D6FS boot passes
 nine native phase/codegen/ABI checks, including exact host/native
 assembly-stream comparison and executing a nested-call program.
 
-However, multi-function/global-symbol KIR1 reconstruction still
-reports `gaddress: bad Sclass 0` in native KGEN, and standalone
-KGEN `-N` still faults with exit 126. Those remain higher-priority
-native self-hosting blockers. Details `TOOLS/KCC-NATIVE-ABI-V1373.MD`.
+At the v1373 checkpoint, multi-function/global-symbol KIR1 still
+reported `gaddress: bad Sclass 0` and standalone KGEN `-N` faulted
+with exit 126.  These historical defects were corrected in v1395
+and v1401 above.  Details `TOOLS/KCC-NATIVE-ABI-V1373.MD`.
 
 # DAIMOS SELF-HOSTING USERLAND TOOL SET
 
@@ -149,7 +174,7 @@ PHASE SPLITTING, SCRATCH-BACKED INTERMEDIATE STATE, LARGE-MEMORY EXECUTION, AND
 USERSPACE OVERLAYS BEFORE CHANGING THE KERNEL ABI.
 
 THE CURRENT NATIVE BOOTSTRAP HAS NOW PROVEN THE PHASE-SPLITTING PATH.  KCC IS
-SEPARATED AS KCPP -> KPT4 -> KPARSE -> KIR1 -> KGEN -> KPCODE1 -> KOPT.  ALL
+SEPARATED AS KCPP -> KPT4 -> KPARSE -> KIR1 -> KGEN -> KPCODE2 -> KOPT.  ALL
 27 CURRENT KCC TRANSLATION UNITS PRODUCE BYTE-IDENTICAL PDP-6 DAS/GAS OUTPUT
 AGAINST THE INTEGRATED COMPILER IN BOTH OPTIMIZED AND -N MODES.  THE CURRENT
 NATIVE OBJECT CLOSURES, BEFORE LIBC/STACK/HEAP, ARE 23783 WORDS FOR KCPP,
@@ -164,7 +189,7 @@ THE 96K RUNTIME TARGET IS CONSIDERED MET.
 
 THE NATIVE DRIVER NOW RUNS KCPP AS A CHILD AND THEN USES DESTRUCTIVE EXEC FOR
 KPARSE -> KGEN -> KOPT, SO COMPLETED PHASE IMAGES DO NOT REMAIN RESIDENT.
-KPT4, KIR1, AND KPCODE1 ARE STORED AS `/SCRATCH/KCCxxxxx.*` ON THE OPTIONAL
+KPT4, KIR1, AND KPCODE2 ARE STORED AS `/SCRATCH/KCCxxxxx.*` ON THE OPTIONAL
 D6SET1 DRUM-BACKED D6FS MOUNT.  THEY ARE NOT CHARGED TO MEMFS AND DO NOT CHURN
 THE ROOT D6FS.  THE NATIVE BOOTSTRAP STDIO BUFFERS ONE 0200-WORD D6FS BLOCK
 FOR OUTPUT; WITHOUT THAT BUFFERING, ONE-WORD SYNCHRONOUS DRUM WRITES MADE THE
@@ -181,11 +206,11 @@ SECOND COMPLETE PROCESS IMAGE IN THE NORMAL LOW-MEMORY GROWTH CASE.  THIS
 REMOVES THE NEED FOR A KCC-SPECIFIC FIXED HEAP AND MAKES THE 96K ACCEPTANCE
 TEST A REAL IMAGE+BSS+STACK+HEAP HIGH-WATER MEASUREMENT.
 
-THE CURRENT EXACT-96K RUN REACHES KGEN BUT FAILS WHILE RECONSTRUCTING KIR1
-UNDER MEMORY PRESSURE.  A 128K RUN REACHES THE SAME GRAPH-RECONSTRUCTION PATH
-BUT EXCEEDED THE 180-SECOND ACCEPTANCE WINDOW.  SCRATCH STORAGE AND CLEANUP ARE
-THEREFORE NO LONGER THE BLOCKER; KGEN WORKING-SET REDUCTION/VM PRESSURE IS THE
-NEXT SELF-HOSTING ITEM.
+THE PRE-V1401 EXACT-96K RUN REACHED KGEN BUT FAILED WHILE RECONSTRUCTING
+KIR1 UNDER MEMORY PRESSURE.  A 128K RUN REACHED THE SAME PATH BUT EXCEEDED
+THE 180-SECOND ACCEPTANCE WINDOW.  THE V1401 KIR STACK CORRECTION PASSED
+AT 256K, NOT AT 96K; REPEAT THE EXACT-96K PEAK HEAP/STACK TEST WITH THE
+CURRENT COMPILER BEFORE CLAIMING THAT MEMORY TARGET.
 
 KCPP SOURCE INPUT IS STORAGE-FORMAT AGNOSTIC.  ORDINARY ASCII AND NATIVE
 SIXBIT/S6REC C SOURCE USE THE SAME COMMAND LINE AND INCLUDE SEARCH.  PLAIN
@@ -231,7 +256,7 @@ ROUNDTRIP AND NATIVE 36-BIT CMP ACCEPTANCE PASS. SEE
 `TOOLS/CSIX-PACKED7-V1372.MD`. NATIVE KCC'S ASSEMBLY EMITTER STILL
 HAD A SEPARATE CORRECTNESS DEFECT AT V1372. V1373 FIXED THE
 NESTED-ARGUMENT ABI BUG FOR SINGLE-FUNCTION NATIVE COMPILATION,
-BUT MULTI-FUNCTION KIR GLOBALS AND UNOPTIMIZED KGEN REMAIN OPEN;
+AND V1395/V1401 LATER CLOSED THOSE TWO COMPILER CORRECTNESS DEFECTS;
 A SUCCESSFUL KCC EXIT ALONE DOES NOT YET ESTABLISH FULL
 NATIVE KCC->DAS->RUN SELF-HOSTING.
 
