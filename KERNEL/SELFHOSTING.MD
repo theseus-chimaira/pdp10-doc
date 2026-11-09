@@ -1,3 +1,27 @@
+## V1402: native DAS packed ASCII7 and executable acceptance
+
+Native DAS now accepts KCC's five-ASCII7-character-per-36-bit-word
+assembler source directly via `DAS -A`.  S6REC remains the default
+and explicit `-S` input.  DAS shares its existing buffered 36-bit
+reader, and native assembly identifiers/directives are recognized
+in mixed case without changing quoted literals or symbol spelling.
+Malformed input with nonzero spare bits, embedded NULs or trailing
+words after a short final word is rejected.  See
+`TOOLS/DAS-NATIVE-ASCII7-V1402.MD`.
+
+The full native PDP-6 grouped test root uses all five v1401 KCC
+phases and all three rebuilt native DAS phases.  The strict 17/17
+testkit acceptance includes host/native byte-exact assembly of
+KCC-generated ASCII7 and normal S6REC, mixed-case quoted data,
+negative format cases and executing a new native-DAS-assembled
+standalone DXR, returning exit code 7.  This is actual guest RUN,
+not merely object validation.  All images are staged test-only.
+
+Native `DAS -C` relocatable DOBJ output and the complete native
+KCC -> DAS -> DLINK -> executed C89 program remain OPEN.  The
+production toolchain is not replaced; KCORE size optimization is
+still the final KCORE stage after functional acceptance.
+
 ## V1401: native KGEN KIR1 stack-lifetime correction
 
 The v1395 host-KCC call-safe induction-pointer correction fixed the
