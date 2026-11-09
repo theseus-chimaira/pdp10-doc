@@ -1,3 +1,23 @@
+## V1403: native DOBJ1 linker and C89 execution acceptance
+
+The resident DLINK independently links host-produced DOBJ1 inputs
+for a newly compiled C89 `main` and the existing CRT0/syscall
+runtime.  daimos-testkit `daimos-native-dlink-c89-v1403` rebuilds
+the full grouped 237-file D6FS test root with corrected v1401 KCC,
+v1402 DAS and the normal native linker.  Five native PDP-6 tests
+PASS: KCC compiles the fixture, DAS assembles the produced ASCII7,
+DLINK links the separately host-assembled C89 relocatable object,
+the native-linked DXR matches the host linker output word for word,
+and the actual native-linked executable exits with status 7.
+
+The native linker itself is no longer a blocker for this simple
+runtime and relocation profile.  The main DOBJ1 **was not** produced
+on the target.  Full self-hosting still requires native DAS `-C`
+relocatable object generation across DAS1/DAS2, with correct
+external-symbol and relocation records and bounded resident RAM.
+See `TOOLS/DLINK-NATIVE-C89-V1403.MD` for this acceptance boundary.
+No production toolchain or boot media changed.
+
 ## V1402: native DAS packed ASCII7 and executable acceptance
 
 Native DAS now accepts KCC's five-ASCII7-character-per-36-bit-word
