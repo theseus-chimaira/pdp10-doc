@@ -9,6 +9,82 @@ not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
 
+## v1391/v1392: APR-bounded FULL DXR restoration and KCC correctness
+
+**2026-11-10. Staged host/native test acceptance, NOT a production
+KCORE or disk-swap change.**
+
+The previously staged FULL DXR callback accepted a backing record,
+destination APR base and stable process u-area, but did not receive
+the extent's *allocated length*. Validating only the executable
+text count was insufficient: a DXR file with the same PURE text
+but an oversized initialized image could write past the allocated
+APR. This also affected compressed FULL decode.
+
+`proc_pure_ram_restore_v1391.[ch]` now supplies a four-word C ABI
+callback argument list: saved backing identity, pinned physical
+destination APR base, stable u-area and **trusted allocated APR
+word count**. The shared assembler
+`exec_image_full_bounded_v1391` first obtains the immutable source
+vnode, VFS stat and DXR2/TX2 metadata using the same parser as EXEC
+and PURE_PREFIX. Before invoking any payload reader or decompressor,
+FULL mode rejects zero/unaligned APR capacity, unaligned APR base,
+physical address overflow, or an initialized image where
+`image_words + 020 > allocated_APR_words`. An exactly fitting
+initialized image is valid. The former unbounded staged FULL entry
+is removed, not retained as a compatibility backdoor. The current
+production `proc_swap_reload_pure` remains unchanged.
+
+Native KCC/DAS/PDP-6 tests in `daimos-testkit` verify successful
+plain/compressed FULL restoration, exactly filled APR, mount 18
+and canonical vnode identity, short read, invalid metadata,
+compressed decoder failure and rollback. Crucially, both plain
+and compressed *oversized* cases observe **zero payload-reader and
+decoder invocations**. Independent negative cases cover zero,
+misaligned and out-of-range allocations and physical base
+misalignment; sentinel words immediately beyond the target APR
+remain unchanged. The only valid mutable suffix is copied from
+its original owner-pinned raw RAM after the FULL reload succeeds.
+These are native component tests with controlled VFS/MM, not
+concurrent scheduler/PI or 32K/48K guest acceptance.
+
+### Optimizer integrity and size
+
+Testing uncovered a separate real KCC code-generation defect:
+under a larger diagnostic layout, optimized KCC emitted
+`MOVEM 7,swap_slots(1)` for the constant slot
+`swap_slots[1]`, leaving a dynamic AC1 index without a valid
+reaching definition. `kcc/ccopt.c` now embeds a constant in the
+symbolic address only after a straight-line backward register
+definition scan proves it, stopping at skips, branches, calls and
+register modifications. This is a compiler fix, not a DAIMOS
+array-access workaround. All 21 focused native/host PURE and
+EXEC regressions pass on the corrected installed KCC; its fresh
+optimized release build matches the tested binary. The cleaned
+v1392 test also passes on the old compiler, so a smaller
+independent old-failing repro and full compiler matrix remain open.
+See `TOOLCHAIN/KCC-SYMBOLIC-FOLD-20261110-V1392.MD`.
+
+| Isolated PDP-6 source | TEXT words | Static DATA/BSS |
+| --- | ---: | ---: |
+| Existing production EXEC loader | 183 | 0 |
+| Disposable refactored EXEC caller | 119 | 0 |
+| Shared DXR inspector/payload core | 161 | 0 |
+| Shared capacity-bounded FULL/PREFIX adapter | 74 | 0 |
+| Previous production PURE FULL reload leaf | 50 | 0 |
+| Separate v1391 FULL restore C transaction | 359 | 0 |
+
+The hypothetical combined EXEC+FULL replacement costs
+`119+161+74=354` TEXT words versus `183+50=233`, i.e.
+**+121 words before p10fold** (and without counting the new C
+transaction). Thus the safety correction is staged but not a
+resident-RAM saving. Do not link the v1391 C body alongside the
+older restore transaction as a permanent duplicate. Net physical
+memory benefit still requires actual folded KCORE measurements and
+multiple inactive-process workloads at 32K/48K. Grouped compressed
+PURE_PREFIX, PI/VFS ownership concurrency and booted lifecycle
+regressions remain open.
+
 ## v1389/v1390: smaller shared loader and one FULL backing entry
 
 **Staged and native PDP-6 tested, not linked into production
