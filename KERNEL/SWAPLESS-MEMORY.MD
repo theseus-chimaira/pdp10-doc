@@ -19,6 +19,26 @@ finished. Production D6LZ36 and raw disk/drum swapping are unchanged.
 
 # Swapless process-memory reclamation
 
+**v1451 finalized test-only bitmap codec:** the independent PDP-6
+RAM-only encoder+decoder now totals **30 TEXT words, zero BSS**,
+preserves AC10..AC15 without a stack frame, and packages as a
+**36-word transient / 30-word resident MRES**. It deliberately
+contains *no untrusted-data validation* because MM alone owns
+both source and packed images. Exact preflight, buffer lifetime,
+process state/restore and root-profile gating remain separate
+work. See KERNEL/D6CODEC-BITMAP-TRUSTED-OPTIMIZATION-V1451.MD.
+
+**2026-11-10 v1432 evidence:** A native 55-word PDP-6
+zero-presence-bitmap encoder/decoder compresses real cold
+DSH mutable suffixes to 314/524/677 words (from
+3200/3200/5248) using 24,658-41,400 encoder instructions.
+This is test-only capacity evidence, NOT a production feature:
+finish PURE-only reclaim and real MM/32K/48K acceptance first.
+Never encode on every SLEEP. The same bitmap **expands
+typical nonzero-heavy compiled DXRs by ~2.7%**, so it does
+not replace TSFS's general-purpose executable/file codec.
+See KERNEL/SWAPLESS-BITMAP-COMPRESSION-V1432.MD.
+
 Status: accepted KCORE direction, 2026-11-09 v1375. **Staged PURE-only
 and zero-copy transactions pass through v1382; no production scheduler or full
 swapless guest acceptance.** This document supersedes the earlier proposal
