@@ -1,3 +1,22 @@
+## 2026-11-10 v1397: fail-closed PURE DROP MM rebase cleanup
+
+The staged `proc_pure_ram_drop_v1381` formerly ignored failure to unpin the
+original PROCESS extent after `mm_pure_rebase_pinned_v1381` rejected the
+conversion. It could return a less severe error while leaving an unresolved
+MM pin and a process still owning TRANSITION. The revised transaction checks
+the cleanup result: a failed unpin returns `MM_ERR_BUSY`, preserving
+TRANSITION and the original descriptor for explicit recovery. A successful
+unpin still returns the original rebase error. The native PDP-6 v1395/v1397
+test now injects both cleanup cases, in addition to four existing FULL
+restore rollback/finish faults; all PASS. Existing native v1381 in-place and
+v1384 prefix tests also PASS. The separate KCC target object changes from
+**518 to 521 TEXT words** (+3), with zero DATA/BSS. It is **not production
+linked**, so no KCORE increase or proven whole-system RAM gain exists yet.
+
+The grouped D6 codec remains deferred until the outstanding AUXSTORE/
+BACKSTORE, restricted MEMFS XIP and swapless PURE RAM feature integration is
+finished. Production D6LZ36 and raw disk/drum swapping are unchanged.
+
 # Swapless process-memory reclamation
 
 Status: accepted KCORE direction, 2026-11-09 v1375. **Staged PURE-only

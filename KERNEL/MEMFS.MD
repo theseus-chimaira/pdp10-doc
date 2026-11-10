@@ -1,3 +1,29 @@
+## 2026-11-10 v1396: pinned XIP metadata is immutable during execution
+
+The production movable MEMFS provider now checks its existing four-entry
+XIP pin reference table before any operation through `memfs_chmod`. This
+also covers the same dispatch entry's CHOWN and UTIME branches. A pinned
+executable must retain its file mode, ownership and timestamp as well as its
+code words; restoring writable or changing provenance while a process still
+fetches that memory is forbidden. On final unpin, ordinary metadata edits
+resume. The check adds no reference table, filesystem metadata word, or
+fixed KCORE code. The rebuilt MEMFS MRES rises from **1712 to 1719 resident
+words**, with no additional DATA/BSS.
+
+Native PDP-6 tests execute the real provider, proving that CHMOD/CHOWN/
+UTIME are rejected during a pin and accepted after release, with unchanged
+metadata during refusal. Existing v216 SIMH and AAP user-mode XIP fetch,
+monitor UUO and production VM teardown PASS. The test harness's former
+`proc_swap_detach` helper returned an invalid nonzero success status and
+lacked `wall_time36`; both test-only defects have been corrected.
+
+**Not yet complete:** the strict v1394 no-write instruction profile is
+staged but not connected to a trusted source-vnode admission transaction or
+general production RUN/EXEC, scheduler, BRK and swap exclusions. The PDP-6
+does not provide hardware text write protection. A mutable MEMFS file with
+a PURE header is not sufficient authority to execute arbitrary instructions
+from shared physical memory.
+
 ## v1094: XIP release failure must retain its VM owner
 
 VM teardown distinguishes an unloaded MEMFS MRES entry from a loaded

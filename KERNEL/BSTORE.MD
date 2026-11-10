@@ -1,3 +1,16 @@
+## 2026-11-10 v1397: canonical new AUXSTORE v1 empty regions
+
+Original `mkauxstore` v1 descriptors wrote the computed start address even
+when BACKSTORE, LOGSTORE or CACHESTORE had a zero length. KINIT already
+treated length zero as absent. Rejecting old descriptors for this vestigial
+start would make previously formatted media unbootable, so the reader keeps
+supporting both representations. The host `mkauxstore` formatter now writes
+exact **0,0** for each absent pool, without changing the descriptor version
+or the physical placement of nonempty regions. New and legacy descriptors
+both pass v507 discovery tests; the actual host formatter's canonical
+output and its destructive-write safeguards pass v636. AUXSTORE choice v492
+and region bounds v657 PASS. No new resident state and no fixed KCORE growth.
+
 ## 2026-11-10 v1393: BACKSTORE allocated-owner release integrity
 
 `backstore_free` now validates the complete run against the existing shared
