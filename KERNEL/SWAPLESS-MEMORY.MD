@@ -9,6 +9,87 @@ not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
 
+## v1389/v1390: smaller shared loader and one FULL backing entry
+
+**Staged and native PDP-6 tested, not linked into production
+(2026-11-10).** The v1386 shared DXR inspector and FULL/PURE_PREFIX
+payload engine now use contiguous BLT register-save frames rather
+than seven individual AC PUSH/POP pairs. This preserves the established
+PDP-6 AC10..AC16 calling convention and reduces the standalone
+shared assembler object from 225 to **212 TEXT words**, zero static
+DATA/BSS. Native v1386 parser, v1387 in-place restoration and the
+v1388 disposable EXEC caller tests still PASS.
+
+The `exec_image_full_backing_v1389` entry consists of a zero-prefix
+selection and branch into the *same* backing adapter. It uses the
+existing `proc_swap_unpack_backing` vnode/mount reconstruction,
+VFS stat, validated DXR inspector and FULL payload reader; no
+duplicate DXR parsing or decompressor code is added. The same
+adapter's `exec_image_prefix_backing_v1386` entry invokes bounded
+plain PURE_PREFIX instead. With FULL, the fresh, separate APR
+destination receives the entire initialized DXR image and the
+restoration transaction subsequently overlays the saved writable
+suffix. Thus even compressed FULL DXR uses the original decoder
+without overwriting the only authoritative source suffix.
+
+The native PDP-6 `daimos-testkit/tests/validation/
+exec-image-full-backing-v1390` test links the **actual staged**
+v1381 RAM drop/restore transaction and real backing-unpack assembly
+to this common FULL path. Controlled immutable providers exercise
+plain and compressed DXR2, mount 1 and mount 18, failed short reads,
+invalid TX2 and corrupt compressed input. The source suffix is
+retained on failure and overlaid after successful FULL reload.
+This PASS does not prove the production disk swap or 32K guest
+behavior. The existing `proc_swap_reload_pure` is unchanged.
+
+The final native test sweep also found an **out-of-contract
+test-provider write**: the v1387/v1390 mock VFS header reader wrote
+three words when the shared inspector requested only two. That
+extra write could corrupt adjacent frame scratch and made a mount-18
+case appear sensitive to an unrelated, wider compression-mode
+predicate. Correcting the fixture to write TX2 only on a
+three-word request (while DXR2 inspector reads TX2 separately)
+restored reliable PASS in both predicate configurations. This
+finding does not demonstrate any KCC, assembler or production VFS
+regression; the corrected regression now respects actual VFS read
+bounds.
+
+### Size and capacity gate
+
+| Independently assembled PDP-6 source | TEXT words |
+| --- | ---: |
+| Existing production EXEC loader | 183 |
+| Alternate shared-engine EXEC caller | 119 |
+| Shared DXR parser and payload engine only | **161** |
+| Shared FULL/PREFIX backing adapter | **51** |
+| Existing independent PURE FULL reload leaf | 50 |
+| **Combined alternate EXEC + FULL replacement, before folding** | **331** |
+| **Current EXEC + FULL leaf baseline, before folding** | **233** |
+
+The hypothetical replacement is therefore **+98 words**, before
+p10fold and before all new swapless MM/scheduler transaction code.
+There are no new static data words, but this does NOT establish net
+system RAM savings. In particular, measuring only a 256-word PURE
+prefix saved from one suspended process while ignoring the resident
+transaction and allocator code would be misleading. Net physical
+RAM must be evaluated for real 32K/48K workloads, including all
+inactive processes, actual KCORE linked text/BSS, heap/stack, and
+pressure/retry costs. The executable v1390 size regression records
+these isolated measures and rejects unexpected growth.
+
+**Mandatory safety gate before connecting FULL to live swapping:**
+the older three-argument PURE reload callback does not expose the
+physical destination's allocated word count to the common DXR
+reader. Even with a pinned immutable vnode and matching TX2 text
+count, a larger initialized-image length in a malformed/backing
+file could overrun the allocated APR extent. A final callback ABI
+must carry explicit destination capacity and reject
+`initialized_words + EXEC_USER_ORIGIN` greater than that capacity
+*before* any read/decompress/write operation. The native tests use
+valid controlled images and do not close this hostile-header bound.
+The separate compressed PURE_PREFIX output-boundary constraint and
+full 32K/48K tape-root integration remain open.
+
 ## v1386-v1388: actual shared DXR loader staging and cost gate
 
 **2026-11-10: native tested, deliberately NOT production linked.**
