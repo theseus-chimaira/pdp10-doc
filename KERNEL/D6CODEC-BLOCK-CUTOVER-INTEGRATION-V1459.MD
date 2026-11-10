@@ -68,6 +68,11 @@ The **v1452 control** exhibits the same 48K GCC lowmem
 no-login result and the same TSFS-root `INIT: RUN FAILED`.
 These are not evidence of a new v1459 decoder regression,
 but neither configuration may be counted as accepted.
+Additionally, the original v1452 DTC and MTC Stage-1 read-in
+tapes, substituted into otherwise identical v1459 boot media,
+also produced no boot banner in 75 seconds. These short
+control runs do not prove equivalent long-term behavior, but
+they show the early read-in delay is not unique to v1458.
 
 For the 32K lowmem profile, KCORE ends at octal `023034`,
 above the strict octal `020000` gate. The 32K KINIT image
