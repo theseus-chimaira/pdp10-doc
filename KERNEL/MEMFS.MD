@@ -1,3 +1,43 @@
+## 2026-11-10 v1401-v1404: MM-backed chunk ownership and release faults
+
+The previous MEMFS private `memfs_data_free` leaf cleared the descriptor of
+an emptied physical data chunk before invoking `mm_free`. A refused MM free
+therefore left the vnode referring to an untracked but still allocated RAM
+extent. The corrected leaf returns success/failure and clears the descriptor
+**only after** the managed-memory release succeeds. TRUNCATE propagates the
+refusal while preserving the previous file size/data. Callers discarding
+speculative new extents must instead enter the fatal ownership invariant if
+that cleanup cannot be completed: the new extent has no published vnode.
+
+Within a shared 02000-word chunk, the sector bitmap now checks that every
+bit in a requested release range is still owned. This rejects duplicate
+sector frees rather than silently touching bookkeeping while other files
+own neighbouring sectors. Releasing an extent absent from all chunk
+descriptors also reports failure. No new per-sector or per-vnode metadata.
+
+On eviction, the fresh BACKSTORE allocation is provisional until its write
+and vnode publication succeed. If writing fails and `backstore_free` also
+refuses to release the provisional run, normal eviction cannot safely
+return because the allocated blocks have no persistent owner. The error
+now reaches the existing fatal storage invariant instead of leaking disk
+blocks. A dedicated source-linked PDP-6 fault test confirms the invariant
+marker is set before HALT, in addition to ordinary MM-free and double-free
+tests (previous failures at octal 0260 and 0262).
+
+The boot image Makefile also omitted the raw `memfs_data_pdp6.s` and
+`memfs_snapshot_pdp6.s` input dependencies. As a result, a direct MRES
+target could use stale generated assembler despite changes in these
+sources. Both inputs are now explicit dependencies; the target was verified
+to regenerate the kernel assembler and relink correctly. After this fix,
+the actual MEMFS MRES package measures **1771 resident words** (1758
+initialized + 13 BSS), up from 1752 at v1400. The new code is movable;
+fixed KCORE has not grown. Normal/fault PDP-6 and v216 SIMH/AAP restricted
+user XIP lifecycle regressions PASS.
+
+The 32K/48K/256K booted pressure matrix, actual swapless PURE scheduler
+activation, and general production XIP RUN/EXEC remain open. D6 codec
+integration continues to be deferred.
+
 ## 2026-11-10 v1399/v1400: backing ownership and failure-atomic teardown
 
 `memfs_backing_drop` no longer clears the sole vnode first,,block-count
