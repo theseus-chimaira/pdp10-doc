@@ -9,6 +9,96 @@ not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
 
+## v1386-v1388: actual shared DXR loader staging and cost gate
+
+**2026-11-10: native tested, deliberately NOT production linked.**
+
+`system/kernel/proc/exec_image_common_v1386.s` is the first executable
+format/loading component shared *in executable native tests* between
+ordinary EXEC and swapless inactive-PURE restoration. It defines a
+single DXR1/DXR2 inspector and a single payload loader. The parsed
+metadata occupies exactly four caller-owned temporary words:
+
+| Word | Left 18 bits | Right 18 bits |
+| --- | --- | --- |
+| 0 | Entry offset | Uncompressed initialized image words |
+| 1 | DXR flags | BSS words |
+| 2 | Uncompressed PURE text words | DXR header words (2 or 3) |
+| 3 | Relocation-map words | Compressed payload words |
+
+The inspector validates the executable magic, entry and image limits,
+DXR1/DXR2 file shape, BSS/flag bounds, compressed payload length and
+text metadata/TX2 tag before publishing that four-word description.
+The loader interprets it in `FULL` mode (DXR1/2 plain, DXR2 compressed
+via the existing D6LZ36 decoder), or `PURE_PREFIX` mode (DXR2 PURE,
+copy exactly the missing prefix and write **no** mutable word). The
+current compressed-prefix case returns unsupported and triggers the
+already proven full-image restore fallback. Neither mode allocates
+kernel process tables or additional permanent state.
+
+`exec_image_prefix_backing_v1386` is a bridge within the same staged
+source, not a new parser: it uses `proc_swap_unpack_backing` to
+reconstruct the original vnode and high mount ID, obtains file size
+and regular-file type via VFS, checks the parsed TX2 text size
+against the saved PURE record, and uses the common prefix loader.
+It does not own MM, alter the process's execution state or bypass
+existing immutable-vnode/unmount exclusion. Its caller is the
+previously staged v1384 MM restore transaction. The original v1385
+standalone loader is kept **only in daimos-testkit** as historical
+validation evidence; it is not in DAIMOS source.
+
+The native PDP-6 testkit results are:
+
+- v1386: shared parser and image reader, DXR1/DXR2 FULL, compressed
+  FULL delegation, STRICT prefix output boundaries, invalid shapes
+  and short read rollback: PASS.
+- v1387: real v1381 zero-copy PURE drop, v1384 MM claim/rollback/commit
+  and the same v1386 shared loader, using the existing genuine backing
+  unpacker, including mount 18, provider validation and safe
+  compressed-prefix refusal: PASS.
+- v1388: generate a throwaway EXEC caller from the current production
+  `exec_load.s` with explicit source-anchor checks. Real PDP-6
+  execution of this alternate caller together with the v1386 common
+  engine passes plain DXR1/DXR2 and compressed FULL, RT root-only
+  admission, malformed headers, VM NOMEM, read/decode failure and
+  PURE-attachment rollback. The generated caller is **not** the
+  production EXEC implementation: PASS.
+
+The native tests caught a caller-clobbered register bug in v1386
+header parsing (a DXR2 header count lost across the VFS callback).
+The corrected routine preserves the value across VFS. The v1386
+negative suite also corrected a test fixture which had failed to
+generate the intended malformed file length. These fixes are in
+the staged/test code; production source remains unchanged.
+
+### KCORE size gate
+
+| Comparable isolated PDP-6 source | TEXT words |
+| --- | ---: |
+| Existing production `exec_load.s` | 183 |
+| Throwaway v1388 EXEC caller | 119 |
+| Shared v1386 inspector + payload core, no bridge | 169 |
+| **Combined alternate EXEC baseline** | **288 (+105)** |
+| Full v1386 module with restoration bridge | 225 |
+
+All these stand-alone sources have zero static DATA/BSS. The
+combined sizes are **pre-fold component measurements**, not a final
+KCORE link comparison. Adding the shared parser and loader to the
+currently mandatory resident EXEC path would increase text words
+before folding despite reducing the caller from 183 to 119. The
+extra bridge adds 56 TEXT words relative to the 169-word parser/
+payload core. This must be reduced, folded safely, or selected only
+for a genuinely swapless configuration with measured net RAM saved
+before any production link acceptance. The existing three fixed
+resident C translation units and raw disk/drum swapping are unchanged.
+
+**Still open:** actual source-to-production EXEC cutover and booted
+32K/48K acceptance, `proc_swap_reload_pure` FULL path consolidation,
+grouped D6codec bounded compressed PURE_PREFIX, hardware PI/VFS
+concurrency and full MM/scheduler/EXIT/WAIT lifecycle. The v1388
+native PASS does not close these conditions or establish a positive
+production link-size delta.
+
 ## v1384/v1385: prefix restore proof and ONE shared EXEC loader
 
 **Staged and native tested, not production linked (2026-11-10).**
