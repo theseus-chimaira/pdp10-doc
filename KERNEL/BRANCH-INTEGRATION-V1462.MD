@@ -37,6 +37,17 @@ format, retaining its previous swap and filesystem compatibility.
   a pre-existing unmet acceptance gate rather than a new regression.
 - Production-linked native PDP-6 BACKSTORE owner, swap-in refused-release
   and retry, exchange accounting, cancellation and metadata checks PASS.
+- The isolated v1458 decoder and VFS native checks PASS, including
+  malformed inputs and a stack canary. The historical full v1458 runner
+  stops at its Stage-1-selection assertion because the new decoder is
+  intentionally deferred. A new v1462 regression instead checks that
+  the accepted D6LZ36 release path and the experimental sources coexist.
+- The standalone v1458 block decoder and VFS native tests PASS, including
+  malformed streams and the stack canary. The historical combined v1458
+  runner intentionally stops at its last Stage-1 assertion because that
+  assertion requires activating the block decoder in production. A separate
+  versioned v1462 source-selection regression checks D6LZ36 remains
+  selected and retains the standalone experimental block sources.
 - The previously accepted strict 256K F07 guest test remains relevant to
   unchanged release code paths, but its v1406 result is not represented as
   a fresh full-system test of all optional merged components.
