@@ -791,3 +791,21 @@ filesystem lifetime must be inspected before self-hosting claim.
 Relocatable `.set` cases, independent -N output equality, exact
 96K peak-memory and broad media failures remain to be tested.
 KCORE code/RAM size-only optimization stays LAST.
+
+## V1403: native DLINK C89 and DOBJ1 acceptance
+
+The v1403 testkit independently verified the resident linker with
+genuine C89-generated DOBJ1 input.  Native PDP-6 KCC emits assembly
+byte-identical to the accepted host KCC; host DAS converts that
+assembly to a reference relocatable DOBJ1.  Native DLINK links it
+with normal CRT0 and syscall objects, emits a DXR identical to the
+host linker, and DAIMOS executes the C89 program with exit status 7.
+All five strict PDP-6 grouped-root acceptance checks pass.
+
+This isolates the remaining native toolchain blocker: resident DAS
+cannot yet emit DOBJ1 through `-C`.  The host-generated DOBJ1 input
+is deliberately not counted as native assembler acceptance.  Native
+`DAS -A -C` must preserve full symbol/relocation semantics through
+the file-backed DAS1/DAS2 split before declaring native C89
+self-hosting.  The 96K process working-set check is still pending;
+no production media or executable has been replaced.
