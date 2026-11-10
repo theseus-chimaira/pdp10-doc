@@ -1,3 +1,22 @@
+## 2026-11-10 v1405: BACKSTORE refusal is prepublication, retryable
+
+The v1398 checked `backstore_free(first,blocks)` returns 0 on complete
+bitmap/used-accounting release, -1 on refused ownership. Production
+`proc_swap_in` now invokes the checked release before committing the
+new physical resident base and before decrementing process swap blocks.
+If the release fails, its newly allocated MM extent is freed by the
+existing after-unpin rollback, the TRANSITION lock is removed, and the
+stable disk record, PURE/executable backing, bitmap and storage mode
+remain unchanged. If the MM rollback itself fails, the existing fatal
+invariant preserves the lock instead of resuming an untracked process.
+
+Native testkit v1405 source-links the exact transaction, BACKSTORE
+verifier and free code; it tests a deliberately incomplete allocation
+bitmap, retention of all disk-owner accounting and storage identity,
+then a successful retry with the missing bit restored. A source mutant
+that discards the release return is rejected by the executable assertions.
+No duplicate allocator implementation or new persistent owner field.
+
 # DAIMOS v1318: native source-authentic swap-in transaction and rollback
 
 Date: 2026-11-07. Baseline: DAIMOS `4b2369d1` with unchanged

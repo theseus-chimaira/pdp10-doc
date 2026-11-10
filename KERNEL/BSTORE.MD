@@ -1,3 +1,40 @@
+## 2026-11-10 v1405: SWAP-MRES checked release and no false publication
+
+The seven `backstore_free` calls in the movable PDP-6 process swap code
+now check the complete-release return introduced in v1398. The most
+important change is swap-in commit ordering: after restoring the saved
+disk words and successfully unpinning the new MM extent, the process
+releases its old BACKSTORE run **while the original DISK record and storage
+mode are still authoritative**. Only a successful free allows publication
+of the restored physical base, decrement of `proc_swap_blocks_used`,
+replacement of the record with the executable backing identity, and the
+DISK->RESIDENT mode transition. A refused release invokes the existing
+post-unpin MM cleanup, retains the original disk owner and can be retried
+without accounting/bitmap drift. An MM rollback refusal still enters the
+existing fatal MM invariant.
+
+Exchange accounting, reservation prepare/cancel, failed swap-out rollback,
+and optional PURE verifier scratch release cannot all be rolled back once
+their particular cleanup points are reached. They now check the allocator
+result and enter the established storage invariant rather than claiming
+that a disk allocation was released when it remains owned. No new flags,
+bitmap, provider object or permanent KCORE state was introduced.
+
+A new source-linked PDP-6 v1405 test executes the production swap-in,
+the real BACKSTORE bitmap validator and the real free routine. An
+incomplete bitmap causes rollback, without changing the original disk
+record or accounting; after restoring the bitmap, the same process
+successfully commits once. Removing the status check as an executable
+negative control is rejected. Native v781/v782/v787 cover successful and
+refused exchange cleanups; native swap-PURE and exact backing/data
+integration remain PASS. The older integrated v812 fixture fails its own
+assertion on both v1404 and v1405; it is not a new SWAP-MRES regression.
+
+Measured 32K lowmem: fixed KCORE **9687** (unchanged), movable SWAP MRES
+**1757 -> 1762 (+5) words**, combined KCORE+MRES **16362 -> 16367**,
+single-root permanent placement **31 words over** instead of 26.
+The strict 256K F07 full-guest postflight is a separate acceptance gate.
+
 ## 2026-11-10 v1398: existing-owner release after STORAGECTL disable
 
 The historical `backstore_free(first, blocks)` void PDP-6 entry now reports
