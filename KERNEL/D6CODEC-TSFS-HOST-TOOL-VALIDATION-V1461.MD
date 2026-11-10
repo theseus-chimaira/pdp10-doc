@@ -1,7 +1,7 @@
 # v1461: source-matched TSFS host tools and strict extent validation
 
 Date: 2026-11-10. Status: host-producer and validator fix
-verified; complete TSFS guest command acceptance remains open.
+verified; full-profile TSFS-root login, DSH and ECHO accepted.
 
 ## Failure mechanism
 
@@ -51,9 +51,14 @@ The external-command runtime problem therefore cannot be
 attributed to mismatched ECHO file contents in this image.
 
 With the corrected image, the full 256K TSFS-root system
-reaches INIT, ROOT LOGIN and DSH V1. The guest ECHO command
-did not complete within the first 70-second command timeout,
-so full TSFS-root command execution is not yet accepted.
+reaches INIT, ROOT LOGIN and DSH V1. The guest external ECHO
+command completes and returns to DSH within the extended
+240-second command allowance (`V1461_DSH_EXEC_PASS`). The
+initial 70-second allowance timed out, but the same media
+and unchanged guest code passed the extended acceptance.
+The entire isolated-media cold-boot test took about 307
+seconds of wall-clock time. This does not imply that the
+individual command consumed 307 seconds.
 
 Regression tests are in
 `daimos-testkit/tests/validation/d6codec-v1461-tsfs-exec/`.
