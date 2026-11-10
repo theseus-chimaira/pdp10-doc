@@ -1,3 +1,22 @@
+## 2026-11-10 v1393: BACKSTORE allocated-owner release integrity
+
+`backstore_free` now validates the complete run against the existing shared
+bitmap **before changing any bit or subtracting from blocks-used**. Incomplete
+or duplicate frees are rejected without changing other owners or accounting.
+The check shares the allocation verifier's range and bitmap scan but does
+not require BACKSTORE to be enabled for new allocations: `STORAGECTL` may
+disable swapping while previously allocated runs still need legitimate
+cleanup. No new resident state or per-owner table is introduced.
+
+Real source-linked PDP-6 tests v1393, v777 and v795 pass, including a run
+crossing a 36-bit bitmap-word boundary, disable/release, duplicate free,
+invalid range and allocation-verifier refusal. AUXSTORE region v657,
+BACKSTORE gateway v815 and backing publication v665 also pass. This is
+a completed allocator correctness increment, **not** proof of complete
+AUXSTORE/BACKSTORE feature integration: mixed-media consumers, provider
+failures, persistent recovery and current full 256K pressure/OOM acceptance
+remain to be completed.
+
 # Root-profile boundary for unified TSFS
 
 **2026-11-09 v1375:** The old compressed process disk-swap feature
