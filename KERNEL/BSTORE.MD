@@ -1,3 +1,20 @@
+## 2026-11-10 v1406: full 256K checked-release guest acceptance
+
+The v1405 production SWAP MRES passed the fresh strict v1349 256K KCC
+PDP-6 DSK/D6FS F07 full-guest postflight, including HALT and SIMH EXIT.
+Actual normal physical swap: 34 successful swap-ins, one true MM allocation
+failure/no-partner cooldown, no exchanges and zero outstanding process
+swap/BACKSTORE blocks at HALT. All four independent physical MM owners
+were released after cooldown (sample 13) with no error. Original held-
+provider and child cleanup gates and all six owner-evidence negative
+controls also PASS. This is a new full-system acceptance for the committed
+v1405 checked-free change, not merely a native source-linked test.
+
+Details and archived SHA256-linked evidence:
+`KERNEL/SWAP-FULLGUEST-CHECKED-RELEASE-V1406.MD`. Bitmap-corruption
+release refusal through scheduler termination remains an explicit separate
+test gap. No v1406 production RAM growth or codec change.
+
 ## 2026-11-10 v1405: SWAP-MRES checked release and no false publication
 
 The seven `backstore_free` calls in the movable PDP-6 process swap code
@@ -12,6 +29,12 @@ DISK->RESIDENT mode transition. A refused release invokes the existing
 post-unpin MM cleanup, retains the original disk owner and can be retried
 without accounting/bitmap drift. An MM rollback refusal still enters the
 existing fatal MM invariant.
+This retry was demonstrated by the source-linked native caller, not by
+normal scheduler dispatch. `proc_swap_mres_service_v481` still handles a
+negative `proc_swap_in` result through `SYS_EVENT_TERM`; unlike a positive
+`MM_ERR_NOMEM` pressure result, it does not automatically schedule a
+cooldown/retry. Abnormal bitmap-refusal cleanup needs separate scheduler-
+level acceptance.
 
 Exchange accounting, reservation prepare/cancel, failed swap-out rollback,
 and optional PURE verifier scratch release cannot all be rolled back once

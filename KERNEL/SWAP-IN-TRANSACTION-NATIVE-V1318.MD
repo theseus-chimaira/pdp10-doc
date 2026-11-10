@@ -1,4 +1,4 @@
-## 2026-11-10 v1405: BACKSTORE refusal is prepublication, retryable
+## 2026-11-10 v1405: BACKSTORE refusal is prepublication, rollback-safe
 
 The v1398 checked `backstore_free(first,blocks)` returns 0 on complete
 bitmap/used-accounting release, -1 on refused ownership. Production
@@ -16,6 +16,11 @@ bitmap, retention of all disk-owner accounting and storage identity,
 then a successful retry with the missing bit restored. A source mutant
 that discards the release return is rejected by the executable assertions.
 No duplicate allocator implementation or new persistent owner field.
+The retry is deliberately driven by the native direct caller. Normal
+`proc_swap_mres_service_v481` classifies `proc_swap_in` returning -1 as
+a fatal `SYS_EVENT_TERM` event; automatic scheduler retry of a refused
+BACKSTORE free is **not** demonstrated or implemented here. This differs
+from the positive return used for MM resource pressure and cooldown.
 
 # DAIMOS v1318: native source-authentic swap-in transaction and rollback
 
