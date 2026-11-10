@@ -1,13 +1,117 @@
 # Swapless process-memory reclamation
 
 Status: accepted KCORE direction, 2026-11-09 v1375. **Staged PURE-only
-and registry-free transactions pass through v1380; no production scheduler or full
+and zero-copy transactions pass through v1382; no production scheduler or full
 swapless guest acceptance.** This document supersedes the earlier proposal
 for executable-opt-in *compressed disk swap* (old decision 5/P0-D). Raw
 disk/drum process swapping is unchanged. Compression of disk-swap records is
 not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
+
+## v1381/v1382: zero-copy PURE release by an atomic MM rebase
+
+**Preferred staged PURE-only design, 2026-11-10. Not production linked.**
+
+Earlier v1379 DROP needed a second physical allocation for the raw
+mutable suffix and copied every word into it before releasing the old
+APR extent. This was unnecessary: the suffix already occupies the
+correct high-address part of the original physical extent. Retain it
+without a physical copy by changing the original sorted MM extent
+descriptor from:
+
+`PROCESS [base, base+words)`
+
+to
+
+`PACKED_PROCESS [base+pure_skip, base+words)`.
+
+This releases the lower PURE prefix immediately as a free gap in the
+implicit MM allocator. The descriptor stays in the correct sorted
+position: the preceding extent still ends no later than the old base,
+and the next extent starts no earlier than the original end. The
+owner and physical pin count are preserved. No extra extent or
+per-process metadata is allocated, and no user memory word moves.
+The retained suffix is NOT an APR mapping: it is explicitly
+nonrunnable until full restore.
+
+`system/kernel/mm/mm_pure_rebase_v1381.s` is a new standalone assembler
+primitive, with its own header, requiring one pin, an owner-matched
+MM_TYPE_PROCESS extent, exact old size, 02000-octal APR alignment,
+nonzero 0200-octal-word-multiple PURE prefix shorter than the original
+process, and a range within the full 18-bit physical address space
+(exclusive upper boundary `01000000` octal). It checks ALL failure
+conditions before two descriptor stores. Rejected requests change
+neither MM metadata nor data. No call to the old
+`mm_process_shrink_pinned` is made, because that API must continue
+to enforce the 02000-octal APR process size granularity.
+
+The staged `system/kernel/proc/proc_pure_ram_v1381.[ch]` replaces v1379
+DROP while retaining registry-free RESTORE and DISCARD behavior.
+It validates the resident state and exclusive process transition,
+pins the original extent, disables PI for a short critical section,
+calls the rebase primitive, and publishes stable PURE backing,
+nonresident VM base and the existing packed mode **before restoring
+PI**. Inactive suffix pin removal uses the new physical base.
+An MM validation failure leaves the original image complete,
+restores PI and removes its temporary pin. If post-commit unpin fails,
+the caller retains TRANSITION; neither a partial process image nor
+spurious disk swap record becomes runnable.
+
+The primitive itself does not disable PI: the caller must exclude
+interrupt-time MM mutations until the MM record and process storage
+mode are consistent. The critical section contains no data copy,
+filesystem I/O, memory allocation or retry loop. The descriptor
+search is bounded by MM extent count. The only fallible step before
+publication is the exact preflight and it has no side effects.
+
+The v1381 host test exercises zero additional physical allocations
+or frees during DROP, repeated drop/restore, exact suffix integrity,
+MM pin/type/owner validation, PI pairing, allocation and reload
+failures, and ZOMB DISCARD. The native PDP-6 v1381 regression
+links the actual KCC transaction C, new MM assembler rebase and
+existing assembler mode handlers. Positive, negative and physical
+18-bit boundary cases PASS. The v1382 native regression additionally
+links actual resident PURE vnode/mount busy scanning: source guard
+stays effective through the zero-copy descriptor rebase, return to
+resident state, second drop and terminal release. High mount 18 and
+low-slot alias rejection PASS.
+
+During this work, the older host MM fixture was corrected to reject
+**overlapping physical intervals**, not merely equal allocation
+starting addresses. The previous mock could incorrectly allocate a
+full restored process image over its still-authoritative in-place
+suffix after a failed reload. With the correct check, v1377 and
+v1381 host regressions PASS. This is a test-fixture correction, not a
+production allocator change.
+
+### Memory and text cost
+
+| Example, decimal physical words | v1379 copy/drop | v1381 zero-copy |
+| --- | ---: | ---: |
+| Original APR process | 1,024 | 1,024 |
+| Additional suffix allocation during DROP | 768 | **0** |
+| Peak during DROP | 1,792 | **1,024** |
+| Final inactive suffix | 768 | 768 |
+
+For the same source/object compilation mode, v1379 DROP/RESTORE/
+DISCARD C was 567 PDP-6 KCC TEXT words; v1381 C is 518 and
+`mm_pure_rebase_v1381.s` adds 70, total **588 standalone
+pre-fold words**, zero static DATA/BSS. The increase is 21 TEXT
+words for zero temporary RAM allocation on DROP. These are
+component measurements, NOT a permanent KCORE linked-size delta.
+Neither source is in the production Makefile.
+
+**Still open:** RESTORE must presently retain the raw suffix while
+allocating a complete aligned APR destination and reloading PURE.
+For compressed executable formats the reload may overwrite the
+entire destination; it cannot simply reconstruct a missing prefix
+in place and overwrite the only valid writable data. Therefore
+RESTORE peak and no-partner pressure tests remain blockers, as do
+hardware-PI allocator concurrency, live scheduling, the real
+VFS/provider lifetime, EXEC/RUN/WAIT/EXIT and a full 32K/48K
+swapless tape-root guest. Native tests use controlled MM/PI/provider
+fixtures; they do not certify any of these missing integrations.
 
 ## v1379/v1380: registry-free RAW PURE staging (not production)
 
