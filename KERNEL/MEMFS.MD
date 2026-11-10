@@ -1,3 +1,43 @@
+## 2026-11-10 v1399/v1400: backing ownership and failure-atomic teardown
+
+`memfs_backing_drop` no longer clears the sole vnode first,,block-count
+reference before the shared allocator has released its complete owned run.
+It reports 0 on success (including no backing) and -1 on refusal. The real
+MEMFS WRITE path checks that result before copying user data, so a failed
+release cannot leave an untracked allocation or overwrite a file while its
+old backing is still authoritative. TRUNCATE-to-zero and same-sector growth
+now release the stale backing owner before changing resident data/geometry.
+Larger relocation growth keeps the original owner intact until release is
+confirmed, discarding only the candidate destination on refusal. Tight-core
+spill is handled separately: the original containing chunk was already
+evicted, so a shared commit path must not attempt to free its stale base.
+
+Unmount cannot free one evicted file and subsequently discover that another
+file's BACKSTORE record is invalid. `memfs_data_destroy` now first checks
+all 64 backing records using the same read-only complete-run verifier as
+the swap subsystem. An invalid later record rejects teardown **before any
+earlier owner is released**. A failure returns -1 through the real MRES
+PREPARE_UNMOUNT operation, leaving the mount intact and retryable. Once all
+ownership has passed preflight, a late unexpected MM or bitmap refusal is
+treated as a fatal ownership invariant, not a recoverable partial unmount.
+The existing node/backing table is reused, with no new persistent metadata.
+
+The source-linked PDP-6 regression failed against the pre-fix production
+code at WRITE (octal 0240) and at teardown (0251), then passed after the
+fixes. It checks refused releases during WRITE, same-sector and relocated
+growth, TRUNCATE, direct unmount preparation and the MRES dispatcher,
+including an invalid *later* owner that must not destroy an earlier one.
+The original SIMH and AAP v216 XIP user-image execution and VM teardown
+both still PASS. Production MEMFS MRES rises from **1719 to 1752 resident
+words (+33)**, unchanged 13 BSS words; fixed KCORE is unchanged. This is a
+validated safety correction, not net memory savings.
+
+Still open: propagation of failures from MEMFS's internal sector/MM free
+primitive, failed eviction-write cleanup, fuller low-core spill fault
+injection and booted 32K/48K/256K pressure tests. The restricted XIP
+admission profile has not yet been connected to general RUN/EXEC. The
+grouped D6 codec remains deferred, with production D6LZ36 unchanged.
+
 ## 2026-11-10 v1396: pinned XIP metadata is immutable during execution
 
 The production movable MEMFS provider now checks its existing four-entry
