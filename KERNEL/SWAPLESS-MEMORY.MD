@@ -9,6 +9,98 @@ not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
 
+## v1384/v1385: prefix restore proof and ONE shared EXEC loader
+
+**Staged and native tested, not production linked (2026-11-10).**
+
+The latest raw-PURE prototype can restore into its *original* physical
+APR extent if the released prefix remains wholly free. A new
+`mm_pure_expand_v1384.s` three-operation MM interface claims the
+original lower prefix, reverses that claim after a read failure or
+retypes the fully reconstructed image as PROCESS. Preflight checks
+the exact slot owner, PACKED_PROCESS type, suffix length, exactly one
+pin, proper APR alignment, physical 18-bit limits, preceding MM
+neighbor and one continuous managed physical arena. No data is
+copied or allocated by these MM operations, and the descriptor
+remains PACKED_PROCESS throughout I/O, so the intermediate image
+cannot be scheduled.
+
+The staging transaction `proc_pure_restore_v1384.c` keeps
+TRANSITION and executable backing immutability across the operation.
+It briefly disables PI for the claim and for the MM/VM/storage-mode
+commit, but executes potentially slow filesystem I/O with normal
+interrupts. Failed partial reads reverse the MM claim and leave all
+original mutable suffix words intact; an occupied or unmanaged gap
+returns a distinct result permitting the already tested full-image
+restore fallback. A compressed DXR not known to support bounded
+prefix decoding also takes that safe fallback. The claimed memory
+must not become a runnable PROCESS extent until the complete PURE
+prefix has been validated and loaded.
+
+`daimos-testkit/tests/validation/pure-ram-prefix-v1385/exec_prefix_fixture_v1385.s`
+verifies the actual native DXR2 plain-prefix operation, including
+canonical vnode reconstruction
+for mounts 1 and 18, fifth-bit mount ownership, exact TX2 text size,
+full-sector prefix bounds, malformed headers, short reads and
+compressed-format rejection. It directly reads only
+`[APR_base + 020, APR_base + pure_prefix)`; it never writes the
+already-owned mutable suffix. These tests PASS in
+`daimos-testkit/tests/system/pure-ram-prefix-v1384` and native
+`tests/validation/pure-ram-prefix-v1384`/`pure-ram-prefix-v1385`.
+An inverted PDP-6 arena comparison was found by native tests and
+corrected. No active KCORE linking is altered.
+
+### Loader consolidation (required before production)
+
+The v1385 plain-prefix function exists **only in daimos-testkit**, not
+as a second DAIMOS production DXR loader. Existing
+`exec_load_process` handles initial
+EXEC image construction, while `proc_swap_reload_pure` is used for
+full-image PURE reconstruction. A future single DXR image-loader
+engine must replace duplicated header parsing and payload handling
+and expose an explicit output mode:
+
+| Shared loader mode | Destination contract |
+| --- | --- |
+| `FULL` | Initialize the complete executable image in a new APR allocation; the EXEC caller owns VM setup and process publication |
+| `PURE_PREFIX` | Write only the missing immutable prefix to an already-claimed MM extent, never user ACs or the existing mutable suffix; RESTORE owns MM rollback and process publication |
+
+One DXR parser, one plain payload reader and one accepted grouped
+compressed decoder should implement both modes. Do **not** collapse
+EXEC's pathname/privilege/runtime admission or RESTORE's existing
+process ownership/MM rollback into the low-level image loader.
+Those lifecycle operations are distinct and should remain outside
+the shared core. The present EXEC plain payload path already makes
+a direct VFS read into the allocated image; there is no separate
+runtime relocation pass to duplicate. A future grouped compressed
+decoder must enforce a hard output boundary, including MATCH tokens
+crossing it, or provide independently framed text. Existing
+unbounded/full-image compressed decoding is never permitted to
+write over the inactive mutable suffix.
+
+### Measurements and remaining limits
+
+| Isolated staged PDP-6 object | Text words | Static DATA/BSS |
+| --- | ---: | ---: |
+| v1384 prefix transaction, C89-compatible source | 323 | 0 |
+| v1384 MM claim/release/commit, assembler | 130 | 0 |
+| v1385 plain-prefix testkit fixture, **not production source** | 78 | 0 |
+
+These 531 pre-fold words are **not** production linked-text growth.
+The v1385 test-only 78-word fixture must be replaced by the existing
+EXEC image-loading engine rather than shipped beside it. Full
+linked text and shared-code savings have not been measured.
+
+For a 1024-word process whose first 256 words are reconstructible
+PURE, in-place restore holds only the original 768-word suffix plus
+the reclaimed 256-word prefix (1024 process words total), instead of
+temporarily holding the 768-word suffix plus another complete
+1024-word allocation. This assumes the gap remains free and excludes
+kernel, device and VFS workspaces. When the gap has been reused,
+full-image restore still needs an APR-aligned allocation elsewhere.
+Actual scheduler/PI integration, grouped-codec bounded output, the
+consolidated loader and a 32K/48K swapless guest remain open.
+
 ## v1383: one-word size geometry and safe prefix-only restoration
 
 **Design reconciliation, 2026-11-10. No new production code or test
