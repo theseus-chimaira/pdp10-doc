@@ -55,15 +55,21 @@ encoder and TSFS producer/checker in `$PDP10_PREFIX`.
    retry and ignored-result negative-control tests pass with the new
    decoder selected.
 
-The first new 256K TSFS-root cold boot reached ROOT LOGIN and DSH but
-**did not return from external ECHO within the 240-second command
-allowance**. The observed PC at a later 70-second diagnostic sample was
-octal 030775, inside `dtc_search_wait` in the DECtape driver, not inside
-the block decoder. This identifies the sampled execution state but does
-not by itself establish whether seek latency or another runtime defect
-caused the full timeout. A separate extended, isolated TSFS guest run is
-needed before accepting this configuration; host/extent checks are not a
-substitute for guest completion.
+6. An independent, isolated **256K TSFS-root cold boot also PASS**:
+   ROOT LOGIN, DSH and a real external compressed ECHO returned to
+   the shell prompt with the expected output. A first run timed out
+   after a 240-second command allowance while the sampled PC was octal
+   030775, in `dtc_search_wait` inside the DECtape block-search driver,
+   not inside the block decoder. A second, otherwise identical run
+   completed with a 480-second command allowance. This bound tolerates
+   the observed physical DECtape seek latency, but the test still
+   requires the completed external command and returned DSH prompt;
+   no decoder or kernel source was modified between the two runs.
+
+The testkit's `inspect-exec-v1465.py` provides an isolated-media SIMH
+register and history probe for the slow tape-read path. The first
+snapshot demonstrates where the processor was executing at that instant,
+not proof that the entire delay was exclusively caused by tape motion.
 
 ## Measured RAM cost and outstanding gates
 
@@ -74,8 +80,8 @@ to 16381**. The strict 32K single-root permanent-address test still
 fails by 45 words; there is no new static codec BSS. Optimization must
 preserve bounded decoding and the source-linked ownership invariants.
 
-Real DTC/MTC cold boots, an accepted 48K runtime, strict 32K placement,
-and a fresh 256K F07 physical swap/OOM postflight with the block-only
+Real DTC/MTC *Stage-1* cold boots, an accepted 48K runtime, strict 32K
+placement, and a fresh 256K F07 physical swap/OOM postflight with block-only
 executables are separate remaining acceptance requirements. The older
 v1406 full-guest result predates this incompatible format cutover and
 must not be reported as a new v1464 test.
