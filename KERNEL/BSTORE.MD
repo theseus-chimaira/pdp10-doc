@@ -1,3 +1,31 @@
+## 2026-11-10 v1398: existing-owner release after STORAGECTL disable
+
+The historical `backstore_free(first, blocks)` void PDP-6 entry now reports
+**0 on full release, -1 on refusal** through AC1; old machine-code callers
+which discard the result retain their original calling convention. Both
+the verifier and checked free use the same complete bitmap ownership scan.
+The allocation-enable flag is checked only for allocating/extending new
+BACKSTORE records, not for examining or releasing previously owned blocks.
+Disabling new swapping must never strand an existing on-disk process image.
+
+Resident `proc_swap_detach()` now relies on this **single checked release**
+instead of prechecking via an allocation-enabled verifier and then calling
+an unchecked void free. If the release refuses, no used-block decrement,
+storage-mode publication or record erasure occurs: VM teardown retains the
+existing owner for retry. Native PDP-6 v1393/v795/v777, host v880/v957,
+normal and PURE-verify native swap, and bounded source-contract checks PASS.
+
+A matched, clean 32K GCC lowmem comparison against committed v1397 yields
+**9694 -> 9687 fixed KCORE words (-7)**. SWAP MRES remains 1757 words;
+complete KCORE+MRES inventory 16369 -> 16362 words. The strict 16K
+single-root permanent boundary is still 26 words over, down from 33.
+This is a verified net memory saving; the earlier 9870-word checkpoint
+had stale build artifacts and cannot be used to attribute the code change.
+
+Remaining BACKSTORE work: propagate refusals through MEMFS backing-drop,
+resize and unmount, and audit remaining SWAP MRES void-return consumers.
+Complete live 256K physical swap/OOM matrix acceptance is still required.
+
 ## 2026-11-10 v1397: canonical new AUXSTORE v1 empty regions
 
 Original `mkauxstore` v1 descriptors wrote the computed start address even
