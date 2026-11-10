@@ -9,6 +9,93 @@ not part of the release plan.
 The old P0-D *feature-list* label must not be confused with DAIMOS's
 separate v1298 **P0-D OOM fault/regression matrix**, which stays accepted.
 
+## v1383: one-word size geometry and safe prefix-only restoration
+
+**Design reconciliation, 2026-11-10. No new production code or test
+acceptance.** A PDP-6 word can encode the two uncompressed lengths
+needed for swapless PURE restoration:
+
+| Left half (18 bits) | Right half (18 bits) |
+| --- | --- |
+| Exact immutable text words from the DXR2/TX2 executable | Current retained mutable user-memory suffix words |
+
+These are **uncompressed** counts, not the number of stored compressed
+stream words. The correct current suffix count is NOT merely the
+original writable DATA section of the executable: runtime BSS,
+stack, heap, other writable words and APR padding must be retained
+exactly. The low 020-octal user AC words are saved in the stable
+u-area and are not copied from the executable during text reload.
+For the present full-sector PURE-drop convention:
+
+`released_prefix = (text_words + 020) & ~0177`
+
+`mutable_suffix = current_VM_allocated_words - released_prefix`.
+
+Validate that `released_prefix` is nonzero, less than the current VM
+allocation, exactly 0200-word-sector aligned, and the sum is an
+APR-legal allocated size. The existing DXR2 header already contains
+18-bit *uncompressed initialized image* words and the TX2
+uncompressed text count. The process `vm_state` holds its full
+current 18-bit VM allocation; the already resident/saved PURE
+backing word contains its validated text count. That backing word
+currently encodes only **14** text bits alongside vnode and mount
+identity. Therefore the two proposed sizes can be reconstructed at
+quiescence with **zero extra permanent per-process words** for the
+existing supported PURE range. Changing the 14-bit backing limit is
+an independent ABI decision; merely defining a larger 18-bit field
+elsewhere does not extend it. A packed `text,,suffix` word is an
+optional *transient representation*, not automatically an additional
+KCORE table or slot.
+
+### In-place RESTORE and compressed executable caveat
+
+The v1381 DROP releases only the lower contiguous
+`released_prefix` words, retaining the raw suffix at its original
+physical address. A matching in-place RESTORE can reclaim that gap
+and reverse the MM descriptor rebase if, and only if, the whole
+prefix remains free, the reconstructed full base satisfies APR
+alignment, and a transactional MM/PI/PROCESS owner transition is
+validated. Reconstruct **only** the missing words at addresses
+`[base + 020, base + released_prefix)`, preserving the suffix
+bit-for-bit. A plain DXR2 loader can request the shorter count;
+neither user ACs nor any mutable DATA may be overwritten.
+
+The current `proc_swap_reload_pure` compressed DXR path is NOT safe
+for this operation because it invokes the existing decoder on the
+entire initialized image. Furthermore, the trusted-backing
+`d6lz36_decode_vfs` ABI can stop when a requested output count is
+reached, but the fixed `decompressor.inc` MATCH path subtracts the
+whole token length and rejects a match if it runs beyond the
+requested prefix end. It cannot simply be passed the smaller
+prefix length on every existing compressed DXR. Metadata alone does
+not change token boundaries or guarantee partial decoding.
+
+At the atomic grouped-D6codec production cutover, choose either
+an explicitly bounded-prefix decoder that safely clips the final
+match without touching writable memory, or an independently framed
+immutable-text segment guaranteed by the producer. Preserve the
+global **no permanent legacy decoder** policy, and test match
+crossings, exact lengths, short files, corrupt streams and
+restoration rollback against actual native PDP-6 code. A single
+36-bit geometry word is adequate for the sizes; stream framing and
+data safety require separate proof.
+
+If another MM allocation has occupied the released prefix, size
+knowledge cannot make it free. The already staged safe fallback
+allocates a complete, aligned APR extent elsewhere, decodes there
+and then overlays the exact retained suffix. If memory is
+insufficient, the process stays inactive until the scheduler can
+retry without violating source ownership; never overwrite the
+only valid mutable suffix. This is why in-place RESTORE is a fast
+path with a rigorous unavailable-gap fallback, not a guarantee
+that any suspended process can resume immediately.
+
+This v1383 section corrects the earlier framing of full compressed
+image reload as the only possible design. It records a feasible
+prefix-only alternative, **not** its completed implementation.
+The v1381/v1382 native component acceptance and production linking
+state remain unchanged.
+
 ## v1381/v1382: zero-copy PURE release by an atomic MM rebase
 
 **Preferred staged PURE-only design, 2026-11-10. Not production linked.**
