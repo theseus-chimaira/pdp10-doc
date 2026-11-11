@@ -28,6 +28,19 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1490: BCACHE/DTC feature-correctness closure
+
+Completed in KCORE: DTC write preserves AC1..AC3 and the clean L1
+cache invalidates even if the private MM slab cannot be freed. PDP-6
+source-linked v1490 and two negative mutations PASS; no new allocator
+or independent MRES work. Current evidence and remaining separate
+physical/combined-media tests are in DAIMOS
+`design/kcore-bcache-write-reclaim-v1490.md`. Historical v572
+disk-root DTFS mount-success acceptance is stale: present boot policy
+does not install the DTFS MRES on disk root, and the later v1 online
+oracle intentionally requires refusal. v578 tape-root test's retired
+host-tool build step has been updated to use installed `mktsfs`.
+
 ## v1489 feature-only KCORE sweep (2026-11-11)
 
 See DAIMOS `design/kcore-feature-source-sweep-v1489.md` for the precise

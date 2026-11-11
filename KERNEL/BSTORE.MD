@@ -1,3 +1,27 @@
+## 2026-11-11 v1490: BCACHE invalidation independent of MM release
+
+The installed DTFS DTC write veneer previously used `bcache_reclaim()`
+as a pre-write invalidation operation. That routine calls MM using
+AC1..AC3, clobbering the physical DTC unit, block and buffer arguments
+before the device service. Furthermore, a refused `mm_free` left both
+cache tags valid even when the caller needed to discard them for media
+write or identity reuse. This could return stale clean data.
+
+KCORE now exports `bcache_invalidate_all()`: clear both clean tags
+without freeing the 0201-octal-word private slab and without changing
+AC1..AC3. `dtfs_dtc_write` uses this before the hardware call;
+`bcache_reclaim` uses it before MM free. Refused free retains the MM
+owner pointer for retry but can no longer retain a stale cache identity.
+No second cache, new allocation, process state, or device record was
+introduced. DAIMOS production commit `3835c5ae`; daimos-testkit
+`d81b039` tests the real PDP-6 source with nonzero physical DTC unit,
+exact write arguments, read-after-write, refused MM free, retry and
+two executable negative controls, all PASS. Existing allocation,
+multisource and v688 cache checks PASS; KCC full KCORE and DTFS MRES
+link succeeded. Physical installed-provider tape-root acceptance is
+separate and not inferred from these native tests. Source evidence:
+DAIMOS `design/kcore-bcache-write-reclaim-v1490.md`.
+
 ## 2026-11-10 v1406: full 256K checked-release guest acceptance
 
 The v1405 production SWAP MRES passed the fresh strict v1349 256K KCC
