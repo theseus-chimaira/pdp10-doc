@@ -1,5 +1,14 @@
 # DAIMOS KCORE 0.9 release-scope audit v1488
 
+**Current-status index (2026-11-11, v1502):** this file is the dated
+v1488 source audit, not a claim that no subsequent work occurred.
+For the current feature checklist and accepted native TERM stages
+through v1501, consult `STATUS/KCORE-FEATURE-STATE-V1502.MD`.
+Original v1488 source findings, size measurements and prior accepted
+profiles remain valid only in their stated scope. In particular, the
+v1492 mount-capacity ABI/consumer changes are still uncommitted, and
+the corrupt-BACKSTORE full-guest fault gate remains OPEN.
+
 Date: 2026-11-11. Scope: source-backed reconciliation of DAIMOS
 KCORE features against dated TODO, project-state, build, testkit and
 historical pdp10-doc status documents. This is durable documentation,

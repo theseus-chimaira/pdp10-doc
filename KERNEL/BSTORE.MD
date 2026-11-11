@@ -1,3 +1,24 @@
+## 2026-11-11 v1502: checked-release and both native TERM lifecycles
+
+Native v1498, v1500 and v1501 were re-run on committed production
+source and PASS, including their executable negative controls.
+v1500 proves the *immediate foreign TERM -> real finalizer -> idle
+PREVM retry* seam against controlled VM/FILE/MM. New committed
+testkit v1501 (`7f415a8`) proves the complementary *foreign TERM
+deferral -> controlled VM restoration -> real owning-return deferred
+event consumer* seam. In v1501 the final private close is only an
+observer stub; in v1500 physical VM/BACKSTORE is still controlled.
+These native tests do not qualify an end-to-end real bitmap fault.
+
+The committed v1499 guest diagnostic has a prepared, shell-valid
+runner, but no accepted completed physical branch/owner report.
+The v1495 physical fault guest reached HALT and zero backing counts,
+yet had two real TERM calls without immediate PREVM, so the precise
+event decision and safe final release remain OPEN. Normal v1336
+zero-fatal-swap-in acceptance is not relaxed. The durable complete
+current status, precise evidence and next gates are in
+`STATUS/KCORE-FEATURE-STATE-V1502.MD`.
+
 ## 2026-11-11 v1500: real event + finalizer + idle PREVM native gate
 
 Testkit v1500 (`5674a7e`) source-links the production

@@ -28,6 +28,34 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1502: current KCORE feature-completion tasks
+
+Native immediate-TERM/finalizer v1500 and deferred owner-return
+v1501 both PASS, with real production event code and controlled
+backend; v1498 positive/negative also re-PASS. The v1499 physical
+branch runner only PREPARES. Do not claim corrupt-BACKSTORE physical
+acceptance or assume that its third free is an idle PREVM retry.
+
+- [ ] F2: physically classify the two TERM decisions using v1499
+  map-backed WAIT/PC/FD-control/owner snapshots.
+- [ ] F2: prove permanently refused BACKSTORE fail-closed policy,
+  eventual safe delivery, finalizer retry and exact backing ownership;
+  add a separate fault-specific guest acceptance, without relaxing
+  the original normal-swap F07/v1336 matrix.
+- [ ] F2: close distinct mixed-device, BCACHE/DTFS tape-root,
+  LOGSTORE and AUXSTORE integration failure gates.
+- [ ] F1: integrate and accept uncompressed swapless PURE drop and
+  complete APR restoration through the production scheduler.
+- [ ] F3: finish dynamic FSINFO mount-capacity ABI/consumer v1492
+  changes and acceptance; they are uncommitted work, not a released API.
+- [ ] F4: consider mutable-only RAM compression only if F1 passes and
+  matched complete-memory accounting proves savings.
+- [ ] F5: close remaining targeted guest device/clock profiles.
+
+Versioned status: `STATUS/KCORE-FEATURE-STATE-V1502.MD`.
+No 32K testing, MRES module unload/reload, standalone MRES work or
+size optimization is reopened by this documentation reconciliation.
+
 ## 2026-11-11 v1500: integrated real TERM/finalizer native coverage
 
 The v1500 source-linked native PDP-6 test executes real event
