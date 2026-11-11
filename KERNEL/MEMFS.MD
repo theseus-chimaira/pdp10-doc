@@ -1,3 +1,12 @@
+## 2026-11-11 v1479: MEMFS XIP excludes sub-96K hosts
+
+XIP is exclusively a MEMFS-backed process format. MEMFS is disabled
+on hosts below 96K physical words; consequently 32K/48K low-memory
+configurations are not XIP acceptance or release test targets. The
+real XIP guests exercise 128K, 192K and 256K. The shared testkit XIP
+launcher rejects sub-96K memory sizes before building any image.
+Retain independent 32K/48K lowmem testing for non-XIP features.
+
 ## 2026-11-11 v1476: singleton remount and bounded state clear
 
 Full-profile 128K/192K/256K KCC PDP-6 v1474 guests each performed
