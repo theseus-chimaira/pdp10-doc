@@ -7,10 +7,14 @@ and the historical records in `KERNEL/BSTORE.MD` and
 kernel patch. DAIMOS is still version 0.5; release 0.9 is not claimed.
 
 Evidence baseline: DAIMOS `80434835` (v1500), daimos-testkit `7f415a8`
-(v1501), pdp10-doc `a94e246` (v1500). Native v1498, v1500 and v1501
-positive/negative PDP-6 tests were re-run successfully during this
-documentation reconciliation. The disposable v1499 physical runner
-was prepared and shell-validated, **not** accepted as a booted guest.
+(v1501), pdp10-doc `a94e246` (v1500), plus contemporaneous testkit
+`6c3de2c` (v1502) correcting the physical branch observer. Native
+v1498, v1500, v1501 and the v1502 positive/negative PDP-6 tests were
+re-run successfully during reconciliation. The initial v1499 physical
+guest did run and captured two independent pre/post TERM snapshots,
+but its optional branch counters used inverted `SKIPN` polarity and
+cannot be used for acceptance. The corrected runner has been prepared,
+**not** re-qualified with a completed corrected physical guest.
 Separate uncommitted v1492 FSINFO/mount changes are not production
 acceptance and must not be described as merged functionality.
 
@@ -26,13 +30,13 @@ acceptance and must not be described as merged functionality.
 | BCACHE/DTC write and refused-MM invalidation | Corrected in production; native accepted | v1490; physical tape-root and mixed-media still OPEN |
 | Checked BACKSTORE swap-in refusal | Real code native accepted, physical failure case OPEN | v1405/v1493; v1495 diagnostic is **not** fault acceptance |
 | Foreign and deferred TERM/finalization of DISK owner | Native real-source boundaries accepted through v1501 | v1498, v1500, v1501; controlled VM/restore backends, not complete physical chain |
-| Physical corrupt-backing/TERM owner resolution | OPEN | v1499 branch capture prepared only; permanent fault not accepted |
+| Physical corrupt-backing/TERM owner resolution | OPEN | v1499 physical snapshots exist but event-branch counters were invalid; corrected physical rerun and permanent fault remain unaccepted |
 | Device, VOLUME, BCACHE and LOGSTORE mixed failures | OPEN for distinct untested cases | Retain accepted v1484/v1485 snapshots and v1490 native correction |
 | Swapless PURE-text drop, full APR reconstruction | OPEN; isolated prototypes only | v1381-v1397 not on production link path |
 | Dynamic mount capacity enumeration | Core mount slab installed; consumer/ABI update WIP | v1492 changes are uncommitted; no accepted >4 mount enumeration |
 | Optional mutable-only RAM compression | Deferred, conditional | v1451 test-only bitmap; requires full uncompressed PURE and net-positive RAM |
 
-## Precise BACKSTORE/TERM evidence, v1493-v1501
+## Precise BACKSTORE/TERM evidence, v1493-v1502
 
 - **v1493**: real `proc_swap_in`, checked bitmap release and slot-0
   service preserve the original DISK owner on a refused free, roll back
@@ -57,9 +61,11 @@ acceptance and must not be described as merged functionality.
   protection mutation is rejected.
 - **v1499**: separate full-guest diagnostic captures before/after
   event descriptors, saved PC, WAIT/FD-control bits, return result,
-  PREVM marker and exact branch counters. Its disposable 256K runner
-  PREPARES; no completed map-backed physical classification is yet
-  accepted. Do not infer the physical branch from the native tests.
+  PREVM marker and intended branch counters. Its initial physical
+  run produced two independent before/after snapshots, but the
+  original `SKIPN`-guarded branch counters incremented *outside*
+  the selected event. These counts are invalid for classification.
+  A corrected guest has not yet received physical acceptance.
 - **v1500**: unchanged real `proc_event_apply`, `proc_finish_slot` and
   `proc_finish_service_v881` run *together* in one native PDP-6 test.
   Controlled first VM refusal retains TRANSITION+FINALIZE+PREVM and
@@ -74,6 +80,13 @@ acceptance and must not be described as merged functionality.
   fatal-close observer. A mutation disabling pending-bit consumption
   is rejected. This verifies the owner-return seam, not the actual
   `proc_fatal_close_current_v879`/physical VM finalization afterward.
+- **v1502**: the diagnostic injector now uses `SKIPE` for an active
+  event. Testkit `6c3de2c` executes the extracted guard on PDP-6
+  through inactive/active/inactive states and rejects the historical
+  inverted `SKIPN` negative mutation. This corrects *test-only*
+  instrumentation; it does not modify production KCORE or validate
+  the old erroneous counts. Fresh corrected physical evidence remains
+  necessary to identify the actual TERM decision branch.
 
 Native immediate-foreign and deferred-owner delivery are both
 supported, but the physical v1495 run's exact branch remains unknown.
@@ -84,10 +97,12 @@ F07 matrix.
 
 ## Open KCORE feature tasks, in dependency order
 
-1. **F2a, physical TERM classification**: run and verify v1499 with
-   actual full 256K HALT/EXIT and unique map-backed before/after
-   snapshots; identify the exact busy, WAIT, saved-PC or existing
-   pending fatal predicate and resulting event return/ownership.
+1. **F2a, physical TERM classification**: rerun corrected v1499/v1502
+   instrumentation in a full 256K HALT/EXIT guest; validate its
+   scoped branch counters against independent pre/post owner snapshots,
+   then identify the exact busy, WAIT, saved-PC or pending-fatal
+   predicate and resulting event return/ownership. The old branch
+   counter values may not be used.
 2. **F2b, BACKSTORE irreparable fault policy**: exercise permanently
    corrupt bitmap/media refusal without orphaning the DISK record,
    false RESIDENT/READY_ONCE, unsafe retry loops or destructive foreign

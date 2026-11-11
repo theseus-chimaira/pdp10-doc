@@ -32,12 +32,16 @@ not removed from release scope. No KCORE size sweep is underway.
 
 Native immediate-TERM/finalizer v1500 and deferred owner-return
 v1501 both PASS, with real production event code and controlled
-backend; v1498 positive/negative also re-PASS. The v1499 physical
-branch runner only PREPARES. Do not claim corrupt-BACKSTORE physical
+backend; v1498 positive/negative also re-PASS. The initial v1499
+physical run produced valid pre/post owner snapshots but inverted
+its branch-counter `SKIPN` scope. The testkit v1502 `SKIPE` fix and
+native mutation regression PASS, but corrected full-guest branch
+classification is still OPEN. Do not claim corrupt-BACKSTORE physical
 acceptance or assume that its third free is an idle PREVM retry.
 
-- [ ] F2: physically classify the two TERM decisions using v1499
-  map-backed WAIT/PC/FD-control/owner snapshots.
+- [ ] F2: physically classify both TERM decisions using corrected
+  v1499/v1502 map-backed WAIT/PC/FD-control/owner and branch evidence;
+  reject original out-of-scope event counts.
 - [ ] F2: prove permanently refused BACKSTORE fail-closed policy,
   eventual safe delivery, finalizer retry and exact backing ownership;
   add a separate fault-specific guest acceptance, without relaxing

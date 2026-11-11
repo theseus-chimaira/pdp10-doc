@@ -10,8 +10,12 @@ event consumer* seam. In v1501 the final private close is only an
 observer stub; in v1500 physical VM/BACKSTORE is still controlled.
 These native tests do not qualify an end-to-end real bitmap fault.
 
-The committed v1499 guest diagnostic has a prepared, shell-valid
-runner, but no accepted completed physical branch/owner report.
+The initial v1499 physical guest recorded two genuine pre/post
+TERM-owner snapshots, but its optional branch counters had inverted
+`SKIPN` scope and are not valid event-specific evidence. Testkit
+v1502 (`6c3de2c`) corrected this to `SKIPE`; the extracted guard's
+native positive/negative PDP-6 regression PASSes. A fresh corrected
+256K guest and accepted branch/owner report remain OPEN.
 The v1495 physical fault guest reached HALT and zero backing counts,
 yet had two real TERM calls without immediate PREVM, so the precise
 event decision and safe final release remain OPEN. Normal v1336
