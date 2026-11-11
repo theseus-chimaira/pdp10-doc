@@ -28,6 +28,19 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## v1489 feature-only KCORE sweep (2026-11-11)
+
+See DAIMOS `design/kcore-feature-source-sweep-v1489.md` for the precise
+remaining KCORE tasks: storage failure/mixed-media tests, swapless
+PURE scheduler/MM transaction and FULL APR restoration, dynamic-mount
+enumeration interface above slot four, and conditional mutable-RAM
+compression after uncompressed reclaim is proven. KCORE KINIT clock/
+hardware regressions remain targeted acceptance, not missing APIs.
+The identity-only unlinked kpack v1 stub was removed; other staged
+revisioned sources remain because testkit uses them. This is a
+feature-only inventory and does not reopen 32K, MRES module unloading,
+independent filesystem/userland work or KCORE size optimization.
+
 ## 2026-11-11 v1488: documentation-source reconciliation
 
 Current KCORE gates are maintained by DAIMOS/TODO.MD v1488 and the

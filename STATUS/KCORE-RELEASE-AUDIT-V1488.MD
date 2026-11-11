@@ -7,6 +7,22 @@ not a transient implementation handoff. The DAIMOS source and its
 current PROJECT-STATE.MD / TODO.MD supersede any stale dated assertion.
 DAIMOS VERSION remains 0.5; release 0.9 is NOT claimed.
 
+## v1489 KCORE-only source sweep correction (2026-11-11)
+
+The detailed KCORE-only audit is in DAIMOS
+`design/kcore-feature-source-sweep-v1489.md`. It separates installed
+KCORE capabilities from staged PURE/codec objects, and excludes MRES
+module development, online D6FS packing, unified TSFS, general
+userland work and size optimization from the **KCORE feature** checklist.
+It also records the outstanding public mount-enumeration interface:
+KINIT actually publishes dynamic `vfs_mount_limit`, while the legacy
+`VFS_NMOUNT=4` still limits MOUNT/DF to four scanned slots. Do not
+replace the live boot mount slab with the old four-slot implementation.
+The unused `kpack_codec_v1` identity-only source pair has been removed;
+testkit-referenced codec/PURE revisions remain for reproduction.
+An isolated current KCC `system/kernel kcore` compile passes after this
+source cleanup. This is not new full-system KCORE link or guest evidence.
+
 ## Accepted functional boundaries
 
 | Feature | Current acceptance | Evidence / implementation |
