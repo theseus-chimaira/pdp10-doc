@@ -28,6 +28,17 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1498: source-linked TERM deferral gate
+
+The actual `proc_event_apply` now has a native v1498 DISK-owner
+positive/negative gate: WAIT/saved executive PC cause safe deferred
+TERM, repeated requests coalesce, and a saved user PC permits
+foreign finalization whose refused VM release preserves ownership.
+Pending physical acceptance: identify exact event predicates for
+v1495, prove correct deferred or immediate TERM completion under
+corrupt backing, and separately test permanently unrecoverable
+bitmap refusal. Keep normal v1336 acceptance unchanged.
+
 ## 2026-11-11 v1497: precise physical BACKSTORE fault outcome
 
 The v1495 physical 256K KCC guest reached HALT and final zero backing

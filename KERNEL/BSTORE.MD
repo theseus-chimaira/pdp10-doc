@@ -1,3 +1,23 @@
+## 2026-11-11 v1498: foreign TERM policy for nonresident DISK owners
+
+Testkit v1498 (`f9ab499`) executes the unchanged production
+`proc_event_apply` on a native PDP-6 interpreter with a nonresident
+DISK process. WAIT_CHILD and saved executive-mode PC defer TERM to
+the owning executive continuation, even though the user VM is absent;
+repeated TERM coalesces in the stable u-area pending bits. Clearing
+WAIT/pending state and selecting a user-mode saved PC permits foreign
+finalization. Controlled VM teardown refusal retains DISK ownership;
+a separate successful finalize commits. A deliberately unsafe source
+mutation bypassing the saved-PC guard is rejected. No kernel code,
+RAM/ABI or production scheduler changes.
+
+This validates the policy but does not prove which gate the v1495
+256K physical guest hit. A v1499 disposable physical diagnostic is
+intended to capture the actual saved PC/WAIT/FD-control state and
+the event's return and branch witnesses. The entire fault-specific
+physical BACKSTORE acceptance remains OPEN. See DAIMOS
+`design/kcore-backstore-term-policy-v1498.md`.
+
 ## 2026-11-11 v1497: physical corrupt-BACKSTORE lifecycle classified
 
 Fresh 256K KCC PDP-6 guest v1495 reached real HALT/EXIT. One physical
