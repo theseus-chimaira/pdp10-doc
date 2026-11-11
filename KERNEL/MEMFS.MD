@@ -1,3 +1,30 @@
+## 2026-11-11 v1468: certified pinned raw-XIP MEMFS admission
+
+The movable MEMFS MRES now has a second private kernel-only XIP entry:
+`FS_MRES_OP_XIP_SAFE_ADMIT_V1468` (24 decimal, 030 octal). Input is vnode
+in AC1 and pointers to physical base and logical entry in AC2/AC3, with
+return 0 on accepted and pinned, -1 on refusal. No process VM mapping is
+created by this service. Unlike the existing format-only operation 027,
+this checks the entire raw image while its MEMFS-owned MM extent is pinned.
+It accepts an XIP/PURE header, root-owned regular executable with no mode
+write bits, APR-multiple image larger than 02000 words, entry exactly 020,
+MOVEI AC2,immediate at 020 and monitor EXIT (UUO 040) at 021, with all
+remaining image words zero. It does not trust file PURE alone for hardware
+write protection; PDP-6 APR has no such protection.
+
+On rejection the provisional pin is released and caller output pointers
+are unchanged. An MM refusal to release an unpublished provisional pin
+hits the established storage ownership invariant rather than losing its
+last owner. The older 027 format-only check remains for source-linked
+hardware tests and is not a trusted process launcher. Native PDP-6
+positive, negative, cleanup-fatal and pre-v1468 red/green tests PASS;
+SIMH and AAP user XIP compatibility remains PASS. A matched full MEMFS
+MRES relink grows from 1783 to 1854 resident words, static BSS remains 13.
+
+Still outstanding are root-privileged RUN/EXEC process selection, no-write
+startup, BRK/swap exclusion and scheduled VM rollback tests. Those are
+**not** implied by the availability of this provider-level operation.
+
 ## 2026-11-11 v1467: raw-XIP admission requires a root-owned file
 
 The MEMFS MRES's existing private XIP-admit operation (027) now reads the
