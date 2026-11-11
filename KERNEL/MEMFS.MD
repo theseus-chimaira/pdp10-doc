@@ -1,3 +1,33 @@
+## 2026-11-11 v1467: raw-XIP admission requires a root-owned file
+
+The MEMFS MRES's existing private XIP-admit operation (027) now reads the
+source vnode's UID9 ownership directly from the already resident MEMFS
+owner table. Admission requires UID 0 in addition to regular-file type,
+executable non-writable mode and the raw XIP/PURE header checks. The owner
+check occurs before `memfs_xip_pin`; rejected user-owned files leave caller
+base/entry outputs, MM pin count and provider reference table unchanged.
+Group ownership alone is not an admission criterion. No additional node,
+process, or fixed-KCORE state is allocated.
+
+Native PDP-6 MEMFS normal and fatal tests pass. A new test sets UID 1 on a
+previously valid image, verifies refused admission without a pin or output
+publication, then restores UID 0 and checks the existing positive path. The
+unchanged pre-v1467 provider fails this test at octal 0236; current source
+passes. Existing v216 real user XIP UUO and VM teardown pass on both SIMH
+and AAP, v202 XIP also passes on AAP, and v1394 restricted instruction
+policy tests pass on the host and a native PDP-6.
+
+This closes only the **provider-side source-provenance prerequisite**. The
+PDP-6 APR does not enforce shared-text write protection; the separate
+v1394 no-write instruction verifier must still be connected to privileged
+RUN/EXEC. User startup writes, BRK, swap exclusion, VM publication and
+rollback must all be handled before scheduled raw-XIP launch is enabled.
+
+The matched pre-v1467 and v1467 MEMFS MRES links used the same current
+KCORE map and unmodified snapshot/runtime companions: total resident
+1774 -> 1781 words (+7 initialized, unchanged 13-word BSS). No fixed
+KCORE object was changed, and no size-only optimization was attempted.
+
 ## 2026-11-10 v1401-v1404: MM-backed chunk ownership and release faults
 
 The previous MEMFS private `memfs_data_free` leaf cleared the descriptor of
