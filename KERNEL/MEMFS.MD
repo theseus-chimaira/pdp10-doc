@@ -1,3 +1,30 @@
+## 2026-11-11 v1470: XIP lifecycle at physical 128K/192K/256K
+
+The v1469 strict, root-only, pinned and write-free MEMFS XIP implementation
+is now accepted on three independently constructed full-profile KCC PDP-6
+disk-root images: 128K, 192K, and 256K core. Each has the corresponding
+KINIT boot-image ceiling, physically detected memory size and full MEMFS
+provider set. All three reached INIT, ROOT LOGIN and DSH, exercised the
+real v1469 source-image readback, six serial/queued XIP RUN/WAIT process
+lifetimes, content-policy refusal, non-root refusal, argv refusal, EXEC
+rollback and successful EXEC replacement, and returned shell status 0.
+
+An apparent 192K result on the original Open SIMH simulator was invalid:
+`set cpu 192k` failed because `PDP10/kx10_cpu.c` advertised the 12-bank
+CPU modifier as `196K`. The sims fork fixed that typo in commit
+`16dc791`; rebuilding and installing the simulator enabled genuine 192K
+hardware configuration, which the DAIMOS guest then detected (`MEM 192 K`)
+and used successfully. The v1470 testkit memory matrix preflights the
+SIMH modifier and checks KINIT's detected memory and MEMFS loading in
+every guest transcript. This is a release-acceptance test and SIMH fix,
+not a change to KCORE or the MEMFS executable format.
+
+MEMFS is intentionally absent from the separate 48K lowmem profile;
+that configuration does not participate in the XIP matrix. Pending XIP
+work consists of fault-injected allocator/teardown rollback and stronger
+concurrent RAM-pressure evidence; general writable shared text is not
+available on PDP-6 APR hardware.
+
 ## 2026-11-11 v1469: privileged RUN/EXEC from certified MEMFS XIP
 
 The v1468 strict private admission now has a production consumer. The
