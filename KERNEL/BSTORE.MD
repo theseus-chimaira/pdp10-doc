@@ -1,3 +1,23 @@
+## 2026-11-11 v1500: real event + finalizer + idle PREVM native gate
+
+Testkit v1500 (`5674a7e`) source-links the production
+`proc_event_apply`, `proc_finish_slot` and
+`proc_finish_service_v881` into a single PDP-6 instruction test,
+with a nonresident DISK owner and controlled VM/FILE/MM backends.
+Immediate foreign TERM enters the real finalizer, whose first refused
+VM release must retain TRANSITION, FINALIZE+PREVM, the original DISK
+record and exact TERM status. Idle retry releases VM once, survives
+two u-area MM refusals, and publishes the zombie without repeated
+HUP, FILE close or VM destruction. Removing the PREVM owner marker
+is detected by an executable negative test. All v1500 native checks
+PASS; no production code/RAM/ABI change.
+
+Because the VM and physical BACKSTORE bitmap are controlled here,
+v1500 is not physical acceptance. The separate v1499 full-guest
+event-branch witness and subsequent permanent-corruption and
+end-to-end TERM/owner qualification remain OPEN. See DAIMOS
+`design/kcore-backstore-event-finalizer-v1500.md`.
+
 ## 2026-11-11 v1498: foreign TERM policy for nonresident DISK owners
 
 Testkit v1498 (`f9ab499`) executes the unchanged production

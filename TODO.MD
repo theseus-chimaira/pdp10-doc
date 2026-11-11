@@ -28,6 +28,17 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1500: integrated real TERM/finalizer native coverage
+
+The v1500 source-linked native PDP-6 test executes real event
+delivery, process FINALIZE+PREVM and idle retry together, with
+controlled refused VM and u-area MM release. Exact DISK ownership,
+deferred retries, once-only FILE/HUP/VM effects, zombie publication
+and negative missing-PREVM mutation PASS. Full physical BACKSTORE
+failure acceptance still requires v1499 branch classification,
+owner-safe TERM consumption and permanently invalid backing checks.
+See DAIMOS `design/kcore-backstore-event-finalizer-v1500.md`.
+
 ## 2026-11-11 v1498: source-linked TERM deferral gate
 
 The actual `proc_event_apply` now has a native v1498 DISK-owner
