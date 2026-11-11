@@ -1,3 +1,23 @@
+## 2026-11-11 v1493: checked BACKSTORE refusal reaches scheduler TERM
+
+The v1405 swap-in checked-free transaction is now source-linked with the
+actual `proc_swap_mres_service_v481` slot-0 scheduler service in native
+PDP-6 testkit v1493. A deliberately incomplete BACKSTORE bitmap makes
+the production free fail. The original DISK record and usage counters
+survive, the replacement MM extent is rolled back, and the scheduler
+requests exactly one TERM instead of erroneously setting READY_ONCE or
+interpreting a corrupted bitmap as ordinary memory pressure. Two
+executable negative mutations (unchecked free, false scheduler ready)
+are rejected. The original v1405 checked-free transaction regression
+also PASSes on the current source, including retry after repairing the
+bitmap. No permanent kernel code or ABI changes were needed.
+
+This is **native service-level evidence**, not full guest termination
+and finalization: `proc_event_apply` is an observer stub in the v1493
+fixture. A physical 256K corrupt-bitmap owner/finalizer test remains
+OPEN and cannot be inferred from accepted normal v1405/v1466 F07
+guests. See DAIMOS `design/kcore-backstore-scheduler-refusal-v1493.md`.
+
 ## 2026-11-11 v1490: BCACHE invalidation independent of MM release
 
 The installed DTFS DTC write veneer previously used `bcache_reclaim()`

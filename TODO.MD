@@ -28,6 +28,17 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1493: KCORE checked-release scheduler acceptance
+
+Native PDP-6 source-linked slot-0 scheduler + real swap-in + real
+BACKSTORE bitmap checked-release refusal PASS. The DISK owner survives,
+replacement MM rollback succeeds, TERM is requested exactly once,
+and READY_ONCE/exchange/cooldown stay disabled. Two executable
+negative mutations and the existing v1405 transaction test PASS.
+This closes only the native service boundary; real full-guest TERM/
+finalizer/physical-corruption recovery remains OPEN. No code-size
+optimization or MRES module changes. See `KERNEL/BSTORE.MD` v1493.
+
 ## 2026-11-11 v1490: BCACHE/DTC feature-correctness closure
 
 Completed in KCORE: DTC write preserves AC1..AC3 and the clean L1
