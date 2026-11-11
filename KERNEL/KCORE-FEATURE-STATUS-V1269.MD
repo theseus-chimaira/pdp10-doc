@@ -1,5 +1,13 @@
 # DAIMOS PDP-6 KCORE feature status v1269
 
+**2026-11-11 v1488:** Historical source snapshot. The v1286 audit
+cited below has ALSO been superseded; use
+`STATUS/KCORE-RELEASE-AUDIT-V1488.MD` and DAIMOS/TODO.MD for current
+release gates. Grouped D6 codec, strict MEMFS XIP and requester-only
+BRK OOM are accepted in their defined profiles; do not reopen
+old v1269/v1286 unchecked items. 32K is deferred. MRES runtime
+unload/reload is POST-1.0, not a 0.9/1.0 gate.
+
 **Historical snapshot; superseded for current release gates by
 `KERNEL/KCORE-CONSOLIDATED-STATUS-V1286.MD`.** In particular, the
 F07/E13/F11 OPEN statements below are the original v1269 status,

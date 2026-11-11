@@ -1,5 +1,25 @@
 # DAIMOS V0.9 CURRENT SCOPE
 
+## 2026-11-11 v1488: reconciled KCORE release scope
+
+Consult `STATUS/KCORE-RELEASE-AUDIT-V1488.MD` for source evidence
+and current feature gates. Grouped D6 codec v1464 and restricted
+root-only MEMFS XIP RUN/EXEC v1469-v1485 are accepted; their old
+unchecked staging tasks are NOT still active. The physical 48K
+non-XIP DSK/D6FS guest v1486 passes five stable DATE/MEMSTAT probes.
+All 32K testing is suspended by explicit decision. MEMFS is disabled
+below 96K, so there are no 32K/48K XIP acceptance cases.
+
+Remain open before 0.9: verified outstanding shared storage
+combination/fault cases, production swapless PURE scheduler and full
+APR restore (plus optional net-RAM-positive in-memory mutable-state
+compression), the online D6FS packer, unified TSFS after KCORE, and
+the final KCORE RAM-only sweep LAST. The v1487 shared EXEC pilot passes
+DXR native tests but costs +180 isolated TEXT words; it is NOT
+production-linked and did not independently guest-test XIP again.
+MRES runtime unload/reload is POST-1.0, with no work before 0.9.
+DAIMOS VERSION is still 0.5; this is not a 0.9 release signoff.
+
 ## 2026-11-09 v1375 swapless process-memory policy
 
 Compressed records in disk/drum swap are no longer planned. Production

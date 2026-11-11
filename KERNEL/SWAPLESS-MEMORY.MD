@@ -1,3 +1,31 @@
+## 2026-11-11 v1488: active swapless PURE integration boundary
+
+Production raw disk swap is unchanged. The v1381 in-place PURE drop,
+v1384 prefix restore, and v1395/v1397 fault rollback tests PASS on
+native PDP-6 in isolation, but NONE of the staged C PURE RAM
+transactions nor bounded FULL restore v1391 is scheduler-linked.
+There is no proven net whole-system RAM saving from these components.
+The v1451 30-word trusted bitmap codec is also test-only, not
+activated RAM compaction or production process compression.
+
+The v1487 updated common-DXR EXEC/PURE candidate carries over the
+original strict XIP admission path and passes standalone DXR tests.
+Same-profile isolated TEXT counts: production EXEC 218, candidate
+EXEC 163, shared engine 235: +180 combined TEXT words. This is NOT
+a production change or accepted RAM optimization; the copied XIP
+branch has not been given a fresh real guest lifecycle test.
+Avoid duplicating resident loader parsers to reach the PURE milestone.
+Audit existing loader/restore reuse and total process savings first.
+
+Native 48K LOWMEM v1486 verifies ROOT/DSH and five stable
+DATE/MEMSTAT samples, not swapless PURE; 32K is explicitly deferred
+and must not be run. MEMFS/XIP requires at least 96K. Complete safe
+inactive process drop/restore under actual scheduler/PI, fallback,
+immutability and APR ownership before enabling optional in-memory
+mutable-state compression. Future runtime MRES unload/reload is
+POST-1.0 and not part of this integration. Refer to
+`STATUS/KCORE-RELEASE-AUDIT-V1488.MD` for current gate inventory.
+
 ## 2026-11-10 v1397: fail-closed PURE DROP MM rebase cleanup
 
 The staged `proc_pure_ram_drop_v1381` formerly ignored failure to unpin the

@@ -1,3 +1,32 @@
+## 2026-11-11 v1488: audited MEMFS/XIP scope
+
+The v1469-v1485 restricted, root-only, write-free MEMFS XIP RUN/EXEC
+and pinned-ownership lifecycle are accepted on separate full-profile
+128K/192K/256K physical PDP-6 guests. v1484/v1485 prove cold-boot
+PERSIST snapshot restore, refused partial publication and damaged
+metadata rejection with same-boot volatile remount recovery.
+MEMFS is DISABLED below 96K; 48K v1486 is an accepted non-XIP
+ROOT/DSH guest, and 32K testing is deferred.
+
+v1487's updated shared DXR loader candidate retains the original
+MEMFS XIP branch by source generation, but its standalone native
+regression exercises DXR, NOT a new live XIP guest. It costs +180
+isolated TEXT words and is NOT linked in production.
+
+Successful filesystem unmount/remount is not runtime MRES code unload.
+Dynamic provider MRES unloading and reloading remains POST-1.0, with
+no further work before the 0.9 release. Refer to
+`STATUS/KCORE-RELEASE-AUDIT-V1488.MD` for current source evidence.
+
+## 2026-11-11 v1487: MRES module unloading is post-1.0
+
+The existing boot-installed MEMFS provider remains resident through
+the 0.9 and 1.0 release tracks. Dynamic MRES unload/reload, including
+MEMFS, is a planned POST-1.0 feature, not deleted from the roadmap.
+No implementation or release testing of it is planned before 0.9
+ships. An ordinary MEMFS filesystem unmount/remount does not unload
+its module and is independently accepted.
+
 ## 2026-11-11 v1485: failed persistent snapshot mount cleanup
 
 The v1484 PERSIST cold-reboot path passed valid snapshot restoration

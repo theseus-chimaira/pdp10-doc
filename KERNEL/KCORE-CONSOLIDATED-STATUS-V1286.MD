@@ -1,3 +1,14 @@
+**HISTORICAL v1286 SOURCE AUDIT — SUPERSEDED 2026-11-11 v1488.**
+Read `STATUS/KCORE-RELEASE-AUDIT-V1488.MD` and current
+DAIMOS/PROJECT-STATE.MD / TODO.MD before treating an unchecked feature
+as a release blocker. Since this dated audit, v1298 enabled and
+accepted F12/F13 (64/64 defined 256K OOM gates); v1464 completed
+grouped D6 codec; v1469-v1485 completed privileged strict MEMFS XIP
+RUN/EXEC, snapshot and corruption recovery; v1486 accepted 48K
+non-XIP LOWMEM. The text below remains unchanged historical evidence
+of v1286, including its obsolete "XIP not linked", "D6LZ36 active"
+and "F12/F13 unchecked" findings. 32K testing is currently on hold.
+
 **2026-11-09 v1375 policy supersession:** The former fourth pre-sweep
 track, opt-in compressed process **disk swap**, is CANCELLED. Raw disk
 swap is retained. Its replacement is swapless-only PURE executable-text
@@ -26,7 +37,7 @@ reconciliation, **not** a new guest acceptance or a fresh linked-size run.
 The historical dated sections of `PROJECT-STATE.MD`, `KCORE.MD`, and
 `TODO.MD` remain evidence of their original revisions, not current gates.
 
-## Current authority and scope
+## Historical v1286 authority and scope (superseded by v1488)
 
 * Source code establishes whether a feature is wired in production.
 * `DAIMOS/PROJECT-STATE.MD` v1284 and `DAIMOS/TODO.MD` v1284 are the

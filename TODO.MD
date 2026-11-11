@@ -28,6 +28,25 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1488: documentation-source reconciliation
+
+Current KCORE gates are maintained by DAIMOS/TODO.MD v1488 and the
+single source-backed reference `STATUS/KCORE-RELEASE-AUDIT-V1488.MD`.
+The v512/v1029/v1269/v1286 snapshots below were not deleted, but
+must NOT be read as live open gates: grouped codec v1464 and
+restricted MEMFS XIP v1469-v1485 are already in production, and
+F12/F13 physical BRK OOM is enabled/accepted v1298. Native v1486
+48K non-XIP guest passes; all 32K tests remain on hold.
+
+Swapless PURE scheduler/restore and optional RAM-only mutable
+compression remain OPEN, despite successful isolated v1381/v1384/
+v1395 and v1451 tests. The v1487 isolated common EXEC candidate
+adds 180 TEXT words and stays unlinked. Backing-service remaining
+gates, online D6FS packer and post-KCORE/pre-0.9 unified TSFS remain
+separate current release tasks. Runtime MRES unload/reload is
+preserved for POST-1.0 only and must not be worked on until 0.9
+has shipped. All dated notes below are historical evidence.
+
 ## 2026-10-27 DAIMOS v512 documentation synchronization
 
 V521 GRANULARITY AUDIT (2026-10-27): The general DAIMOS MM allocator

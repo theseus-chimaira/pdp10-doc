@@ -1,5 +1,22 @@
 # DAIMOS RESIDENT-SIZE STATUS
 
+## 2026-11-11 v1488: no cross-profile size comparisons
+
+The latest v1486 48K physical LOWMEM guest measured 49152 total
+words, 16271 resident words, and 23320 process words across five
+consecutive DATE/MEMSTAT samples, with four of 12 process slots
+occupied and no MEMFS mount. This is live accounting, NOT a
+permanent KCORE+MRES size or a 32K acceptance measurement.
+
+The v1487 native shared EXEC candidate totals 163+235 TEXT words
+against the same-revision production EXEC 218 (+180). It is
+unlinked and cannot be treated as a measured full-image increase
+or shrink. Current full-profile fixed KCORE, installed MRES,
+KINIT transient stack and live lowmem RAM budgets must be measured
+separately. 32K testing is suspended; all dated v188 and earlier
+measurements below remain historical. See
+`STATUS/KCORE-RELEASE-AUDIT-V1488.MD` and DAIMOS/SIZEOPT.MD.
+
 ## Historical source inventory (consolidated 2026-11-03)
 
 `STATUS/DAIMOS-KCORE-FUNCTION-INVENTORY-20261021-V87.MD` and its TSV
