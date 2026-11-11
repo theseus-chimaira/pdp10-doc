@@ -1,3 +1,39 @@
+## 2026-11-11 v1485: failed persistent snapshot mount cleanup
+
+The v1484 PERSIST cold-reboot path passed valid snapshot restoration
+at 128K/192K/256K. v1485 adds a destructive 128K negative test with
+its own independent AUXSTORE drum image: boot one writes and executes
+a certified strict root-owned MEMFS XIP and commits its snapshot at
+HALT. The host changes exactly one bit in snapshot namespace metadata
+without changing the six-word commit header, its checksum, or the
+AUXSTORE partition descriptor. The next cold boot must reject the
+checksum, not accept corrupt directory or file data.
+
+Before the v1485 correction, memfs_snapshot_mount returned failure
+but memfs_mres_mount left the unpublished 01200-word namespace extent
+allocated and the three-word memfs_mres_fs singleton nonzero. MEMINFO
+then misreported available MEMFS capacity despite the refused VFS
+mount, and a new volatile mount could not claim the singleton.
+Production memfs_runtime.s now routes refused snapshot admission
+through the existing mount-failure MM cleanup, freeing the namespace
+extent before clearing the three ownership words. On an MM refusal,
+the ownership record remains intact rather than orphaning memory.
+
+The new real 128K two-boot negative test now PASSes: boot two reports
+MOUNTALL failure for the damaged snapshot, then creates a fresh
+volatile MEMFS at /TEMP in the same boot, recreates and executes an
+XIP image, and HALTs with STATUS:0. The matching independently built
+normal 128K/192K/256K two-boot persistence matrix still restores exact
+saved file contents and executable images with unchanged AUXSTORE
+geometry. Source-linked v1094/v1471 ownership tests and native
+MEMFS normal/v1403/v1468 fatal tests also PASS.
+
+The fix changes one MRES code word in the matched 128K image and adds
+no MRES BSS, fixed KCORE or per-process words; KCORE endpoint remains
+023434 octal. Snapshot format, commit-last protocol, disk layout,
+backing reservation and device bridges are unchanged. MEMFS/XIP still
+requires at least 96K; 32K/48K remain non-XIP release profiles.
+
 ## 2026-11-11 v1484: persistent MEMFS snapshot survives cold reboot
 
 A PERSIST mount on `/TEMP` must survive an actual two-boot PDP-6 SIMH
