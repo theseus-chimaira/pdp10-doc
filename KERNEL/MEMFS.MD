@@ -1,3 +1,44 @@
+## 2026-11-11 v1469: privileged RUN/EXEC from certified MEMFS XIP
+
+The v1468 strict private admission now has a production consumer. The
+resident `exec_load_process` checks the raw-XIP magic after normal
+file lookup, regular-file and execute permission checks, requires a
+root caller and MEMFS provider, then requests the certified pinned
+extent through `FS_MRES_OP_XIP_SAFE_ADMIT_V1468` (030 octal). The
+regular DXR1/DXR2 relocation/copy/codec path remains separate. The
+returned exact base is published into a staged process VM so ordinary
+rollback and VM teardown release the MEMFS-owned pin, never a PROCESS
+MM extent. Each RUN still owns an independent process slot and u-area;
+EXEC uses the existing replace-and-rollback transaction.
+
+The new private `FS_MRES_OP_XIP_OWNS_BASE_V1469` (031 octal) probes the
+existing four-entry MEMFS pin table without changing references. VM
+startup uses it to refuse nonzero argv/env and prepare only the four
+kernel-resident startup return words for XIP, with **no writes to the
+shared code image**. BRK setters likewise refuse MEMFS-pinned XIP.
+The existing `mm_is_pinned` guards exclude XIP from swap victims and
+direct swap-out. No persistent XIP process flag, table or second bitmap
+has been introduced.
+
+On a fresh 256K PDP-6 KCC disk-root simulator, ROOT LOGIN and DSH boot;
+the full v1469 test executes three sequential and three queued XIP
+RUN/WAIT lifetimes, rejects malformed extra code/data, unprivileged
+UID1 launch, and nonzero argc RUN and EXEC, then commits a privileged
+XIP EXEC replacement, exits normally and returns to DSH with status 0.
+Pinned-file CHMOD refusal and post-release mutability were exercised.
+Source-linked MEMFS normal/fatal, SIMH/AAP user-mode XIP, v1394 strict
+policy and EXEC transaction regressions all pass. The matching MEMFS
+MRES link increased 1849 -> 1851 words (BSS remains 13). GCC lowmem
+fixed KCORE is 9765 words (+64 versus v1466), not a final 32K fit.
+
+The only permitted program remains `MOVEI 2,immediate` followed by
+unindexed `UUO 040` EXIT, with zero in all other nonheader words.
+DAIMOS takes the EXIT status from the UUO effective address, hence
+this restricted program exits with status zero. PDP-6 APR has no text
+write protection; general writable-user-code XIP is not supported.
+Low-memory, multi-provider pressure and fault-injected transactional
+rollback remain to be accepted before a final release qualification.
+
 ## 2026-11-11 v1468: certified pinned raw-XIP MEMFS admission
 
 The movable MEMFS MRES now has a second private kernel-only XIP entry:
