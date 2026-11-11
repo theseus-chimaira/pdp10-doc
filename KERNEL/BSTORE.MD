@@ -1,3 +1,28 @@
+## 2026-11-11 v1503: physical coalesced TERM and DISK owner accepted
+
+Completed 256K KCC PDP-6 v1499 guest has two independent mapped
+before/after event snapshots for real scheduler TERM calls. Both
+targeted nonresident DISK slot `010` with an already-pending TERM
+bit, no WAIT and an executive-mode saved PC. Both calls returned
+zero, coalescing without changing VM, scheduler, FD-control or
+FINALIZE. This is the correct pre-existing-fatal branch and explains
+the missing immediate PREVM. The already-pending TERM's origin and
+later owner-return delivery remain separately unproven.
+
+Testkit v1503 (`8987b4a`) validates physical HALT/EXIT, one real
+bitmap fault, three matching checked frees, one repair, final zero
+BACKSTORE and F07 18/18, plus exact two-event state; 15 negative
+mutations are rejected. Independent physical protected owner, MM,
+process-slot, swap-stack and owner-lifecycle audits PASS. Invalid
+v1499 SKIPN-gated branch counters are **not used**; v1502 fixed the
+diagnostic polarity for future captures.
+
+This **accepts physical TERM coalescing**, not final physical
+TERM consumption or permanently corrupt backing. Normal v1336's
+zero-failed-swap-in rule stays strict. See DAIMOS
+`design/kcore-backstore-coalesced-physical-v1503.md` and current
+`STATUS/KCORE-FEATURE-STATE-V1503.MD`.
+
 ## 2026-11-11 v1502: checked-release and both native TERM lifecycles
 
 Native v1498, v1500 and v1501 were re-run on committed production

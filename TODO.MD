@@ -28,6 +28,28 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1503: physical TERM classification and remaining gates
+
+- [x] Re-verify exact v1499 physical 256K pre/post owner snapshots:
+  two already-pending TERM requests safely coalesced, saved PC still
+  executive, no WAIT, DISK VM unchanged, no immediate PREVM.
+  Testkit v1503 15 invalid-evidence mutations all rejected. Do not
+  use the old inverted v1499 branch counters for this verdict.
+- [ ] Prove actual pending TERM **consumption** at the owning return
+  after physical restore, then correct real private close/teardown.
+  Native v1501 controls restored VM and final close.
+- [ ] Test permanent corrupt BACKSTORE refusal and full physical
+  terminate/finalizer/checked backing-release accounting without
+  relaxing the strict normal F07/v1336 acceptance.
+- [ ] Continue distinct mixed-device/BCACHE/DTFS/LOGSTORE gates,
+  uncompressed swapless PURE/full APR integration, uncommitted v1492
+  mount-capacity ABI acceptance, optional RAM-positive compression
+  after PURE, and remaining targeted physical profiles.
+
+Authoritative current state: `STATUS/KCORE-FEATURE-STATE-V1503.MD`.
+MRES code unload/reload remains POST-1.0; 32K stays HOLD; final
+KCORE size optimization waits for functional freeze.
+
 ## 2026-11-11 v1502: current KCORE feature-completion tasks
 
 Native immediate-TERM/finalizer v1500 and deferred owner-return

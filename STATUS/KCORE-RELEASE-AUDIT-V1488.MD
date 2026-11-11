@@ -1,9 +1,10 @@
 # DAIMOS KCORE 0.9 release-scope audit v1488
 
-**Current-status index (2026-11-11, v1502):** this file is the dated
+**Current-status index (2026-11-11, v1503):** this file is the dated
 v1488 source audit, not a claim that no subsequent work occurred.
-For the current feature checklist and accepted native TERM stages
-through v1501, consult `STATUS/KCORE-FEATURE-STATE-V1502.MD`.
+For the current feature checklist and the scoped physical coalesced
+TERM acceptance through v1503, consult
+`STATUS/KCORE-FEATURE-STATE-V1503.MD`.
 Original v1488 source findings, size measurements and prior accepted
 profiles remain valid only in their stated scope. In particular, the
 v1492 mount-capacity ABI/consumer changes are still uncommitted, and

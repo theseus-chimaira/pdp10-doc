@@ -1,5 +1,11 @@
 # DAIMOS KCORE feature state, v1502
 
+**Superseded current-status index:** the accepted *physical*
+already-pending TERM coalescing classification landed subsequently in
+testkit v1503. See `STATUS/KCORE-FEATURE-STATE-V1503.MD` for the
+current open/accepted feature gates. This v1502 snapshot remains for
+its original test and source baseline.
+
 Date: 2026-11-11. This is the current **feature-completion** index for
 KCORE, checked against committed production sources, testkit acceptance
 and the historical records in `KERNEL/BSTORE.MD` and
