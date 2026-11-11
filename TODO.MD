@@ -28,6 +28,18 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1496: F07 fault-injection acceptance prerequisites
+
+The F07 shared runner incorrectly counted SIMH's
+`+uncommitted-changes` banner as a process acknowledgement. Fixed in
+testkit v1496; five strict marker positive/negative cases PASS, and
+the captured physical run contains exactly 18 guest acknowledgments
+and 18 reaps. Normal v1336 acceptance rejects all terminal swap-in
+failures, correctly for an unmodified guest; a separate fault-specific
+verifier must link each expected failure with the injected owner and
+full TERM/PREVM cleanup. The v1494 physical run is NOT accepted;
+v1495 diagnostics separate those remaining uncertainties.
+
 ## 2026-11-11 v1494: KCORE PREVM finalizer recovery gate
 
 The production process finalizer and idle PREVM retry execute in

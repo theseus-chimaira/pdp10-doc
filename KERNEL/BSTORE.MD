@@ -1,3 +1,31 @@
+## 2026-11-11 v1496: F07 physical fault-test milestone integrity
+
+The first disposable v1494 full-guest bitmap-corruption run reached
+physical PDP-6 HALT with one injected fault, three matching checked
+BACKSTORE release attempts, one bitmap repair, and zero final swap
+blocks. It did NOT pass end-to-end acceptance: the TERM witness was
+zero, the composite diagnostic error counter was one, and normal
+v1336 verification rejects fatal swap-in failures by design.
+
+An independent F07 test harness bug is fixed by testkit v1496:
+the SIMH startup banner's git revision
+`edd19b17+uncommitted-changes` was counted as a guest `+` child
+acknowledgment. The saved guest output actually contained exactly
+18 guest acknowledgments and 18 reaps. The shared runner now counts
+only after the real F07 user `<` marker and before the simulator
+HALT/examine trailer. Exact child counts are unchanged; five host
+positive/negative parsing cases PASS. Commit `f106218` in
+daimos-testkit. This is not a kernel fix.
+
+The regular v1336 acceptance requires zero `swapin_fail` events;
+fault-injection acceptance must use an additional explicitly scoped
+verifier that proves the expected failure(s), TERM/finalizer ownership
+and release, without relaxing the original normal-swap acceptance.
+New v1495 disposable-guest diagnostics were committed in testkit to
+separate scheduler failure, real event return, TERM witness stack
+offset, and PREVM marker timing. The complete physical gate remains
+OPEN pending verified evidence from that profile.
+
 ## 2026-11-11 v1494: PREVM idle-finalizer retries refused VM teardown
 
 The production `proc_finish_slot` and `proc_finish_service_v881`
