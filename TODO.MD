@@ -28,6 +28,19 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1497: precise physical BACKSTORE fault outcome
+
+The v1495 physical 256K KCC guest reached HALT and final zero backing
+blocks, with 1 bitmap fault, 3 matching releases, 2 negative swap-in
+service returns and 2 real TERM calls, neither entering PREVM. The
+third release lacked PREVM too, disproving the v1494 finalizer-retry
+assumption. Independent MM/owner/slot/stack verifiers pass; the full
+fault-specific gate stays OPEN. Next: classify deferred TERM against
+WAIT/CTX_PC and pending event bits, test owner-safe delivery (or an
+immediately finalizable owner), and independently test permanent
+corruption without false ownership release. Keep normal v1336 strict.
+Source: DAIMOS `design/kcore-backstore-physical-f07-diagnostic-v1497.md`.
+
 ## 2026-11-11 v1496: F07 fault-injection acceptance prerequisites
 
 The F07 shared runner incorrectly counted SIMH's

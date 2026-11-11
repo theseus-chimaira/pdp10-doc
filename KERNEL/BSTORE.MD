@@ -1,3 +1,35 @@
+## 2026-11-11 v1497: physical corrupt-BACKSTORE lifecycle classified
+
+Fresh 256K KCC PDP-6 guest v1495 reached real HALT/EXIT. One physical
+allocation bitmap bit was cleared after a successful backing read.
+Final counters: one fault, three matching `backstore_free` calls, one
+bitmap repair, two negative swap-in service entries, two real
+`proc_event_apply` returns, final 0/0 process-swap/BACKSTORE blocks.
+All 18 F07 guest acknowledgments and 18 reaps were present after the
+v1496 SIMH-banner parser correction. Protected-OOM, MM peak, slots,
+swap stack and independent owner-lifecycle replay verifiers PASS.
+
+Crucially, both TERM calls returned **without** TRANSITION/PREVM
+finalization, and the third matching backing free lacked PREVM as
+well. Therefore it was **not demonstrated to be an idle PREVM
+finalizer retry**. The v1494 injection assumption is invalid, and
+its dedicated verifier correctly fails. The normal v1336 verifier
+correctly disallows all fatal swap-in events; it remains unmodified.
+The KCORE `proc_event_apply` foreign-fatal path explicitly defers TERM
+when a saved private executive continuation or wait class prevents
+safe remote teardown. The v1495 result is consistent with that
+policy; the exact predicate/event result was not observed, so neither
+an unsafe kernel fault nor successful immediate finalization is
+proven. Do not bypass the existing stack-safety deferral.
+
+Fault-injection qualification remains OPEN: classify the exact
+deferred-event branch and pending TERM bit, prove owner-safe delivery
+after restored backing or an explicitly finalizable target's
+PREVM/idler cleanup, and separately qualify permanently refused
+backing. Maintain a separate strict fault-specific verifier rather
+than weakening v1336. Detailed source/replay/sha256 evidence in
+DAIMOS `design/kcore-backstore-physical-f07-diagnostic-v1497.md`.
+
 ## 2026-11-11 v1496: F07 physical fault-test milestone integrity
 
 The first disposable v1494 full-guest bitmap-corruption run reached
