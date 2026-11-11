@@ -1,3 +1,37 @@
+## 2026-11-11 v1471: transactional pinned-XIP VM teardown
+
+The privileged v1469 raw-XIP process VM uses a borrowed MEMFS MM pin,
+not an MM_TYPE_PROCESS allocation. The initial implementation called
+MEMFS XIP_RELEASE (private operation 026) before the fallible process
+swap/backing detach. A native fault injector demonstrated that a refused
+detach could leave the process VM descriptor intact after the pin had
+already been dropped. A retry could no longer release its ownership.
+
+`vm_space_destroy` now queries the existing read-only MEMFS operation
+031 first. For a pinned XIP base it detaches the **resident, zero-text**
+swap record before operation 026 releases its MEMFS pin; `VM_SPACE_NONE`
+is published only after both succeed. A detach refusal retains VM,
+pin and swap record. If MM unpin fails, the VM and pin remain owned,
+and a retry safely repeats the idempotent resident XIP detach before
+retrying unpin. Ordinary private process MM extents still use the
+existing MM-free-then-detach ordering. The ordinary path obtains its
+physical base from the saved stack word, never scratch AC3 across an
+MRES gateway call.
+
+PDP-6 source-linked v1471 fault tests exercise failed backing detach,
+failed MM unpin, retry and recovery, and private-MM base preservation.
+Two deliberately broken release/base variants fail the assertions.
+v1094/v1108/v1109 original hardware fault cases continue to pass after
+test fixture updates for the 030/031 operations and reordered stages.
+The corrected full KCC 128K, 192K and 256K disk-root guests pass boot
+through ROOT LOGIN/DSH, six XIP RUN/WAIT lifetimes and privileged EXEC
+replacement at each of the three verified physical memory sizes.
+Matched fixed KCORE cost is +19 words (octal 023411 -> 023434); VM
+static BSS is unchanged. No general XIP write protection has been added.
+
+RAM u-area allocation injection and heavier pressure remain to be
+qualified separately; the three-size post-fix guest matrix is complete.
+
 ## 2026-11-11 v1470: XIP lifecycle at physical 128K/192K/256K
 
 The v1469 strict, root-only, pinned and write-free MEMFS XIP implementation
