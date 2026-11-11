@@ -1,3 +1,29 @@
+## 2026-11-11 v1473: pinned-XIP pressure and mount-refusal acceptance
+
+Full-profile KCC PDP-6 at 128K, 192K and 256K has passed three per-boot
+concurrent RUN/WAIT rounds using the same strict root-owned read-only
+MEMFS XIP image. The v1473 testkit allocates distinct child process
+slots/u-areas up to the available slot limit (capped at 56 children per
+round), waits for zero EXIT statuses, and checks baseline process-slot,
+physical process-MM and MEMFS logical-data accounting after each round.
+The original v1469 negative admission tests and successful privileged
+EXEC replacement also pass for every physical memory size.
+
+An important lifetime distinction was confirmed: the certified XIP
+program exits in two instructions, so a child can remain in a zombie
+slot after relinquishing its MEMFS pin. Queued process-slot occupancy
+does not itself prove XIP pin ownership. A separate v1472 fault-injected
+128K guest now proves a live pin through a refused CHMOD in the pending
+SIDL RUN rollback state, then calls `dsys_unmount(/TEMP)` and requires
+refusal. That same guest verifies slot-zero deferred unpin and cleanup,
+one injected u-area allocation failure, two injected unpin refusals,
+and a subsequent successful XIP RUN/WAIT and EXEC replacement.
+
+All v1473 changes are test-only: production KCORE and MEMFS remain
+byte-for-byte unchanged. Future release tests must include successful
+MEMFS unmount/re-mount and provider unload/reload or failure lifetimes;
+those have not been claimed by this pressure/unmount-refusal gate.
+
 ## 2026-11-11 v1472: certified XIP RUN/u-area failure and deferred owner lifetime
 
 The production v1471 XIP release ordering is now accepted at the
