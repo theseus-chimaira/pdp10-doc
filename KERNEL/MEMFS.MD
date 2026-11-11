@@ -1,3 +1,37 @@
+## 2026-11-11 v1472: certified XIP RUN/u-area failure and deferred owner lifetime
+
+The production v1471 XIP release ordering is now accepted at the
+unpublished RUN child's *post-admission u-area allocation* boundary.
+`exec_load_process` has already asked MEMFS to certify and pin a strict
+root-owned, no-write raw XIP image before `proc_run_block` allocates the
+independent stable 0410-word child u-area. If the latter allocation
+refuses, the slot must discard its VM, or retain exact ownership until
+the slot-zero reaper can complete an unsuccessful release.
+
+The v1472 testkit copies the production KCORE/MEMFS assembly into an
+isolated image and inserts only two controlled fault hooks: a read-only
+operation-031 check of the real pinned VM base followed by one injected
+u-area allocator refusal, and two MEMFS XIP unpin refusals that leave
+the existing ref and physical MM pin untouched. Unmodified production
+code handles VM, swap-record, SIDL state, shared retry backoff and slot
+reaping. No fault hook ships in production and no permanent RAM is added.
+
+All three independent KCC, full-profile DSK/D6FS physical PDP-6 boots
+at **128K, 192K and 256K PASS** the v1472 guest. It checks a stage-3
+`SYS_TEARDOWN_RUN_VM` unpublished owner, refusal to CHMOD the pinned
+executable, completion of deferred unpin and slot discard, no zombie
+available to WAIT, baseline process/VM accounting, successful CHMOD and
+executable readback after release, and a new successful XIP RUN/WAIT.
+The complete v1469 negative tests and privileged EXEC replacement also
+pass (`STATUS:0`). Independent post-HALT KCORE counter examination
+confirms exactly one allocation refusal and two unpin refusals at each
+physical RAM size; the guest KINIT banner confirms actual installed RAM.
+
+This completes the dedicated XIP u-area failure/slot-zero retry gate.
+Outstanding work remains broader concurrent RAM pressure and source
+provider/mount lifetime fault testing. General writable shared text is
+still unavailable without PDP-6 hardware write protection.
+
 ## 2026-11-11 v1471: transactional pinned-XIP VM teardown
 
 The privileged v1469 raw-XIP process VM uses a borrowed MEMFS MM pin,
