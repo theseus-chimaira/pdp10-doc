@@ -28,6 +28,16 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1494: KCORE PREVM finalizer recovery gate
+
+The production process finalizer and idle PREVM retry execute in
+testkit v1494 after a controlled VM destroy refusal, followed by
+real finalizer stage retries. Retained owner/status, no repeated HUP
+or double VM free, no premature zombie, and premature-commit negative
+mutation all PASS. Existing v1081/v1086 regressions PASS. The real
+BACKSTORE bitmap/TERM/finalizer **combined** physical guest still
+needs acceptance. See `KERNEL/BSTORE.MD` v1494.
+
 ## 2026-11-11 v1493: KCORE checked-release scheduler acceptance
 
 Native PDP-6 source-linked slot-0 scheduler + real swap-in + real

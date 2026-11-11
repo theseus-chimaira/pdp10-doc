@@ -1,3 +1,23 @@
+## 2026-11-11 v1494: PREVM idle-finalizer retries refused VM teardown
+
+The production `proc_finish_slot` and `proc_finish_service_v881`
+were executed in source-linked PDP-6 testkit v1494 with controlled
+first VM release refusal, subsequent success, and two independent
+u-area MM refusal retries. FINALIZE+PREVM, TRANSITION and exact VM
+ownership were retained while release was refused. The idle finalizer
+then committed VM destruction once, did not rerun sleeping HUP, and
+completed zombie publication only after u-area release. A mutation
+that falsely treats VM refusal as success failed. Existing v1081
+refused-TTY and v1086 PI6-masked finalizer tests also PASS. No KCORE
+production source/ABI/RAM change.
+
+The VM backend in v1494 was test-controlled; v1493 independently
+tested real checked BACKSTORE swap-in and the scheduler with an event
+observer. The *combined* physical 256K corrupt-bitmap -> TERM ->
+PREVM finalizer -> eventual owner resolution sequence remains OPEN;
+separate passing native boundaries do not qualify this full guest.
+See DAIMOS `design/kcore-backstore-prevm-finalizer-v1494.md`.
+
 ## 2026-11-11 v1493: checked BACKSTORE refusal reaches scheduler TERM
 
 The v1405 swap-in checked-free transaction is now source-linked with the
