@@ -1,3 +1,36 @@
+## 2026-11-11 v1476: singleton remount and bounded state clear
+
+Full-profile 128K/192K/256K KCC PDP-6 v1474 guests each performed
+three real /TEMP singleton MEMFS unmount/remount cycles. They checked
+duplicate mount refusal, invalidation of the old executable vnode,
+zero logical MEMFS usage and capacity after unmount, recreation of the
+same strict XIP file on a fresh mount, full namespace/PROCESS MM
+accounting recovery, new XIP RUN/WAIT and the v1469 EXEC/negative suite.
+
+An isolated v1475 test inserts exactly one MEMFS data-destroy preflight
+refusal. It verifies the first unmount returns failure without releasing
+the VFS mount or executable data, and that the original XIP remains
+readable and runnable. This test exposed a real out-of-bounds write in
+the production unmount success path: memfs_mres_fs declares THREE BSS
+words while fs_zero_words cleared FIVE. The two excess zeros overwrite
+adjacent MRES storage, resetting the test's refusal counter and causing
+a later unmount failure. v1476 corrects the count from five to three.
+
+The newly passing 128K fault-injected guest exercises the refused
+unmount, successful retry and three normal remount rounds. A linked
+MRES-map validator requires the counter canary to occupy the first
+word after the three-word singleton state, making the overwrite
+detectable in future runs. The correction changes one immediate
+operand; no additional fixed KCORE, MEMFS MRES BSS or process words.
+Existing native v1094/v1471 release and v1403/v1468 MEMFS tests PASS.
+
+The post-fix 128K/192K/256K full-profile PDP-6 normal remount matrix
+PASSes all three per-boot cycles, XIP readback/RUN/EXEC, and orderly
+HALT at every memory size. A successful filesystem unmount/remount does not unload the
+MEMFS MRES code. The orderly HALT bridge invokes snapshot shutdown;
+persistent snapshot/HALT/reboot acceptance and dynamic provider
+unload/reload are separate release gates, still open.
+
 ## 2026-11-11 v1473: pinned-XIP pressure and mount-refusal acceptance
 
 Full-profile KCC PDP-6 at 128K, 192K and 256K has passed three per-boot
