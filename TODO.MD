@@ -28,6 +28,22 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1505: exact repeated BACKSTORE refusal gate
+
+- [x] Source-linked actual checked bitmap/swap-in/slot-0 PDP-6
+  transaction retains the DISK owner through six *forced* repeated
+  refusals, then restores exactly once after explicit bit repair.
+- [x] No MM pin leak, false RAM publish, READY_ONCE or accounting
+  decrement; v1493 unsafe mutations re-PASS.
+- [x] Correct documented service success AC1 to slot|READY_ONCE,
+  and failure to TERM request (not guaranteed immediate termination).
+- [ ] Physical selected-owner TERM consumption after repaired backing:
+  v1504 running; require target-specific proof, not global zero usage.
+- [ ] Permanent corruption terminal policy and bounded retries without
+  losing DISK owner/private executive stack; full fault-specific
+  physical acceptance remains OPEN. See
+  `STATUS/KCORE-FEATURE-STATE-V1505.MD`.
+
 ## 2026-11-11 v1503: physical TERM classification and remaining gates
 
 - [x] Re-verify exact v1499 physical 256K pre/post owner snapshots:

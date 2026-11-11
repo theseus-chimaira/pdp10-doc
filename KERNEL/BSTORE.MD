@@ -1,3 +1,28 @@
+## 2026-11-11 v1505: repeated invalid BACKSTORE release is fail-closed
+
+Native testkit v1505 (`b0e5075`) executes real PDP-6 checked
+BACKSTORE free, complete swap-in and slot-0 service. Six deliberately
+repeated requests against one persistently invalid allocation bit
+retain the original nonresident DISK record, bitmap and counters;
+each temporary MM extent is rolled back, no pin is leaked, no
+READY_ONCE/RESIDENT is published. Six hardware-read observer calls,
+six TERM service observer calls, six MM rollbacks, zero publishes.
+Existing v1493 executable unsafe mutations also PASS. After the
+fixture explicitly repairs the bit, the seventh request succeeds,
+releases the backing once and publishes a resident owner. This is
+**native ownership acceptance**, not a physical retry-cadence or
+permanent-corruption policy acceptance.
+
+The tested actual service return on success is `slot|READY_ONCE`
+(`01002` for slot 2); the production API comment was corrected.
+A failure result requests TERM, which may remain pending rather
+than terminate synchronously, as physical v1503 proved. No KCORE
+functional change or added RAM. Full physical owning-return delivery
+remains under v1504; permanent corruption terminal resolution and
+full fault-specific physical acceptance remain OPEN. See DAIMOS
+`design/kcore-backstore-repeated-refusal-v1505.md` and
+`STATUS/KCORE-FEATURE-STATE-V1505.MD`.
+
 ## 2026-11-11 v1503: physical coalesced TERM and DISK owner accepted
 
 Completed 256K KCC PDP-6 v1499 guest has two independent mapped
