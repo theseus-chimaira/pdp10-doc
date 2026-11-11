@@ -1,3 +1,33 @@
+## 2026-11-11 v1506: repaired bitmap through physical owner TERM ACCEPTED
+
+Testkit `2bf10ff` v1504 generated a fresh disposable 256K KCC
+PDP-6 physical F07 guest and recorded the complete repairable
+BACKSTORE failure lifecycle. One real allocation bit was cleared;
+two checked swap-in release attempts failed and requested TERM.
+Both requests safely coalesced with an earlier pending TERM on
+nonresident DISK slot `010`, preserving its private executive stack.
+The third matching release repaired only the injected bitmap bit;
+the process subsequently returned on its own executive continuation.
+
+The actual owner-side `proc_deferred_term_v970` consumed pending
+TERM exactly once, clearing its FD bit and setting the private
+fatal-close latch. The real private close and process finish ran
+once with status `0400001`, followed by one zombie publication
+for that exact slot. Its VM/swap backing was released, final
+process-swap/BACKSTORE allocation counts were zero, and all 18 F07
+RUN children were acknowledged and reaped. Strict v1504 owner
+verification rejects **20** independent state mutations, on top
+of v1503's 15 coalescing/bitmap mutations. Independent physical
+v1159/v1203/v1205/v1207/v1349 audits also PASS.
+
+This closes the **repairable bitmap full-guest owner-completion
+gate**, not a permanently corrupt backing policy. Normal v1336
+requires zero failed swap-ins and correctly rejects intentional
+injected faults; its criteria are unchanged. No new resident code,
+memory word or ABI was introduced. See DAIMOS
+`design/kcore-backstore-owner-return-physical-v1506.md` and
+`STATUS/KCORE-FEATURE-STATE-V1506.MD`.
+
 ## 2026-11-11 v1505: repeated invalid BACKSTORE release is fail-closed
 
 Native testkit v1505 (`b0e5075`) executes real PDP-6 checked

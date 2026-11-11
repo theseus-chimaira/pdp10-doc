@@ -28,6 +28,25 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-11 v1506: selected physical TERM owner completed
+
+- [x] Exact selected nonresident DISK owner `010` consumed the
+  original pending TERM once after real bitmap repair, executed
+  one private fatal close/finish/zombie, and released backing.
+- [x] Fault-specific v1504 strict physical verifier plus 20 wrong
+  owner/term/status mutations PASS; v1503's 15 bitmap/coalescing
+  mutations and independent v1159/v1203/v1205/v1207/v1349 audits
+  also PASS; F07 18/18 and final 0/0 backing.
+- [ ] Define bounded terminal failure response when the bitmap/
+  DEVICE cannot be repaired. Keep DISK ownership and private
+  executive continuation; do not repeatedly perform unsafe
+  restorations or silently lose backing.
+- [ ] Finish other F2 mixed DEVICE/VOLUME/BCACHE/DTFS/LOGSTORE cases,
+  F1 swapless PURE with APR, F3 dynamic mount acceptance, optional
+  net-RAM-positive compression after PURE, then remaining physical
+  gates and KCORE size optimization. See
+  `STATUS/KCORE-FEATURE-STATE-V1506.MD`.
+
 ## 2026-11-11 v1505: exact repeated BACKSTORE refusal gate
 
 - [x] Source-linked actual checked bitmap/swap-in/slot-0 PDP-6
