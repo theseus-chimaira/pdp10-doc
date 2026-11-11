@@ -1,5 +1,39 @@
 # DAIMOS LOGSTORE V1
 
+## 2026-11-11 v1484: correct direct-device register ABI and preserve AUXSTORE
+
+The resident LOGSTORE direct-I/O entry passes AC1=unit, AC2=physical
+block and AC3=caller buffer. The raw Type 236/167 and DSK270 MRES
+services instead accept device-native addresses and buffer arguments;
+they cannot be patched straight into the LOGSTORE entry. A prior KINIT
+`logstore_minit` bound the MRES raw service addresses without the KCORE
+driver bridge, sending the intended LOGSTORE blocks 05372/05373 to the
+Type 167 DMA as core-buffer addresses and writing to DR0 physical block
+zero. Its AUXSTORE descriptor was overwritten with KCORE instructions.
+Consequently a committed, checksum-valid MEMFS v2 snapshot in the same
+drum's BACKSTORE could not be discovered on the following cold boot.
+
+Corrected KINIT first checks that the DSK/DRM services are installed,
+then patches the LOGSTORE direct read/write call site to the existing
+public KCORE `drm236_read_block`/`drm236_write_block` or
+`dsk270_read_sector`/`dsk270_write_sector` bridges. No permanent tables,
+new process RAM or KCORE words are added. This does not change the
+public LOGSTORE service ABI, record layout or optional tape drain.
+
+An isolated diagnostic Type 236 SIMH recorded the original unintended
+DR0 write using memory 005372/005373 (the intended physical block
+numbers) as DMA source and drum address zero. Restoring only the
+damaged descriptor words in a disposable image made the existing MEMFS
+snapshot recover, proving that its data and checksum were sound; no
+descriptor repair or simulator logger is included in production.
+`daimos-testkit/tests/validation/daimos-logstore-abi-guard-v1484.py`
+rejects the old raw-MRES binding and accepts the corrected KCORE bridge;
+native append and direct read/write tests PASS.
+
+The actual full-profile PDP-6 128K/192K/256K persistent MEMFS two-boot
+tests now PASS snapshot write/recovery and XIP RUN on both boots, with
+identical AUXSTORE descriptor geometry before and after each HALT.
+
 ## Current implementation note — 2026-10-29 v661
 
 LOG is an independent **persistent record ring**, not a cache and not

@@ -1,3 +1,41 @@
+## 2026-11-11 v1484: persistent MEMFS snapshot survives cold reboot
+
+A PERSIST mount on `/TEMP` must survive an actual two-boot PDP-6 SIMH
+cycle, preserving the same backing-drum image across independent RAM
+initializations. The v1477/v1484 test creates a strict root-owned
+no-write XIP executable and a separate three-word data file in MEMFS,
+verifies their contents and XIP RUN/WAIT, HALTs to commit the snapshot,
+then boots again and checks exact file contents and XIP execution.
+Both HALTs must succeed with no MOUNTALL failure. It also runs the
+host AUXSTORE inspector before the first boot and after **each** HALT
+and rejects any change to the physical partition descriptor.
+
+An initial bug in `memfs_snapshot_pdp6.s` inverted three boundary
+comparisons and omitted invalidation of BCACHE's shared filesystem
+block workspace before direct BACKSTORE reads and writes. Both issues
+were corrected. Boot-time process-swap reservation now recognizes the
+v2 snapshot header as well as the previous v1 persistent-range format,
+so existing committed snapshot blocks remain reserved during startup.
+The MEMFS MRES image gains two code words (no BSS growth) from the
+cache invalidation calls; KCORE fixed endpoint remains 023434 octal.
+
+The more serious restoration failure arose outside MEMFS: KINIT
+previously patched LOGSTORE's direct-device unit/block/buffer call to
+raw Type 236 MRES services requiring group-address/buffer arguments.
+This wrote LOGSTORE traffic over DR0's AUXSTORE block-zero descriptor.
+The snapshot itself remained checksum-valid at physical block 015767,
+but the next boot could not rediscover the backing partition. The
+v1484 `logstore_minit` bridge correction fixes the cause; see
+`KERNEL/LOGSTORE.MD`. No media repair is part of normal operation.
+
+The native full-profile 128K, 192K and 256K two-boot tests all PASS
+and confirm the untouched descriptor, exact snapshot readback and
+restored MEMFS XIP execution. Independently, v1478 injects a partial
+snapshot write refusal in a disposable MRES source copy and verifies
+that HALT fails before the commit header is published, then retry
+can safely commit. The fault-injection assertion is separate from
+normal successful two-boot acceptance.
+
 ## 2026-11-11 v1479: MEMFS XIP excludes sub-96K hosts
 
 XIP is exclusively a MEMFS-backed process format. MEMFS is disabled
