@@ -1,3 +1,20 @@
+## 2026-11-12 v1511: physical DRM BACKSTORE read errors accepted
+
+- [x] Real 256K KCC PDP-6 checked two Type-167/236 PI2 error
+  completions, actual DRM accounting and private descriptor
+  wakeup, BACKSTORE negative read/MM rollback, 25 checked-release
+  refusals, 27 negative source-linked slot-0 completions, intact
+  DISK `02350`/`0330`, u-area, bitmap, pending TERM/retry, no
+  phantom READY_ONCE/ZOMB. A separate swapped PID `011` restored
+  and executed 397 real SLEEP calls. Strict verifier PASS;
+  five source and eleven physical mutation controls rejected.
+- [ ] v1512 actual booted Type-236 lost-PI2/PI6 watchdog return
+  and owner rollback; native/prerequisite tests PASS only.
+- [ ] True persistent hardware/media loss, reconstruction and
+  safe long-lived owned-failure policy (never force free).
+- [ ] Mixed DEVICE/VOLUME, DTFS/BCACHE, LOGSTORE/MEMFS;
+  F1 PURE/MM/APR and F3 FSINFO mounts; optimization afterward.
+
 ## 2026-11-12 v1510: independent swapped owner physically accepted
 
 - [x] Under one genuine permanently refused BACKSTORE checked free,

@@ -1,3 +1,23 @@
+## 2026-11-12 v1511: physical Type-236 BACKSTORE read-error propagation
+
+Disposable full 256K KCC PDP-6 v1511 accepted genuine
+Type-167/236 PI2 completion through the production DRM error,
+private descriptor wakeup and BACKSTORE read/VM rollback path.
+Two selected real controller error completions and 25 later
+checked release refusals produced exactly 27 negative slot-0
+services. Thirteen physical fault-on samples retained the exact
+slot `010` DISK allocation `02350`/`0330`, stable u-area,
+bitmap, retry epoch and pending TERM, with no false RAM owner,
+reclaim or zombie. Another genuinely swapped PID `011` restored
+and executed 397 SLEEP syscalls; resident PID 5 also progressed.
+Strict physical verifier PASS; five source and eleven evidence
+negative mutations rejected. No production source or RAM changes.
+This is *injected real PI2 error-path* acceptance, not actual
+destroyed media, lost completion/PI6 timeout or successful cleanup
+of the permanently held owner. See
+`STATUS/KCORE-FEATURE-STATE-V1511.MD` and DAIMOS
+`design/kcore-backstore-device-error-physical-v1511.md`.
+
 ## 2026-11-12 v1510: healthy swapped process restores during held bad owner
 
 Real 256K PDP-6 F07 physical v1510 PASSed independent **DISK-backed**
