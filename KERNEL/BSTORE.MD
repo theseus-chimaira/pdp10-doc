@@ -1,3 +1,20 @@
+## 2026-11-12 v1515: fixed critical-device HALT, including TSFS root tapes
+
+Fixed KCORE exports `kcore_critical_device_lost_v1515` for a
+**confirmed** boot-root or BACKSTORE device loss. Root (AC1=1),
+BACKSTORE (AC1=2), and invalid reason each HALT at a separate
+linked code address with PI disabled; six native PDP-6 positive/
+negative cases PASS. Controlled relink: +11 fixed code words,
+zero permanent data. No driver calls it until reliable loss
+classification is present: temporary Type-270/236 PI errors,
+Type-136 DTC errors, and PI6/tape watchdog timeouts are not
+confirmation of missing media. A TSFS root can span multiple
+physical DECtapes; removal of **any active root-set member** is
+fatal, not every tape on the controller. Auxiliary non-root DTFS
+tape removal is nonfatal with checked recovery requirements.
+Automatic root-set/device ownership routing and physical unplug
+acceptance remain OPEN. See `STATUS/KCORE-FEATURE-STATE-V1515.MD`.
+
 ## 2026-11-12 v1513: confirmed root/BACKSTORE loss is fatal
 
 User policy supersedes older proposals to reconstruct a vanished

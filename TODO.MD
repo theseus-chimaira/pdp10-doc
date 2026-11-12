@@ -1,3 +1,20 @@
+## 2026-11-12 v1515: role-based fixed/removable device loss
+
+- [x] Implement no-return v1515 root/BACKSTORE critical-device
+  HALT leaf with three distinct safe link-symbol PCs and global
+  PI disabled. Full fixed KCC KCORE link PASS; six native PDP-6
+  positive/mutation cases PASS; +11 code words, 0 data words.
+- [x] Clarify that a removable TSFS **root-set DECtape member** is
+  as critical as fixed root media; non-root auxiliary DTFS tape
+  loss is not. Only selected root-set membership is fatal.
+- [ ] Classify reliable permanent loss or removal distinctly from
+  individual bad blocks, temporary PI errors and tape/DRM timeouts;
+  route actual root-set/BACKSTORE provider loss to v1515 and
+  physically verify fatal PCs, including multi-tape TSFS root.
+- [ ] Non-root D6FS/DTFS reappearance/replacement with validated
+  identity, BCACHE invalidation and dirty/open FILE safety; mixed
+  storage providers, PURE/MM/APR, dynamic FSINFO remain OPEN.
+
 ## 2026-11-12 v1514: non-root retained mount and checked unmount PASS
 
 - [x] Source-linked PDP-6 native v1514 tests real VFS unmount:
