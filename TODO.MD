@@ -1,3 +1,23 @@
+## 2026-11-12 v1512: physical Type-236 PI6 watchdog accepted
+
+- [x] Boot real 256K KCC PDP-6 and suppress two selected real
+  drum DR_DONE publications without falsifying slot-0 status.
+  The original PI6 300-tick watchdog timed out the still-owned
+  private descriptor twice, correctly accounting DRM storage
+  errors and returning through BACKSTORE read/MM rollback.
+  Sixteen fault-on samples preserve exact bad DISK `02350`/`0330`,
+  u-area, bitmap, retry marker and pending TERM, with 30 later
+  refused checked frees, 32 total negative restores, no phantom
+  READY_ONCE, ZOMB or forced reclaim. Strict physical v1512 PASS.
+- [x] Independent formerly swapped PID `011` checked-restored
+  and executed 562 real SLEEP calls; resident PID 5 progressed
+  by 992 further SLEEP calls. Four source, twelve evidence and
+  missing-digit-field negative checks rejected. No new KCORE RAM.
+- [ ] Actual destroyed/unavailable DEVICE/media reconstruction
+  or safe retained ownership without forced free/false parent WAIT.
+- [ ] Mixed DEVICE/VOLUME/BCACHE/DTFS/LOGSTORE/MEMFS recovery;
+  F1 swapless PURE/MM/APR; F3 FSINFO mounts; optimization later.
+
 ## 2026-11-12 v1511: physical DRM BACKSTORE read errors accepted
 
 - [x] Real 256K KCC PDP-6 checked two Type-167/236 PI2 error

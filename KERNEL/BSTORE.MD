@@ -1,3 +1,24 @@
+## 2026-11-12 v1512: lost Type-236 PI2 completion / PI6 watchdog physical PASS
+
+Booted 256K PDP-6 v1512 suppressed two actual selected drum
+`DR_DONE` completion notifications while retaining the live
+private request descriptor. Production's unchanged 300-tick
+PI6 watchdog then failed both descriptors, accounted two actual
+DRM errors, woke slot-0 and returned negative BACKSTORE reads
+through original MM rollback. Direct PI2 error count stayed zero.
+Sixteen physical fault-on samples retain original DISK slot `010`
+BACKSTORE `02350`/`0330`, u-area, bitmap, retry tag and TERM
+with 30 later checked-free refusals, exact failed-service count
+32, and no false RAM publication, free or zombie. Independent
+swapped PID `011` checked-restored and executed 562 real user
+SLEEP calls; resident PID 5 progressed by 992. Strict physical
+verifier PASS; twelve unsafe evidence and four source mutation
+controls plus missing-field parser check rejected. No new
+production RAM, process state or ABI. This is injected missing
+completion, not actual lost magnetic media or safe reclaim of an
+irreparable process. See `STATUS/KCORE-FEATURE-STATE-V1512.MD` and
+DAIMOS `design/kcore-backstore-watchdog-physical-v1512.md`.
+
 ## 2026-11-12 v1511: physical Type-236 BACKSTORE read-error propagation
 
 Disposable full 256K KCC PDP-6 v1511 accepted genuine
