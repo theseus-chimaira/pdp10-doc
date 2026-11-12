@@ -1,3 +1,19 @@
+## 2026-11-12 v1509: physical runnable fairness after permanent swap failure
+
+- [x] Real 256K PDP-6 physically held failed DISK slot `010`
+  across six clock-progressing snapshots with 3..14 refused
+  checked BACKSTORE frees, unchanged u-area/bitmap/TERM and
+  no premature finalization. Independent PID 5 was truly live
+  and resident, with real SLEEP entries 98..456 (+358) during
+  this failure. Strict physical v1509 and source/evidence mutation
+  regressions PASS; no production process state or RAM growth.
+- [ ] Demonstrate independent *swapped* contender restoration and
+  user dispatch under the same persistent-fault conditions.
+- [ ] Investigate genuine permanent DEVICE/media loss and safe
+  recovery or explicitly retained ownership without forced free.
+- [ ] Complete mixed storage DEVICE/VOLUME, DTFS/BCACHE,
+  LOGSTORE/MEMFS, swapless PURE/MM/APR and dynamic FSINFO gates.
+
 ## 2026-11-12 v1508: physical persistent BACKSTORE refusal
 
 - [x] Test genuinely booted 256K PDP-6 source-linked selected DISK

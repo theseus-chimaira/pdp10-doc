@@ -1,3 +1,21 @@
+## 2026-11-12 v1509: physical independent resident bystander under failed BACKSTORE
+
+Source-linked 256K KCC PDP-6 selected DISK slot `010`, original
+BACKSTORE `02350`/`0330`. During six consecutive permanent
+checked-free refusal samples, the owner kept its DISK bitmap,
+u-area, retry marker and pending TERM; there were 3..14 rejected
+releases, no false RAM publication or terminal finalization.
+An independent real resident PID 5 spinner executed **358 further
+SLEEP syscalls** (counter 98..456) over 7,904 PI6 ticks while
+the failed owner's backing remained intact. Strict physical
+v1509 verifier and source/evidence negative mutations PASS. All
+additional instrumentation is confined to the disposable guest;
+no production KCORE memory or state growth. This qualifies
+resident-bystander fairness, **not** independent healthy swapped
+restore or genuine DEVICE/media recovery. See
+`STATUS/KCORE-FEATURE-STATE-V1509.MD` and DAIMOS
+`design/kcore-backstore-bystander-physical-v1509.md`.
+
 ## 2026-11-12 v1508: real physical permanently refused BACKSTORE free
 
 The real 256K KCC PDP-6 executed v1508's isolated selected-owner
