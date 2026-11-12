@@ -28,6 +28,26 @@ not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
 
+## 2026-11-12 v1507: per-owner BACKSTORE retry native PASS
+
+- [x] After checked swap-in refusal, delay precisely the failed
+  nonresident DISK owner using the stable u-area retry epoch, not
+  a new process state or global fatal cooldown. Healthy swapped
+  and runnable bystanders remain schedulable, including against
+  two independently failing owners and realtime lease selection.
+- [x] Test 0100-tick PI6 delay, 17-bit epoch wrap, marker retirement,
+  real checked repair and original DISK ownership; three negative
+  mutations plus v1493/v1505/v1316-v1317 native regressions PASS.
+  Full isolated 256K KCC image build PASS.
+- [x] Native v788 paired publication and v854 sector/PURE exchange
+  verify checked incoming-owner retry-tag retirement.
+- [ ] Qualify the sustained permanent-failure policy in a booted
+  physical guest; verify actual bystander progress and that neither
+  unsafe forced free nor fake process finalization is exposed.
+- [ ] Complete mixed media/BCACHE/LOGSTORE/DTFS/MEMFS, F1 PURE
+  and F3 mount enumeration gates before final KCORE optimization.
+  See `STATUS/KCORE-FEATURE-STATE-V1507.MD`.
+
 ## 2026-11-11 v1506: selected physical TERM owner completed
 
 - [x] Exact selected nonresident DISK owner `010` consumed the

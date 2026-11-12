@@ -1,3 +1,30 @@
+## 2026-11-12 v1507: normal and RT failed-restore retry gating
+
+Native PDP-6 scheduler/slot-0/PI6 source-link v1507 now closes
+the prior uncontrolled repeated selection after a refused
+checked BACKSTORE release. The original DISK extent, allocation
+bitmap, stable u-area and deferred TERM remain authoritative.
+The failed owner's existing finalizer control word 067 holds
+a transient LH bit 040000 and low-17-bit clock epoch only if
+FINALIZE is clear. Normal and realtime selectors delay **that
+owner only** for 0100 octal ticks, preserving healthy swapped
+admission and independently delaying multiple bad owners. At
+expiry, or after checked successful ordinary restore/exchange,
+the marker is retired. The allocator-pressure global cooldown
+is unchanged. No new process state or resident data word.
+
+Real-source native v1507 negative controls (no timestamp, missing
+normal guard, missing RT guard) PASS; v1493, v1505 and v1316-v1317
+source-authentic rollback tests PASS; isolated full 256K KCC
+image build succeeded. Native v788 checked-publish and v854
+full sector/PURE exchange PASS with retry-tag retirement.
+**Persistent physical MEDIA/DEVICE loss
+and irreparable owner finalization remain OPEN**. A bounded retry
+is not a successful resource release; never declare a zombie or
+free backing without checked teardown. See
+`STATUS/KCORE-FEATURE-STATE-V1507.MD` and DAIMOS
+`design/kcore-backstore-retry-scheduler-v1507.md`.
+
 ## 2026-11-11 v1506: repaired bitmap through physical owner TERM ACCEPTED
 
 Testkit `2bf10ff` v1504 generated a fresh disposable 256K KCC
