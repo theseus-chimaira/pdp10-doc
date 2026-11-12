@@ -1,3 +1,22 @@
+## 2026-11-12 v1513: critical media HALT; secondary media recovery
+
+- [x] Adopt crash-only policy for **confirmed** root and
+  BACKSTORE media loss; supersede old reconstruction/recovery
+  proposals. Do not panic on a lone PI error or watchdog timeout.
+- [x] Native PDP-6 v1513 non-root D6FS failure/retry and root
+  reader isolation; no clean cache entry from failed reads;
+  three actual negative mutants rejected. Corrected old D6FS
+  multi-mount test-only linkage. No production RAM or ABI change.
+- [ ] Distinguish permanently offline root/BACKSTORE from a
+  transient read failure; implement a minimal terminal HALT
+  and optional cheap diagnostic, then physically qualify it.
+- [ ] Non-root mounted media return/replacement: checked
+  identity and superblocks, BCACHE invalidation, dirty-block
+  safety and live FILE/lease behavior, physical acceptance.
+- [ ] Mixed DEVICE/VOLUME, DTFS/BCACHE, LOGSTORE/MEMFS errors,
+  F1 swapless PURE/MM/APR, F3 FSINFO 1/4/8/26 enumeration;
+  optimization/compression deferred until features are done.
+
 ## 2026-11-12 v1512: physical Type-236 PI6 watchdog accepted
 
 - [x] Boot real 256K KCC PDP-6 and suppress two selected real

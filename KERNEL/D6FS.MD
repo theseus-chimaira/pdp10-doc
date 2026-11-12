@@ -1,3 +1,21 @@
+## 2026-11-12 v1513: non-root media return, native D6FS PASS
+
+The real `d6fs_reader_get_block` and `fs_backing_read` source
+were linked into a native PDP-6 test. The non-root mount-ID-2
+callback failed twice with no clean BCACHE store; the independent
+mount-ID-1 root reader remained usable. The same secondary
+backing subsequently returned, succeeded, failed a second
+time and succeeded again, all without changing reader mount IDs.
+Three executed source mutations were rejected. The older v1
+multi-mount fixture also PASSes after its test-only missing
+backing-read symbol was supplied; v674 remount and v9 mount
+mutation tests PASS. This is not a full guest detached-device
+recovery, stale-cache-on-media-replacement proof or dirty FILE
+handoff. These remain active recovery work for **non-root** D6FS.
+Confirmed boot-root media loss, by contrast, is a terminal KCORE
+condition, not a remount/reconstruction requirement. See
+`STATUS/KCORE-FEATURE-STATE-V1513.MD`.
+
 ## AUXSTORE DBOOT conversion compatibility (v1194)
 
 The auxiliary-drum image builder first creates a disposable DBOOT

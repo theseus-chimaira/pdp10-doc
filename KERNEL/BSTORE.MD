@@ -1,3 +1,24 @@
+## 2026-11-12 v1513: confirmed root/BACKSTORE loss is fatal
+
+User policy supersedes older proposals to reconstruct a vanished
+boot-root or BACKSTORE. On **confirmed** permanent loss, KCORE
+should HALT, preferably with a cheap distinct root/BACKSTORE
+diagnostic; no quarantine state, phantom free, forced foreign
+teardown or recovery is required. A generic Type-270/236 negative
+I/O completion is **not** reliable loss detection: v1511-v1512
+physically demonstrated transient controller-error/timeout
+rollback and subsequent healthy swap execution. Root/BACKSTORE
+loss classification and fatal dispatch are still OPEN.
+Non-root mounted filesystems should fail I/O while unavailable
+but remain candidates for checked recovery. Source-linked v1513
+native D6FS test PASSes negative secondary read, no false cache
+publication, independent root reader and successful retry after
+same secondary media returns; three actual source mutations
+rejected. Full replacement-media identity and BCACHE recovery
+remain OPEN. No production runtime RAM/code growth. See
+`STATUS/KCORE-FEATURE-STATE-V1513.MD` and DAIMOS
+`design/kcore-media-loss-policy-v1513.md`.
+
 ## 2026-11-12 v1512: lost Type-236 PI2 completion / PI6 watchdog physical PASS
 
 Booted 256K PDP-6 v1512 suppressed two actual selected drum
