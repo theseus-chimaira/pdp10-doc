@@ -1,3 +1,28 @@
+## 2026-11-12 v1517: PDP-6 Type-551 simulated detach status
+
+DAIMOS testkit `daimos-dtc-select-status-v1517.sh` executes
+real PDP-6 Type-551 search/select commands and captures CONI 0214
+status in memory. On local source-built SIMH and the installed
+simulator, an unattached DTC0 reports `000004` octal; when attached
+it reports `001000`; after detach it again reports `000004`.
+An unrelated unattached DTC7 also reports `000004`. All four
+real PDP-6 HALT PCs are verified; testkit commit `3536d98`.
+
+`sims/PDP10/pdp6_dtc.c` models an unavailable selected transport
+as `DTB_ILL` when its simulator `UNIT_ATT` flag is clear. This
+must **not** be extrapolated to original Type-551 physical-reel
+removal behavior. A Type-551 select/illegal error can represent
+other invalid selection/command conditions, and a tape with no
+readable timing/mark signal can instead cause a bounded timeout.
+The original TU55/TU56 maintenance descriptions document the
+REMOTE/OFF/LOCAL switches. In particular the TU56 documentation
+states that its analog SELECT ECHO selection detector is not
+used with 550, 551 or 552 controllers. Therefore `DTB_ILL`
+is not an independently validated "reel removed" notification.
+
+See `STATUS/KCORE-FEATURE-STATE-V1517.MD`; no automatic
+root-tape HALT or new RAM state was introduced.
+
 # PDP-6 DECtape: sequential transfer and seek timing
 
 ## AAP Type-551/555 emulator measurements (2026-10-25)

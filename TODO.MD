@@ -1,3 +1,19 @@
+## 2026-11-12 v1517: Type-551 selection-status experiment PASS
+
+- [x] Native PDP-6 SIMH legal SEARCH/SELECT/CONI probe PASS for
+  unattached, attached, detached DTC0 and unrelated DTC7.
+  `DTB_ILL=000004` identifies the simulated selection error,
+  **not** a hardware-certified physical reel-removal event.
+  Testkit `3536d98`; no production KCORE code/data change.
+- [ ] Find authoritative Type-551/TU55 hardware-compatible
+  device/tape loss signaling rather than inferring loss from
+  illegal command/selection bits or elapsed search/transfer time.
+  Route confirmed active TSFS root-member loss to v1515 HALT,
+  but keep unrelated non-root DTFS failures nonfatal.
+- [ ] Physical guest removal versus timeout, root HALT-PC and
+  auxiliary DTFS retained mount/FILE, replacement validation,
+  BCACHE and dirty/open resource safety.
+
 ## 2026-11-12 v1516: exact root-member DECtape classification
 
 - [x] KINIT TSFS boot now retains exact root physical-unit mask
