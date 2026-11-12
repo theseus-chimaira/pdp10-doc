@@ -1,3 +1,19 @@
+## 2026-11-12 v1518: DTFS observed-I/O error cache coherency PASS
+
+- [x] Source-linked PDP-6 DTFS physical read/write, directory
+  loader and real clean BCACHE now invalidate both cache tags
+  and the directory mount identity on observed negative hardware
+  return. Four actual negative source mutations rejected; v1490
+  BCACHE ABI/MM-refusal, DTFS and TSFS regressions PASS. Controlled
+  cost six optional MRES instructions, zero data/fixed KCORE words.
+  GCC 32K and KCC 256K tape-root KINIT/MRES LINK; strict 32K
+  fixed-KCORE size gate independently FAILS, not accepted.
+- [ ] Authoritative Type-551 media removal/loss event (not PI or
+  timeout), root-member fatal dispatch and real physical acceptance.
+- [ ] Non-root DTFS **replacement** media identity, dirty/open FILE
+  safety, BCACHE and checked revalidation/remount. Silent detachment
+  cannot be detected solely by this after-error cache fix.
+
 ## 2026-11-12 v1517: Type-551 selection-status experiment PASS
 
 - [x] Native PDP-6 SIMH legal SEARCH/SELECT/CONI probe PASS for

@@ -1,3 +1,21 @@
+## 2026-11-12 v1518: DTFS failed read/write invalidates shared cache
+
+Source-linked optional DTFS DTC read/write wrappers now clear
+`dtfs_cache_mount` and both clean BCACHE identities on negative
+physical read. Write failures also clear the directory identity;
+every write still invalidates clean BCACHE before raw DTC transfer
+without clobbering unit/block/buffer. Native PDP-6 test links
+actual DTFS loader and BCACHE, rejects four unsafe source mutants,
+and proves an **observed** failure forces a new physical directory
+read instead of trusting stale cached metadata. Existing BCACHE,
+DTFS and TSFS regression suites PASS. Both 256K KCC and 32K GCC
+tape-root KINIT/DTFS-TSFS MRES builds LINK; strict fixed-KCORE
+32K size gate still FAILS at `023241` octal. Controlled cost
+**+6 optional MRES code words, +0 data, +0 fixed KCORE**.
+This is NOT physical tape-removal sensing or safe automatic
+replacement-volume recovery. See `STATUS/KCORE-FEATURE-STATE-V1518.MD`
+and DAIMOS `design/kcore-dtfs-io-error-cache-v1518.md`.
+
 ## 2026-11-12 v1516: exact physical TSFS root-set membership
 
 The TSFS root may span 1..8 physical DECtapes. Its former eight
