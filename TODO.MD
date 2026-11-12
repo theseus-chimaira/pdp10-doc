@@ -1,3 +1,23 @@
+## 2026-11-12 v1520: native DTFS random volume ID and mount retention PASS
+
+- [x] Optional native DTFS `DTVOL1` identity record in reserved
+  RBN0: 72 random host-generated bits, checksum, zero padding.
+  Old all-zero legacy media still mounts; partial/corrupted
+  stamps fail closed. Host mkdtfs, C89-compatible userspace probe,
+  target MKFS.DTFS clear-before-format, native PDP-6 mount/identity
+  storage and five executed negative mutations PASS. Verified
+  identity lives in existing per-mount TSFS shape/extent words,
+  no extra permanent RAM or MM allocation. Controlled +46
+  optional MRES code, zero fixed KCORE. Isolated 256K KCC and
+  32K GCC tape-root links PASS; strict 32K size gate still FAILS.
+- [ ] Checked *mounted* DTFS media identity transition before
+  accepting I/O on old FILE/vnode and cached state after errors
+  or replacement. Handle dirty writes, legacy tapes with no ID,
+  open descriptors and stale mount-slot reuse safely; no implicit
+  continuation onto a different tape. Stamped mount is NOT recovery.
+- [ ] True Type-551 physical device loss signal and v1515 TSFS
+  root-member fatal dispatch remain OPEN independently.
+
 ## 2026-11-12 v1519: native DTFS admission is physically checked
 
 - [x] Direct `SYS_DTFS_MOUNT`/DTFS MOUNT_UNIT must not bypass

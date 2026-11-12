@@ -1,3 +1,30 @@
+## 2026-11-12 v1520: optional native DTFS persistent 72-bit identity
+
+Host native `mkdtfs` now records two random 36-bit ID halves
+in previously reserved physical RBN0 with SIXBIT `DTVOL1`
+header, complement checksum and zero padding. The existing
+RBN0144 directory, file map and native magic remain unchanged.
+An all-zero RBN0 still designates legacy DTFS, which is accepted
+for initial mount but has NO authenticated volume identity.
+Nonempty corrupted identity headers are rejected rather than
+silently treated as legacy. Actual userspace DTFSPROBE and
+PDP-6 DTFS mount validate RBN0 from raw physical I/O;
+the verified ID is stored in otherwise TSFS-only SHAPE/EXTENT
+words already allocated for that DTFS mount. No new RAM slab.
+Target `MKFS.DTFS`, lacking reliable entropy, clears old RBN0
+before creating a legacy native directory, to avoid reusing the
+previous volume's ID; it aborts if the clear fails.
+Host/C89 source-linked probe/MKFS and native PDP-6 validation,
+five unsafe mutations and old DTFS/BCACHE/TSFS regressions PASS.
+KCC 256K/GCC 32K tape-root KINIT/MRES link; strict 32K KCORE
+size gate remains FAILED. Controlled +46 optional MRES code,
+zero new permanent data or fixed KCORE, and zero per-mount
+slab growth. **Retaining the ID does NOT implement automatic
+live media replacement**: post-error ID comparison, dirty/open
+FILE/vnode handling and silent media change remain OPEN.
+Details: `STATUS/KCORE-FEATURE-STATE-V1520.MD` and DAIMOS
+`design/kcore-dtfs-volume-id-v1520.md`.
+
 ## 2026-11-12 v1519: native DTFS kernel mount-admission verification
 
 The direct DTFS MOUNT_UNIT kernel path previously trusted the
