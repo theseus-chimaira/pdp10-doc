@@ -1,3 +1,18 @@
+## 2026-11-12 v1510: healthy swapped process restores during held bad owner
+
+Real 256K PDP-6 F07 physical v1510 PASSed independent **DISK-backed**
+contender progress under permanent selected checked BACKSTORE release
+refusal. Failed slot `010` held its original `02350`/`0330` run,
+u-area, retry marker and TERM for 13 fault-on samples with 1..24
+refused frees. Healthy slot `011` was SLEEP/DISK, then committed a
+real checked restore at sample 32, and executed 331 real subsequent
+SLEEP syscalls; resident PID 5 also progressed. No false zombie,
+READY_ONCE or bitmap release, and no new production KCORE RAM or
+process state. The sample-stopped diagnostic does not demonstrate
+unrecoverable DEVICE/media cleanup. See
+`STATUS/KCORE-FEATURE-STATE-V1510.MD` and DAIMOS
+`design/kcore-backstore-swapped-progress-physical-v1510.md`.
+
 ## 2026-11-12 v1509: physical independent resident bystander under failed BACKSTORE
 
 Source-linked 256K KCC PDP-6 selected DISK slot `010`, original

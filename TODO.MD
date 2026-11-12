@@ -1,3 +1,17 @@
+## 2026-11-12 v1510: independent swapped owner physically accepted
+
+- [x] Under one genuine permanently refused BACKSTORE checked free,
+  independently observe healthy swapped PID `011` restoring through
+  a checked production transaction and executing 331 real SLEEP
+  syscalls. Original failed slot `010` preserved through 13
+  fault-on physical samples, while resident PID 5 also advanced.
+  Strict v1510 physical verifier PASS with eight source and eleven
+  false-evidence mutations rejected. Zero production RAM/state.
+- [ ] Physical DEVICE/media-error propagation, watchdog and safe
+  preservation or reconstruction of a genuinely irreparable owner.
+- [ ] Remaining KCORE mixed storage failures, PURE/MM/APR and
+  dynamic FSINFO feature integration before final optimization.
+
 ## 2026-11-12 v1509: physical runnable fairness after permanent swap failure
 
 - [x] Real 256K PDP-6 physically held failed DISK slot `010`
