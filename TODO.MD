@@ -1,3 +1,19 @@
+## 2026-11-12 v1516: exact root-member DECtape classification
+
+- [x] KINIT TSFS boot now retains exact root physical-unit mask
+  in unused bits 24..31 of its existing per-mount shape word,
+  avoiding unit-zero versus unused-padding confusion. Native
+  source-linked query checks namespace root/mount bounds/mask;
+  1/2/8 member host, full native four mutation negatives, TSFS
+  stored and cross-member reads PASS. GCC 32K and KCC 256K full
+  KINIT/MRES links PASS, but strict 32K KCORE size FAILS.
+- [ ] Find an authoritative controller/media removal or change
+  indication separate from ordinary PI errors, illegal commands
+  and Type-136 tape watchdog timeouts; test actual root-set loss
+  routed to v1515 HALT and unrelated non-root tape nonfatal path.
+- [ ] Non-root DTFS identity/superblock revalidation, BCACHE,
+  dirty/open resources and full physical detach/return/replacement.
+
 ## 2026-11-12 v1515: role-based fixed/removable device loss
 
 - [x] Implement no-return v1515 root/BACKSTORE critical-device

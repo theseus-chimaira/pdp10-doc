@@ -1,3 +1,28 @@
+## 2026-11-12 v1516: exact physical TSFS root-set membership
+
+The TSFS root may span 1..8 physical DECtapes. Its former eight
+3-bit logical-to-physical selectors had trailing zero padding,
+indistinguishable from a *genuine physical unit zero*. KINIT now
+stores the validated exact eight-unit root membership mask in
+unused bits 24..31 of the existing 36-bit per-mount TSFS shape
+word, preserving low selector bits and on-media format. The
+optional TSFS provider exports `tsfs_root_owns_dtc_unit_v1516`
+which checks the actual namespace-root provider, dynamic mount
+limit and physical mask; it returns +1 selected, 0 unrelated,
+-1 invalid. No new permanent data word or fixed KCORE growth.
+Host KINIT roots of 1/2/8 members and native PDP-6 source-linked
+membership, four unsafe mutations, and TSFS cross-member readers
+PASS. Both isolated 32K GCC and 256K KCC tape-root KINIT/MRES
+builds LINK, but the separate **strict 32K KCORE size gate FAILS**
+at `023241` octal, required `<020000`. Approximately +25..27
+optional tape MRES code words, zero data words. Reliable DTC
+removal detection and v1515 fatal dispatch are still OPEN:
+ordinary Type-136 read failures and watchdogs do not prove the
+selected TSFS-root tape was removed. Non-root DTFS removal remains
+nonfatal with checked revalidation. See
+`STATUS/KCORE-FEATURE-STATE-V1516.MD` and DAIMOS
+`design/kcore-tsfs-root-member-v1516.md`.
+
 # DECtape filesystem: unified TSFS
 
 **2026-11-09 v1375 memory-policy note:** A swapless tape-root build may
