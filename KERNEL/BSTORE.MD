@@ -1,3 +1,20 @@
+## 2026-11-12 v1508: real physical permanently refused BACKSTORE free
+
+The real 256K KCC PDP-6 executed v1508's isolated selected-owner
+fault instrumentation: one ordinary process slot `010` retained
+the original DISK run `02350`/`0330`, with 1/4/7 checked
+release refusals in three actual PI6-clock-progressing samples.
+The bitmap remained intact, u-area stable, pending TERM and
+per-owner retry stamp present. No false RAM/READY_ONCE,
+owning fatal-close/finalizer, zombie or repair.
+The strict testkit physical verifier PASSed; ten unsafe witness
+mutations rejected. No production code or RAM change from v1507.
+This is bounded observed scheduling under *injected checked-free
+refusal*, not physical DEVICE damage, owner reclamation, HALT or
+proof of live healthy swapped-process completion under fault.
+See `STATUS/KCORE-FEATURE-STATE-V1508.MD` and DAIMOS
+`design/kcore-backstore-persistent-physical-v1508.md`.
+
 ## 2026-11-12 v1507: normal and RT failed-restore retry gating
 
 Native PDP-6 scheduler/slot-0/PI6 source-link v1507 now closes

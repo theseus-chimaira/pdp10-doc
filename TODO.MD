@@ -1,3 +1,20 @@
+## 2026-11-12 v1508: physical persistent BACKSTORE refusal
+
+- [x] Test genuinely booted 256K PDP-6 source-linked selected DISK
+  owner with every checked BACKSTORE free refused. Strict physical
+  v1508 verifier PASSes three clock-progressing fault-on samples,
+  1/4/7 failed frees, preserved authoritative DISK bitmap/u-area,
+  pending TERM and zero premature finalizers; ten unsafe mutations
+  rejected. No new production state or RAM.
+- [ ] Verify independently runnable/swapped bystander progress
+  physically under the selected persistent failure (native v1507
+  selection/fairness already passed).
+- [ ] Qualify genuinely irrecoverable backing/DEVICE faults and safe
+  retained ownership, or genuine reconstruction before teardown;
+  do not turn retry throttling into a false ZOMB/release claim.
+- [ ] Continue mixed DEVICE/VOLUME, BCACHE/DTFS/LOGSTORE/MEMFS,
+  PURE/MM/APR and dynamic FSINFO feature integration.
+
 ### 2026-11-07 v1298 F12/F13 production OOM signoff
 
 The requester-only BRK physical-OOM production policy is now enabled
