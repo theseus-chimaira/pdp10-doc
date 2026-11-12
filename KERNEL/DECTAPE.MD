@@ -1,3 +1,24 @@
+## 2026-11-12 v1519: native DTFS kernel mount-admission verification
+
+The direct DTFS MOUNT_UNIT kernel path previously trusted the
+userspace probe and did not independently validate physical media.
+It now invalidates old clean BCACHE/directory identities, reads
+native directory block 0144 **through real DTC I/O**, checks
+native magic, reserved owners for blocks 0/0144, and the three
+terminal native allocation tags before publishing VFS/media owner.
+The existing raw DTC patch path, workspace and on-media format are
+unchanged. Native PDP-6 source-linked source-admission test PASS;
+six unsafe source mutations rejected, DTFS/BCACHE regressions PASS.
+Isolated GCC 32K and KCC 256K tape-root links PASS; the separate
+32K fixed-KCORE size gate still FAILS (`023241` >= `020000` octal).
+Cost +27 optional MRES code words, no permanent data or fixed KCORE.
+**Format validation does not establish unique tape identity**:
+the native DTFS image has magic/owner markers but no unique volume
+identifier. Different-media replacement, old open FILE/dirty owners,
+and authoritative physical loss detection remain OPEN. See
+`STATUS/KCORE-FEATURE-STATE-V1519.MD` and DAIMOS
+`design/kcore-dtfs-native-mount-validation-v1519.md`.
+
 ## 2026-11-12 v1518: DTFS failed read/write invalidates shared cache
 
 Source-linked optional DTFS DTC read/write wrappers now clear

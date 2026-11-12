@@ -1,3 +1,22 @@
+## 2026-11-12 v1519: native DTFS admission is physically checked
+
+- [x] Direct `SYS_DTFS_MOUNT`/DTFS MOUNT_UNIT must not bypass
+  native format validation merely because DTFSPROBE is normally
+  run by userland. A fresh raw DTC directory read (not BCACHE)
+  now checks magic, reserved allocation owners and native
+  terminal tags before VFS publication. Actual PDP-6 source
+  test and six negative mutations PASS. DTFS/BCACHE regressions,
+  GCC 32K and KCC 256K tape-root full links PASS. Cost +27
+  optional MRES words, zero data/fixed KCORE; strict 32K KCORE
+  size gate remains FAILED and must not be reported as accepted.
+- [ ] Native DTFS lacks a persistent unique volume ID: decide
+  exact identity storage/compatibility strategy before enabling
+  safe different-tape replacement or resurrecting open/dirty FILE
+  and vnode ownership. Same-format magic is not identity.
+- [ ] Find real Type-551 physical-loss evidence, route confirmed
+  TSFS root member disappearance to v1515 HALT, and physically
+  test independent non-root DTFS return/replacement handling.
+
 ## 2026-11-12 v1518: DTFS observed-I/O error cache coherency PASS
 
 - [x] Source-linked PDP-6 DTFS physical read/write, directory
