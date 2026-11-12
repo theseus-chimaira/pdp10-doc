@@ -1,3 +1,17 @@
+## 2026-11-12 v1514: non-root retained mount and checked unmount PASS
+
+- [x] Source-linked PDP-6 native v1514 tests real VFS unmount:
+  non-root D6FS sync failure retains mount/RO/root namespace
+  and leaves FILE owner alone; return of the same medium permits
+  provider cleanup and exact secondary retirement. Three
+  negative ordering mutations rejected; no production RAM.
+- [ ] Actual physical unplug/return and *replacement* media:
+  revalidation, BCACHE invalidation, dirty data, pinned/open FILE
+  safe lifecycle. Native failure/return is not full recovery.
+- [ ] Confirmed root/BACKSTORE loss classifier and fatal HALT,
+  no reconstruction, plus mixed providers, F1 PURE/MM/APR,
+  dynamic FSINFO; compression/optimization afterward.
+
 ## 2026-11-12 v1513: critical media HALT; secondary media recovery
 
 - [x] Adopt crash-only policy for **confirmed** root and

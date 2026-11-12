@@ -1,3 +1,17 @@
+## 2026-11-12 v1514: non-root failed-sync retains VFS mount
+
+Native PDP-6 source-linked `vfs_unmount` refuses teardown
+when secondary D6FS sync returns -1. Its mount root, target,
+RO policy and FILE owner survive; root remains unchanged.
+When the same medium returns, the VFS successfully syncs,
+prepares provider unmount, unlocks FILE ownership and clears
+only the secondary mount slot. Three executed unsafe VFS
+ordering mutants were rejected. This verifies a clean
+*return-to-unmount* contract, not hot-unplug or revalidation
+of new media. Testkit `34fab36`, DAIMOS
+`design/kcore-nonroot-unmount-return-v1514.md` and
+`STATUS/KCORE-FEATURE-STATE-V1514.MD`.
+
 ## 2026-11-12 v1513: non-root media return, native D6FS PASS
 
 The real `d6fs_reader_get_block` and `fs_backing_read` source
