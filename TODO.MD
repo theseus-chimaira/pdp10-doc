@@ -15,6 +15,19 @@ See `STATUS/KCORE-FEATURE-STATE-V1539.MD` and the testkit v1539
 physical witness. The v1538 status section below is retained as
 historical evidence and superseded for single-root-member coverage.
 
+## 2026-11-13 v1543: real DRM236 D6FS root loss accepted
+
+- [x] The KCC `ROOT=drum BOOT=drm` PDP-6 guest mounts D6FS
+  from DR0..DR3, detaches all four selected root members,
+  and HALTs at the exact root PC 003743 on required root
+  `/SYSTEM/INIT` physical data I/O. Type-270 v1540 root HALT
+  also accepted. No production source/RAM change in v1543.
+- [ ] Remaining P0-A: actual failed noncritical secondary
+  DSK270/DRM236 I/O must not stop another selected root; a
+  mere unused-drive DETACH is insufficient proof. Combine
+  ROOT/BACKSTORE DEVICE/VOLUME physical faults and verify
+  exact owner reason. Do not reopen the accepted policy.
+
 ## 2026-11-13 v1542: physical critical BACKSTORE acceptance
 
 - [x] Full 256K KCC PDP-6 real Type-236 PI2 error completion for a

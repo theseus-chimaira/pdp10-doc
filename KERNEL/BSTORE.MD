@@ -1,3 +1,18 @@
+## 2026-11-13 v1543: actual DRM236 root fail-stop qualified
+
+The normal `ROOT=drum BOOT=drm` 256K KCC PDP-6 D6FS root
+boots from four selected Type-236 drums. After an authentic PID1
+root checkpoint, physical DR0..DR3 DETACH followed by a required
+uncached `/SYSTEM/INIT` data read reaches the root HALT at octal
+PC 003743. The BACKSTORE-specific HALT remains distinct at 003747;
+v1542 physically validated the latter with a live Type-236 PI2
+error-path injection. The earlier D6FS Type-270 root v1540 also
+PASSes. No code or RAM change in v1543.
+
+Secondary DSK/DRM actual failed-I/O negative controls and shared
+ROOT/BACKSTORE DEVICE/VOLUME fault cases remain open; see
+`STATUS/KCORE-FEATURE-STATE-V1543.MD`.
+
 ## 2026-11-13 v1542: physical Type-236 BACKSTORE failure HALT accepted
 
 Actual 256K PDP-6 KCC physical Type-236 PI2 completion failure
