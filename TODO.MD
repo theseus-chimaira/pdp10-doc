@@ -1,3 +1,20 @@
+## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
+
+- [x] Full 256K PDP-6 selected three-member TSFS root: physically
+  detach DTC0 only, retain attached DTC1/DTC2, then issue a required
+  uncached root-file read. Exact root-specific HALT at linked octal
+  PC `003743` PASS. No extra resident code or DATA/BSS.
+- [x] v1538 full root-set loss and v1534 independent nonroot DTFS
+  failure remain PASS with the revised fail-stop policy.
+- [ ] Still open: real D6FS disk/drum-root physical outage, separate
+  BACKSTORE unavailability escalation with no false transient PI
+  HALTs, and combined device-owner acceptance. Do not revive the
+  superseded requirement for a hardware proof of permanent root loss.
+
+See `STATUS/KCORE-FEATURE-STATE-V1539.MD` and the testkit v1539
+physical witness. The v1538 status section below is retained as
+historical evidence and superseded for single-root-member coverage.
+
 ## 2026-11-13 v1538: current root-storage P0-A policy and acceptance
 
 - [x] Root provider (selected D6FS or TSFS) now fails stop on a
