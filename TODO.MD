@@ -45,6 +45,16 @@ historical evidence and superseded for single-root-member coverage.
 - [ ] Mixed ROOT/BACKSTORE shared DEVICE/VOLUME fault
   qualification remains separate; no owner release on failure.
 
+## 2026-11-13 v1546: shared critical-service native order
+
+- [x] Source-linked PDP-6 D6FS root and BACKSTORE share one
+  DSK270/DRM236 or mapped VOLUME physical unit. Twelve cases,
+  five unsafe source mutants PASS; exact distinct HALT,
+  unchanged owned blocks and correct no-second-operation order.
+- [ ] Physical full guest with actual shared ROOT/BACKSTORE
+  DEVICE/VOLUME failure and live swapped owners remains P0-A.
+  No production code or RAM growth. Strict 32K HOLD.
+
 ## 2026-11-13 v1543: real DRM236 D6FS root loss accepted
 
 - [x] The KCC `ROOT=drum BOOT=drm` PDP-6 guest mounts D6FS

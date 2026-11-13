@@ -31,6 +31,19 @@ The full-guest secondary physical negative and mixed BACKSTORE
 DEVICE/VOLUME fault tests are still open. See
 `STATUS/KCORE-FEATURE-STATE-V1544.MD`.
 
+## 2026-11-13 v1546: native shared ROOT/BACKSTORE order accepted
+
+The genuine D6FS reader, DSK270/DRM236 adapter, BACKSTORE
+DEVICE/VOLUME gateway and both v1515 HALT leaves execute together
+under the PDP-6 native CPU. Twelve shared-unit cases and five
+unsafe source mutants PASS: first failed root vs swap request
+selects its own reason-specific HALT, while owned backing blocks
+are not freed and the second service is not invoked. This is
+source-linked validation, not a full-guest combined-controller
+physical fault acceptance; that P0-A case remains open.
+No fixed code/RAM change; see
+`STATUS/KCORE-FEATURE-STATE-V1546.MD`.
+
 ## 2026-11-13 v1543: actual DRM236 root fail-stop qualified
 
 The normal `ROOT=drum BOOT=drm` 256K KCC PDP-6 D6FS root
