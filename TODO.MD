@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1548 (2026-11-13)
+## CURRENT KCORE FEATURES after v1549 design (2026-11-13)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -18,11 +18,16 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   of a previously discarded, genuinely partial WRITE_UNCERTAIN
   secondary DTFS volume after later reinsertion or cold boot;
   preserve owner/cwd/PIPE/swap lifetimes and replacement identity.
+  v1549 checked DTVOL2 pre-write intent protocol and offline
+  prefix-partial / real `mkdtfs` media models PASS. There is
+  **no deployed KCORE durability implementation yet**; physical
+  native Type-551 and cold-boot acceptance remain open.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Acceptance status: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1549.MD`.
+Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
 
