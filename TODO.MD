@@ -1,3 +1,29 @@
+## CURRENT KCORE FEATURES after v1548 (2026-11-13)
+
+The dated entries below preserve historical acceptance and earlier
+open questions. This top section supersedes their P0-A `OPEN`
+claims; do not treat historical status lines as separate current
+tasks. No KCORE optimization or 32K reduction is authorized.
+
+- [x] **P0-A critical ROOT/BACKSTORE fail-stop COMPLETE.**
+  Both full-guest orders on shared DRM236 root plus owned BLOCKSET
+  VOLUME now PASS: BACKSTORE-first v1547 to HALT `003747`, and
+  ROOT-first v1548 to HALT `003743` with octal `0320` swap
+  blocks owned at arm and HALT. Native test, actual selected
+  PI2 driver error path and 13 evidence mutations PASS;
+  root tape/disk/drum and independent mounted secondary
+  hardware negative tests remain accepted. An injected PI2
+  branch is not the same as natural hardware disappearance.
+- [ ] **P0-B:** durable rejection/authorized repair or reformat
+  of a previously discarded, genuinely partial WRITE_UNCERTAIN
+  secondary DTFS volume after later reinsertion or cold boot;
+  preserve owner/cwd/PIPE/swap lifetimes and replacement identity.
+- [ ] **P1-C:** real concurrent process swap/restore with MEMFS
+  persistent snapshot and independent LOGSTORE fault activity;
+  check backing bitmap, MM and cache ownership isolation.
+
+Acceptance status: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
+
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
 
 - [x] Full 256K PDP-6 selected three-member TSFS root: physically

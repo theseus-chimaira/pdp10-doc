@@ -1,3 +1,21 @@
+## 2026-11-13 v1548: complete critical ROOT/BACKSTORE fail-stop gate
+
+Both orders of a critical service failure on shared selected
+DRM236 D6FS root/BACKSTORE have now been tested on a full 256K
+PDP-6 guest. v1547 BACKSTORE-first HALTs at `003747`; v1548
+ROOT-first, after a real cache-miss FILE data read while octal
+`0320` BACKSTORE blocks are owned, HALTs at ROOT `003743`.
+The linked post-HALT owner count remains octal `0320`, the mapped
+DRM volume and published root are verified, and 13 negative
+evidence controls reject false classification. Both use actual
+Type-236 PI2 completion with a selected injected error path,
+not natural hardware removal.
+
+**P0-A closed** under this explicit service-unavailability policy
+and accepted physical/native matrix. No new production code or
+resident words in v1548. See
+`STATUS/KCORE-FEATURE-STATE-V1548.MD`.
+
 ## 2026-11-13 v1545: actual noncritical mounted DSK/DRM failure PASS
 
 Full PDP-6 guest mounted secondary D6FS on genuine independently
