@@ -15,6 +15,23 @@ See `STATUS/KCORE-FEATURE-STATE-V1539.MD` and the testkit v1539
 physical witness. The v1538 status section below is retained as
 historical evidence and superseded for single-root-member coverage.
 
+## 2026-11-13 v1545: real secondary D6FS DSK270/DRM236 outage
+
+- [x] 256K PDP-6 selected DRM236 D6FS ROOT with independent
+  mounted DSK270 D6FS; physically detach all DSK secondary
+  members, observe nonfatal failed file READ, root READ survives.
+- [x] Inverse DSK270 selected ROOT / DRM236 mounted secondary:
+  after physical DR0..3 detach secondary read returns error and
+  root read survives. Real `dsys_d6fs_mount`, `d6fsck`-validated
+  14-word handoff and mount ID2/provider6; six corrupt-media
+  and five wrong-ABI negative test controls rejected.
+- [x] Correct transient KINIT DSK direct filesystem patch sites
+  7/8/11/12 from raw low-level service to existing public
+  Type-270 address-conversion wrappers; no new fixed words/RAM.
+- [ ] Remaining P0-A shared ROOT/BACKSTORE DEVICE/VOLUME fault
+  ordering and distinct critical owner HALT reason; retain
+  authoritative ownership without fabricated release.
+
 ## 2026-11-13 v1544: D6FS/DSK/DRM source-linked isolation
 
 - [x] Native 24-case D6FS read/write/physical DSK270/DRM236

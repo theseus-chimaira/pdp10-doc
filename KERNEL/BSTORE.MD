@@ -1,3 +1,20 @@
+## 2026-11-13 v1545: actual noncritical mounted DSK/DRM failure PASS
+
+Full PDP-6 guest mounted secondary D6FS on genuine independently
+validated Type-270 DSK media while D6FS ROOT used Type-236 DRM.
+After real DSK DETACH, secondary file-data READ returned error,
+without stopping KCORE; root file-data READ succeeded. The
+inverse DSK ROOT/DRM secondary scenario also PASSes.
+
+The physical test revealed KINIT had patched DSK filesystem
+adapter slots directly to raw MRES, skipping the resident
+Type-270 physical-address conversion. The four sites now call
+`dsk270_read_sector` or `dsk270_write_sector`. Native ABI tests
+and corrupt-media mutation controls PASS, with no extra fixed
+KCORE code/RAM or ABI change. Combined shared ROOT/BACKSTORE
+DEVICE/VOLUME physical failure acceptance remains open; see
+`STATUS/KCORE-FEATURE-STATE-V1545.MD`.
+
 ## 2026-11-13 v1544: physical adapter secondary isolation, native PASS
 
 Source-linked PDP-6 tests now connect the actual D6FS read/write
