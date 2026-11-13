@@ -15,6 +15,20 @@ See `STATUS/KCORE-FEATURE-STATE-V1539.MD` and the testkit v1539
 physical witness. The v1538 status section below is retained as
 historical evidence and superseded for single-root-member coverage.
 
+## 2026-11-13 v1542: physical critical BACKSTORE acceptance
+
+- [x] Full 256K KCC PDP-6 real Type-236 PI2 error completion for a
+  valid owned BACKSTORE WRITE HALTs at v1515 reason-2 PC 003747.
+  Error counter 1, enabled 1, used octal 0320; four clean
+  pre-fault samples. Nine corrupt physical witness mutations
+  rejected; no production KCORE source/RAM change in v1542.
+- [ ] Remaining P0-A hardware profiles: alternate DRM-root,
+  independent secondary DSK/DRM negative fault and combined
+  root/BACKSTORE DEVICE/VOLUME fault. Native v1541 already
+  covers direct/mapped source paths; physical profile still open.
+- [ ] P0-B and P1-C/D/E stay strictly separate; do not reopen
+  the accepted selected-root or BACKSTORE policy.
+
 ## 2026-11-13 v1541: current critical storage P0-A policy
 
 - [x] Required selected root filesystem and active/owned BACKSTORE

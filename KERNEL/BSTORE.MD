@@ -1,3 +1,17 @@
+## 2026-11-13 v1542: physical Type-236 BACKSTORE failure HALT accepted
+
+Actual 256K PDP-6 KCC physical Type-236 PI2 completion failure
+on a live, already-owned BACKSTORE WRITE PASS: final I/O returns
+through the unchanged v1541 fixed gateway and machine HALTs at
+octal PC 003747 (linked v1515 entry 003740+7, not root PC 003743).
+Native post-HALT examination confirms one selected PI2 error,
+enabled BACKSTORE, and octal 0320 allocated backing blocks.
+Nine corrupt-evidence mutations rejected. Earlier v1511/v1512
+scheduler retry after the **final failed** backing I/O is now
+intentionally superseded. No production code or resident data
+added by the v1542 physical acceptance test. See
+STATUS/KCORE-FEATURE-STATE-V1542.MD.
+
 ## 2026-11-13 v1541: fatal failure of active or still-owned BACKSTORE
 
 Fixed `fs_mres.s` checks final negative results from valid BACKSTORE
