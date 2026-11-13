@@ -1,3 +1,27 @@
+## 2026-11-13 v1541: fatal failure of active or still-owned BACKSTORE
+
+Fixed `fs_mres.s` checks final negative results from valid BACKSTORE
+READ/WRITE operations after the existing physical driver recovery.
+For enabled swap or any remaining allocated blocks, it dispatches
+with reason 2 to v1515's BACKSTORE-specific no-return HALT. The
+shared gateway covers direct DSK270/DRM236 DEVICE and multi-member
+VOLUME mapping failures. Unlike v1513/v1515's earlier proposals,
+positive proof of permanent removal is not required: failing a
+required critical service is sufficient.
+
+Do not confuse the enabling flag with process-block ownership:
+disabling new swap allocations while DISK owners remain cannot
+make BACKSTORE optional. Conversely an inactive unowned optional
+KINIT snapshot probe returns -1 without HALT. Invalid range,
+NULL-buffer and zero-count requests never imply broken hardware.
+
+Native source-linked PDP-6 17 cases and six unsafe mutations PASS;
+full KCC fixed KCORE/FS MRES tape-root links PASS, no new permanent
+DATA/BSS or ABI. The old v1511/v1512 post-negative swap retry
+expectation is intentionally superseded by this strict fail-stop
+policy. See `STATUS/KCORE-FEATURE-STATE-V1541.MD`. A full-guest
+physical PI2 BACKSTORE negative/HALT-PC gate is independently open.
+
 ## 2026-11-13 v1538: mounted root fail-stop; BACKSTORE still separate
 
 After bounded physical error recovery, a failed **selected-root**

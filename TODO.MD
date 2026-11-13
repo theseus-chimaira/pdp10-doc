@@ -15,6 +15,29 @@ See `STATUS/KCORE-FEATURE-STATE-V1539.MD` and the testkit v1539
 physical witness. The v1538 status section below is retained as
 historical evidence and superseded for single-root-member coverage.
 
+## 2026-11-13 v1541: current critical storage P0-A policy
+
+- [x] Required selected root filesystem and active/owned BACKSTORE
+  now both use fatal service-level classification after an exhausted
+  actual read/write, not speculative permanent-device-loss bits.
+  Root owner/PC is distinct from BACKSTORE reason 2 HALT.
+- [x] v1541 BACKSTORE direct DSK270/DRM236 and mapped VOLUME
+  actual negative transfer routes to BACKSTORE HALT when enabled
+  or still allocated. Inactive/unowned KINIT probe and invalid
+  requests do not HALT. Source-linked PDP-6 17 cases/six mutants
+  and KCC tape-root fixed+FS MRES link PASS, no new DATA/BSS.
+- [x] v1538/v1539/v1540 root physical acceptance covers all-
+  member TSFS, one-member TSFS, and D6FS disk-root loss at
+  the exact v1515 root HALT PC; independent secondary DTC3
+  physical failed write remains nonfatal (v1534).
+- [ ] v1541 BACKSTORE complete full-guest Type-236/270 physical
+  positive failure and exact **swap**, not root, HALT PC. Earlier
+  v1511/v1512 returned-final-error scheduler retries are
+  superseded intentionally, not silently counted as passing.
+- [ ] Alternate DRM root, independent DSK/DRM noncritical loss,
+  shared DEVICE/VOLUME failure and mixed root/BACKSTORE acceptance.
+  P0-B and P1 tasks remain defined by DAIMOS current `TODO.MD`.
+
 ## 2026-11-13 v1538: current root-storage P0-A policy and acceptance
 
 - [x] Root provider (selected D6FS or TSFS) now fails stop on a
