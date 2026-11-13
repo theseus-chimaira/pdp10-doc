@@ -1,3 +1,19 @@
+## 2026-11-13 v1544: physical adapter secondary isolation, native PASS
+
+Source-linked PDP-6 tests now connect the actual D6FS read/write
+paths to `fs_backing.s` physical DSK270/DRM236 direct and
+interleaved-set mapper and v1538 root owner classifier. All
+24 cases and six source mutants PASS. A failed secondary D6FS
+request must return without stopping the root or affecting
+D6SET root-only I/O counters; a corresponding selected-root
+error HALTs at the root-specific PC. Actual physical controller
+status is a test double, not a detached mounted filesystem.
+No production code/RAM changes, only policy-comment corrections.
+
+The full-guest secondary physical negative and mixed BACKSTORE
+DEVICE/VOLUME fault tests are still open. See
+`STATUS/KCORE-FEATURE-STATE-V1544.MD`.
+
 ## 2026-11-13 v1543: actual DRM236 root fail-stop qualified
 
 The normal `ROOT=drum BOOT=drm` 256K KCC PDP-6 D6FS root

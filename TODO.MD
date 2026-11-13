@@ -15,6 +15,19 @@ See `STATUS/KCORE-FEATURE-STATE-V1539.MD` and the testkit v1539
 physical witness. The v1538 status section below is retained as
 historical evidence and superseded for single-root-member coverage.
 
+## 2026-11-13 v1544: D6FS/DSK/DRM source-linked isolation
+
+- [x] Native 24-case D6FS read/write/physical DSK270/DRM236
+  root-versus-secondary integration, including three-member
+  mapped sets, six unsafe mutants rejected and normal full
+  KCC KCORE/D6FS MRES link PASS. Zero executable/RAM change.
+- [ ] Real full-guest selected TSFS or D6FS root with a separate
+  **validated and mounted** D6FS secondary, physically failed
+  DSK/DRM I/O, nonfatal error return and healthy root progress.
+  Test-only error callbacks alone are insufficient.
+- [ ] Mixed ROOT/BACKSTORE shared DEVICE/VOLUME fault
+  qualification remains separate; no owner release on failure.
+
 ## 2026-11-13 v1543: real DRM236 D6FS root loss accepted
 
 - [x] The KCC `ROOT=drum BOOT=drm` PDP-6 guest mounts D6FS
