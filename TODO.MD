@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1551 (2026-11-13)
+## CURRENT KCORE FEATURES after v1552 (2026-11-13)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -33,11 +33,17 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   PASS. The service is still deliberately unlinked pending
   MM scratch, actual mandatory write gate and owner-safe CLEAN
   unmount; cold-boot/partial-media physical tests are open.
+  v1552 adds a source-linked **MM-allocated, physically pinned**
+  0200-word scratch owner 015 octal for v1551. Eleven strict-MM
+  native scenarios, ten source mutants and a second test using
+  production MM allocator/pin/free instructions all PASS.
+  A failed unpin/free retains the caller's exact MM owner pointer.
+  The wrapper is not yet wired into mounted DTFS and P0-B is OPEN.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1551.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1552.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
