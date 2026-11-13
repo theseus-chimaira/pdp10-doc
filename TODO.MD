@@ -1,3 +1,26 @@
+## 2026-11-13 v1538: current root-storage P0-A policy and acceptance
+
+- [x] Root provider (selected D6FS or TSFS) now fails stop on a
+  genuine backing read/write error after the physical driver's usual
+  bounded recovery. Secondary mounted filesystem errors remain local.
+  Source-linked native PDP-6 D6FS 11 cases/5 mutants and TSFS 12
+  cases/4 mutants PASS; fixed KCORE and matching optional MRES
+  KCC links PASS. No new resident DATA/BSS, no size optimization.
+- [x] Real 256K KCC TSFS-root guest with physically detached DTC3
+  leaves independent DTC4, MEMFS and TSFS root operational (v1534
+  current-source revalidation PASS under v1538).
+- [x] Real 256K PDP-6 TSFS-root DTC0/DTC1/DTC2 physical detachment
+  followed by an actual `/SYSTEM/INIT` root data read: exact v1515
+  root HALT PC `003743` PASS. Warm metadata cache hits alone are
+  not evidence of a physical root I/O failure. Disk/drum D6FS and
+  isolated single-member TSFS-root outages still need acceptance.
+- [ ] Separate BACKSTORE-critical policy for truly unavailable swap
+  service; preserve accepted v1511/v1512 recoverable PI/watchdog
+  behavior and checked held-owner bitmap/slot accounting.
+- [ ] Complete physical root and BACKSTORE positive/negative suite;
+  no premature declaration of entire P0-A closure. Full P1 work
+  remains in DAIMOS `TODO.MD` current head.
+
 ## 2026-11-12 v1520: native DTFS random volume ID and mount retention PASS
 
 - [x] Optional native DTFS `DTVOL1` identity record in reserved

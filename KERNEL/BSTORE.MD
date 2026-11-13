@@ -1,3 +1,24 @@
+## 2026-11-13 v1538: mounted root fail-stop; BACKSTORE still separate
+
+After bounded physical error recovery, a failed **selected-root**
+D6FS/TSFS backing I/O calls the fixed
+`kcore_root_fs_io_failure_v1538` owner gate and then v1515's
+root-specific HALT. A negative secondary filesystem transfer retains
+its mount and ownership, never halting merely because the controller
+is shared with the root. Root failures no longer require proof of
+permanent physical media removal; the tradeoff is that exhausted
+temporary root-I/O errors can stop the machine. The existing v1511/
+v1512 transient BACKSTORE PI/timeout rollback remains safe and active.
+BACKSTORE-critical escalation requires separate full-guest evidence.
+
+Native PDP-6 D6FS 11+5 and TSFS 12+4 cases/mutants PASS; actual KCC
+fixed KCORE and matching MRES links PASS. A booted real DTC3 failure
+with live TSFS root, DTC4 and MEMFS PASSes. Positive physical
+TSFS-root DTC0/DTC1/DTC2 detach and real `/SYSTEM/INIT` data
+failure HALT at octal `003743` also PASS. Disk/drum root and
+BACKSTORE critical paths remain separate open acceptance gates.
+See `STATUS/KCORE-FEATURE-STATE-V1538.MD`.
+
 ## 2026-11-12 v1515: fixed critical-device HALT, including TSFS root tapes
 
 Fixed KCORE exports `kcore_critical_device_lost_v1515` for a
