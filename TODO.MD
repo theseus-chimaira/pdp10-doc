@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1549 design (2026-11-13)
+## CURRENT KCORE FEATURES after v1550 (2026-11-13)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -22,11 +22,16 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   prefix-partial / real `mkdtfs` media models PASS. There is
   **no deployed KCORE durability implementation yet**; physical
   native Type-551 and cold-boot acceptance remain open.
+  v1550 installed the independent PDP-6 DTVOL2 record parser
+  and explicit experimental host formatter option; 13 native
+  media cases, seven unsafe source mutants and legacy v1520
+  regression PASS. Parser is NOT linked into production DTFS;
+  no write-ahead or clean-unmount feature has been enabled.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1549.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1550.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
