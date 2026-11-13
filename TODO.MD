@@ -45,6 +45,18 @@ historical evidence and superseded for single-root-member coverage.
 - [ ] Mixed ROOT/BACKSTORE shared DEVICE/VOLUME fault
   qualification remains separate; no owner release on failure.
 
+## 2026-11-13 v1547: shared physical DRM-root BACKSTORE-first
+
+- [x] Full 256K KCC PDP-6 `ROOT=drum BOOT=drm`: four-member
+  D6FS root and mapped swap share DR0..DR3. One selected
+  Type-236 PI2 error for owned BACKSTORE WRITE HALTs at
+  distinct swap PC `003747`; octal `0320` blocks retained,
+  root/volume/device mapping and nine mutation guards PASS.
+- [ ] P0-A final combined physical gate: ROOT-first failed
+  actual transfer *while BACKSTORE still owns blocks*.
+  Native v1546 proves both orders; physical v1547 proves swap
+  first. No new KCORE code/RAM; 32K/optimization HOLD.
+
 ## 2026-11-13 v1546: shared critical-service native order
 
 - [x] Source-linked PDP-6 D6FS root and BACKSTORE share one

@@ -31,6 +31,20 @@ The full-guest secondary physical negative and mixed BACKSTORE
 DEVICE/VOLUME fault tests are still open. See
 `STATUS/KCORE-FEATURE-STATE-V1544.MD`.
 
+## 2026-11-13 v1547: full-guest shared DRM root BACKSTORE HALT
+
+On a complete 256K PDP-6 with D6FS `ROOT=drum`, mapped
+BACKSTORE shares selected DR0..DR3 physical members. A
+selected real Type-236 PI2 error completion on an owned swap
+WRITE reaches the distinct swap HALT `003747`, preserving
+octal `0320` owned blocks. Physical root/device/VOLUME
+mapping, four clean pre-error samples and nine corrupt-evidence
+mutants PASS. No production code/RAM change; this is a
+disposable controller error-path injection, not real drum removal.
+
+ROOT-first error while those owners remain live is still open;
+see `STATUS/KCORE-FEATURE-STATE-V1547.MD`.
+
 ## 2026-11-13 v1546: native shared ROOT/BACKSTORE order accepted
 
 The genuine D6FS reader, DSK270/DRM236 adapter, BACKSTORE
