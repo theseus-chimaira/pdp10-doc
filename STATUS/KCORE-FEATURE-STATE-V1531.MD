@@ -40,6 +40,19 @@ It is a discard-and-replacement protocol,
 not a data repair algorithm or silent
 automatic recovery.
 
+**Durability limit:** this operation does not
+maintain a persistent blacklist of the
+discarded old DTC volume. The volatile
+WRITE_UNCERTAIN marker disappears after
+restart; later physical reinsertion of
+the damaged tape may pass ordinary valid
+RBN0/directory MOUNT checks. Administrators
+must retain discarded media offline for
+salvage or disposal. Durable cross-reboot
+bad-volume refusal/data-integrity certification
+is a separate OPEN P0-B policy gate if
+required by the system's operating policy.
+
 ## Physical acceptance
 
 The complete real guest:
