@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1552 (2026-11-13)
+## CURRENT KCORE FEATURES after v1553 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -39,11 +39,16 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   production MM allocator/pin/free instructions all PASS.
   A failed unpin/free retains the caller's exact MM owner pointer.
   The wrapper is not yet wired into mounted DTFS and P0-B is OPEN.
+  v1553 authenticates the VFS DTFS root/mount and stored volume ID
+  for its first-write dirty barrier. Eighteen PDP-6 cases and
+  13 unsafe source mutations PASS/rejected. It remains unlinked
+  until physical already-armed media revalidation, real provider
+  write routing and owner-excluding CLEAN/unmount are complete.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1552.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1553.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
