@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1557 (2026-11-14)
+## CURRENT KCORE FEATURES after v1558 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -70,11 +70,20 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   V1/V1 behavior remains. Native 26 cases/8 mutants and 24
   real-image mount cases/11 mutants PASS; old v1519/v1520 and
   full KCC MRES link PASS. No writable V2 is enabled.
+  v1558 fixes real physical short/false-successful admission:
+  the shared RBN0144 workspace is zeroed before each native
+  directory read; RBN0 gets 128 **nonzero all-one sentinels**
+  so no-byte success cannot masquerade as valid zero legacy.
+  Unlinked v1551 dirty arm also clears its MM scratch before
+  initial read and final readback. Native 17 arm cases/10 mutants,
+  28 real-media mount cases/13 mutants and 20 replacement cases/
+  six mutants PASS, plus old v1519/v1520/v1555/v1556 and full
+  KCC DTFS MRES link PASS. Writable V2 and CLEAN/unmount still OPEN.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1557.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1558.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
