@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1554 (2026-11-14)
+## CURRENT KCORE FEATURES after v1555 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -50,11 +50,18 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   real production MM verify and 4 mutations all PASS.
   Still unlinked; mandatory provider mounting/writing and final
   CLEAN-unmount with cold-boot physical acceptance remain OPEN.
+  v1555 integrates **real DTFS MRES DTVOL2/CLEAN mount admission,
+  READ-ONLY only**. The central write veneer rejects any internal
+  DATA/DIR write to a unit with a published V2 mount, including
+  another mount of the same unit. Full KCC optional MRES link
+  PASS; 15 mount cases/9 mutants, 12 write cases/7 mutants,
+  12 C89 probe checks and v1519/v1520/v1522 regressions PASS.
+  Writable V2, exclusive CLEAN/unmount and cold boot remain OPEN.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1554.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1555.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
