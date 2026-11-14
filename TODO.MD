@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1566 (2026-11-14)
+## CURRENT KCORE FEATURES after v1567 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -159,11 +159,26 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   READ-ONLY veto remains UNCHANGED. **P0-B OPEN:** media-generation/
   exchange, partial physical DATA/DIR/CLEAN, reinsertion and
   post-RW cold boot and rollback acceptance.
+  v1567: **actual PDP-6 Type-551 interrupted physical RBN0 CLEAN and
+  second unmodified production cold boot PASS.** Eleven physically
+  booted DTVOL2 crash images (ten RO/RW refusals plus one valid CLEAN
+  negative control showing DATA corruption undetected) and full
+  SHA-256 immutability. A test-only source-matched image physically
+  armed DIRTY with production v1551/v1552, then used SIMH's genuine
+  `PARTIALWRITE=0000:1` to interrupt unmodified v1566 CLEAN after
+  exactly one changed 36-bit word. Exact instruction breakpoints,
+  flushed on-media record comparison and real sticky VFS refusal
+  PASS. A fresh completely unmodified KCC boot refused both RO/RW
+  of the same torn tape without publishing a mount. Original v1529
+  physical partial DATA regression PASS. Production changes/RAM: 0.
+  **P0-B OPEN**: no Type-551 mechanical reel-generation lock;
+  partial V2 DATA/DIR and removable exchange/replacement/reinsertion
+  after user RW still unproven; DTVOL2 remains RO.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1566.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1567.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
