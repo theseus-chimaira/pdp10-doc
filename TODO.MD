@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1556 (2026-11-14)
+## CURRENT KCORE FEATURES after v1557 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -64,11 +64,17 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   KCC full DTFS MRES assemble/fold/link PASS. Writable V2 remains
   DISABLED pending mandatory DIRTY write gate, retained scratch,
   exclusive CLEAN/unmount and physical cold-boot acceptance.
+  v1557 adds the actual native production exclusive V2 physical-
+  unit mount check: V2 conflicts with ANY existing DTFS on its
+  DTC unit; V1 conflicts with an existing V2 on the same unit;
+  V1/V1 behavior remains. Native 26 cases/8 mutants and 24
+  real-image mount cases/11 mutants PASS; old v1519/v1520 and
+  full KCC MRES link PASS. No writable V2 is enabled.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1556.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1557.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
