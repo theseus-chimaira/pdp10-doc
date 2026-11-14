@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1558 (2026-11-14)
+## CURRENT KCORE FEATURES after v1560 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -79,11 +79,22 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   28 real-media mount cases/13 mutants and 20 replacement cases/
   six mutants PASS, plus old v1519/v1520/v1555/v1556 and full
   KCC DTFS MRES link PASS. Writable V2 and CLEAN/unmount still OPEN.
+  v1560 establishes the retained DTFS MM scratch `basep` lifetime
+  in the existing per-slot VFS provider-private auxiliary word,
+  shared with D6FS's reader slot on disjoint provider mounts.
+  Native VFS refuses a stale owner before DTFS publication and
+  after final owner recheck before unmount; poisoned discard
+  refuses both before and after sleeping replacement I/O.
+  No added fixed RAM or mount slab word; native 16 helper/5 mutants,
+  14 VFS publish/unmount/5 mutants and 5 ordering mutants PASS,
+  plus v1514/v1523 regressions and full KCC MRES link. Actual
+  v1552 write gateway still UNLINKED; writable V2, CLEAN/unmount,
+  physical Type-551 replacement and cold boot remain P0-B OPEN.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1558.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1560.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
