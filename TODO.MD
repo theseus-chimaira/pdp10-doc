@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1555 (2026-11-14)
+## CURRENT KCORE FEATURES after v1556 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -57,11 +57,18 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   PASS; 15 mount cases/9 mutants, 12 write cases/7 mutants,
   12 C89 probe checks and v1519/v1520/v1522 regressions PASS.
   Writable V2, exclusive CLEAN/unmount and cold boot remain OPEN.
+  v1556 completes actual production V2/CLEAN read-fault recovery:
+  strict physical RBN0, saved 72-bit ID, unchanged media/root/
+  read-only policy after sleeping I/O; 29 native PDP-6 cases,
+  14 unsafe mutants and legacy v1522 acceptance all PASS.
+  KCC full DTFS MRES assemble/fold/link PASS. Writable V2 remains
+  DISABLED pending mandatory DIRTY write gate, retained scratch,
+  exclusive CLEAN/unmount and physical cold-boot acceptance.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1555.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1556.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
