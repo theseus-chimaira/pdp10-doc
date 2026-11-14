@@ -1,9 +1,21 @@
-## CURRENT KCORE FEATURES after v1574 (2026-11-14)
+## CURRENT KCORE FEATURES after v1575 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
 claims; do not treat historical status lines as separate current
 tasks. No KCORE optimization or 32K reduction is authorized.
+
+- [x] P0-B CLOSED v1575 for explicit **operator-trust DTVOL2**:
+  full physical RW/DIRTY/CLEAN/reboot, torn DATA and sticky owner,
+  destructive discard of an unowned poisoned VFS mount while the
+  original DIRTY reel remains installed, RW/RO remount refusal,
+  fresh CLEAN replacement mount and independent damaged-reel
+  cold boot PASS. v1531/v1570 raw replacement verifier replaced by
+  serialized cache-only provider drain. VFS owner/MM/PIPE/swap
+  rechecks retained. Optional DTFS MRES -89 words; fixed RAM
+  unchanged. No hardware interlock or auto-repair is claimed;
+  legacy V1 abandoned-reel safety requires operator quarantine.
+  See `STATUS/KCORE-FEATURE-STATE-V1575.MD`.
 
 - [x] v1574 Type-136 reverse WRITE count overrun: the production
   driver's reversed final-data PI3 now leaves count zero to dispatch

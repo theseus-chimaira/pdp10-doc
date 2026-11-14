@@ -1,3 +1,19 @@
+## 2026-11-14 v1575: DTVOL2 RW and operator-trust discard accepted
+
+The previously documented hardware-interlocked writable-DECtape
+requirement is superseded **only** by the explicitly accepted
+trusted-operator contract. A writable physical reel remains installed
+for the full mount. DTVOL2 writes first commit physical WRITE_INTENT
+and perform checked final CLEAN; true partial Type-551 writes remain
+WRITE_UNCERTAIN and their DIRTY RBN0 rejects a later cold boot.
+The v1531/v1570 private replacement verifier is removed. Root's
+poisoned-owner discard still waits for a serialized DTFS provider
+lease, invalidates BCACHE and checks process/MM ownership, but reads
+no proposed replacement media. Only a subsequent independent MOUNT
+verifies the newly installed reel. Physical full-guest and source-
+linked negative tests PASS. The optional DTFS MRES shrinks 89 words
+with no added fixed RAM. See `STATUS/KCORE-FEATURE-STATE-V1575.MD`.
+
 ## 2026-11-14 v1571: DTVOL2 writable media-retention boundary
 
 Physical WRITE_INTENT, full 72-bit RBN0 identity, mandatory

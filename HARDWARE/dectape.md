@@ -1,3 +1,19 @@
+## 2026-11-14 v1575: operator-trust DTVOL2 writable profile
+
+DAIMOS has explicitly accepted the weaker operating rule that a
+trusted operator retains every mounted writable DECtape reel until
+successful unmount or root's completed poisoned-owner discard. The
+v1571 hardware proof that Type-551 cannot detect a silent external
+reel exchange remains correct but is no longer a release blocker.
+The kernel still handles partial writes, short reads, real device
+faults, cache invalidation, MM pins, exclusive provider leases and
+physical DTVOL2 DIRTY/CLEAN seals. The v1575 administrative discard
+no longer tests a newly installed reel's 72-bit ID itself: the next
+independent mount does so, while the original DIRTY reel is refused.
+This is not permission for live exchange of a writable reel or an
+automatic recovery of a poisoned legacy V1 tape. See
+`STATUS/KCORE-FEATURE-STATE-V1575.MD`.
+
 ## 2026-11-14 v1574: reverse-write Type-136 count overrun fixed
 
 DAIMOS's real PDP-6 Type-551/Type-136 driver had an independent
