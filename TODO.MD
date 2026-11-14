@@ -1,3 +1,20 @@
+## Current KCORE feature increment: v1580 (2026-11-14)
+
+- [x] Physical 128K KCC/PDP-6 twice cold-booted on same real
+  Type-236 AUXSTORE drum: four sleeping 24K-word process children
+  existed at each privileged persistent MEMFS HALT. The disposable
+  snapshot MRES refused zero actual KCORE `proc_swap_blocks_used`;
+  both genuine physical HALTs passed. Independent raw-drum oracle
+  verified the 35-sector v2 snapshot for the real 3,648-word pool,
+  248 nonzero non-snapshot backing sectors, intact separate
+  LOGSTORE range and byte-identical AUXSTORE descriptor. Boot two
+  recovered exact MEMFS data/XIP and boot-one committed LSREC1.
+  No production code or RAM change.
+- [ ] P1-C remains OPEN for PI-driven simultaneous swap-in DURING
+  snapshot DMA, mapped DEVICE/VOLUME failures, and ownership/
+  BCACHE/PI rollback. This new physical owner witness cannot close
+  those distinct acceptance requirements. P1-D/P1-E/freeze open.
+
 ## Current KCORE feature increment: v1579 (2026-11-14)
 
 - [x] Source-linked original PDP-6 MEMFS snapshot and BACKSTORE
