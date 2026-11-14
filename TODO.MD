@@ -1,9 +1,21 @@
-## CURRENT KCORE FEATURES after v1576 (2026-11-14)
+## CURRENT KCORE FEATURES after v1577 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
 claims; do not treat historical status lines as separate current
 tasks. No KCORE optimization or 32K reduction is authorized.
+
+- [x] P1-C partial v1577 LOGSTORE torn/failure rollback: original
+  producer PDP-6 source and four rejected mutations verify cursor,
+  slot and wakeup stability after failed physical block write.
+  Two full 128K guest cold boots physically write an uncommitted
+  LOGSTORE record on DRM236, simulate negative completion through
+  test-only MRES, observe unchanged cursor and invalid physical
+  readback, retry the same slot, then recover log and MEMFS persistent
+  state across cold boot. This is NOT a natural Type-236 error.
+  **P1-C remains OPEN** for unretried orphan recovery, active
+  swap/snapshot overlap and real hardware DEVICE/VOLUME/PI errors.
+  No production code/RAM. `STATUS/KCORE-FEATURE-STATE-V1577.MD`.
 
 - [x] P1-C v1576 partial physical mixed-storage acceptance:
   one 128K PDP-6 full production guest, two cold boots on the same
