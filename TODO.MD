@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1560 (2026-11-14)
+## CURRENT KCORE FEATURES after v1561 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -90,11 +90,22 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   plus v1514/v1523 regressions and full KCC MRES link. Actual
   v1552 write gateway still UNLINKED; writable V2, CLEAN/unmount,
   physical Type-551 replacement and cold boot remain P0-B OPEN.
+  v1561 links the real v1551-v1554 first-write physical RBN0
+  marker and MM-pinned scratch helpers into optional production
+  DTFS MRES. The native central DATA/DIR write veneer now calls
+  a unique-unit-to-VFS-mounted V2 bridge, passing the exact v1560
+  retained aux slot and preserving raw UNIT/BLOCK/BUFFER across
+  sleeps. The existing v1555 unconditional RO veto still precedes
+  the bridge; no actual V2 RBN0/DATA/DIR write is enabled.
+  PDP-6 35 bridge cases/13 mutants, 12 central veneer cases/9
+  mutants, previous v1554/real v1552 MM, v1559 source audit and
+  full KCC KCORE/DTFS MRES build PASS. P0-B still needs exclusive
+  CLEAN/unmount and physical partial-write/reinsertion/cold boot.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1560.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1561.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
