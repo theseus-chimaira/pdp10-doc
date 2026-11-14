@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1567 (2026-11-14)
+## CURRENT KCORE FEATURES after v1568 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -144,6 +144,16 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   This does NOT yet establish simultaneous Type-551 controller
   I/O, exclusive physical CLEAN/readback or removable-media
   generation safety. **P0-B remains OPEN, DTVOL2 stays RO.**
+  v1568 **real physical DTVOL2 DATA partial and cold boot PASS**:
+  exact DTC3/mount2 test-only RW after provider publication,
+  genuine first-write DIRTY, native directory and DATA physically
+  verified. Real Type-551 `PARTIALWRITE=0145:1` changed exactly
+  one 36-bit DATA word, retained the second old word and complete
+  valid DIRTY RBN0. Poisoned ownership retained. The exact tape
+  on a second unchanged production KCORE cold boot refused both
+  RO/RW and remained byte-identical. Zero production code/RAM
+  change. **P0-B OPEN:** interrupted V2 directory, reel exchange,
+  reinsertion/replacement and RW cutover. Production V2 remains RO.
   v1566 **physical DIRTY->CLEAN prerequisite PASS:** real linked
   DTFS private MRES op027 uses exact owner/VFS quiescence and
   72-bit identity. The existing dynamic MM scratch is pinned,
