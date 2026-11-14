@@ -1,3 +1,21 @@
+## Current KCORE feature increment: v1581 (2026-11-14)
+
+- [x] Actual full 128K PDP-6 Type-236 direct DEVICE failure during
+  persistent MEMFS shutdown with live swap owners. Selected physical
+  snapshot-header DR_DONE goes through original PI2 error and original
+  fatal reason-2 HALT at linked PC `004011`. Post-HALT KCORE words
+  confirm one real descriptor completion, original DRM driver error
+  counter 1, `01374` octal swap-owned
+  blocks, exact `0157670` group address, cleared target and arm.
+  Physical drum has no committed snapshot header, retains 248
+  nonzero backing sectors, and keeps all AUXSTORE partitions intact.
+  Seven intentionally corrupted physical witnesses rejected; no
+  production source/RAM/ABI changes. Injected PI2 is not natural
+  magnetic media failure.
+- [ ] P1-C OPEN: independently scheduled PI swap-in overlap with
+  snapshot DMA, multi-member mapped VOLUME failure/return and exact
+  nonfatal owner/BCACHE/MM rollback. P1-D/P1-E and final freeze OPEN.
+
 ## Current KCORE feature increment: v1580 (2026-11-14)
 
 - [x] Physical 128K KCC/PDP-6 twice cold-booted on same real
