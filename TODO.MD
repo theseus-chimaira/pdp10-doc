@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1569 (2026-11-14)
+## CURRENT KCORE FEATURES after v1570 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -166,6 +166,24 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   Zero production source/RAM change. **P0-B OPEN:** physical reel
   exchange/generation interlock and same/replacement reel policy
   during writable operation. Production DTVOL2 remains READ-ONLY.
+  v1570 **real V2 poisoned-reel same/replacement and two production
+  cold boots PASS:** private op026 now admits a different, fully
+  CLEAN and salted DTVOL2 with valid native directory only for a
+  poisoned V2, preserving V1-to-V1 and all prior owner/MM barriers.
+  Native source-linked PDP-6 30 cases/eight unsafe mutants, v1558
+  20/six and real full V1 v1531 admin regression PASS. Isolated
+  exact DTC3/mount2 test physically wrote DIRTY, suffered a real
+  Type-551 one-word partial DATA write, and rejected the same
+  physically reinserted old reel even after explicit FD/cwd release.
+  Independently stamped different V2/CLEAN physically retired old
+  mount and mounted RO; original and new reel SHA-256 unchanged.
+  Two further wholly unmodified production cold boots rejected old
+  DIRTY RO/RW and mounted new CLEAN RO with no tape changes.
+  **P0-B OPEN:** Type-551 has no atomic reel-generation/interlock
+  guarantee during a subsequent physical WRITE. Specify/verify a
+  physical or operating media-retention contract before allowing
+  production V2 RW. No fixed KCORE or mount-slab RAM growth;
+  optional DTFS MRES TEXT only; v1555 RO mandatory.
   v1566 **physical DIRTY->CLEAN prerequisite PASS:** real linked
   DTFS private MRES op027 uses exact owner/VFS quiescence and
   72-bit identity. The existing dynamic MM scratch is pinned,
