@@ -1,3 +1,25 @@
+## 2026-11-14 v1571: DTVOL2 writable media-retention boundary
+
+Physical WRITE_INTENT, full 72-bit RBN0 identity, mandatory
+before-each-write physical revalidation, quiesced CLEAN and checked
+poisoned-owner replacement cannot guarantee a reel never changes
+in the interval between independent Type-551 operations.
+An unchanged-production PDP-6 guest mounted V2/CLEAN read-only,
+had its DTC3 reel silently exchanged for a different complete
+CLEAN V2 identity while it was idle, and subsequently accepted
+FSINFO/STAT/CHDIR and UNMOUNT on the old VFS owner. Two physical
+boot runs and complete independent old/new reel SHA-256 proofs
+PASSed this **negative** safety oracle. Software sees no reason
+to mark READ_SUSPECT when no physical operation fails.
+
+Real hardware would need an externally enforceable mechanical
+reel-retention and WRITE interlock before lifting production
+v1555 DTVOL2 READ-ONLY. Never substitute a software-only lease,
+status poll or operator acknowledgement for an atomic mechanism.
+P0-B remains OPEN; zero production code/RAM growth in v1571.
+See `STATUS/KCORE-FEATURE-STATE-V1571.MD` and
+`HARDWARE/dectape.md`.
+
 ## 2026-11-12 v1520: optional native DTFS persistent 72-bit identity
 
 Host native `mkdtfs` now records two random 36-bit ID halves

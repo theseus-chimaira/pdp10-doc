@@ -1,3 +1,36 @@
+## 2026-11-14 v1571: physically silent reel exchange, no generation interlock
+
+Two complete unchanged production KCC/PDP-6 boots on valid DTVOL2
+CLEAN reels tested a **silent** physical DTC3 media change. An
+independent second reel had different two-half 72-bit identity,
+complete valid salted CLEAN RBN0 and full native directory. After
+the first reel was mounted RO, real guest PID1 blocked on CTY with
+no DTC3 I/O while SIMH DETACHed and ATTACHed the second reel in a
+single monitor episode. With no observed read failure, the original
+VFS FSINFO/STAT/CHDIR all still succeeded and UNMOUNT completed.
+Both reel SHA-256 digests stayed unchanged. This is a NEGATIVE
+proof of the missing physical media-generation signal, not safe
+permission for a live reel exchange or any production V2 write.
+
+The 1966 DEC TU55 *Instruction Manual*, section 3.3, describes
+placing REMOTE/OFF/LOCAL in OFF to release the brakes for loading
+or removal, then returning to LOCAL/REMOTE. The program can issue
+no command during this mechanical operation. Switching OFF and
+back does not supply this Type-551 guest with a durable counter or
+hardware mechanism that binds verified RBN0 to the next physical
+WRITE. The documented TU55 WRITE LOCK switch can inhibit writing
+but does not guarantee continuous retention of the same reel.
+Manual: https://www.bitsavers.org/pdf/dec/dectape/tu55/H-TU55_MaintMan_Nov66.pdf
+(chapter 3, section 3.3, plus table 3-1).
+
+A true writable-volume guarantee requires a physically enforced
+lock/retention mechanism that prevents changing reels while a
+write is permitted; mere polling, software epochs, RBN0 rereads,
+temporary select status and operator acknowledgments do not
+provide an atomic physical no-exchange guarantee. DAIMOS v1555
+therefore keeps production DTVOL2 READ-ONLY, with P0-B OPEN.
+See `STATUS/KCORE-FEATURE-STATE-V1571.MD`.
+
 ## 2026-11-12 v1517: PDP-6 Type-551 simulated detach status
 
 DAIMOS testkit `daimos-dtc-select-status-v1517.sh` executes

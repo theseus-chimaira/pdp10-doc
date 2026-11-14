@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1570 (2026-11-14)
+## CURRENT KCORE FEATURES after v1571 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -184,6 +184,19 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   physical or operating media-retention contract before allowing
   production V2 RW. No fixed KCORE or mount-slab RAM growth;
   optional DTFS MRES TEXT only; v1555 RO mandatory.
+  v1571 **silent physical reel exchange NEGATIVE PASS (two complete
+  unchanged production PDP-6 boots):** valid V2/CLEAN DTC3 mount
+  was swapped to a distinct fully valid V2/CLEAN ID during blocked
+  PID1 CTY with zero DTC3 I/O/error. Original FSINFO/STAT/CHDIR
+  and UNMOUNT succeeded; old owner had NOT rechecked new RBN0.
+  Both independent reel full SHA-256 digests were unchanged.
+  v1517 present-unit CONI status was rerun PASS but has no sticky
+  reel-change indication. **P0-B OPEN:** no hardware no-exchange
+  guarantee binds RBN0 validation to a later WRITE. Physical
+  locking/interlocked write path required; software-only status,
+  renewed reads and an operator acknowledgment are insufficient.
+  Production v1555 DTVOL2 READ-ONLY mandatory; ZERO production
+  code, resident or MRES growth in v1571.
   v1566 **physical DIRTY->CLEAN prerequisite PASS:** real linked
   DTFS private MRES op027 uses exact owner/VFS quiescence and
   72-bit identity. The existing dynamic MM scratch is pinned,
