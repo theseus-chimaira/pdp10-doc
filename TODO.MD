@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1568 (2026-11-14)
+## CURRENT KCORE FEATURES after v1569 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -154,6 +154,18 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   RO/RW and remained byte-identical. Zero production code/RAM
   change. **P0-B OPEN:** interrupted V2 directory, reel exchange,
   reinsertion/replacement and RW cutover. Production V2 remains RO.
+  v1569 **physical directory partial write and second cold boot PASS:**
+  the test-only exact DTC3/mount2 writable path physically armed
+  V2 WRITE_INTENT and wrote initial RBN0144. A subsequent CREATE
+  encountered real Type-551 `PARTIALWRITE=0144:1`; a linked VFS
+  breakpoint allowed full-image byte comparison proving exactly
+  one changed directory word, unchanged valid DIRTY RBN0 and all
+  other blocks. Guest retained the poisoned mount with healthy TSFS.
+  An entirely unchanged production cold boot of the *exact* damaged
+  tape refused both RW/RO and left full-tape SHA-256 identical.
+  Zero production source/RAM change. **P0-B OPEN:** physical reel
+  exchange/generation interlock and same/replacement reel policy
+  during writable operation. Production DTVOL2 remains READ-ONLY.
   v1566 **physical DIRTY->CLEAN prerequisite PASS:** real linked
   DTFS private MRES op027 uses exact owner/VFS quiescence and
   72-bit identity. The existing dynamic MM scratch is pinned,
