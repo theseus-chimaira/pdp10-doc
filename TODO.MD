@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1561 (2026-11-14)
+## CURRENT KCORE FEATURES after v1562 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -101,11 +101,22 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   mutants, previous v1554/real v1552 MM, v1559 source audit and
   full KCC KCORE/DTFS MRES build PASS. P0-B still needs exclusive
   CLEAN/unmount and physical partial-write/reinsertion/cold boot.
+  v1562 adds the tested **transient V2 owner-quiescence prerequisite**:
+  use an existing MM-backed per-mount media bit before sleeping SYNC,
+  reject new FILE/cwd, stale mount and ordinary provider admissions,
+  and release only the original VFS owner's barrier without yielding
+  before retirement. Real V2 RO veto remains active; no physical
+  CLEAN seal has been implemented. Native 41 helper cases/7 mutants,
+  12 complete VFS unmount cases/3 mutants, earlier v1514/v1523/
+  v1554/v1555/v1556/v1560/v1561 regressions and KCC image PASS.
+  Still needed: PIPE/swap and scheduler admission proof, actual
+  owner-safe physical CLEAN/write/readback, media exchange protection,
+  partial writes/reinsertion/cold boot. **P0-B remains OPEN.**
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1561.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1562.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
