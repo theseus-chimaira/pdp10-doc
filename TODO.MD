@@ -1,9 +1,18 @@
-## CURRENT KCORE FEATURES after v1571 (2026-11-14)
+## CURRENT KCORE FEATURES after v1574 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
 claims; do not treat historical status lines as separate current
 tasks. No KCORE optimization or 32K reduction is authorized.
+
+- [x] v1574 Type-136 reverse WRITE count overrun: the production
+  driver's reversed final-data PI3 now leaves count zero to dispatch
+  both normal write ACKs; reverse READ retains its count reset. Two
+  full-physical original/unsafe mutant classes and original native
+  stream/reverse regressions PASS. Full KCC image links, optional
+  tape MRES +1 TEXT, zero fixed RAM. v1572 operator-trust changes
+  remain an independent uncommitted integration and the extra
+  DTVOL2 RBN0 read has not been removed from production.
 
 - [x] **P0-A critical ROOT/BACKSTORE fail-stop COMPLETE.**
   Both full-guest orders on shared DRM236 root plus owned BLOCKSET

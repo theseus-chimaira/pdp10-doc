@@ -1,3 +1,18 @@
+## 2026-11-14 v1574: reverse-write Type-136 count overrun fixed
+
+DAIMOS's real PDP-6 Type-551/Type-136 driver had an independent
+reverse-write completion bug: after the last of 128 reverse DATAO
+words, the handler reloaded `storage_count=0200`. The next DCT
+write acknowledgments were processed as another data stream and
+could corrupt unrelated physical tape blocks without a guest error.
+v1574 retains the original two write ACKs and leaves reverse WRITE
+at zero count; reverse READ still restores its prior word count.
+Exact full-reel tests, original forward/reverse regressions and
+two executed unsafe code mutations establish the correction.
+This is separate from the site's operator-trust assumption about
+reel exchange; operator trust does not make a transfer bug safe.
+See `STATUS/KCORE-FEATURE-STATE-V1574.MD`.
+
 ## 2026-11-14 v1571: physically silent reel exchange, no generation interlock
 
 Two complete unchanged production KCC/PDP-6 boots on valid DTVOL2
