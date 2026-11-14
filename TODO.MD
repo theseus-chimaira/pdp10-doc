@@ -1,9 +1,20 @@
-## CURRENT KCORE FEATURES after v1575 (2026-11-14)
+## CURRENT KCORE FEATURES after v1576 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
 claims; do not treat historical status lines as separate current
 tasks. No KCORE optimization or 32K reduction is authorized.
+
+- [x] P1-C v1576 partial physical mixed-storage acceptance:
+  one 128K PDP-6 full production guest, two cold boots on the same
+  AUXSTORE drum with persistent MEMFS XIP/data and exact physical
+  LOGSTORE record write/read/recovery across boot. v1536 KINIT
+  snapshot-reserved swap bitmap, seven rejected mutants, and v1316
+  source-linked swap-in/MM rollback, three rejected mutants, PASS
+  independently. Descriptor geometry byte-identical. **P1-C OPEN**
+  for active concurrent physical swap + snapshot commit, LOGSTORE
+  partial failure and mixed DEVICE/VOLUME loss/return. Zero new
+  production code/RAM. `STATUS/KCORE-FEATURE-STATE-V1576.MD`.
 
 - [x] P0-B CLOSED v1575 for explicit **operator-trust DTVOL2**:
   full physical RW/DIRTY/CLEAN/reboot, torn DATA and sticky owner,
