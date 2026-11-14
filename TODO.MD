@@ -1,9 +1,21 @@
-## CURRENT KCORE FEATURES after v1577 (2026-11-14)
+## CURRENT KCORE FEATURES after v1578 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
 claims; do not treat historical status lines as separate current
 tasks. No KCORE optimization or 32K reduction is authorized.
+
+- [x] P1-C partial v1578: leave one invalid LOGSTORE physical
+  LSREC1 with a zero commit trailer *unretried* through MEMFS
+  snapshot HALT. Host verifies exact 36-bit physical orphan before
+  second cold boot; fresh production KINIT ignores it and reuses
+  original physical slot/sequence, while MEMFS data/XIP restores.
+  Consecutive physical committed sequences `3,4,5`; four negative
+  altered physical images rejected; native LOGSTORE recovery PASS.
+  Synthetic completion status after actual invalid Type-236 write,
+  NOT a naturally failing controller. **P1-C remains OPEN** for
+  concurrent process swap/HALT and real DEVICE/VOLUME/PI failures.
+  Zero production code/RAM. `STATUS/KCORE-FEATURE-STATE-V1578.MD`.
 
 - [x] P1-C partial v1577 LOGSTORE torn/failure rollback: original
   producer PDP-6 source and four rejected mutations verify cursor,
