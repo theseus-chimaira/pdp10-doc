@@ -1,3 +1,17 @@
+## Current KCORE feature increment: v1579 (2026-11-14)
+
+- [x] Source-linked original PDP-6 MEMFS snapshot and BACKSTORE
+  allocator/free execute together. An existing process and the
+  38-block persistent snapshot remain correctly owned when two more
+  process runs are allocated across invalid-header and metadata I/O
+  callbacks. All 512 bitmap bits, 147/39 sector accounting, final
+  commit order and three executed unsafe mutants PASS/reject.
+  Native physical I/O callbacks are synthetic, not real DMA.
+- [ ] P1-C full real-guest swap/snapshot HALT concurrency and mapped
+  DEVICE/VOLUME/PI controller failure and owner rollback are still
+  open. P1-D alternate real inventory, P1-E uncompressed PURE and
+  final cross-feature acceptance remain open.
+
 ## CURRENT KCORE FEATURES after v1578 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
