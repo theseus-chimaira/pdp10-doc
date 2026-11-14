@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1565 (2026-11-14)
+## CURRENT KCORE FEATURES after v1566 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -144,11 +144,26 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   This does NOT yet establish simultaneous Type-551 controller
   I/O, exclusive physical CLEAN/readback or removable-media
   generation safety. **P0-B remains OPEN, DTVOL2 stays RO.**
+  v1566 **physical DIRTY->CLEAN prerequisite PASS:** real linked
+  DTFS private MRES op027 uses exact owner/VFS quiescence and
+  72-bit identity. The existing dynamic MM scratch is pinned,
+  WR_UNCERTAIN published BEFORE raw I/O; after full physical
+  DIRTY admission, CLEAN write and independent readback, the
+  service frees MM and clears only volatile ARMED/uncertain.
+  VFS rescans owners after sleeping I/O and retains poisoned mounts
+  on partial failure. 84 source-linked native PDP-6 cases, 34
+  rejected unsafe mutations; full KCC build PASS, +28 fixed TEXT
+  words, no added fixed DATA/BSS. A disposable physically booted
+  PDP-6 image performed two genuine Type-551 DIRTY->CLEAN cycles
+  without altering final full-tape SHA-256. The production v1555
+  READ-ONLY veto remains UNCHANGED. **P0-B OPEN:** media-generation/
+  exchange, partial physical DATA/DIR/CLEAN, reinsertion and
+  post-RW cold boot and rollback acceptance.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1565.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1566.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
