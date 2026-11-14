@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1564 (2026-11-14)
+## CURRENT KCORE FEATURES after v1565 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -134,11 +134,21 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   **P0-B OPEN:** real overlapping SYNC/new-owner scheduler race,
   physically checked exclusive CLEAN write/readback, media exchange
   protection and partial RW failure/reinsertion/cold-boot proof.
+  v1565: **actual two-process PDP-6 scheduler crossover PASS**.
+  A source-matched isolated KCORE copy sleeps with the genuine
+  V2 mount quiescence bit acquired; the second real process
+  witnesses sealed provider FSINFO refusal, real OPEN/CHDIR
+  refusal, unchanged cwd, subsequent DTFS retirement and
+  restored underlying TSFS mountpoint access. Whole physical
+  DTC3 tape unchanged. No production code or RAM change.
+  This does NOT yet establish simultaneous Type-551 controller
+  I/O, exclusive physical CLEAN/readback or removable-media
+  generation safety. **P0-B remains OPEN, DTVOL2 stays RO.**
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1564.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1565.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
