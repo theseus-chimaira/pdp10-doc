@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1553 (2026-11-14)
+## CURRENT KCORE FEATURES after v1554 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -44,11 +44,17 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   13 unsafe source mutations PASS/rejected. It remains unlinked
   until physical already-armed media revalidation, real provider
   write routing and owner-excluding CLEAN/unmount are complete.
+  v1554 adds physical DIRTY/identity revalidation for each later
+  write, sharing the existing pinned MM scratch lifecycle. Native
+  17 raw media tests/10 mutations, 23 gate tests/8 mutations,
+  real production MM verify and 4 mutations all PASS.
+  Still unlinked; mandatory provider mounting/writing and final
+  CLEAN-unmount with cold-boot physical acceptance remain OPEN.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1553.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1554.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
