@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1563 (2026-11-14)
+## CURRENT KCORE FEATURES after v1564 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -123,11 +123,22 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   Still needed: full-guest scheduled FILE/PIPE/EXEC interleaving,
   physical exclusive CLEAN/readback and removable Type-551 identity
   protection/fault acceptance. **P0-B remains OPEN.**
+  v1564: **two actual KCC PDP-6 physical cold boots PASS**.
+  The full Type-551 DTC3 DTVOL2/CLEAN image rejects RW, mounts
+  RO, denies unmount against separately scheduled PID2 cwd/FILE
+  owners, retires, remounts RO and retires again; its whole-image
+  SHA-256 is unchanged. A second physical boot with an independently
+  valid WRITE_INTENT seal rejects RO and RW, publishes no slot and
+  leaves tape bytes unchanged. Old DTVOL1 physical cross-owner test
+  also PASS. No production code or RAM change.
+  **P0-B OPEN:** real overlapping SYNC/new-owner scheduler race,
+  physically checked exclusive CLEAN write/readback, media exchange
+  protection and partial RW failure/reinsertion/cold-boot proof.
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1563.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1564.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
