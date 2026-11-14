@@ -1,4 +1,4 @@
-## CURRENT KCORE FEATURES after v1562 (2026-11-14)
+## CURRENT KCORE FEATURES after v1563 (2026-11-14)
 
 The dated entries below preserve historical acceptance and earlier
 open questions. This top section supersedes their P0-A `OPEN`
@@ -112,11 +112,22 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   Still needed: PIPE/swap and scheduler admission proof, actual
   owner-safe physical CLEAN/write/readback, media exchange protection,
   partial writes/reinsertion/cold boot. **P0-B remains OPEN.**
+  v1563 closes staged PURE executable owner exclusion in RUN/EXEC:
+  the production C backing-attach path now checks DTFS quiescence
+  before publication; native mount/backing scanners now count SIDL
+  with or without its stable u-area, including mount IDs 17..26.
+  No extra process/mount/RAM word. 11 native KCC attach and real
+  VFS gate cases/two mutants; 26 actual PDP-6 SIDL/resident/swapped
+  PURE owner cases/six mutants; host and v1382/v1523/v1562/PIPE
+  regressions and full KCC image PASS. +34 fixed KCORE TEXT words.
+  Still needed: full-guest scheduled FILE/PIPE/EXEC interleaving,
+  physical exclusive CLEAN/readback and removable Type-551 identity
+  protection/fault acceptance. **P0-B remains OPEN.**
 - [ ] **P1-C:** real concurrent process swap/restore with MEMFS
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1562.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1563.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
