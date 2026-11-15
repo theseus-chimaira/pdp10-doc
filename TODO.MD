@@ -1,11 +1,33 @@
-## Current KCORE feature increment: v1599 (2026-11-15)
+## Current KCORE feature increment: v1600 (2026-11-15)
+
+- [x] **P1-C v1600 independently attached direct-DEVICE DRM swap
+  failure with DSK270 root:** actual 128K PDP-6 full KCC guest
+  with four distinct physical DSK270 D6FSR2 root members plus
+  separate DR0 AUXSTORE (original physical direct BACKSTORE
+  `05770+010000`, LOGSTORE `05370+0400` octal). Original
+  `device_region_map=400000005770` and `volume_data_blocks=0`
+  explicitly rule out a mapped VOLUME. Original PI6 service
+  wakes two separate swapped SLEEP/DISK children, slots 6 and 7,
+  once; scheduler enters one real DR0 direct BACKSTORE swap READ
+  for **slot 6**, actual physical `006421`, logical `000431`.
+  Authentic DR_DONE PI2 via disposable test-only selected error
+  enters unchanged driver/critical BACKSTORE branch and required
+  fatal reason-2 HALT octal `004011`. No RESIDENT publication,
+  original positive swap and BACKSTORE ownership retained, no
+  false persistent snapshot commit, physical AUXSTORE descriptor
+  and four real DSK-root layouts independently checked. **27**
+  deliberately unsafe witnesses rejected; v1599 23 and v1586 15
+  regression mutants still PASS. Only one swap DMA before
+  mandatory fatal halt; no postfault service claimed. No
+  permanent source/RAM/ABI/media change. Full details in
+  `STATUS/KCORE-FEATURE-STATE-V1600.MD`.
 
 - [x] **P1-C v1599 two independently PI6-woken DISK owners at
   fatal physical BACKSTORE READ:** full 128K PDP-6 with original
   DR0..DR3 four-member D6FS root VOLUME, mapped BACKSTORE and
   real LOGSTORE/MEMFS shutdown snapshot. Original timer service
   wakes *both* distinct original SLEEP/DISK owners, slots **6**
-  and **7**, once. Original scheduler selects slot 7 for one
+  and **7**, once. Original scheduler selects slot 6 for one
   physically mapped Type-236 swap READ; its genuine DR_DONE PI2
   follows a disposable one-shot injected original DRM error
   and unchanged reason-2 BACKSTORE HALT octal **`004011`**.
@@ -46,13 +68,14 @@
   lifecycle, four raw physical D6FSR2 root descriptors and four
   mutation controls PASS. Initial test disabled only DR but
   missed Type-167 DP probe; corrected test, no kernel patch.
-- [ ] **P1-C remaining:** v1599 maps a fatal BACKSTORE PI2
-  failure to a real independently scheduled, double PI6-woken
-  owner set on DRM root VOLUME. Still test **direct DEVICE**
-  DRM AUXSTORE BACKSTORE with DSK270 independent root, separate
-  provider progress before failure, dirty/write-through failures
-  and loaded physical repeatability. Critical owned-media errors
-  remain fatal; do not test for recovery after the required HALT.
+- [ ] **P1-C remaining:** v1599 mapped-DRM-root VOLUME and v1600
+  independent DSK-root/direct-DRM DEVICE fatal swap READ both
+  PASS with two genuine PI6 owner wakeups and retained critical
+  ownership. v1596 separate DTFS fault with writable MEMFS also
+  PASS. Still test dirty/write-through and cache/owner isolation,
+  repeated timing under loaded simulator, and final source-matched
+  full-service physical controller matrix. Critical owned-media
+  errors remain fatal; no service after required HALT is allowed.
 - [ ] **P1-D final source-matched matrix:** accepted real
   DTC/TSFS capacities 7/8, real DSK/DRM D6FS capacity 6,
   actual DSK root with missing DRM capacity 2, physical mounted

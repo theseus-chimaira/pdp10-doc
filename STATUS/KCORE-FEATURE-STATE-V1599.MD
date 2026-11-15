@@ -17,7 +17,7 @@ original clock tick. Both are woken ONCE by the original PI6
 timer service. No test queues RUN or invokes a swap transaction.
 
 The unchanged slot-0 scheduler issues a physical mapped swap
-READ for slot 7. On its first genuine Type-236 DR_DONE PI2,
+READ for slot 6. On its first genuine Type-236 DR_DONE PI2,
 a selected test-only error takes the original `drm236_pi_error`
 path. The original BACKSTORE critical-failure gate reaches the
 no-return reason-2 HALT, **PC octal `004011`**. Exactly one
