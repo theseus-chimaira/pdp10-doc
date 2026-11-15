@@ -1,4 +1,33 @@
-## Current KCORE feature increment: v1601 (2026-11-15)
+## Current KCORE feature increment: v1603 (2026-11-15)
+
+- [x] **P1-C FINAL v1603 full physical storage/swap/BCACHE CLOSED:**
+  two independent actual 128K KCC PDP-6 boots of DR0..DR3 D6FS
+  mapped VOLUME root with real LOGSTORE/MEMFS persisted snapshot.
+  Each original guest has independently PI6-awakened DISK owners
+  **6/7** (one each), five mapped swap READ attempts/**1120** real
+  Type-236 DR_DONE PI2, one checked original MM/bitmap/BCACHE/
+  process owner rollback. The original physical LOGSTORE torn
+  uncommitted WRITE, selected completion error and genuine same-
+  slot committed retry leave a populated D6FS 128-word clean cache
+  exact (0/0 differences; authentic HIT/HIT). Boot1 snapshot written,
+  boot2 restored, 283 other nonzero backing sectors; **44** false
+  cache/PI6/owner/LOGSTORE/raw physical witnesses rejected.
+  Fresh current-source v1592 and v1590 loaded two-boot physical
+  tests PASS. Native original v1602 D6FS clean WRITE-through
+  failed/successful DSK270/DRM236 controller cases 4/4, five unsafe
+  source mutations rejected, complete independent 128-word clean
+  private cache preserved. Original v1544 DSK/DRM owner-adapter
+  24 cases/six mutants and v1490/v1538 source-linked tests PASS;
+  earlier v1599/v1600 fatal mapped VOLUME/direct DEVICE BACKSTORE
+  single READ/PI2 reason-2 HALT `004011`, and v1596 physical
+  DTFS DTC6 outage with healthy MEMFS writes, remain accepted.
+  There is NO dirty/writeback cache daemon; no postfatal recovery
+  or two simultaneous DMA swap READs is claimed. Historical DTFS
+  v1518 test has an outdated pre-v1561 source mutation anchor;
+  not claimed PASS. **P1-C CLOSED**, no production KCORE/RAM/ABI/
+  media change. Distinct P0-B physical reel-retention OPEN,
+  P1-E KA10 and strict 32K size/optimization HOLD. Details:
+  `STATUS/KCORE-FEATURE-STATE-V1603.MD`.
 
 - [x] **P1-D FINAL v1601 dynamic FSINFO/controller matrix CLOSED:**
   full original 128K PDP-6 four-member DRM236 D6FSR2 root with
@@ -89,14 +118,13 @@
   lifecycle, four raw physical D6FSR2 root descriptors and four
   mutation controls PASS. Initial test disabled only DR but
   missed Type-167 DP probe; corrected test, no kernel patch.
-- [ ] **P1-C remaining:** v1599 mapped-DRM-root VOLUME and v1600
-  independent DSK-root/direct-DRM DEVICE fatal swap READ both
-  PASS with two genuine PI6 owner wakeups and retained critical
-  ownership. v1596 separate DTFS fault with writable MEMFS also
-  PASS. Still test dirty/write-through and cache/owner isolation,
-  repeated timing under loaded simulator, and final fault-specific
-  cross-provider ownership matrix. Critical owned-media
-  errors remain fatal; no service after required HALT is allowed.
+- [x] **P1-C final remaining cases CLOSED by v1602/v1603:**
+  v1599/v1600 direct DEVICE and mapped VOLUME fatal swap,
+  v1596 separate physical DTFS/MEMFS provider isolation, native
+  v1602 authoritative WRITE-through/BCACHE failure and physical
+  v1603 two PI6 owners with actual recoverable LOGSTORE torn/retry,
+  exact MM/bitmap/cache rollback and loaded two-boot repeatability
+  all accepted. No recovery after a critical owned-media HALT.
 - [x] **P1-D final source-matched matrix:** completed by v1601
   reverse no-DSK physical root, current-source no-DRM physical
   rerun and native service-pair cases, together with accepted
