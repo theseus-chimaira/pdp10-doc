@@ -1,4 +1,23 @@
-## Current KCORE feature increment: v1585 (2026-11-15)
+## Current KCORE feature increment: v1586 (2026-11-15)
+
+- [x] Full 128K PDP-6 independent swap-READ PI2 fail-stop during
+  snapshot DMA on the real DR0..DR3 four-member Type-236 root VOLUME.
+  Original PI6 wakes a genuinely disk-backed timed sleeping child;
+  original slot-0 begins one physical swap READ; the selected actual
+  DR_DONE is routed through original DRM error handling and critical
+  BACKSTORE reason-2 HALT `004011`. Original driver errors 1,
+  successful resident publications 0, process swap blocks `01650`
+  octal remain owned, snapshot uncommitted, exact physical selected
+  DR1 `017506`/logical `000431`, 268 other nonzero tail sectors and
+  unchanged four D6FSR2 layouts. Fifteen deliberately corrupted
+  original/physical witnesses rejected; v1583/v1585 regressions
+  reverified. Production kernel source, RAM and ABI unchanged.
+- [ ] P1-C still OPEN for *recoverable* owner/MM/BCACHE rollback,
+  later-sector error timings and multiple simultaneous owner changes,
+  and the previously observed rare v1585 timeout under load.
+  P1-D/E and VERSION 0.5/32K optimization HOLD unchanged.
+
+## Historical KCORE feature increment: v1585 (2026-11-15)
 
 - [x] Genuine independently scheduled swap-in DURING physical MEMFS
   snapshot acceptance: two full 128K PDP-6 cold boots on the real
