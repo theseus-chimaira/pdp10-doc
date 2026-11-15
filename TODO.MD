@@ -1,4 +1,23 @@
-## Current KCORE feature increment: v1604 (2026-11-15)
+## Current KCORE feature increment: v1605 (2026-11-15)
+
+- [x] **v1605 multi-CPU source-map, PDP-6 binary identity:**
+  the current PDP-6 kernel/boot source selection is centralized
+  in `arch/pdp6_source_map_v1605.mk`, with KCC full `ROOT=tape`
+  `kcore.dxr` and map exactly matching the unmodified image.
+  Source-only changes; no KA10/KI10 implementation, KCORE growth
+  or runtime dispatch. Architecture and source classification:
+  `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD`.
+- [ ] **Machine-port split before KA10/KI10:** separate only
+  context/PI/UUO leaves from generic policy in `proc_pdp6.s`;
+  preserve current source-sensitive testkit coverage and generated
+  image. Keep VM and PI backends replaceable as complete files.
+  Do not add performance overhead to PDP-6 for future processors.
+- [ ] **KI10 initial resident paging, future:** machine context,
+  512-word user page maps, 22-bit frame representation and page-
+  bounded user-copy/EXEC/MonitorFS, separate from existing
+  18-bit contiguous MM descriptor. No demand paging initially.
+- [ ] **KA10 initial low-segment port, future:** boot/PI/relocation
+  first; optional KT10A dual segment and shared high code later.
 
 - [x] **P1-E cross-machine architecture REVIEW v1604 (not a
   production feature acceptance):** verified original PDP-6

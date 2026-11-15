@@ -1,3 +1,19 @@
+## 2026-11-15 v1605: PURE owner contract for KA10/KI10 portability
+
+P1-E v1604 staged preflight now isolates common stopped-process
+TRANSITION/immutable-backing eligibility from the PDP-6-only
+sector-rounded omitted PURE prefix calculation. No production
+scheduler PURE reclaim/restore is linked yet; v1451 mutable-RAM
+compression remains test-only. A KA10 with optional protected
+high segment must independently own shared immutable code and
+private low mutable state, not drop/reload another process's high
+segment. KI10 uses 512-word noncontiguous physical page frames:
+the same immutable backing and lifecycle contract applies, but
+PDP-6 physical extent and prefix algorithms do not. No
+runtime VM vtable is added on PDP-6. See
+`KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
+`DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
+
 ## 2026-11-11 v1488: active swapless PURE integration boundary
 
 Production raw disk swap is unchanged. The v1381 in-place PURE drop,
