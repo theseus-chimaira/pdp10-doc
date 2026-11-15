@@ -14,6 +14,27 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-15 v1608: staged P1-E1 source admission
+
+The first P1-E implementation increment now adds a non-sleeping
+swapless and live executable-mount check to the already staged
+v1381 RAW DROP and v1391 bounded FULL RESTORE. It rejects
+enabled or still-owned BACKSTORE, missing mount slab/identity,
+unsupported provider and mismatched high mount-ID bit before
+any MM pin, rebase or destination allocation. Terminal
+PACKED teardown remains possible when backing is missing.
+
+Native PDP-6 source-linked v1381, v1384, v1385 and v1395/v1397
+and v1604 boundary tests PASS, plus the v1608 refused
+source/admission cases and a deliberate bypass mutant rejected
+by the testkit. Full KCC PDP-6 ROOT=tape image and map are
+byte-identical to the v1606 baseline. No production scheduler
+calls the staged transactions; no physical swapless boot,
+VFS provider lifetime or PI6 process reclamation is accepted
+by this test. P1-E1 production and E2-E5 remain OPEN.
+DAIMOS design and exact evidence:
+`design/kcore-p1e-source-admission-v1608.md`.
+
 ## 2026-11-15 v1607: source-matched KCORE completion checklist
 
 The active task is **production uncompressed P1-E RAW PURE**

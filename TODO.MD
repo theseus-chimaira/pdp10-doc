@@ -1,4 +1,15 @@
-## Current KCORE feature increment: v1607 (2026-11-15)
+## Current KCORE feature increment: v1608 (2026-11-15)
+
+- [x] **P1-E1 source gate v1608 (staged):** no-disk-backing
+  and valid executable mount/provider required before RAW
+  DROP/bounded FULL restore; source-loss terminal discard
+  remains possible. KCC native DROP/prefix/FULL/rollback
+  tests and bypass-mutation rejection PASS. Full PDP-6
+  KCORE DXR/map match v1606 byte-for-byte.
+- [ ] **P1-E1 production lifetime gate / P1-E2 onward:**
+  source immutability during actual swapless boot, scheduler
+  PI6/slot-0 integration and physical owner/restore tests
+  remain OPEN. No codec or runtime P1-E integration yet.
 
 The authoritative remaining-work inventory is
 `STATUS/KCORE-REMAINING-WORK-V1607.MD` and DAIMOS
