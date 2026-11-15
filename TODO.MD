@@ -1,3 +1,18 @@
+## Current KCORE feature increment: v1582 (2026-11-15)
+
+- [x] Source-linked native PDP-6 real BSET INTERLEAVE translator,
+  fixed BACKSTORE gateway, v1515 reason-2 HALT, with three physically
+  distinguishable members. 13 successful/error/refusal/range cases
+  and 7 rejected executed unsafe source mutants. Every selected
+  logical tail sector is verified to the correct member, physical
+  sector, DSK/DRM class and buffer stride. Existing swap owner
+  retained at fatal HALT; disabled-but-owned fatal and inactive/
+  unowned negative returns both proved. No production RAM change.
+- [ ] P1-C remains OPEN for **physical** full multi-member VOLUME
+  controller failures, real concurrent swap-in/snapshot PI overlap,
+  and exact recoverable owner/MM/BCACHE rollback. P1-D/P1-E and
+  KCORE completion/freeze remain OPEN. 32K optimization HOLD.
+
 ## Current KCORE feature increment: v1581 (2026-11-14)
 
 - [x] Actual full 128K PDP-6 Type-236 direct DEVICE failure during
