@@ -1,4 +1,29 @@
-## Current KCORE feature increment: v1588 (2026-11-15)
+## Current KCORE feature increment: v1589 (2026-11-15)
+
+- [x] Genuine physical D6FS populated BCACHE reclaimed during
+  independent PI6 swap-in: two complete 128K PDP-6 cold boots on
+  four-member DR0..DR3 Type-236 root VOLUME. Ordinary VFS OPEN/READ
+  populates private cache slab `0307577`, D6FS source/block key
+  `100100001010`, 28 nonzero of 128 original data words. At exact
+  original `bcache_reclaim`, one independent swap has started;
+  all 128 words match, original MM frees slab, old tag later MISSES
+  and no stale cache data survives. Separate v1588 post-DMA checked
+  release refusal correctly preserves original DISK owner `01650`
+  octal and all 29 bitmap words. Four mapped physical swap READs,
+  896 matched Type-236 PI2 and three RESIDENT publishes EACH boot;
+  both normal HALTs `022004`, second boot recovers MEMFS/XIP and
+  LOGSTORE; DR3 commit header `017777`, 282 other nonzero backing
+  sectors. Forty-eight bad linked/physical/cache witnesses rejected.
+  No production code/RAM/ABI change.
+- [ ] **P1-C OPEN:** no-reclaim populated-cache retention under an
+  unrelated provider rollback, mixed DEVICE/VOLUME and multi-owner
+  transitions, repeated-load stability (v1585 intermittent timeout).
+  Separate legacy v1490 BCACHE/DTC native fixture cannot link modern
+  `dtfs_intent_mount_gate_v1561`; repair its source-authentic test
+  harness without stubbing or bypassing a real write-intent gate.
+  P1-D/E and VERSION 0.5/32K optimization HOLD unchanged.
+
+## Historical KCORE feature increment: v1588 (2026-11-15)
 
 - [x] Physical post-DMA checked BACKSTORE release refusal with
   original recoverable MM rollback: two full 128K KCC PDP-6 cold
