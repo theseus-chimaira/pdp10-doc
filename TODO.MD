@@ -1,3 +1,20 @@
+## Current KCORE feature increment: v1583 (2026-11-15)
+
+- [x] Real 128K PDP-6 four-member Type-236 D6FS root VOLUME with
+  persistent MEMFS/XIP, LOGSTORE and four 24K-word sleeping swapped
+  children. Real first invalid snapshot header WRITE at original
+  logical last BACKSTORE block, exact selected Type-236 DR_DONE PI2
+  error publication and reason-2 HALT `004011`, one original driver
+  error and `01374` octal actual owned blocks. Physical mapped
+  `075774` data/`02000` tail and DR3 sector `017777` group
+  `777770` independently checked across all four raw 36-bit drums;
+  248 other nonzero tail sectors, invalid physical commit header and
+  unchanged on-media descriptors. Twelve corrupted physical evidence
+  cases rejected. No production RAM/source changes.
+- [ ] P1-C remains OPEN for actual independent swap-in *during*
+  snapshot DMA and recoverable owner/MM/BCACHE fault rollback.
+  P1-D/P1-E remain OPEN, VERSION 0.5 and 32K optimization HOLD.
+
 ## Current KCORE feature increment: v1582 (2026-11-15)
 
 - [x] Source-linked native PDP-6 real BSET INTERLEAVE translator,
