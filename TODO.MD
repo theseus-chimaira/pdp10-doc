@@ -1,4 +1,22 @@
-## Current KCORE feature increment: v1583 (2026-11-15)
+## Current KCORE feature increment: v1584 (2026-11-15)
+
+- [x] Full 128K PDP-6 two cold-boot physical snapshot v2 commit and
+  persistence recovery on original four-member DR0..DR3 root VOLUME.
+  Positive real process swap ownership on both HALTs, `051` octal
+  Type-236 snapshot DR_DONE PI2 events each, valid mapped DR3
+  sector `017777` header, 3,648-word MEMFS pool, 271 nonzero other
+  backing sectors, byte-identical physical member descriptors,
+  recovered MEMFS XIP/data and prior LOGSTORE record. Ten corrupted
+  evidence variants rejected; no production code or RAM change.
+- [ ] **Independent swap-in during snapshot DMA remains UNPROVEN:**
+  original slot-0 swap-in start, final publication and matching
+  physical swap-READ PI2 counts are all zero in both otherwise
+  healthy boots. Optional `--require-overlap` oracle correctly
+  rejects this evidence. P1-C remains OPEN for demonstrated
+  independently scheduled swap-in and nonfatal MM/BCACHE/owner
+  rollback. P1-D/E stay OPEN; VERSION 0.5 and 32K/optimization HOLD.
+
+## Historical KCORE feature increment: v1583 (2026-11-15)
 
 - [x] Real 128K PDP-6 four-member Type-236 D6FS root VOLUME with
   persistent MEMFS/XIP, LOGSTORE and four 24K-word sleeping swapped
