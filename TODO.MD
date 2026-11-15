@@ -1,4 +1,31 @@
-## Current KCORE feature increment: v1589 (2026-11-15)
+## Current KCORE feature increment: v1590 (2026-11-15)
+
+- [x] P1-C v1590 live D6FS clean cache preserved through original
+  physically uncommitted LOGSTORE write/refusal and same-slot retry:
+  two genuine 128K KCC PDP-6 cold boots on four-member Type-236
+  DR0..DR3 VOLUME. Original VFS/D6FS READ populates private clean
+  BCACHE slab `0377577`, key `100100001010`, 28 nonzero of all 128
+  data words. The physical LOGSTORE trailer-zero record write is
+  real; the error reported afterward is test-induced. Both after
+  refusal and after committed retry, cache owner/key and all 128
+  data words are unchanged, original `bcache_fetch` HIT/HIT, zero
+  fetched-word differences. Subsequent original PI6/slot-0 swap
+  completes four mapped physical READs and 896 matching Type-236
+  PI2 per boot; original post-DMA rollback retains process DISK
+  backing `01650` octal, all 29 bitmap words, and three successful
+  resident publishes. Second cold boot restores MEMFS/XIP/LOGSTORE;
+  snapshot header DR3 `017777`. Forty-seven corrupted original/
+  physical/cache witnesses rejected. The separate native v1490
+  BCACHE/DTC regression was repaired and passed using the genuine
+  v1561 DTFS write-intent gate (no bypass).
+- [ ] **P1-C remains OPEN:** simultaneous independent owner changes,
+  later-stage fault timings and loaded repeated-boot stability,
+  including isolated v1585 timeout. The successful cache-retention
+  case is separate from v1589 legitimate MM cache reclamation.
+  Actual owned-BACKSTORE controller errors remain fatal. P1-D/E,
+  VERSION 0.5 and strict 32K/optimization HOLD remain unchanged.
+
+## Historical KCORE feature increment: v1589 (2026-11-15)
 
 - [x] Genuine physical D6FS populated BCACHE reclaimed during
   independent PI6 swap-in: two complete 128K PDP-6 cold boots on
