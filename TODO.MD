@@ -1,4 +1,45 @@
-## Current KCORE feature increment: v1592 (2026-11-15)
+## Current KCORE feature increment: v1594 (2026-11-15)
+
+- [x] **P1-D v1594 real four-member DSK270-root physical FSINFO:**
+  original 128K KCC PDP-6 boots from four separate DSK0..DSK3
+  D6FSR2 physical disk members. KINIT and original FSINFO publish
+  capacity six: root D6FS provider 6, MEMFS `/TEMP` provider 4,
+  four spare DRM236 positions, no phantom mount in holes 2..5,
+  indices 6/7 invalid. The real guest also completes the ordinary
+  XIP EXEC/RUN/WAIT regression. A competing-simulator port
+  collision in the first attempted run was rejected; corrected
+  per-run DCS/GE ports pass with NO simulator errors. Independent
+  verifier checks all four distinct original physical D6FSR2
+  member identities/geometries (45,056 sectors per disk) and
+  rejects 3 false physical/FSINFO witnesses. Full corrected
+  guest PASS, no installed code/RAM/ABI/media changes.
+- [x] **P1-C v1593 specific independent RESIDENT owner proven:**
+  two full 128K PDP-6 physical cold boots on DR0..DR3 Type-236
+  mapped root VOLUME, original PI6 timer waking distinct slots
+  6 and 7 during persistent MEMFS/LOGSTORE snapshot. Source-linked
+  observer after original `proc_storage_publish_v30` success
+  shows timer-woken **slot 7** publishes RESIDENT on both boots,
+  aligned VM `0220000`, stable u-area, transition clear and
+  backing cleared. Slot 6 also published successfully once
+  during another transaction before/around its later checked
+  release refusal; the separately refused operation rolls back
+  original DISK/MM/bitmap/BCACHE owner and sends TERM. Five
+  physical mapped swap READs, 1,120 actual Type-236 PI2, four
+  RESIDENT publications per boot; boot 2 restores MEMFS/XIP/
+  LOGSTORE, v2 header DR3 `017777`. Thirty-nine false witnesses
+  rejected. Same real DRM-root guest verifies original FSINFO
+  capacity six. Production kernel, RAM and ABI unchanged.
+- [ ] **P1-C remaining:** mixed later-stage DEVICE/VOLUME/DTFS
+  physical errors, dirty/write-through rollback and repeatable
+  loaded-simulator timing. Actual owned-media I/O failure remains
+  critical fail-stop, never silently recoverable.
+- [ ] **P1-D remaining:** genuinely failed or absent providers,
+  high-slot physical provider error/retirement, and fail-closed
+  empty/unpublished distinctions under alternate device inventory.
+  Physical DTC TSFS seven/eight slots and D6FS DRM/DSK six slots
+  are accepted; the 26-slot maximum is representational only.
+
+## Historical KCORE feature increment: v1592 (2026-11-15)
 
 - [x] **P1-C v1592: two distinct real sleeping DISK owners awake in
   the same physical snapshot:** two complete 128K KCC PDP-6 cold
