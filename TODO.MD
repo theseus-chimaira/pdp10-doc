@@ -1,4 +1,26 @@
-## Current KCORE feature increment: v1586 (2026-11-15)
+## Current KCORE feature increment: v1587 (2026-11-15)
+
+- [x] Recoverable pre-I/O MM pin refusal during independent PI6/
+  slot-0 swap-in while full physical 128K PDP-6 commits mapped
+  MEMFS snapshot. Two real DR0..DR3 D6FS root VOLUME cold boots;
+  original MM allocates aligned process base `0220000`; synthetic
+  MM pin refusal then original MM free/transition unlock/TERM return
+  nonfatally. Both real boots original MM extent count `024->023`,
+  full 29-word backing bitmap exactly unchanged, actual owner
+  counts and disk record/mode maintained, BCACHE metadata preserved,
+  and three additional swap-ins publish successfully with 672
+  matching original Type-236 PI2. Physical DR3 v2 snapshot header
+  `017777` committed and restored on boot 2 with prior LOGSTORE,
+  275 additional nonzero backing sectors. Thirty-three false
+  witness cases rejected; v1585/v1586 regressions still pass.
+- [ ] **P1-C remains OPEN:** nonfatal post-I/O owner/MM/BCACHE
+  restoration after an actual transaction mutation, multiple
+  simultaneous transitions and v1585 loaded-timing stability.
+  Do not reinterpret fatal owned-BACKSTORE faults as retryable.
+  P1-D/E, VERSION 0.5, 32K/optimization HOLD unchanged. No
+  production code or RAM growth.
+
+## Historical KCORE feature increment: v1586 (2026-11-15)
 
 - [x] Full 128K PDP-6 independent swap-READ PI2 fail-stop during
   snapshot DMA on the real DR0..DR3 four-member Type-236 root VOLUME.
