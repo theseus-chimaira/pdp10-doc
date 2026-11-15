@@ -1,4 +1,25 @@
-## Current KCORE feature increment: v1600 (2026-11-15)
+## Current KCORE feature increment: v1601 (2026-11-15)
+
+- [x] **P1-D FINAL v1601 dynamic FSINFO/controller matrix CLOSED:**
+  full original 128K PDP-6 four-member DRM236 D6FSR2 root with
+  DSK270 physically absent, KINIT FSINFO **2** slots instead of
+  six, original linked MM slab and root/MEMFS identity confirmed,
+  four unique untouched DRM member sectors, full XIP lifecycle.
+  **10** invalid physical/FSINFO/MM/controller witnesses rejected.
+  Fresh current-source complementary DSK270 root / Type-167 DP/DRM
+  absent v1597 rerun also PASS, four corrupted cases rejected.
+  Previously accepted genuine TSFS roots capacity 7/8 and DSK/DRM
+  roots capacity 6; four native high-slot DTFS mounts, physical
+  missing provider vs empty FSINFO return, different-reel refusal,
+  original-reel recovery and unaffected provider work all PASS.
+  Source-linked v1492 exact FSINFO/MOUNTS/DF and v22 full/disk
+  root inventory, including missing/asymmetric READ/WRITE pairs,
+  PASS. The currently modeled installed controller classes support
+  up to 9 slots with a one-member root; 26 is representational,
+  not a physically installed array. **P1-C** dirty/write-through,
+  cache/owner timing and repeat-loaded I/O remain OPEN; **P1-E**
+  and strict 32K/optimization HOLD. No new production KCORE/RAM/
+  ABI/MRES/media change. See `STATUS/KCORE-FEATURE-STATE-V1601.MD`.
 
 - [x] **P1-C v1600 independently attached direct-DEVICE DRM swap
   failure with DSK270 root:** actual 128K PDP-6 full KCC guest
@@ -73,16 +94,14 @@
   PASS with two genuine PI6 owner wakeups and retained critical
   ownership. v1596 separate DTFS fault with writable MEMFS also
   PASS. Still test dirty/write-through and cache/owner isolation,
-  repeated timing under loaded simulator, and final source-matched
-  full-service physical controller matrix. Critical owned-media
+  repeated timing under loaded simulator, and final fault-specific
+  cross-provider ownership matrix. Critical owned-media
   errors remain fatal; no service after required HALT is allowed.
-- [ ] **P1-D final source-matched matrix:** accepted real
-  DTC/TSFS capacities 7/8, real DSK/DRM D6FS capacity 6,
-  actual DSK root with missing DRM capacity 2, physical mounted
-  Type-551 high-slot absence and same-reel return. Remaining
-  unusual root/controller-service combinations and final
-  current-source build/boot verification; 26 is not an installed
-  device count. P1-E still held for KA10 compatibility.
+- [x] **P1-D final source-matched matrix:** completed by v1601
+  reverse no-DSK physical root, current-source no-DRM physical
+  rerun and native service-pair cases, together with accepted
+  7/8/6/2 root/controller profiles and high mounted Type-551
+  failure/return. No physical 26-device claim. P1-E KA10 HOLD.
 
 ## Historical KCORE feature increment: v1594 (2026-11-15)
 
