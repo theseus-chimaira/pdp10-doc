@@ -1,4 +1,17 @@
-## Current KCORE feature increment: v1605 (2026-11-15)
+## Current KCORE feature increment: v1606 (2026-11-15)
+
+- [x] **v1606 PDP-6-first modularity rule:** existing v1605
+  source selection remains, with zero runtime CPU abstraction.
+  VM-state RH/active check, physical user-pointer interpretation,
+  contiguous MM descriptors, machine PI/traps and EXEC/XIP
+  destinations are explicitly machine-owned. Do not plan or
+  implement alternate CPU targets before PDP-6 completion.
+  `KERNEL/MULTI-CPU-PORTABILITY-V1606.MD`.
+- [ ] **P1-E PDP-6 RAW swapless PURE production:** complete
+  inactive reclaim/restoration, immutable backing owner, scheduler
+  and PI exclusion, EXEC/EXIT/WAIT, failure rollback and real
+  PDP-6 hardware-pressure tests. Compression remains conditional
+  on measured RAM savings. P0-B and 32K/optimization HOLD persist.
 
 - [x] **v1605 multi-CPU source-map, PDP-6 binary identity:**
   the current PDP-6 kernel/boot source selection is centralized
@@ -7,17 +20,12 @@
   Source-only changes; no KA10/KI10 implementation, KCORE growth
   or runtime dispatch. Architecture and source classification:
   `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD`.
-- [ ] **Machine-port split before KA10/KI10:** separate only
-  context/PI/UUO leaves from generic policy in `proc_pdp6.s`;
-  preserve current source-sensitive testkit coverage and generated
-  image. Keep VM and PI backends replaceable as complete files.
-  Do not add performance overhead to PDP-6 for future processors.
-- [ ] **KI10 initial resident paging, future:** machine context,
-  512-word user page maps, 22-bit frame representation and page-
-  bounded user-copy/EXEC/MonitorFS, separate from existing
-  18-bit contiguous MM descriptor. No demand paging initially.
-- [ ] **KA10 initial low-segment port, future:** boot/PI/relocation
-  first; optional KT10A dual segment and shared high code later.
+- [ ] **Source separation only during actual PDP-6 work:** the
+  mixed context/scheduler `proc_pdp6.s` and transfer/policy
+  `proc_swap_pdp6.s` may be split after source-sensitive testkit
+  coverage is migrated, if a real PDP-6 feature requires it.
+  Otherwise retain them as selected machine source units and
+  make no speculative page/segment interfaces.
 
 - [x] **P1-E cross-machine architecture REVIEW v1604 (not a
   production feature acceptance):** verified original PDP-6

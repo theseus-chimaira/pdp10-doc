@@ -14,6 +14,23 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-15 v1606: PDP-6-first PURE lifecycle and memory mapping
+
+The P1-E staged v1604 implementation now separates common
+quiescent-process lifecycle admission from PDP-6-only APR PURE
+prefix geometry. PDP-6 remains the ONLY implemented CPU target.
+Finish and physically validate its RAW swapless PURE reclamation,
+source immutability, full and fast restore, PI-safe publication,
+EXEC/EXIT/WAIT, owner rollback and peak RAM before attempting
+compression. Production scheduler linkage is not yet accepted.
+
+A noncontiguous/segmented mapping is a future backend concern:
+common policy retains writable state and executable ownership,
+not a presumed physical APR prefix or single contiguous user
+pointer. No future CPU port is planned, and no paging or shared
+segment code is part of the current P1-E work.
+See `KERNEL/MULTI-CPU-PORTABILITY-V1606.MD`.
+
 ## 2026-11-11 v1488: active swapless PURE integration boundary
 
 Production raw disk swap is unchanged. The v1381 in-place PURE drop,
