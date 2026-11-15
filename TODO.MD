@@ -1,4 +1,33 @@
-## Current KCORE feature increment: v1584 (2026-11-15)
+## Current KCORE feature increment: v1585 (2026-11-15)
+
+- [x] Genuine independently scheduled swap-in DURING physical MEMFS
+  snapshot acceptance: two full 128K PDP-6 cold boots on the real
+  four-member Type-236 mapped DR0..DR3 root VOLUME. Test-only
+  deadline alignment wakes one originally sleeping disk-backed
+  child via the genuine 60 Hz PI6 timer; the original slot-0
+  scheduler completes two process swap-ins/publications each boot,
+  with `0700` octal matching original swap-READ DMA DR_DONE and
+  `01311` total snapshot-window PI2 per boot. Both normal HALTs
+  `022004`, original process-backed blocks `0750`, zero device
+  errors. Boot 2 restores MEMFS/XIP and prior LOGSTORE, physical
+  v2 header DR3 `017777`, 275 nonzero other sectors, four intact
+  members. Seventeen corrupt evidence cases rejected; repaired the
+  inherited v1584 negative-test oracle without weakening its
+  earlier zero-overlap baseline. No production changes.
+- [ ] P1-C still OPEN for exact recoverable MM/BCACHE/owner rollback
+  and failure *during* independent swap/snapshot overlap. P1-D and
+  P1-E remain OPEN; VERSION 0.5 and the 32K/optimization HOLD.
+
+- [ ] Repeat v1585 physical overlap under loaded simulator timing:
+  one additional 180-second probe timed out after partial physical
+  snapshot writes, without captured CPU state, while a later full
+  two-boot rerun passed all strict evidence and negative checks.
+  A bounded 300-second v1585-only timeout now captures CPU/PC on
+  failure. Slow host execution and rare scheduler stalls remain to
+  be distinguished; do not treat this as proven media corruption or
+  a confirmed kernel deadlock.
+
+## Historical KCORE feature increment: v1584 (2026-11-15)
 
 - [x] Full 128K PDP-6 two cold-boot physical snapshot v2 commit and
   persistence recovery on original four-member DR0..DR3 root VOLUME.
