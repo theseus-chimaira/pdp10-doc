@@ -14,6 +14,17 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-15 v1607: source-matched KCORE completion checklist
+
+The active task is **production uncompressed P1-E RAW PURE**
+and its native/real PDP-6 scheduler, owner, PI6, full APR
+restore, OOM, source identity and rollback acceptance.
+The v1604 lifecycle/geometry split remains staged only.
+Compression is a later measured yes/no decision; generic
+segmentation/paging, strict 32K optimization and CPU ports
+are not active. See
+`STATUS/KCORE-REMAINING-WORK-V1607.MD`.
+
 ## 2026-11-15 v1606: PDP-6-first PURE lifecycle and memory mapping
 
 The P1-E staged v1604 implementation now separates common

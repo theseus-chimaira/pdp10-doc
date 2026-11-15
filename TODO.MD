@@ -1,4 +1,30 @@
-## Current KCORE feature increment: v1606 (2026-11-15)
+## Current KCORE feature increment: v1607 (2026-11-15)
+
+The authoritative remaining-work inventory is
+`STATUS/KCORE-REMAINING-WORK-V1607.MD` and DAIMOS
+`design/kcore-remaining-work-v1607.md`.
+
+- [x] P0-A critical ROOT/BACKSTORE; P1-C v1603 combined
+  storage and P1-D v1601 FSINFO: ACCEPTED, not active work.
+- [x] P0-D/E/F OOM: accepted only for the defined v1298
+  release profile and v1348/v1351 owner/no-partner evidence.
+- [x] P0-B v1575 DTVOL2 RW: accepted under explicit
+  trusted-operator no-live-reel-exchange and quarantine rules.
+- [ ] P0-B *hardware* reel retention: still unproved by
+  stock Type-551, v1571 negative; separate policy/hardware
+  scope, not a software-only fix.
+- [ ] P1-E RAW swapless PURE: production source ownership,
+  no-backing gate, quiesced zero-copy rebase, fast/full
+  APR restore, actual PI6/scheduler/EXEC/EXIT/WAIT and
+  failure-atomic real native/physical PDP-6 tests.
+- [ ] Optional compression yes/no after RAW P1-E,
+  based solely on net **whole-system** peak RAM benefit.
+- [ ] Final matched-source KCORE acceptance matrix and
+  footprint report. Strict 32K/optimization and CPU ports
+  remain explicitly unscheduled/HOLD.
+
+Older unchecked historical sections below do not reopen v1603,
+v1601, v1575's *declared* policy or v1298 acceptance.
 
 - [x] **v1606 PDP-6-first modularity rule:** existing v1605
   source selection remains, with zero runtime CPU abstraction.
