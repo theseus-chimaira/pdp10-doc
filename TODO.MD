@@ -1,4 +1,31 @@
-## Current KCORE feature increment: v1590 (2026-11-15)
+## Current KCORE feature increment: v1591 (2026-11-15)
+
+- [x] **P1-D v1591 genuine above-seven-slot physical boot:** an
+  unmodified KCC PDP-6 boots a separate TSFS root on *two* physical
+  DTC0/DTC1 Type-551 tapes, with DTC2 empty. Original TSFS root
+  discovery and KINIT mount slab publish FSINFO capacity **8**.
+  Original PID1 mounts four separately 72-bit-stamped DTFS tapes
+  DTC3..DTC6 (IDs 2..5); checks empty slots 5..7, invalid 8/9,
+  exact provider/path, stable high ID across middle unmount and
+  clean retirement. Full physical guest PASS, corrected KCC test
+  probe recompiles without warnings; no production source/RAM/
+  ABI/media changes. See `STATUS/KCORE-FEATURE-STATE-V1591.MD`.
+- [ ] **P1-D remaining:** actual alternate D6FS DSK/DRM-root
+  controller/service inventories and provider-failure enumeration.
+  The native root-mask inventory tests and 7/8-slot physical
+  TSFS profiles are accepted. Twenty-six is not a real physical
+  device-count claim.
+- [ ] **P1-E architecture hold for KA10:** revisit the formerly
+  planned uncompressed swapless PURE/MM rebase/APR integration
+  before writing production code. The v1381/v1391 pieces remain
+  isolated PDP-6-specific experiments, not a cross-target contract.
+  Decide common versus machine-specific VM/text restore and
+  protection semantics with later KA10 compatibility in mind.
+  Preserve ordinary disk/drum swapping and fail-closed ownership;
+  defer RAM compression and all new P1-E implementation until
+  this architecture decision is made.
+
+## Historical KCORE feature increment: v1590 (2026-11-15)
 
 - [x] P1-C v1590 live D6FS clean cache preserved through original
   physically uncommitted LOGSTORE write/refusal and same-slot retry:
