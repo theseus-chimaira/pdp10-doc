@@ -1,4 +1,28 @@
-## Current KCORE feature increment: v1591 (2026-11-15)
+## Current KCORE feature increment: v1592 (2026-11-15)
+
+- [x] **P1-C v1592: two distinct real sleeping DISK owners awake in
+  the same physical snapshot:** two complete 128K KCC PDP-6 cold
+  boots on four-member Type-236 DR0..DR3 root VOLUME, mapped
+  BACKSTORE, MEMFS v2/XIP and LOGSTORE. Test-only timer observer
+  retimes original slots 6 and 7 to one original PI6 tick during
+  snapshot; both original timer-service wakeups observed (1/1).
+  Each boot performs five real independent slot-0 swap READs,
+  1120 matched Type-236 PI2 and four successful RESIDENT publishes;
+  selected slot 6 receives controlled post-DMA checked BACKSTORE
+  release refusal with original MM/bitmap/BCACHE/TERM rollback.
+  Both normal HALTs, second boot recovers MEMFS/XIP/LOGSTORE,
+  physical DR3 v2 snapshot header `017777`, 3,648-word pool and
+  277 other nonzero backing sectors. Twenty-nine deliberately
+  false linked/physical owner/PI6/MM witnesses rejected. Production
+  code, resident RAM, ABI and on-media format unchanged. See
+  `STATUS/KCORE-FEATURE-STATE-V1592.MD`.
+- [ ] **P1-C remaining:** the four successful publications are
+  aggregate; prove the *specific* other timer-woken slot 7
+  reached RESIDENT, then mixed DEVICE/VOLUME later failure,
+  dirty/write-through/DTFS and repeated loaded-simulator timing.
+  Genuine owned-BACKSTORE media faults remain fail-stop.
+
+## Historical KCORE feature increment: v1591 (2026-11-15)
 
 - [x] **P1-D v1591 genuine above-seven-slot physical boot:** an
   unmodified KCC PDP-6 boots a separate TSFS root on *two* physical
