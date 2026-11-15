@@ -23,10 +23,13 @@ full native cases PASS, including DSK/DRM multiblock transfers,
 second/third-block fatal failures, disabled-but-owned fail-stop,
 disabled-and-unowned ordinary error, missing mapper active/inactive,
 range overflow/end and zero-length transfers. Fatal HALT must be
-the linked reason-2 BACKSTORE address, never the ROOT reason. Seven
+the linked reason-2 BACKSTORE address, never the ROOT reason. Eight
 actually executed unsafe source mutations are all rejected: wrong
 physical block, member, data offset, DRM route, missing fatal,
-missing-mapper bypass or ignored owned-block gate.
+missing-mapper bypass, ignored owned-block gate, or a 0100-word
+instead of 0200-word transfer-buffer stride. Every physical
+completion compares its original buffer pointer to the expected
+per-sector address.
 
 Unlike older controlled fake-mapper tests, v1582 uses the actual
 production BSET mapper; however, it does NOT run a physical

@@ -3,7 +3,7 @@
 - [x] Source-linked native PDP-6 real BSET INTERLEAVE translator,
   fixed BACKSTORE gateway, v1515 reason-2 HALT, with three physically
   distinguishable members. 13 successful/error/refusal/range cases
-  and 7 rejected executed unsafe source mutants. Every selected
+  and 8 rejected executed unsafe source mutants. Every selected
   logical tail sector is verified to the correct member, physical
   sector, DSK/DRM class and buffer stride. Existing swap owner
   retained at fatal HALT; disabled-but-owned fatal and inactive/
