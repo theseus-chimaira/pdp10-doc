@@ -1,4 +1,22 @@
-## Current KCORE feature increment: v1598 (2026-11-15)
+## Current KCORE feature increment: v1599 (2026-11-15)
+
+- [x] **P1-C v1599 two independently PI6-woken DISK owners at
+  fatal physical BACKSTORE READ:** full 128K PDP-6 with original
+  DR0..DR3 four-member D6FS root VOLUME, mapped BACKSTORE and
+  real LOGSTORE/MEMFS shutdown snapshot. Original timer service
+  wakes *both* distinct original SLEEP/DISK owners, slots **6**
+  and **7**, once. Original scheduler selects slot 7 for one
+  physically mapped Type-236 swap READ; its genuine DR_DONE PI2
+  follows a disposable one-shot injected original DRM error
+  and unchanged reason-2 BACKSTORE HALT octal **`004011`**.
+  No false RESIDENT publication, original positive BACKSTORE/
+  process allocation and physical backing content remain,
+  uncommitted snapshot and four intact D6FSR2 headers.
+  **23** deliberately corrupt owner/PI6/PI2/media/ownership
+  controls rejected; original v1586 15 controls still PASS.
+  Only ONE actual swap DMA preceded the fatal HALT, no
+  post-fault recovery or dual DMA is claimed. No permanent
+  KCORE code/RAM/ABI change. `STATUS/KCORE-FEATURE-STATE-V1599.MD`.
 
 - [x] **P1-D v1595 physical high mounted-volume error:** actual
   two-member Type-551 TSFS root with eight FSINFO slots, four
@@ -28,10 +46,13 @@
   lifecycle, four raw physical D6FSR2 root descriptors and four
   mutation controls PASS. Initial test disabled only DR but
   missed Type-167 DP probe; corrected test, no kernel patch.
-- [ ] **P1-C remaining:** physical DSK/DRM BACKSTORE-owned media
-  loss intersecting independent process swap and simultaneous
-  healthy provider work, dirty/write-through failure and loaded
-  simulator stability. Critical owned-media errors remain fatal.
+- [ ] **P1-C remaining:** v1599 maps a fatal BACKSTORE PI2
+  failure to a real independently scheduled, double PI6-woken
+  owner set on DRM root VOLUME. Still test **direct DEVICE**
+  DRM AUXSTORE BACKSTORE with DSK270 independent root, separate
+  provider progress before failure, dirty/write-through failures
+  and loaded physical repeatability. Critical owned-media errors
+  remain fatal; do not test for recovery after the required HALT.
 - [ ] **P1-D final source-matched matrix:** accepted real
   DTC/TSFS capacities 7/8, real DSK/DRM D6FS capacity 6,
   actual DSK root with missing DRM capacity 2, physical mounted
