@@ -1,4 +1,28 @@
-## Current KCORE feature increment: v1587 (2026-11-15)
+## Current KCORE feature increment: v1588 (2026-11-15)
+
+- [x] Physical post-DMA checked BACKSTORE release refusal with
+  original recoverable MM rollback: two full 128K KCC PDP-6 cold
+  boots on four-member Type-236 mapped DR0..DR3 root. Original PI6
+  wakes independent slot-0 swap-in; four actual physical BACKSTORE
+  swap READs and 896 genuine matching Type-236 PI2 completions per
+  boot. One test-only release refusal after physical READ/MM unpin
+  invokes original `proc_swap_in_free_fail`; three OTHER restores
+  publish RESIDENT. MM extent `024->023`, allocated base `0220000`
+  absent, process-owned blocks `01650` octal, backing `01734`/`01713`
+  octal, all 29 bitmap words, DISK record/mode and BCACHE metadata
+  preserved across cleanup. Both native HALTs `022004`; second
+  cold boot restores MEMFS/XIP and previous LOGSTORE; valid physical
+  header DR3 `017777`, 275 other nonzero backing sectors. Thirty-four
+  corrupted original/physical witnesses rejected; v1586/v1587
+  retained physical regressions pass. No production code/RAM change.
+- [ ] **P1-C remains OPEN:** real populated BCACHE identity/data
+  handling under mixed DEVICE/VOLUME provider failures, simultaneous
+  owner transition failures, and v1585 loaded-simulator timing
+  stability. Synthetic provider release refusal does NOT make
+  owned-media errors recoverable; the original fatal policy holds.
+  P1-D/E remain OPEN; VERSION 0.5 and strict 32K/optimization HOLD.
+
+## Historical KCORE feature increment: v1587 (2026-11-15)
 
 - [x] Recoverable pre-I/O MM pin refusal during independent PI6/
   slot-0 swap-in while full physical 128K PDP-6 commits mapped
