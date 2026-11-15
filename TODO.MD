@@ -1,4 +1,46 @@
-## Current KCORE feature increment: v1594 (2026-11-15)
+## Current KCORE feature increment: v1598 (2026-11-15)
+
+- [x] **P1-D v1595 physical high mounted-volume error:** actual
+  two-member Type-551 TSFS root with eight FSINFO slots, four
+  real native DTC3..DTC6 DTFS secondary volumes, public IDs
+  2..5. Live DTC3 physical removal returns FSINFO error, not
+  an empty published slot, while all high identities survive.
+  Different stamped reel refused; original reel recovers; all
+  mounts retire. Independent physical media/checksum oracle
+  rejects five unsafe cases. No production RAM/ABI changes.
+- [x] **P1-C v1596 real high-slot DTFS loss plus writable MEMFS:**
+  physical DTC6 highest published volume ID5 disappears and
+  returns while a separate writable MEMFS at ID6 writes and
+  rereads exact file data. Original FSINFO refuses missing DTC6;
+  all other providers retain identity and progress. Full 256K
+  original DAIMOS KCORE guest on corrected Type-551 simulator
+  PASS, five authentic physical DTVOL1 reels and eight rejected
+  false raw/CTY witnesses. Original simulator v1524 repeatedly
+  failed DTC6 return due stale reel `CMD/DSTATE/DELAY` after
+  detach/attach, despite valid same media. Root-cause corrected
+  in `sims` commit `fe97912` (v1598), not in KCORE; installed
+  versionized `pdp6-v1598` preserves former v1524 binary.
+- [x] **P1-D v1597 physical missing Type-167/236 hardware:**
+  genuine DSK270 D6FSR2 4-member 128K PDP-6 boot, actual
+  Type-167 `DP` I/O processor and drum units disabled before
+  MINIT. Original FSINFO capacity 2 (D6FS ID1 + MEMFS ID2),
+  not 6 with controller present; zero phantom DRM slots. XIP
+  lifecycle, four raw physical D6FSR2 root descriptors and four
+  mutation controls PASS. Initial test disabled only DR but
+  missed Type-167 DP probe; corrected test, no kernel patch.
+- [ ] **P1-C remaining:** physical DSK/DRM BACKSTORE-owned media
+  loss intersecting independent process swap and simultaneous
+  healthy provider work, dirty/write-through failure and loaded
+  simulator stability. Critical owned-media errors remain fatal.
+- [ ] **P1-D final source-matched matrix:** accepted real
+  DTC/TSFS capacities 7/8, real DSK/DRM D6FS capacity 6,
+  actual DSK root with missing DRM capacity 2, physical mounted
+  Type-551 high-slot absence and same-reel return. Remaining
+  unusual root/controller-service combinations and final
+  current-source build/boot verification; 26 is not an installed
+  device count. P1-E still held for KA10 compatibility.
+
+## Historical KCORE feature increment: v1594 (2026-11-15)
 
 - [x] **P1-D v1594 real four-member DSK270-root physical FSINFO:**
   original 128K KCC PDP-6 boots from four separate DSK0..DSK3
