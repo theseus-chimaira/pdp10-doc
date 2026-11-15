@@ -1,4 +1,22 @@
-## Current KCORE feature increment: v1603 (2026-11-15)
+## Current KCORE feature increment: v1604 (2026-11-15)
+
+- [x] **P1-E cross-machine architecture REVIEW v1604 (not a
+  production feature acceptance):** verified original PDP-6
+  single-base APR/VM and original context restore, distinguished
+  the KA10 hardware's optional independently protected high
+  segment. Recommend a common guarded inactive PURE RAW-suffix
+  owner transaction and separate processor-specific MM/APR
+  restore, beginning with a KA10 verified low-segment-only
+  backend rather than assuming KT10A or shared read-only text.
+  Current-source native v1381/v1384/v1395 isolated prototypes
+  initially failed to link due to the moved `vfs_namespace_root`
+  state owner; testkit now links original `device_state.s`, with
+  all three and v540 original MM/APR handoff PASS. No dummy
+  namespace, no production source alteration, no full-guest
+  swapless/KA10 claim. **P1-E implementation HOLD pending explicit
+  design decision and target validation.** P0-B reel retention
+  OPEN, strict 32K/optimization HOLD. Full review:
+  `STATUS/KCORE-P1E-PDP6-KA10-ARCHITECTURE-V1604.MD`.
 
 - [x] **P1-C FINAL v1603 full physical storage/swap/BCACHE CLOSED:**
   two independent actual 128K KCC PDP-6 boots of DR0..DR3 D6FS
