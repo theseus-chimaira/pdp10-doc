@@ -14,6 +14,46 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1609: production terminal PACKED/RAW owner cleanup
+
+KCORE now has a correctly owned PDP-6 EXIT/VM destroy path
+for a future inactive RAW PURE process, before enabling real
+reclamation. `vm_space_destroy` admits storage mode PACKED
+only with zero APR base; `proc_swap_detach` dispatches the
+new PDP-6-only `pdp6_pure_detach_v1609` physical MM leaf
+when mode 2 is authoritative. It checks TRANSITION, stable
+u-area, saved executable identity, original PURE geometry
+and exactly one unpinned MM_TYPE_PACKED_PROCESS extent with
+matching process owner and suffix word count. It never
+interprets a saved PURE executable record as a DISK run.
+
+On refusal the inactive owner, mode and record survive for
+PREVM retry. On success the exact MM extent is freed,
+PACKED->RESIDENT is published, the saved backing is cleared
+and VM_SPACE_NONE is committed. Terminal release does not
+require the executable mount to survive. The existing disk
+swap and resident XIP paths retain their previous behavior.
+The physical leaf is source-selected via the existing PDP-6
+architecture manifest, without new process or RAM state.
+
+The first correct C scan grew the linked KCORE by 169 words.
+The accepted compact PDP-6 assembly scan costs 104 words:
+`__kcore_low_end` `024364` -> `024534` octal, zero new
+DATA/BSS or per-process words. Full KCC ROOT=tape build and
+native PDP-6 actual VM destroy / proc_swap_detach / MM leaf
+positive and negative tests PASS, including an intentionally
+unsafe saved-backing mutant. Historical v880/v957 DISK and
+v1129 VM_NONE tests PASS. Staged in-place v1384 restore
+now also checks v1608 live executable-source admissibility
+before any MM prefix claim; v1384/v1385/v1395 tests PASS.
+
+This does **not** create PACKED processes in production.
+P1-E1 real immutable VFS lifetime, E2 slot-0 RAW DROP,
+E3 complete prefix/FULL restoration, E4 scheduler/PI6/
+RUN/EXEC/EXIT/WAIT and E5 full physical PDP-6 tests
+remain OPEN. No RAM codec or paging is enabled.
+See DAIMOS `design/kcore-p1e-packed-terminal-v1609.md`.
+
 ## 2026-11-15 v1608: staged P1-E1 source admission
 
 The first P1-E implementation increment now adds a non-sleeping

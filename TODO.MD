@@ -1,4 +1,22 @@
-## Current KCORE feature increment: v1608 (2026-11-15)
+## Current KCORE feature increment: v1609 (2026-11-16)
+
+- [x] **P1-E terminal PACKED owner v1609, production linked:**
+  correct mode-2 VM destroy and PDP-6 exact MM suffix
+  release; no mistaken disk block free, no live VFS mount
+  dependency during EXIT; failed owner release is retryable.
+  Native PDP-6 real VM/detach, wrong owner/pin/size/backing,
+  double destroy and source-identity mutant PASS. KCORE
+  +104 code words, zero additional permanent DATA/BSS.
+- [x] **Staged fast prefix source check v1609:** the in-place
+  v1384 path now validates the same immutable executable mount
+  as v1381 DROP and v1391 FULL. Native positive/negative
+  prefix and bounded restore regressions PASS.
+- [ ] **P1-E source and scheduler gates remain OPEN:**
+  a real no-BACKSTORE boot, immutable source lifetime,
+  zero-copy inactive DROP, complete runnable restore,
+  slot-0/PI6 and EXEC/WAIT/EXIT/BRK/fragmented-MM
+  physical guest acceptance. Do not enable compression
+  until RAW integration is accepted.
 
 - [x] **P1-E1 source gate v1608 (staged):** no-disk-backing
   and valid executable mount/provider required before RAW
