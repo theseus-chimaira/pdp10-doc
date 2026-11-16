@@ -14,6 +14,58 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1613: physical 64K no-AUXST1 PURE boot
+
+The source-selected opt-in PDP-6 PURE service now installs
+in a genuinely diskless dedicated TSFS boot. The KINIT
+selection previously returned immediately when AUXST1
+discovery returned -1, so the earlier zero-BACKSTORE
+branch could never handle absent media. v1613 selects
+PURE whenever there is no positively validated
+BACKSTORE: absent descriptor (-1) or a valid descriptor
+with zero backing blocks. A validated nonzero BACKSTORE
+continues to select the original DISK swap module.
+The default `DAIMOS_PURE_MRES_ENABLED=0` is unchanged.
+
+The actual KINIT source selection is tested under C89
+for absent, zero and positive AUX capacity, both boot
+families and the disabled flag. A mutant restoring the
+old early return is rejected by the executed test.
+KINIT now prints `PURE LOADED` only after the new
+module is installed and its two original scheduler
+trampolines are patched. This is transient boot
+diagnostics, not resident kernel memory.
+
+The first full 64K PDP-6 SIMH TSFS root with all DSK/DRM
+media **unattached** has successfully booted to
+`DTC OK`, `PURE LOADED`, and `INIT V1`, remaining
+alive until controlled test termination. The test
+is reproducible in daimos-testkit
+`tests/validation/pure-boot-v1613/run-v1613.sh`.
+GCC fixed KCORE is byte-identical to v1612,
+`__kcore_low_end=024254` octal. The installed PURE
+MRES remains 1758 words with no BSS.
+
+This verifies physical boot/install, **not** a successful
+RAW pressure, PI6 restoration or positive net RAM gain.
+Two test-only adaptations of the historical whole-image
+DISK pressure guest could not allocate their third
+oversized process; they failed before actual RAW
+reclaim/wakeup validation. Their octal MEMINFO
+snapshots cannot measure exact physical RAM savings:
+`MEMINFO.process_words` omits retained PACKED raw
+suffixes whenever the process's APR base is zero.
+The failing experiment remains isolated under
+`daimos-testkit/tests/diagnostics/pure-pressure-v1613`,
+not in the required passing suite.
+
+Next is a smaller BRK/MM allocation after sleeping
+owners are established, with exact physical
+MM extent accounting, real slot-0 RUN/WAIT/EXEC
+acceptance and immutable VFS-source lifetime.
+PURE remains OFF by default. DAIMOS implementation
+and results: `design/kcore-p1e-noaux-boot-v1613.md`.
+
 ## 2026-11-16 v1612: measured smaller experimental PURE module
 
 The separate opt-in PDP-6 PURE MRES has been reduced from

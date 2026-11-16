@@ -1,4 +1,30 @@
-## Current KCORE feature increment: v1612 (2026-11-16)
+## Current KCORE feature increment: v1613 (2026-11-16)
+
+- [x] **P1-E no-AUX KINIT v1613 fix:** absent
+  AUXST1 discovery (-1) now selects experimental
+  PURE when enabled, as does a validated zero
+  BACKSTORE. Existing DISK MRES remains selected
+  when validated BACKSTORE is nonzero; default
+  PURE-disabled boot behavior is unchanged.
+  Source-linked C89 positive/negative tests PASS.
+- [x] **Real 64K PDP-6 TSFS boot with no AUX media:**
+  DTC root, no DSK/DRM attachments, KINIT
+  `PURE LOADED` and user `INIT V1` observed,
+  sustained until test shutdown. Fixed GCC KCORE
+  unchanged; PURE MRES still 1758 words.
+- [ ] **Physical RAW reclaim/wakeup is not accepted:**
+  two exploratory oversized-child pressure
+  workloads failed before successful RAW reclaim.
+  Next try an incremental BRK pressure request
+  after establishing sleeping owners. Inactive
+  PACKED MM suffixes are excluded from current
+  `MEMINFO.process_words`, so use exact physical
+  MM accounting for net savings. Release remains
+  blocked on PI6/WAIT/EXEC/EXIT, source lifetime,
+  failure recovery, and peak/net RAM proof.
+
+DAIMOS details:
+`design/kcore-p1e-noaux-boot-v1613.md`.
 
 - [x] **P1-E PURE MRES v1612 smaller, still experimental:**
   remove duplicate PACKED owner scan in PDP-6 service,
