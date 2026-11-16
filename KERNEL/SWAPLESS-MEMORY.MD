@@ -1,3 +1,21 @@
+## 2026-11-16 v1637: six physical 48K PACKED child restorations
+
+With v1636 low BCACHE, the original PDP-6 48K no-AUX TSFS/PURE
+guest admits six sleeping children, refuses a seventh RUN and
+keeps the parent alive to check all six child PIPE/private data,
+EXIT-057 and exact PID/WAIT/status checks (`LwwwwwwZ`, HALT).
+Same compiled guest replayed with original source-linked MM B/A
+tables contains six unpinned PACKED_PROCESS suffixes, each 007000
+octal words, owners 7..2. Parent APR stays 130000..140000.
+Final Z contains no child PACKED or PROCESS owner and no pin leak.
+BCACHE is reclaimed under pressure and can return at low memory.
+Original physical testkit auditor PASSes and rejects forged
+PACKED ownership and false WAIT success. No new production code.
+FULL relocated restore, source failure/unmount, concurrent PI6/
+MM rollback, 32K/64K cache regression and matched net/peak RAM
+remain OPEN. PURE remains OFF by default; strict 32K HOLD.
+DAIMOS report `design/kcore-p1e-bcache-pressure-restoration-v1637.md`.
+
 ## 2026-11-16 v1636: physically recovered six-child 48K capacity
 
 BCACHE now allocates its unchanged owner6, 0201-word private

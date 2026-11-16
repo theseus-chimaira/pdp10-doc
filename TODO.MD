@@ -1,3 +1,18 @@
+## v1637: six physical 48K PACKED restores after seventh RUN (2026-11-16)
+
+- [x] Original source-built PDP-6 48K no-AUX TSFS/PURE kernel
+  admits six sleeping children with low BCACHE; the seventh RUN
+  is refused, parent survives and completes six exact child
+  PIPE/data/EXIT-057/WAIT statuses and normal HALT (`LwwwwwwZ`).
+- [x] Same guest original physical MM B/A each retain six distinct
+  unpinned 007000-word PACKED suffixes, slots 7..2; parent at
+  130000..140000 octal. Final Z has no child PACKED or PROCESS
+  owner. Foreign-owner and false-WAIT controls rejected.
+- [ ] Forced relocated FULL restore, immutable-source/unmount
+  failures, concurrent PI6/MM rollback, matched physical peak/net
+  RAM and 32K/64K cache regressions remain open. PURE default OFF;
+  strict 32K optimization HOLD.
+
 ## v1636: low BCACHE restores six 48K user APR admissions (2026-11-16)
 
 - [x] Correct BCACHE 0201-word private clean slab allocation
