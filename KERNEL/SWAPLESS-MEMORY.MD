@@ -14,6 +14,61 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1618: 120-second Type-551 search/reversal timeout
+
+The original Type-551 DECtape search timeout was
+only 45 seconds (05214 octal ticks at 60 Hz).
+A real rewind or direction reversal can take
+as long as a minute, so the original deadline
+could reject a healthy physical transport.
+
+v1618 increases the search/reversal timeout to
+**120 seconds** (016040 octal ticks), allowing
+a full minute plus another full minute of
+headroom. This is a per-search timeout aged by
+PI6; successful RBN matching and data transfer
+are not delayed by the larger failure bound.
+The PI3 block-mark handler still restarts
+the timeout on search progress. The Type-516
+MTC rewind/spacing bound remains 15 minutes,
+and both DTC/MTC data watchdogs are unchanged.
+
+Compiling the historical v1617 and new v1618
+Type-551 driver against one KCORE map changes
+exactly two linked MRES instruction words:
+the original search command and PI3 mark rearm
+at image offsets 000343 and 000405. Native
+image/BSS/relocation word counts remain
+000607/000017/000013 (octal). Fixed 48K GCC
+KCORE DXR remains byte-identical to v1617,
+low end 024254 octal; no additional process
+fields or permanent memory allocation.
+
+The completely rebuilt v1618 48K no-AUXST1
+PDP-6 TSFS guest confirms three real physical
+Type-551 search samples:
+
+    clk_tick_count: 015435 -> 015441 -> 015446
+    dtc_last_mark:  0341   -> 0133   -> 0126
+    storage_count:  777777761740 at all samples
+
+All values are octal. The 60-Hz clock advanced
+4 and 5 ticks, block marks changed and PI3
+rearmed the new negative 120-second timeout.
+The testkit also rejects the obsolete compiled
+45-second module and a mutation of the live
+physical countdown. Historical v1617 evidence
+remains tied to its original 45-second DXR.
+
+The measurement confirms that the search timer
+and controller progress remain active, but
+does not demonstrate successful RBN/data
+completion, PURE prefix commit or rollback,
+slot-0 READY_ONCE, PIPE/WAIT/EXIT or positive
+net physical RAM savings. P1-E is still
+disabled by default. See DAIMOS
+design/kcore-p1e-dtc-timeout-v1618.md.
+
 ## 2026-11-16 v1617: physical DECtape search during PURE restore
 
 The physical PDP-6 module origin of the previously

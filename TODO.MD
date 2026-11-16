@@ -1,4 +1,32 @@
-## Current KCORE feature increment: v1617 (2026-11-16)
+## Current KCORE feature increment: v1618 (2026-11-16)
+
+- [x] **Type-551 rewind/search timeout v1618:**
+  increase original 45s to 120s (016040 octal
+  60-Hz ticks), accounting for a genuine 60s
+  rewind and another 60s headroom. Original
+  command and PI3 mark-rearm operands change;
+  linked tape module size, KCORE and per-process
+  RAM unchanged. MTC 15m control and data
+  transfer watchdogs unchanged.
+- [x] **Physical 48K PDP-6 timeout acceptance:**
+  real TSFS/no-AUX guest samples the v1618
+  countdown 3 times, demonstrates 4+5 clock
+  ticks and changing RBN mark data. Source
+  and linked old/new DXR equivalence tests
+  PASS; old timeout and mutated physical
+  countdown are rejected. DTC watchdog,
+  reverse write and first-mark regressions
+  PASS. Historic v1617 45s snapshots are
+  still verified against the old linked DXR.
+- [ ] **Still OPEN:** real block match/data
+  completion or bounded search failure,
+  immutable-prefix commit/rollback, MM
+  pin release, slot-0 READY_ONCE,
+  PIPE/WAIT/EXIT, positive net/peak RAM.
+  PURE stays OFF by default.
+
+DAIMOS report:
+design/kcore-p1e-dtc-timeout-v1618.md.
 
 - [x] **Physical MRES origin v1617:** KCORE
   trampoline and linked image decode show
