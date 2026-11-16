@@ -1,3 +1,17 @@
+## v1628: 64K P1-E lifecycle did not actually PACK owners (2026-11-16)
+
+- [x] Source-matched original v1627 64K guest replayed with actual
+  physical MM snapshots at B, A and terminal parent Z. The arena
+  `042602..200000` has 025/025/010 octal descriptors; occupied/
+  free words `074654/040322`, `104654/030322`, `021556/113420`.
+  All three stages have **zero PACKED** owners. Owner-overlap and
+  missing-terminal-snapshot mutants rejected. Normal PIPE/WAIT/EXIT
+  passes but is only a resident-process functional acceptance.
+- [ ] Exercise five physically PACKED children on 48K after an
+  expected sixth RUN resource refusal WITHOUT terminating their
+  parent, then prove PACKED restoration, exact WAIT statuses and
+  MM/immutable-source cleanup. Measure peak and net physical RAM.
+
 ## v1627: 64K P1-E six-child WAIT/EXIT physical acceptance (2026-11-16)
 
 - [x] Separate 64K no-AUX physical PURE source guest accepts all

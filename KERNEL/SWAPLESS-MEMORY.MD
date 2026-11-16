@@ -1,3 +1,23 @@
+## 2026-11-16 v1628: no RAW omissions during accepted 64K lifecycle
+
+The same genuine v1627 full-guest 64K source/DXR was replayed
+under SIMH, taking original MM ownership snapshots at parent B,
+parent A and final Z. The MM arena stays `042602..200000` octal;
+extents B/A/Z number 025/025/010, with occupied/free respectively
+`074654/040322`, `104654/030322`, `021556/113420`. All three
+stages have **zero physical PACKED process extents**. The full
+six-child WAIT/EXIT output remains accepted as an ordinary resident
+process lifecycle, not a proof of RAW PURE packing/restoration or
+net/peak savings. Testkit validates all physical descriptors and
+rejects an overlapping extent and a missing final snapshot.
+
+To accept real RAW restore under a live parent, use the previously
+observed 48K five-PACKED-child resource-pressure case. Keep the
+parent alive after the sixth RUN's expected VM creation refusal,
+then prove every child restore/WAIT/EXIT and physical MM cleanup.
+Default PURE OFF, 32K optimization HOLD. See DAIMOS
+`design/kcore-p1e-64k-physical-owner-matrix-v1628.md`.
+
 ## 2026-11-16 v1627: six-child 64K physical process lifecycle passes
 
 A separate source-backed physical PDP-6 64K TSFS/no-AUX PURE
