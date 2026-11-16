@@ -1,3 +1,21 @@
+## v1629: genuine 48K PACKED restoration and WAIT pass (2026-11-16)
+
+- [x] Actual 48K PDP-6 TSFS/no-AUX PURE guest: five children
+  admitted and sleeping, expected sixth RUN returns -1 under
+  physical VM pressure, but parent survives and completes its
+  original five PIPE/mutable-data/EXIT-057, PID/WAIT/EXITED/status
+  checks, finishing `LwwwwwZ` with normal simulator HALT.
+- [x] Same source-built guest physically replays with live MM
+  owner snapshots: B/A each have five unpinned PACKED 007000-word
+  suffixes (owners 6..2), 022 octal extents, occupied/free
+  057023/016173; Z has 010 extents, zero PACKED/child PROCESS,
+  occupied/free 011536/063460 octal. Original owner/source-linked
+  auditor rejects foreign-owner and false-WAIT mutations.
+- [ ] Separate fast/relocated RAW restore, source-loss/PI6/MM
+  rollback and baseline-matched whole-system net/peak physical
+  RAM. Do not count gross 2560 omitted words as net without
+  installed 1758-word PURE MRES and transient other costs.
+
 ## v1628: 64K P1-E lifecycle did not actually PACK owners (2026-11-16)
 
 - [x] Source-matched original v1627 64K guest replayed with actual

@@ -1,3 +1,31 @@
+## 2026-11-16 v1629: real 48K PACKED to user execution/WAIT accepted
+
+The new actual 48K PDP-6 TSFS/no-AUX PURE guest keeps the parent
+alive after a sixth RUN's expected VM allocation refusal. Its
+first five sleeping children have source-authentic PIPE input,
+private mutable sentinels and EXIT status 057. The parent uses a
+no-growth BRK and preserves all five exact PID/EXITED/status-057
+WAIT checks. Full physical console:
+`aaaaax[B013060/042502]<010000+010000>[A013060/042502]{013060-013060}LwwwwwZ`
+followed by normal HALT. The `x` is expected sixth RUN refusal,
+and L is lifecycle-only, not a RAM-size savings claim.
+
+Same compiled guest replayed with actual source-linked MM at B/A:
+022 octal extents and five distinct unpinned PACKED suffixes,
+each 007000 words (owners 6..2), occupied/free 057023/016173.
+At parent Z after five WAITs there are 010 extents, no PACKED
+and no child PROCESS owners, occupied/free 011536/063460. The
+physical original owner audit and false-owner/WAIT mutations
+PASS/reject. This is real PACKED -> restored user code -> EXIT/WAIT
+and physical MM cleanup, not a 64K resident-only test.
+
+Five omitted 001000-word prefixes total 2560 decimal gross words.
+Installed GCC PURE MRES costs 1758 words; positive whole-system
+net/peak saving is NOT yet established. Exact fast/full restore
+and concurrent immutable source/failure rollback remain OPEN.
+Default PURE OFF, strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-48k-packed-lifecycle-v1629.md`.
+
 ## 2026-11-16 v1628: no RAW omissions during accepted 64K lifecycle
 
 The same genuine v1627 full-guest 64K source/DXR was replayed
