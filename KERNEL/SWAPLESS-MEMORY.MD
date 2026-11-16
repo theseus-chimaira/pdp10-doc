@@ -1,3 +1,20 @@
+## 2026-11-16 v1634: original PURE MRES compiler-only size test
+
+The original PDP-6 GCC 3.2 -Os PURE MRES can be reproduced
+byte-for-byte in testkit using the original kernel map, `p10fold`
+and assembler `das -F -C -O`. It is 003336 octal/1758 decimal
+resident words. The initial separate diagnostic missed `-F` and
+reported a spurious +4-word result; this was corrected in the
+test script, with no production bug. Seven alternative compiler
+settings were measured: O1/O2 made the image larger and the
+best `-Os -fno-strength-reduce` saved only ONE word. None reaches
+the required >=389 decimal word low-core footprint reduction
+under the v1633 fixed parent APR geometry. No production flags
+or code were changed. Next consider validated source helper
+consolidation, with all restoration/rollback behavior preserved.
+PURE OFF by default, strict 32K HOLD. DAIMOS report:
+`design/kcore-p1e-mres-compiler-size-v1634.md`.
+
 ## 2026-11-16 v1633: physical APR corridor threshold under PURE
 
 The original source-linked 48K MM table has a PURE-enabled low-

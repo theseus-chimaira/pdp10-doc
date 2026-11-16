@@ -1,3 +1,15 @@
+## v1634: PURE MRES compiler flag comparison (2026-11-16)
+
+- [x] Original GCC 3.2 -Os PURE MRES rebuilt byte-identically
+  at 003336 octal/1758 decimal resident words with exact PDP-6
+  DAS -F flags and source/KCORE map. Eight compiler choices
+  examined in testkit; best saved only 1 word, not the required
+  389-word 48K APR-alignment improvement. No new flags accepted.
+- [ ] Correct source-level MRES consolidation, or a different
+  proven physical APR layout, must retain fast/FULL restore and
+  source/PI6/MM rollback; prove any candidate with real guests.
+  Default PURE OFF, 32K whole-KCORE optimization HOLD.
+
 ## v1633: original 48K APR corridor lower bound (2026-11-16)
 
 - [x] Physical source-matched MM table: PURE-on low-core dynamic
