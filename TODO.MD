@@ -1,3 +1,20 @@
+## v1633: original 48K APR corridor lower bound (2026-11-16)
+
+- [x] Physical source-matched MM table: PURE-on low-core dynamic
+  high=046605, PURE-off=043247, installed PURE MRES 003336
+  octal/1758 decimal words. Fixed parent 126000..136000;
+  six full child APRs require dynamic high <=046000. PURE-on
+  needs at least 000605 octal/389 decimal words of genuine
+  low-core improvement. Testkit rejects false dynamic/parent
+  extent geometry. This is a bound, not a demonstrated fix.
+- [ ] Physically validate any correctness-preserving MRES shrink
+  or alternate APR layout; retain FULL restoration and rollback.
+  PACKED suffix relocation alone cannot fit six simultaneously
+  runnable full APRs in the existing fixed-parent corridor.
+- [ ] Complete source/unmount/PI6/full restore failure tests,
+  transient peak/net RAM and P1-E feature acceptance. PURE OFF;
+  strict 32K optimization HOLD.
+
 ## v1632: original five-owner physical PURE-on/OFF RAM (2026-11-16)
 
 - [x] Source-matched 48K PDP-6 parent + five live children, both

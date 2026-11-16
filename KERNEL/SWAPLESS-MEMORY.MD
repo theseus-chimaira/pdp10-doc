@@ -1,3 +1,21 @@
+## 2026-11-16 v1633: physical APR corridor threshold under PURE
+
+The original source-linked 48K MM table has a PURE-enabled low-
+core KERNEL_DYNAMIC high of 046605 octal, vs 043247 with the
+same guest and KCORE but no PURE module. The gap 003336 octal
+is exactly 1758 decimal resident PURE MRES words. The parent
+remains a full APR at 126000..136000 with a 002000 upper tail.
+Six other simultaneously runnable full 010000-word APRs require
+the dynamic boundary at or below 046000. The installed PURE
+low-core boundary is 000605 octal/389 decimal words too high,
+even if presently PACKED suffixes could be moved safely.
+Original MM/source auditor and two forged boundary/span tests
+PASS/reject in daimos-testkit v1633. A module-size improvement
+is only a hypothesis pending complete physical guest validation;
+no MM owner or process allocation workaround was introduced.
+PURE OFF by default; strict 32K HOLD. See DAIMOS
+`design/kcore-p1e-apr-corridor-bound-v1633.md`.
+
 ## 2026-11-16 v1632: physical equal-five-owner RAM comparison
 
 Source-identical 48K PDP-6 original INIT DXR and KCORE map are
