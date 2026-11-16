@@ -1,4 +1,26 @@
-## Current KCORE feature increment: v1611 (2026-11-16)
+## Current KCORE feature increment: v1612 (2026-11-16)
+
+- [x] **P1-E PURE MRES v1612 smaller, still experimental:**
+  remove duplicate PACKED owner scan in PDP-6 service,
+  and fold a relocation-safe zero-cost 49-word region
+  between DROP/FULL. KCC installed module shrinks
+  **2275 -> 2196 words**; GCC lowmem
+  **1864 -> 1758 words**, without changing fixed KCORE
+  (`024534` octal), permanent data, per-process RAM
+  or disk swap. Native v1612 duplicate/pinned MM and
+  unsafe READY_ONCE tests PASS.
+- [x] **Rejected measured shared-C experiment:** one
+  common preparation/extent helper produced a 2356-word
+  module, larger than v1611; duplicate policy is a valid
+  abstraction but KCC call overhead costs more RAM.
+- [ ] **P1-E physical acceptance remains OPEN:**
+  do not change `DAIMOS_PURE_MRES_ENABLED=0`
+  default. Real no-AUXST1 TSFS boot, PI6 scheduler
+  and RUN/EXEC/EXIT/WAIT/BRK, executable source
+  lifetime, rollback, peak and net RAM measurements
+  are required before acceptance.
+  See DAIMOS
+  `design/kcore-p1e-pure-mres-minimize-v1612.md`.
 
 - [x] **v1611 experimental source-linked PDP-6 PURE service:**
   dedicated no-AUXST1 MRES with real v1381 zero-copy

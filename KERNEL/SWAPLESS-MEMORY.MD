@@ -14,6 +14,52 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1612: measured smaller experimental PURE module
+
+The separate opt-in PDP-6 PURE MRES has been reduced from
+**2275 to 2196 KCC words** (79 words saved, 3.47%),
+and **1864 to 1758 GCC lowmem words** (106 saved, 5.69%).
+The v1612 CPU-specific service removes one duplicate
+MM extent traversal from the retained-PACKED failure
+path, while still enforcing exactly one nonzero physical
+owner of correct type, word count and pin state.
+Wrong/duplicate/zero-base/pinned owners cannot release
+TRANSITION or publish READY_ONCE.
+
+The existing `p10fold` identifies a 49-word relocation-
+safe zero-cost equivalence in the original v1381 DROP
+and v1391 FULL transaction objects. The generated v1612
+fold plan merges that shared code without an extra JRST
+and without changing fixed KCORE, swap formats or
+the historical disk service. The service policy itself
+also saves 30 KCC words (412 -> 382).
+
+A source-level common helper was tested but resulted in
+**2356** total MRES words because of compiler-generated
+call overhead. The experiment was discarded after
+measuring the complete linked MRES, not because the
+common-preflight idea was invalid. No extra process
+table, CPU vtable, RAM registry or helper survives.
+
+The v1612 native PDP-6 tests execute actual DROP,
+fast-prefix and bounded FULL restoration and refused
+backing/source/loader cases, including duplicate MM
+owners, pinned suffix, and unsafe READY_ONCE mutation.
+The updated OFF -> ON -> OFF KINIT test requires the
+v1612 package, 2196-word folded size and fixed KCORE
+binary identity. `__kcore_low_end` remains octal
+`024534` (GCC `024254`), with no additional BSS or
+per-process words. The fixed GCC lowmem KCORE also
+remains byte-identical to its v1611 image.
+
+P1-E remains **experimental and default OFF**. No
+complete physical no-AUXST1 PDP-6 guest, real PI6
+schedule/EXEC/WAIT/EXIT lifecycle or successful
+net/peak physical RAM acceptance has yet been
+demonstrated. Compression remains deferred. The
+source/measurement record is DAIMOS
+`design/kcore-p1e-pure-mres-minimize-v1612.md`.
+
 ## 2026-11-16 v1611: experimental no-BACKSTORE PURE MRES (default OFF)
 
 DAIMOS now builds a separate PDP-6 swapless PURE MRES containing
