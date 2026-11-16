@@ -14,6 +14,66 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1619: genuine Type-551 RBN and DCT block read
+
+The 48K PDP-6 TSFS/no-AUX PURE pressure guest
+had been observed searching backward for
+physical DECtape block 000004. Two source-
+authentic direct controller tests now use a
+private read-only copy of its actual root
+DTC0 tape. Both a near block-4 read and
+a long seek from block 0341 followed by
+reverse read of block 4 PASS in the
+original Type-551 and Type-136 drivers.
+The 0200-word destination contains data,
+and the test media remain byte-identical.
+
+The same real full PURE guest now proves
+that its own PI3 handler eventually finds
+the requested block. A physical breakpoint
+at PC 031046 catches
+dtc_search_pi_found with unit 0,
+reverse direction, target 000004 and
+last RBN mark 000004. The next breakpoint
+at 031106 catches the original PI3 read
+setup, and PC 030555 catches the
+Type-136 DCT reverse-read completion.
+The latter has storage_state=-1 and
+storage_count=0200 octal, with the
+completion event still unposted.
+
+The original DECtape read completes
+on the DCT path, not on the general
+PI5 tape_pi_done label. An initial
+PI5-only test was therefore corrected;
+there was no production driver bug.
+Temporary extra assembler symbol exports
+were shown to leave every word of the
+linked production tape MRES unchanged.
+The testkit audits these physical
+registers and rejects deliberate
+mutations of both the matched RBN
+and data-completion state.
+
+This closes the question of whether
+the target block can be found and
+transferred. It does NOT prove VFS
+prefix reload completion, the MM
+PACKED-to-PROCESS commit/rollback,
+pin release, slot-0 READY_ONCE,
+PIPE/WAIT/EXIT or positive net RAM.
+The next physical breakpoints are
+the original PURE MRES
+mm_pure_release_prefix_v1384 at
+034612 and mm_pure_commit_prefix_v1384
+at 034614 octal. No permanent
+kernel, driver, MRES or process
+storage code changed in v1619.
+PURE remains disabled by default.
+
+Canonical DAIMOS design record:
+design/kcore-p1e-physical-dct-read-v1619.md.
+
 ## 2026-11-16 v1618: 120-second Type-551 search/reversal timeout
 
 The original Type-551 DECtape search timeout was

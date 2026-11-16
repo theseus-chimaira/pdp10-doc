@@ -1,4 +1,35 @@
-## Current KCORE feature increment: v1618 (2026-11-16)
+## Current KCORE feature increment: v1619 (2026-11-16)
+
+- [x] **v1619 root DTC0 RBN/data proof:**
+  real TSFS root, read-only near
+  block 000004 and long-reverse
+  000341 -> 000004 native PDP-6
+  source driver tests PASS. No
+  physical tape media mutation.
+- [x] **v1619 original full PURE read
+  completion path:** PI3 matching
+  RBN at 031046, read setup 031106,
+  reverse-read DCT completion at
+  030555; block 000004 and its
+  0200-word transfer verified in
+  the real 48K physical guest.
+  Test-only symbol maps produce
+  byte-identical original TAPE DXR.
+  Executed unsafe RBN/DCT mutations
+  rejected. Incorrect earlier
+  PI5 completion probe corrected
+  in testkit, no driver workaround.
+- [ ] **Next P1-E VFS/MM boundary:**
+  verify original prefix rollback
+  (034612) or commit (034614),
+  unpin and RESIDENT publication,
+  scheduler READY_ONCE, PIPE/WAIT/EXIT,
+  executable backing lifetime,
+  net and peak physical memory.
+  Default PURE OFF.
+
+DAIMOS report:
+design/kcore-p1e-physical-dct-read-v1619.md.
 
 - [x] **Type-551 rewind/search timeout v1618:**
   increase original 45s to 120s (016040 octal
