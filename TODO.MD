@@ -1,3 +1,17 @@
+## v1635: first-VM BCACHE high-memory obstruction (2026-11-16)
+
+- [x] Original source-matched 48K PDP-6 first-VM physical MM
+  breakpoint proves BCACHE's 0201-word high-allocation owner6
+  `137577..140000` is present before parent APR creation. Parent
+  VM request 007067 -> 010000 APR rounds highest legal address
+  down to 126000; later parent MM extent confirms that base.
+  Without the high cache slab, top base 130000 is feasible in
+  the same arena. Forged owner/size witnesses rejected.
+- [ ] Prove any low-placed clean-cache policy in a real 48K PURE
+  guest with six admitted children, actual PACKED recovery and
+  all WAIT statuses. Verify cache contents, reclaim and 32K/64K
+  regressions. Do not override RUN failure or move live parent.
+
 ## v1634: PURE MRES compiler flag comparison (2026-11-16)
 
 - [x] Original GCC 3.2 -Os PURE MRES rebuilt byte-identically

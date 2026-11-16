@@ -1,3 +1,23 @@
+## 2026-11-16 v1635: physical BCACHE high slab displaces first parent
+
+The original v1629 48K PDP-6 TSFS/no-AUX/PURE first-VM
+breakpoint stops at `vm_space_create` PC 022472 for parent slot1.
+At that exact moment the source-authentic MM table has the
+un-pinned KERNEL_DYNAMIC owner6 `137577..140000`, the 0201-word
+private BCACHE tag+data slab. BCACHE source requests MM_ALLOC_HIGH.
+The parent's 007067-word VM needs 010000 APR-aligned words,
+forcing highest legal base 126000 while that slab occupies the
+physical end 140000; later MM snapshot confirms parent at 126000.
+The same arena with no high slab could instead place the parent
+at 130000. This identifies physical placement rather than a
+necessary 389-word PURE MRES reduction as a possible remedy
+for the fixed-parent admission regression. Two forged physical
+cache owner/span controls rejected by testkit v1635. No production
+change is made here: validate any general-purpose low placement
+on complete original 48K/64K/32K process and cache workloads.
+PURE default OFF; strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-bcache-parent-placement-v1635.md`.
+
 ## 2026-11-16 v1634: original PURE MRES compiler-only size test
 
 The original PDP-6 GCC 3.2 -Os PURE MRES can be reproduced
