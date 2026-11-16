@@ -1,4 +1,28 @@
-## Current KCORE feature increment: v1610 (2026-11-16)
+## Current KCORE feature increment: v1611 (2026-11-16)
+
+- [x] **v1611 experimental source-linked PDP-6 PURE service:**
+  dedicated no-AUXST1 MRES with real v1381 zero-copy
+  SLEEP/STOP reclaim, v1384 in-place prefix and v1391
+  bounded FULL RUN/slot-0 restore; original DISK MRES
+  retained on AUXST1. Positive/negative native KCC
+  service tests PASS; opt-in KINIT/MRES builds and links.
+- [x] **Production default is OFF:** explicit
+  `DAIMOS_PURE_MRES_ENABLED=1` required to include
+  PURE in KINIT. Default KCORE remains byte-identical
+  to v1610, low end `024534` octal.
+- [x] **KINIT Make dependency ordering:** stack watermark
+  default now precedes the versioned target expansion;
+  historical TSFS MINIT v490 GCC test PASS.
+- [ ] **P1-E real acceptance remains OPEN:** module cost
+  2275 KCC or 1864 GCC words, aggregate 16K placement
+  gate fails with PURE included, net RAM benefit unproved.
+  Validate real no-AUX physical PDP-6 boot, immutable
+  source/unmount/PI6, EXEC/WAIT/EXIT/BRK, MM rollback,
+  actual installed MRES memory and transient RAM peaks
+  before enabling PURE by default.
+
+Detailed evidence in DAIMOS
+`design/kcore-p1e-swapless-service-v1611.md`.
 
 - [x] **Removable SWAP MRES v1610, mode-aware slot-0 service:**
   DISK keeps its original restore, pressure and fatal-error

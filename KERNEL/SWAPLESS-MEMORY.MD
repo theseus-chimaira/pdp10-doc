@@ -14,6 +14,51 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1611: experimental no-BACKSTORE PURE MRES (default OFF)
+
+DAIMOS now builds a separate PDP-6 swapless PURE MRES containing
+the real v1381 zero-copy inactive RAM DROP, v1384 same-base prefix
+restore, v1391 capacity-bounded FULL fallback, its two physical
+MM primitives and the shared v1386 executable image reader.
+KINIT can install this MRES on a dedicated TSFS root with **no**
+AUXST1 backing, or the existing DISK SWAP MRES when AUXST1
+does exist. Both install through the existing two resident
+scheduler trampolines, with no new persistent registry or
+process storage mode.
+
+**Production activation is deliberately disabled:** the
+compile-time switch `DAIMOS_PURE_MRES_ENABLED` defaults to
+zero. It requires explicit value 1 to link and offer the
+new module. All source-linked native PDP-6 DROP/slot-0
+prefix/FULL, source refusal and retry tests PASS, and
+both opt-in KCC KINIT and PURE MRES link successfully.
+The default KINIT omits PURE entirely; default KCORE DXR
+is byte-identical to v1610 with low end `024534` octal.
+
+The experimental PURE MRES costs **2275 KCC or 1864 GCC
+words**, BSS zero, no extra per-process storage. This
+must be subtracted from gross PURE prefixes reclaimed.
+The preliminary strict 16K single-root placement report,
+which sums the mutually exclusive DISK and PURE packages,
+FAILS for experimental KCC full
+(`PERMANENT_LAST=055660` octal, 7089 words over)
+and GCC lowmem (`046702`, 3523 over). The matched
+default KCC full is itself 4814 words over. Thus no
+physical installed-runtime fit or net RAM benefit is
+established by these aggregate link reports.
+
+The independent KINIT Makefile stack-watermark mode stamp
+definition-order issue was corrected, and the historical
+TSFS swapless MINIT v490 GCC test passes again. Full
+no-AUX hardware/simulator physical-guest acceptance,
+immutable executable source lifetime, peak allocator
+memory, EXEC/EXIT/WAIT/BRK and owner-failure tests
+remain open. Compression and other CPU backends are
+not enabled.
+
+Source, size and acceptance detail:
+`design/kcore-p1e-swapless-service-v1611.md` in DAIMOS.
+
 ## 2026-11-16 v1610: authoritative slot-0 DISK/PACKED selection
 
 Production PDP-6 `proc_swap_mres_service_v481` now checks
