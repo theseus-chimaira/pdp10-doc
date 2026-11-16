@@ -1,3 +1,46 @@
+## 2026-11-16 v1627: six-child 64K physical process lifecycle passes
+
+A separate source-backed physical PDP-6 64K TSFS/no-AUX PURE
+guest retains the original child PIPE read, two mutable sentinels
+and EXIT status 057, and the parent's six exact WAIT/EXITED/PID/
+status-057 checks. The only new parent success marker `L` means
+the lifecycle is tested independently of *additional* PURE drops
+specifically during its BRK. Genuine console:
+`aaaaaa[B073470/042522]<010000+017000>[A103470/042522]{073470-103470}LwwwwwwZ`
+followed by normal simulator HALT. Final Z is after all WAIT
+statuses and parent sentinels. Source/physical testkit checks and
+mutated success/word-count negative controls PASS. The full
+functional lifecycle is accepted on this 64K profile, but
+physical PACKED MM owner snapshots, concurrent backing loss,
+full/relocated restore failures and net/peak RAM remain OPEN.
+No production kernel/MM/MRES/ABI code change, PURE OFF by default.
+See DAIMOS `design/kcore-p1e-64k-full-lifecycle-v1627.md`.
+
+## 2026-11-16 v1626: physical PURE MM fit and six-child 64K BRK
+
+The actual v1625 48K physical source-matched MM snapshot has a
+single arena `042562..140000`, five unpinned `007000`-word PACKED
+owners and six separated free gaps totalling `016173` octal words.
+The largest `02000`-aligned free run is `007000`; the exact
+booted PURE DXR image `001043` + BSS `004001` + user stack/origin
+`002020` needs a rounded complete VM of `010000` octal words.
+The sixth RUN therefore cannot fit the current 48K physical owner
+layout. This is not a compiler error or a source admission failure.
+The testkit proves these physical facts and rejects changed owner
+and overlapping-extent mutants; it does not claim a new PACKED
+relocation/compaction feature or positive net RAM.
+
+An independently rebuilt physical 64K no-AUX TSFS/GCC PURE guest
+admits all six children and completes the parent BRK 010000 ->
+017000. Process-word counters grow only by the `010000`-word APR
+allocation: `B073470/042522` to `A103470/042522`. The original
+additional-BRK-reclaim assertion correctly reports `!R`; the six
+child completions follow failed parent cleanup, not full WAIT.
+The next independent lifecycle gate must check parent WAIT/EXIT
+without confusing *when* PURE omission happened with correct
+process termination. Whole-system RAM and 32K remain unaccepted.
+See DAIMOS `design/kcore-p1e-mm-geometry-v1626.md`.
+
 ## 2026-11-16 v1625: physical RUN VM-creation refusal, not scheduler timeout
 
 Current opt-in PDP-6 RAW PURE has physically restored a child and

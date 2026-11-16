@@ -1,3 +1,36 @@
+## v1627: 64K P1-E six-child WAIT/EXIT physical acceptance (2026-11-16)
+
+- [x] Separate 64K no-AUX physical PURE source guest accepts all
+  six RUN children and completes original PIPE/private mutable
+  checks, parent BRK, all six exact PID/EXITED/status-057 WAITs,
+  parent data checks and terminal Z. Exact physical console ends
+  `LwwwwwwZ`. L is lifecycle-only; the original BRK-time
+  additional RAM savings assertion remains a distinct failing
+  negative case. Two forged physical witnesses rejected.
+- [ ] Sample simultaneous PACKED/PROCESS/owner/pin physical MM
+  state before and after pressure and through wake/WAIT. Prove
+  immutable backing, full/relocated restore and rollback, and
+  measured net/peak system RAM including the PURE MRES before
+  enabling P1-E or starting strict 32K size optimization.
+
+## v1626: 48K PURE MM fragmentation and 64K BRK verified (2026-11-16)
+
+- [x] Original 48K six-child PURE physical/MM snapshot fully decoded:
+  five PACKED suffixes, each 007000 octal words; free gaps total
+  016173 but the largest aligned gap is 007000. Source-matched
+  PURE executable image/BSS/stack requires a complete 010000-word
+  initial APR VM. Thus the sixth RUN cannot fit in the captured
+  geometry. MM owner and overlap mutants rejected by testkit.
+- [x] Independent genuine 64K no-AUX/PURE six-child boot admits all
+  six RUNs and parent BRK 010000 -> 017000 succeeds. Exact
+  MEMINFO B 073470/042522 to A 103470/042522 records only the
+  ordinary 010000-word BRK allocation. Old strict additional-drop
+  test correctly emits !R. Six children return after parent abort;
+  complete WAIT and net RAM remain unaccepted.
+- [ ] Accept full source-backed six-child PIPE/WAIT/EXIT without
+  requiring a new PURE drop specifically during BRK; separately
+  measure exact physical RAM and concurrent executable lifetime.
+
 ## v1625: P1-E sixth RUN VM creation failure classified (2026-11-16)
 
 - [x] A source-built 48K PDP-6 TSFS/no-AUX RAW PURE guest with
