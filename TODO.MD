@@ -1,3 +1,12 @@
+## v1623: DECtape hardware-retention backlog retired (2026-11-16)
+
+The supported DTVOL2 writable policy is v1575's trusted-operator
+contract: no reel exchange while a writable mount exists. Physical
+Type-551 hardware has no enforceable reel-retention interlock, and
+software cannot supply one. No strict P0-B hardware-retention TODO
+or KCORE feature-freeze dependency remains. Dated older checklists
+are historical evidence, not active implementation requests.
+
 ## Current KCORE feature increment: v1621 (2026-11-16)
 
 - [x] **v1621 actual restored user code:**
@@ -344,11 +353,6 @@ The authoritative remaining-work inventory is
   storage and P1-D v1601 FSINFO: ACCEPTED, not active work.
 - [x] P0-D/E/F OOM: accepted only for the defined v1298
   release profile and v1348/v1351 owner/no-partner evidence.
-- [x] P0-B v1575 DTVOL2 RW: accepted under explicit
-  trusted-operator no-live-reel-exchange and quarantine rules.
-- [ ] P0-B *hardware* reel retention: still unproved by
-  stock Type-551, v1571 negative; separate policy/hardware
-  scope, not a software-only fix.
 - [ ] P1-E RAW swapless PURE: production source ownership,
   no-backing gate, quiesced zero-copy rebase, fast/full
   APR restore, actual PI6/scheduler/EXEC/EXIT/WAIT and
@@ -947,7 +951,7 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   root tape/disk/drum and independent mounted secondary
   hardware negative tests remain accepted. An injected PI2
   branch is not the same as natural hardware disappearance.
-- [ ] **P0-B:** durable rejection/authorized repair or reformat
+- (Historical, superseded) **P0-B:** durable rejection/authorized repair or reformat
   of a previously discarded, genuinely partial WRITE_UNCERTAIN
   secondary DTFS volume after later reinsertion or cold boot;
   preserve owner/cwd/PIPE/swap lifetimes and replacement identity.
@@ -1260,7 +1264,7 @@ historical evidence and superseded for single-root-member coverage.
   independent secondary DSK/DRM negative fault and combined
   root/BACKSTORE DEVICE/VOLUME fault. Native v1541 already
   covers direct/mapped source paths; physical profile still open.
-- [ ] P0-B and P1-C/D/E stay strictly separate; do not reopen
+- (Historical, superseded) P0-B and P1-C/D/E stay strictly separate; do not reopen
   the accepted selected-root or BACKSTORE policy.
 
 ## 2026-11-13 v1541: current critical storage P0-A policy
