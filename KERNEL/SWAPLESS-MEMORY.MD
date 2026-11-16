@@ -14,6 +14,64 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1620: real PURE MM commit, unpin, READY_ONCE and selection
+
+P1-E's experimental RAW PURE restoration was followed through
+the original code in a full 48K PDP-6 TSFS/no-AUX guest. After
+the v1619 Type-551 RBN/DCT transfer, the original VFS prefix
+loader returns successfully and the CPU enters
+mm_pure_commit_prefix_v1384 at 034614 octal. The matching
+rollback entry at 034612 was not the selected path.
+
+The real commit arguments are owner slot 2, original APR
+base 116000, immutable prefix length 001000 and full
+process length 010000 octal words. The current executing
+slot is zero. Source-linked v1384 MM descriptor word
+024307 then changes in physical memory:
+
+    000014000002   PACKED_PROCESS, pin 1, owner 2
+    000011000002   PROCESS,        pin 1, owner 2
+    000001000002   PROCESS,        pin 0, owner 2
+
+Both writes are observed by native PDP-6 memory write
+watchpoints, not inferred from a function entry or C
+unit test. The physical 116000..126000 APR remains
+in place with no second mutable-suffix copy.
+
+The scheduler then makes two separately verified
+physical writes:
+
+    PC 032477  proc_sched_cursor (024235) = 001002
+               READY_ONCE | restored owner slot 2
+    PC 016770  proc_current_slot (024233) = 000002
+               slot 2 selected for context restoration
+
+At both stops, slot 2 is still PROCESS, pin zero.
+The original READY_ONCE path therefore works with the
+new PURE restoration mode and fixed KCORE without
+additional resident metadata. This is stronger
+physical evidence than merely entering the v1384
+DROP/restore code or finding an RBN block.
+
+The testkit v1620 auditor checks the exact PURE MRES
+linked map/DXR bytes and physical MM/process context.
+It rejects executed wrong-owner, missing-pin,
+retained-pin and incorrect scheduler cursor/current
+mutations. No production KCORE, MRES, MM, driver or
+boot-selection code was changed.
+
+The native watchpoints stop before full user-context
+return, so successful PIPE/WAIT/EXIT, stable executable
+source lifetime and physical peak/net RAM benefit
+remain OPEN. At this snapshot the three other omitted
+prefixes reclaim 1536 decimal gross words compared
+with 1758 resident words for the installed GCC PURE
+MRES; a positive net RAM gain is NOT established.
+P1-E remains disabled by default.
+
+Canonical DAIMOS report:
+design/kcore-p1e-physical-prefix-commit-v1620.md.
+
 ## 2026-11-16 v1619: genuine Type-551 RBN and DCT block read
 
 The 48K PDP-6 TSFS/no-AUX PURE pressure guest

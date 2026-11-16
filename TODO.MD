@@ -1,4 +1,33 @@
-## Current KCORE feature increment: v1619 (2026-11-16)
+## Current KCORE feature increment: v1620 (2026-11-16)
+
+- [x] **v1620 genuine MM in-place PURE
+  prefix commit:** original physical
+  PDP-6 reaches mm_pure_commit_prefix_v1384
+  at 034614 (slot 2). MM descriptor 024307
+  changes PACKED pin1 -> PROCESS pin1 ->
+  PROCESS pin0, original APR 116000..126000.
+  No duplicate mutable suffix allocation.
+- [x] **v1620 restored scheduler selection:**
+  real PURE module cursor 001002
+  (READY_ONCE|2) at PC 032477 and
+  fixed KCORE current slot 2 at PC 016770.
+  Source-matched audits PASS; wrong-owner,
+  removed initial pin, retained final pin,
+  wrong READY_ONCE and wrong current-slot
+  mutations are rejected. All physical
+  process descriptors remain valid.
+- [ ] **v1621 full acceptance remains OPEN:**
+  prove actual user-mode return, complete
+  PIPE/WAIT/EXIT and source lifetime;
+  measure physical net/peak RAM in a fitting
+  workload and with alternative memory sizes.
+  Three omitted prefixes total 1536 decimal
+  words against 1758 for PURE GCC MRES
+  resident code; no positive net RAM yet.
+  Experimental PURE stays default OFF.
+
+DAIMOS:
+design/kcore-p1e-physical-prefix-commit-v1620.md.
 
 - [x] **v1619 root DTC0 RBN/data proof:**
   real TSFS root, read-only near
