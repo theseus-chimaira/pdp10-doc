@@ -1,3 +1,20 @@
+## v1630: first physical v1384 in-place PURE restore accepted (2026-11-16)
+
+- [x] Replayed source-authentic 48K PDP-6 five-PACKED-child guest,
+  with installed PURE MRES instruction verification. Slot 2 reaches
+  fast in-place MM CLAIM at PC 034610 (suffix 117000, owner 2,
+  prefix 001000, complete APR 010000) and COMMIT at PC 034614
+  (original APR 116000, owner 2, same prefix/size). No FULL
+  v1391 entry before commit; all five children subsequently print
+  authentic `w`, and parent completes WAIT/Z and simulator HALT.
+  Source/physical testkit auditor and two false-branch/AC witnesses
+  PASS/reject. Existing native v1395/v1397 MM rollback and v1612
+  PURE service tests PASS. No production kernel, MRES or ABI edits.
+- [ ] Physical relocated FULL v1391 and restoration rollback with
+  obstructed prefix, immutable backing loss and PI6 pressure;
+  whole-system PURE/no-PURE net RAM and transient peak. Keep
+  default PURE OFF and strict 32K optimization HOLD.
+
 ## v1629: genuine 48K PACKED restoration and WAIT pass (2026-11-16)
 
 - [x] Actual 48K PDP-6 TSFS/no-AUX PURE guest: five children

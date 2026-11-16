@@ -1,3 +1,23 @@
+## 2026-11-16 v1630: physical slot-2 in-place PURE claim and commit
+
+The original v1629 five-PACKED-child 48K PDP-6 TSFS/no-AUX guest
+was replayed with debugger breakpoints at original installed PURE
+MRES code, source-matched to the MRES map and DXR instruction bytes.
+The first restored slot 2 enters v1384 MM CLAIM at PC 034610 with
+AC1..4 = 117000, 2, 001000, 010000 (octal suffix/owner/prefix/
+complete APR). It then reaches genuine v1384 MM COMMIT PC 034614
+with AC1..4 = 116000, 2, 001000, 010000 (original APR/owner/
+prefix/complete APR). No FULL v1391 call preceded commit. After
+the debugger resumes, all five original child PIPE/data checks
+and EXIT 057, five parent WAIT statuses, parent Z and simulator
+HALT succeed. Source-backed physical auditor rejects forged AC1
+and false-FULL-PC witnesses; original v1395/v1397 native rollback
+and v1612 service tests PASS. Thus the FIRST restored child's
+fast in-place path is accepted; full-APR fallback and failure
+atomicity still require independent physical acceptance. No
+production code or MRES layout change, PURE default OFF.
+See DAIMOS `design/kcore-p1e-first-inplace-restore-v1630.md`.
+
 ## 2026-11-16 v1629: real 48K PACKED to user execution/WAIT accepted
 
 The new actual 48K PDP-6 TSFS/no-AUX PURE guest keeps the parent
