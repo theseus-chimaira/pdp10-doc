@@ -14,6 +14,34 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1615: physical BRK geometry and OOM observability
+
+A controlled 48K PDP-6 no-AUX PURE guest BRK to
+`014000` halted before cleanup. The real MM table
+contained five PROCESS owners, no PACKED owners,
+and an APR-aligned adjacent lower gap of `02000`
+words. That BRK succeeded without RAW reclaim.
+
+The stepped guest then requested `014000`, `016000`
+and `020000`. The parent disappeared, four sleeping
+pipe readers printed `wwww`, and the eventual
+simulator halt occurred after process cleanup.
+The final MM table contained no process owners;
+it is not a live failure snapshot.
+
+The existing BRK dispatcher invokes fatal process
+close on `MM_ERR_NOMEM` instead of returning to
+user mode. Therefore the test-only BRK cause veneer
+cannot print AC2 on that path. Fatal OOM is
+consistent with the physical trace, but AC2 has
+not yet been independently sampled at failure.
+The next diagnostic must stop at the fatal branch
+before cleanup to capture AC2 and the exact MM
+owner state. No production ABI or KCORE/MRES code
+changed, and PURE remains default OFF.
+
+See DAIMOS `design/kcore-p1e-brk-geometry-v1615.md`.
+
 ## 2026-11-16 v1614: fix host/native DLINK PURE address proof
 
 The first physical pressure experiments uncovered a

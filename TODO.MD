@@ -1,4 +1,21 @@
-## Current KCORE feature increment: v1614 (2026-11-16)
+## Current KCORE feature increment: v1615 (2026-11-16)
+
+- [x] **v1615 physical MM placement baseline:**
+  real 48K PURE guest, controlled BRK `014000`
+  and actual MM table showing five PROCESS owners,
+  zero PACKED, one arena and a `02000`-word
+  adjacent APR-aligned gap.
+- [x] **v1615 BRK OOM distinction:** a stepped
+  `020000` request loses the parent before the
+  test veneer prints an error; the post-cleanup
+  MM table cannot prove RAW ownership. Production
+  `MM_ERR_NOMEM` takes fatal close rather than
+  returning AC2 to the requester.
+- [ ] **Pre-cleanup AC2 and MM capture:** stop
+  the physical guest at the fatal BRK branch,
+  then inspect actual MM extents, PACKED owner
+  and rollback before attempting full restoration
+  and net/peak RAM acceptance. Default OFF.
 
 - [x] **DLINK PURE correctness:** both host and
   native source predicates now recognize AC0..17
