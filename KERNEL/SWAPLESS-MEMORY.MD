@@ -14,6 +14,62 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1617: physical DECtape search during PURE restore
+
+The physical PDP-6 module origin of the previously
+interrupted PC 030762 has now been resolved.
+Actual scheduler trampoline words show PURE
+MRES installed at base 032027 octal: original
+reclaim and service offsets 000210 and 000346
+lead to installed targets 032237 and 032375.
+Therefore PC 030762 is outside the PURE module.
+
+The unmodified linked TAPE MRES image contains
+SKIPN 0,storage_count at offset 000331,
+matching the same exact physical opcode at
+030762. It gives tape MRES base 030431.
+The original tape_io.s source places this
+instruction in dtc_search_wait, after the
+Type-551 controller status checks and before
+block-search timeout or retry handling.
+
+A second real 48K no-AUX physical PDP-6
+breakpoint at PC 030762 stopped with
+storage_state=0200 and storage_count equal
+signed -05214 octal ticks: the exact
+initialized 45-second RBN search timeout
+at 60 Hz. The idle current slot was zero.
+Thus restoration was waiting for a real
+DECtape search. A single sample does
+not prove either a deadlock or completed
+diskless prefix reload.
+
+The accompanying physical MM table showed
+three 007000-word, unpinned PACKED suffixes
+(slots 5, 4, 3) and a full 010000-word
+PACKED prefix claim with one pin (slot 2).
+The latter is a legal intermediate stage
+while immutable text is loaded from VFS,
+not proof of a permanent pin leak.
+
+All measurements are source-map-backed and
+cross-checked against the original tape
+DXR and guest memory; the testkit rejects
+mutations shifting the PURE service export
+or the original initialized tape countdown.
+No production KCORE, module, driver,
+MM or process format has changed.
+
+The next gate is to observe line-clock
+aging and Type-551 PI3 mark/data progress
+until the prefix read completes or returns
+a bounded error. This must precede any
+claim of successful slot-0 RUN/WAIT,
+net/peak RAM savings or a driver bug.
+The experimental PURE MRES remains OFF
+by default. Full findings in DAIMOS:
+design/kcore-p1e-physical-dtc-wait-v1617.md.
+
 ## 2026-11-16 v1616: genuine physical RAW PACKED owners
 
 The experimental 48K PDP-6 TSFS no-AUX guest now

@@ -1,4 +1,28 @@
-## Current KCORE feature increment: v1616 (2026-11-16)
+## Current KCORE feature increment: v1617 (2026-11-16)
+
+- [x] **Physical MRES origin v1617:** KCORE
+  trampoline and linked image decode show
+  PURE MRES base 032027, but PC 030762
+  is Type-551 tape MRES base 030431 plus
+  offset 000331 (SKIPN storage_count).
+  Original source and physical opcode match.
+- [x] **Live DECtape search state:** the
+  actual 48K no-AUX PDP-6 stopped in RBN
+  search with storage_state 0200, initial
+  -05214 tick countdown, four PACKED owners
+  (three unpinned RAW suffixes and one
+  pinned full-prefix claim). Two unsafe
+  image/timeout mutations are rejected.
+- [ ] **P1-E restore completion remains OPEN:**
+  verify storage_clock_tick and PI3 mark
+  progress or bounded tape I/O error,
+  prefix commit/rollback and pin release,
+  scheduler RUN/PIPE/WAIT, source lifetime,
+  peak/net physical RAM. No code or module
+  growth, no driver workaround; default OFF.
+
+DAIMOS source report:
+design/kcore-p1e-physical-dtc-wait-v1617.md.
 
 - [x] **Real 48K physical RAW PACKED publication:**
   two PACKED owners in interrupted MM snapshot,
