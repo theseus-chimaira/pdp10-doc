@@ -14,6 +14,45 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1610: authoritative slot-0 DISK/PACKED selection
+
+Production PDP-6 `proc_swap_mres_service_v481` now checks
+the original two-bit per-slot storage map before calling
+the disk swap-in transaction. DISK retains the original
+I/O, pressure, fatal error and READY_ONCE handling.
+PACKED **cannot** be passed to DISK: the service instead
+keeps the inactive raw MM suffix and executable backing
+record intact, raises the existing 0100-octal cooldown
+and clears the pending request. It issues neither a disk
+read/free nor TERM or READY_ONCE. Invalid modes refuse.
+This is a safe interim service state; it does NOT restore
+RAW memory or authorize an un-restored APR for execution.
+No production path creates PACKED at v1610.
+
+The staged PURE common lifecycle preflight now has three
+explicit actions: DROP (0), TERMINAL (1), RESTORE (2).
+RUN is admissible only for RESTORE when the processor is
+executing in slot 0 with the target TRANSITION-held; DROP
+remains restricted to SLEEP/STOP. Both the v1384 fast
+prefix and v1391 bounded FULL source-linked transactions
+use this common check, followed by their existing PACKED
+mode/executable/MM identity verification.
+
+Real PDP-6 compiled MRES mode test, unsafe DISK-routing
+mutation, slot-0 RUN prefix/FULL tests, and historical
+v1316/v1317 disk-swap/rollback tests PASS. The full KCC
+ROOT=tape KCORE and SWAP MRES package build/link PASS.
+Permanent KCORE DXR/map remain byte-identical to v1609,
+`__kcore_low_end = 024534` octal. The mode selection
+costs 11 instructions in the removable SWAP MRES only.
+
+The next work remains a correctly retained immutable
+executable, a small no-BACKSTORE PURE service, live
+zero-copy inactive DROP and complete prefix/FULL slot-0
+wakeup with PI6/EXEC/WAIT/failure tests. Compression
+is still deferred. DAIMOS source/evidence:
+`design/kcore-p1e-slot0-mode-v1610.md`.
+
 ## 2026-11-16 v1609: production terminal PACKED/RAW owner cleanup
 
 KCORE now has a correctly owned PDP-6 EXIT/VM destroy path

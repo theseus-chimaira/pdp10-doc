@@ -1,4 +1,24 @@
-## Current KCORE feature increment: v1609 (2026-11-16)
+## Current KCORE feature increment: v1610 (2026-11-16)
+
+- [x] **Removable SWAP MRES v1610, mode-aware slot-0 service:**
+  DISK keeps its original restore, pressure and fatal-error
+  path. PACKED defers without disk I/O, TERM or READY_ONCE;
+  its original raw suffix/backing survive untouched.
+  Invalid mode 3 refuses. Native real-service positive
+  tests and unsafe PACKED-as-DISK mutant PASS.
+  No KCORE DXR/map growth (`024534` octal).
+- [x] **Staged v1610 slot-0 RUN restore eligibility:**
+  shared DROP/TERMINAL/RESTORE process preflight. RUN
+  accepted only in RESTORE while slot 0 holds target
+  TRANSITION. Actual v1384 prefix and v1391 bounded FULL
+  source-linked native wake tests PASS. RUN DROP refused.
+  Existing disk v1316/v1317 and v1608/v1609 regressions
+  PASS. See DAIMOS
+  `design/kcore-p1e-slot0-mode-v1610.md`.
+- [ ] **P1-E live swapless operations:** real immutable
+  source lifetime, no-BACKSTORE PURE module, actual
+  inactive DROP, prefix/FULL wake, and hardware PI6,
+  EXIT/EXEC/WAIT/MM pressure tests still OPEN.
 
 - [x] **P1-E terminal PACKED owner v1609, production linked:**
   correct mode-2 VM destroy and PDP-6 exact MM suffix
