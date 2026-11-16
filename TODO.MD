@@ -1,4 +1,44 @@
-## Current KCORE feature increment: v1620 (2026-11-16)
+## Current KCORE feature increment: v1621 (2026-11-16)
+
+- [x] **v1621 actual restored user code:**
+  native PDP-6 guest prints the
+  source-authentic child 'w' marker
+  after slot-2 MM unpin and READY_ONCE
+  current-slot selection. Original
+  source requires PIPE read plus both
+  writable data checks first; compiled
+  PURE DXR and TSFS manifest match.
+  User-signal/source mutations rejected.
+- [x] **v1621 physical BRK-fit negative control:**
+  four-child 48K test BRK 010000 ->
+  016000 succeeds, but logical process
+  words increase by exactly 006000
+  octal; original '!R' correctly
+  rejects this as RAW reclamation.
+  Fitting BRK without pressure is
+  not a memory acceptance test.
+- [x] **v1621 six-child early refusal:**
+  five children pass the ready check
+  then !c occurs before parent BRK.
+  Original code conflates invalid
+  RUN pid and bounded wait-to-SLEEP
+  refusal; the cause is unclassified.
+  Negative-control audit and unsafe
+  refusal-marker mutation PASS.
+- [ ] **Still OPEN:** physical end-to-end
+  full PIPE/WAIT/EXIT under genuine
+  but fitting RAW pressure, immutable
+  source lifetime, exact 48K/64K
+  peak/net physical RAM including
+  1758-word installed GCC PURE MRES.
+  Investigate a five-child fitting
+  profile and classify the sixth-child
+  RUN-vs-SLEEP guard before changing
+  production kernel or MM behavior.
+  Do not default-enable P1-E.
+
+DAIMOS source:
+design/kcore-p1e-physical-user-resume-v1621.md.
 
 - [x] **v1620 genuine MM in-place PURE
   prefix commit:** original physical

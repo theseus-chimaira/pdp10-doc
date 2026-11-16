@@ -14,6 +14,76 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1621: restored child executes user code on PDP-6
+
+The previously source-proven physical 48K TSFS/no-AUX
+PDP-6 PURE restoration was continued beyond the v1620
+MM commit/pin release, READY_ONCE publication and
+selection of child slot 2. After that scheduler write,
+the guest printed an isolated lower-case 'w' before
+the first of two bounded CPU continuation intervals.
+
+The saved pressure-test C source and exact /SYSTEM/INIT
+image named in the TSFS manifest were checked against
+the installed executable, which has DXR2 purity=PURE.
+There is exactly one user-code 'w' path: the child
+returns from its PIPE read, verifies BOTH private
+writable-data sentinels and prints the marker, then
+requests exit status 057 octal. The marker did not
+appear before selecting the restored slot.
+
+This confirms actual successful user-code execution
+after PURE prefix restoration. The testkit rejects a
+missing signal and a wrong-source mutation and also
+rechecks the entire v1620 physical MM/scheduler
+write sequence. It does NOT yet prove that the
+parent has finished WAIT/EXIT for all children.
+
+Separately, a real 48K four-child physical build
+with a smaller, fitting BRK target 016000 octal
+succeeded in BRK but did not provide evidence of
+RAW physical savings: the logical process-word
+count changed 052450 -> 060450, exactly the
+006000-octal parent BRK growth from 010000
+to 016000. The original test correctly emitted
+!R and refused to credit any net mapped-process
+reduction. Four child completion markers followed
+failure cleanup, NOT a successful parent WAIT.
+The dedicated testkit negative-control auditor
+rejects an unsafe altered memory-growth word.
+
+A second actual 48K/no-AUX guest requested
+six children with the same target. Five
+children reached the original ready/sleep
+check, but the sixth produced !c before
+BRK was reached. The source uses !c both
+for an invalid RUN pid and for a child
+that fails to enter SLEEP within bounded
+polling. The available console cannot
+classify which occurred; do not attribute
+it to a compiler or memory allocator
+defect. The source-linked negative-control
+auditor accepts this early refusal and
+rejects a mutated refusal marker.
+
+At the original restore boundary, three remaining
+omitted 001000-word prefixes total 1536 decimal
+gross words, below the installed 1758-decimal-word
+GCC PURE MRES footprint. Even four simultaneously
+packed prefixes offer only 2048 - 1758 = 290
+decimal gross words before other resident costs;
+this is not a measured positive physical net.
+
+Full PIPE/WAIT/EXIT, immutable source lifetime,
+truly pressure-inducing but fitting BRK, and
+48K/64K exact peak/net physical RAM acceptance
+remain OPEN. No permanent KCORE, removable
+module, MM, driver or user ABI was changed.
+PURE stays OFF by default.
+
+DAIMOS source:
+design/kcore-p1e-physical-user-resume-v1621.md.
+
 ## 2026-11-16 v1620: real PURE MM commit, unpin, READY_ONCE and selection
 
 P1-E's experimental RAW PURE restoration was followed through
