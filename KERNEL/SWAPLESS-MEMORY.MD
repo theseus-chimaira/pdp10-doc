@@ -1,3 +1,27 @@
+## 2026-11-16 v1625: physical RUN VM-creation refusal, not scheduler timeout
+
+Current opt-in PDP-6 RAW PURE has physically restored a child and
+executed its first original user-mode PIPE/data checks (v1621),
+but the full parent BRK/WAIT/EXIT and net RAM gate remain OPEN.
+Source-built 48K TSFS/no-AUX six-child v1624 guest isolates the
+sixth refusal as failed RUN (`aaaaa!rwwwww`), before BRK and before
+any child sleep-poll check. A separate five-child BRK 017000 run
+does not return successfully; neither is a passing pressure case.
+
+The v1625 original PDP-6 RUN error-stage replay breaks at linked
+`proc_run_claimed_bad` PC 017725 with AC1 = -2
+(`EXEC_LOAD_NOMEM`). This is the genuine `exec_load.s` return from
+failed `vm_space_create`, not a later u-area/startup error or full
+process-slot table. Source-linked physical/negative auditors PASS.
+Exact free-run/MM admission geometry remains to be captured. Do
+not change VM or scheduler code based solely on this expected
+resource error, and do not claim a positive RAM saving before
+counting the installed 1758-word GCC PURE MRES plus scratch.
+Default PURE OFF; strict 32K size work remains deferred.
+DAIMOS design reports:
+`design/kcore-p1e-physical-run-admission-v1624.md` and
+`design/kcore-p1e-exec-load-nomem-v1625.md`.
+
 ## 2026-11-15 v1605: PURE owner contract for KA10/KI10 portability
 
 P1-E v1604 staged preflight now isolates common stopped-process

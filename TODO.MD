@@ -1,3 +1,23 @@
+## v1625: P1-E sixth RUN VM creation failure classified (2026-11-16)
+
+- [x] A source-built 48K PDP-6 TSFS/no-AUX RAW PURE guest with
+  six requested children reports `aaaaa!rwwwww`: the sixth RUN
+  returns invalid PID before parent BRK, not a PROC_SLEEP wait
+  timeout (v1624). The five-child BRK 017000 experiment does not
+  return successfully; no net RAM acceptance.
+- [x] Physical v1625 breakpoint at original `proc_run_claimed_bad`
+  PC `017725` captures AC1 -2 (`EXEC_LOAD_NOMEM`) after five
+  admitted children. Original `exec_load.s` returns this only
+  when `vm_space_create` fails. Process high slot 010 and capacity
+  014 octal exclude simple process-table saturation. Actual
+  source/linked-map audit and two corrupted physical witnesses
+  PASS/reject. No production KCORE/MRES change.
+- [ ] Inspect live MM free-run and aligned-extent geometry to
+  classify the VM allocation refusal; establish a feasible
+  48K/64K RAW pressure profile and finish parent BRK, all
+  PIPE/WAIT/EXIT, immutable owner/rollback and peak/net RAM.
+  P1-E stays OFF by default and is NOT yet accepted.
+
 ## v1623: DECtape hardware-retention backlog retired (2026-11-16)
 
 The supported DTVOL2 writable policy is v1575's trusted-operator
