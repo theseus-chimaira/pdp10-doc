@@ -1,3 +1,25 @@
+## v1631: matched 48K PURE-on/OFF admission regression (2026-11-16)
+
+- [x] Same original physical PDP-6 48K no-AUX TSFS guest compiled
+  byte-identical (INIT DXR and KCORE symbol map), with PURE module
+  on versus off. ON five children PACK and sixth RUN refuses;
+  OFF original guest prints `aaaaa!uwwwwww`: sixth RUN actually
+  succeeds, parent takes intentional failed expectation, six
+  children execute. Both original simulators HALT.
+- [x] Source-linked OFF MM after sixth RUN: no PACKED, seven
+  unpinned complete 010000 PROCESS extents contiguous 046000..
+  136000, arena 037224..140000, occupied/free 074634/003720.
+  ON five-PACKED case arena 042562..140000: the exact start delta
+  003336 octal is 1758 decimal resident PURE MRES words. ON has
+  more fragmented total free RAM but no 010000 aligned APR run
+  for the sixth RUN. Forged owner/admission physical evidence
+  rejected by testkit. This is an actual process-admission
+  regression for this workload, not a compiler or loader bug.
+- [ ] Compare live FIVE-child PURE-off/on memory snapshots at
+  identical source points and calculate net/peak RAM. Keep source
+  lifetime, FULL fallback/rollback and PI6 gates open. PURE
+  default OFF, 32K size optimization HOLD.
+
 ## v1630: first physical v1384 in-place PURE restore accepted (2026-11-16)
 
 - [x] Replayed source-authentic 48K PDP-6 five-PACKED-child guest,

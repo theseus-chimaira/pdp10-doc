@@ -1,3 +1,32 @@
+## 2026-11-16 v1631: PURE increases aggregate free but reduces admission
+
+In an original physical PDP-6 48K no-AUX TSFS experiment the same
+byte-identical C89 INIT DXR and KCORE map were booted with the
+optional PURE MRES on versus off. With PURE on, five children
+retain PACKED mutable suffixes and the sixth RUN cannot find a
+010000 contiguous aligned APR. With PURE off, the SAME source
+prints `aaaaa!uwwwwww`: sixth RUN unexpectedly succeeds, parent
+exits via the test's `!u` assertion, six children subsequently
+complete their original `w` markers and simulator HALT.
+
+The physical OFF MM snapshot at `!u` shows seven unpinned full
+PROCESS APRs, owner slots 7..1 occupying consecutive 010000-word
+regions `046000..136000`. There is no PACKED owner; the arena is
+037224..140000, occupied/free 074634/003720 octal. The source-
+matched ON five-PACKED case has arena 042562..140000, free 016173
+but the largest aligned hole only 007000, too small for another
+complete 010000 APR. The arena start delta is precisely 003336
+octal, matching the 1758-decimal-word installed PURE MRES image.
+
+Thus RAW PURE's individual 001000-word prefix holes fail to form
+useful contiguous physical VM space, and for this 48K guest the
+optional module worsens RUN admission capacity. This is a real
+feature-performance limitation, NOT demonstrated compiler/MM
+corruption. The compared snapshots have different child counts;
+do not claim equal-load net or peak savings until measured.
+Default PURE OFF, strict 32K optimization HOLD. See DAIMOS
+`design/kcore-p1e-matched-capacity-regression-v1631.md`.
+
 ## 2026-11-16 v1630: physical slot-2 in-place PURE claim and commit
 
 The original v1629 five-PACKED-child 48K PDP-6 TSFS/no-AUX guest
