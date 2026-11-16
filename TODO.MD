@@ -1,3 +1,21 @@
+## v1636: low BCACHE restores six 48K user APR admissions (2026-11-16)
+
+- [x] Correct BCACHE 0201-word private clean slab allocation
+  preference HIGH -> LOW while preserving owner6, no-reclaim
+  allocation, source tags, invalidation, and MM free logic.
+  Actual 48K PDP-6 TSFS/no-AUX/PURE guest admits six children,
+  parent no-growth BRK and exact six original PIPE/data/EXIT-057
+  and PID/EXITED/status-057 WAIT checks; normal simulator HALT.
+- [x] Source-matched physical MM B/A/Z snapshots: parent now at
+  `130000..140000` octal, formerly `126000..136000`; BCACHE at
+  low memory, six full PROCESS owners at B/A, none after WAIT.
+  Cache behavior regression and forged MM parent/WAIT witnesses
+  PASS/reject. This closes earlier sixth-RUN capacity regression.
+- [ ] Validate genuine PACKED restore under seventh-RUN pressure
+  because six children remained resident in this test. Finish
+  32K/64K, source lifetime, full restore/PI6 failure/rollback
+  and physical RAM peak/net gates before final feature acceptance.
+
 ## v1635: first-VM BCACHE high-memory obstruction (2026-11-16)
 
 - [x] Original source-matched 48K PDP-6 first-VM physical MM

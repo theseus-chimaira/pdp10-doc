@@ -1,3 +1,25 @@
+## 2026-11-16 v1636: physically recovered six-child 48K capacity
+
+BCACHE now allocates its unchanged owner6, 0201-word private
+clean slab using low instead of high MM preference. A general
+small-cache placement fix leaves complete aligned high user APRs
+free and retains identical source-key/cache invalidation/reclaim
+behavior. An independent source-built 48K PDP-6 TSFS/no-AUX/PURE
+guest admits SIX child RUNs, completes parent no-growth BRK,
+all original child PIPE/private sentinels/EXIT-057 plus six exact
+parent PID/EXITED/status WAITs, terminal `LwwwwwwZ`, HALT.
+
+Original live B/A/Z MM owner snapshots prove the parent moved
+from former 126000..136000 to `130000..140000` octal, BCACHE
+resides low and six complete PROCESS owners are present at B/A,
+none remain after WAIT. Source-linked physical audit and forged
+parent/success mutants PASS/reject; native BCACHE reclaim/I-O
+and multisource tests PASS. No child was PACKED in this fitting
+six-child workload, so subsequent seventh-RUN RAW pressure/
+restoration and source/PI6/FULL, 32K/64K, physical net/peak
+RAM gates remain OPEN. PURE OFF by default, strict 32K HOLD.
+See DAIMOS `design/kcore-p1e-bcache-low-physical-v1636.md`.
+
 ## 2026-11-16 v1635: physical BCACHE high slab displaces first parent
 
 The original v1629 48K PDP-6 TSFS/no-AUX/PURE first-VM
