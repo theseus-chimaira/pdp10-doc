@@ -1,4 +1,28 @@
-## Current KCORE feature increment: v1615 (2026-11-16)
+## Current KCORE feature increment: v1616 (2026-11-16)
+
+- [x] **Real 48K physical RAW PACKED publication:**
+  two PACKED owners in interrupted MM snapshot,
+  one unpinned 007000-word suffix, another
+  full-size 010000-word owner with one pin.
+  The latter is an allowed intermediate v1384
+  VFS-prefix-claim state, not proof of a leak.
+- [x] **Real source-matched BRK debug:** CPU entry
+  breakpoint hit at 022104; console EXPECT
+  captured five resident owner extents immediately
+  before 020000 BRK. Deferred BRK return address
+  020761 verified from linked DXR, physical
+  before/after snapshot audit PASS.
+- [ ] **Correctness/acceptance remains OPEN:**
+  post-BRK return trap was not hit before timeout;
+  no AC1/AC2 cause confirmed and no completed
+  slot-0 restore or PIPE/WAIT. Next observe
+  the exact immutable-prefix reload commit or
+  rollback boundary and final MM pin release,
+  then test physical net/peak RAM and source
+  lifetime. Experimental PURE stays default OFF.
+
+DAIMOS detail:
+design/kcore-p1e-physical-packed-v1616.md.
 
 - [x] **v1615 physical MM placement baseline:**
   real 48K PURE guest, controlled BRK `014000`

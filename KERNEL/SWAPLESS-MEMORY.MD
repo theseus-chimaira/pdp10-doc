@@ -14,6 +14,58 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1616: genuine physical RAW PACKED owners
+
+The experimental 48K PDP-6 TSFS no-AUX guest now
+demonstrates actual RAW PACKED MM extents in physical
+core after BRK pressure. Source-linked DROP entry
+evidence alone had not established this in v1614.
+
+An executable CPU breakpoint at the exact linked
+vm_space_brk_current address 022104 stopped the real
+initial BRK(0) query. A less intrusive SIMH console
+EXPECT trigger then stopped directly before the
+020000 BRK with five resident PROCESS owners and
+zero PACKED. The parent image was 016000 octal
+words; each of four sleeping children was 010000.
+The largest APR-aligned physical gap was 011577,
+insufficient to allocate a second 020000-word image
+without reclamation or compaction.
+
+The source-DXR-checked, deferred BRK return breakpoint
+020761 was not reached before the second guest was
+interrupted at its controlled timeout. At that later
+instant the MM table showed child 5 as PACKED at
+067000..076000, 007000 words, pin count zero;
+child 4 was PACKED at 076000..106000, 010000 words,
+pin count one. There were no resident PROCESS
+extents and slot zero was active. These are actual
+physical allocations; they are not a reading of
+logical mapped-process MEMINFO.
+
+The full-size pinned PACKED representation is
+intentional in original v1384 restoration: while
+the immutable prefix is being reloaded from VFS,
+MM claims the expanded full image but keeps its
+PACKED type and one pin until commit or rollback.
+The interrupted snapshot matches that intermediate
+shape. It does not prove either a successful restore
+or a persistent MM pin leak.
+
+The v1616 testkit replay wrappers and read-only
+audit verify the exact before/after owner geometry
+against the matching physical KCORE map. The
+snapshots came from separate executions of the
+same preserved image; the late one was stopped
+asynchronously. They are not a complete atomic
+transaction trace. BRK return/AC2, restored RUN,
+PIPE/WAIT/EXIT, executable-source lifetime,
+peak RAM and positive net savings remain open.
+
+DAIMOS design and physical evidence:
+design/kcore-p1e-physical-packed-v1616.md.
+No production KCORE/MRES changes. PURE default OFF.
+
 ## 2026-11-16 v1615: physical BRK geometry and OOM observability
 
 A controlled 48K PDP-6 no-AUX PURE guest BRK to
