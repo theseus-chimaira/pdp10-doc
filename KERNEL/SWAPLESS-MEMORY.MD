@@ -1,3 +1,21 @@
+## 2026-11-16 v1632: physical equal-five-owner RAM comparison
+
+Source-identical 48K PDP-6 original INIT DXR and KCORE map are
+compared with five live children and parent in both modes. ON has
+five unpinned PACKED suffixes, occupied/free MM=057023/016173
+octal; OFF has five full PROCESS owners, occupied/free
+=064224/014330. The physical sampled free-memory difference ON
+minus OFF = +001643 octal / 931 decimal words, accounting for the
+installed PURE MRES as a 003336 octal arena-start difference.
+The largest aligned free gap is ON 007000, OFF 012000; a sixth
+RUN needs 010000 and physically succeeds only in the OFF guest.
+Prior history differs (ON after a refused sixth RUN, OFF before
+the sixth), so these are sampled, not complete physical peaks.
+The source-linked MM audit and fake-owner mutants PASS/reject.
+No production changes. Design report in DAIMOS:
+`design/kcore-p1e-equal-five-memory-v1632.md`. PURE remains OFF
+by default; strict 32K size optimization HOLD.
+
 ## 2026-11-16 v1631: PURE increases aggregate free but reduces admission
 
 In an original physical PDP-6 48K no-AUX TSFS experiment the same

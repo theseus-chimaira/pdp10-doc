@@ -1,3 +1,20 @@
+## v1632: original five-owner physical PURE-on/OFF RAM (2026-11-16)
+
+- [x] Source-matched 48K PDP-6 parent + five live children, both
+  modes. ON five PACKED extents, physical free 016173; OFF five
+  resident full APR processes, free 014330 octal. ON sampled free
+  advantage +001643 octal / +931 decimal words includes installed
+  1758-word PURE MRES. Original MM audit rejects two forged owner
+  types/IDs. ON sample follows sixth RUN refusal, OFF precedes
+  sixth RUN; not a complete matched transient peak.
+- [ ] Prove correct APR placement for future RUN under RAW
+  fragmentation. ON biggest free aligned gap 007000, OFF 012000;
+  new process requires 010000. Do not report summed free words as
+  an extra process, or introduce a retry/owner workaround.
+- [ ] Physical v1391 full restore, source loss/PI6 rollback,
+  complete baseline-matched net/peak RAM and full P1-E acceptance.
+  PURE OFF by default; strict 32K optimization HOLD.
+
 ## v1631: matched 48K PURE-on/OFF admission regression (2026-11-16)
 
 - [x] Same original physical PDP-6 48K no-AUX TSFS guest compiled
