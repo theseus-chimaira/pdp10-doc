@@ -1512,6 +1512,54 @@ PURE DXR is still copied to a private APR extent while executing, whereas
 restricted XIP executes from a pinned MEMFS-owned extent under a different
 trusted no-write policy. Neither feature adds general shared text mappings.
 
+## 2026-11-16 v1622: optional mutable bitmap compression contract (TODO)
+
+The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
+words, zero BSS) is tested independently, not production-linked.
+Only a validated executable explicitly marked
+COMPRESSIBLE_MUTABLE may compress its mutable suffix. PURE
+prefix omission is independent of this opt-in. EXEC replaces
+eligibility, fork inherits it, and the stored RAW/BITMAP format
+is tracked separately. No such executable flag or process
+compression transition has been implemented. The existing DXR
+COMPRESSED flag identifies the file payload, not RAM eligibility;
+the three occupied flag bits above the 15-bit BSS field require
+an audited backward-compatible header extension.
+
+Prefer an ownership-preserving, overlap-safe in-place encoder
+instead of allocating another full mutable image. Preflight
+exact bitmap size and scratch needs read-only; incompressible
+images remain RAW. Before any in-place source overwrite,
+prove non-failing completion under an exclusive process lease
+or exact recovery of a partially transformed stream. No
+intermediate representation may become runnable or published.
+
+The preferred temporary spill location during encoding is
+the process's own still-owned and pinned reconstructible PURE
+prefix, released only after the last scratch read. Restore
+obtains an independent lease, because the original prefix and
+compressed tail may already be partially reused by other
+processes. The resident fs_block_workspace is 0200 octal words
+and also serves serialized VFS/BCACHE: it is NOT free scratch.
+Borrow it only with a verified exclusive, cache-invalidating
+lease that excludes nested filesystem I/O, callbacks and
+deadlock. A pinned no-reclaim dynamic MM extent is a fallback;
+avoid a new permanent scratch slab by default. Prove the
+precise forward/reverse/shifted overlap bounds rather than
+assuming one 36-word-group bitmap per group suffices.
+
+Every reconstruction destination must be fully MM-owned and
+pinned before writing. Test forward and reverse decode (including
+restoration from the end), partially reused prefix or tail,
+another owner occupying a gap, and safe disjoint full-APR
+relocation when overlap cannot be proved. Preserve the only
+valid encoded image and immutable backing on every refusal.
+Prioritize native and physical functional/rollback tests in
+daimos-testkit; do not impose a standalone codec efficiency
+benchmark during this integration phase. This does not change
+the later production linked-size and peak-RAM acceptance gates.
+Authoritative checklist: DAIMOS KCORE.MD and TODO.MD v1622.
+
 ## Hardware and layout invariants
 
 The PDP-6 APR provides one contiguous process mapping, one relocation base
@@ -1554,17 +1602,22 @@ A process must never be marked resident while its full APR image is absent.
   define eligibility inheritance. The actual RAM representation is recorded
   independently from eligibility.
 - **Reclaim:** quiesce the candidate with valid scheduler, PI6 and MM owner
-  state. Prepare a distinct managed-RAM retention extent, copy or compress
-  the mutable image, and validate exact reconstruction/count before
-  changing published ownership. Only then free the original process
-  extent. No in-place overwrite of the only copy, hidden disk write, or
-  release of pinned memory is permitted.
+  state. Either retain an independent MM destination as previously specified,
+  or use the v1622 overlap-safe in-place design only after proving exclusive
+  ownership, sufficient spill and non-failing/recoverable source transformation.
+  Validate complete encoding/count before publishing the shorter extent or
+  releasing any original process words. Never publish a partial stream,
+  overwrite another owner's memory, write hidden disk backing or release
+  pinned scratch while it is live.
 - **Benefit test:** reject non-shrinking compression *after* accounting for
   encoded words, metadata, preserved context and temporary peak RAM. Try
   PURE omission without compression when beneficial. If there is no
   provable net gain, keep the original resident image.
 - **Restore:** reserve a complete APR-aligned process extent (including
-  writable words), reconstruct immutable PURE from the guarded vnode,
+  writable words), including the overlap source only under an explicitly
+  proven safe MM transaction. Choose forward/reverse reconstruction or
+  disjoint relocation based on present ownership, not the former address
+  range. Reconstruct immutable PURE from the guarded vnode,
   restore/decompress mutable words, validate exact counts and ownership,
   then atomically publish runnable process state. On failure, retain the
   original inactive representation and its backing guards; do not run a
@@ -1595,11 +1648,13 @@ A process must never be marked resident while its full APR image is absent.
    bytes retained verbatim in RAM and **no** compression requirement.
    Verify native PDP-6 resume, repeated cycles, executable protection,
    low-memory and failure rollback.
-4. Only then add explicit opt-in mutable-RAM compression using an already
-   validated native lossless codec where feasible. Benchmark the whole
-   KCORE+MRES growth, stack/scratch, peak temporary RAM, compression time
-   and restore time. A codec shared with executable decoding must not be
-   linked a second time. Reject negative net RAM on 32K profiles.
+4. Only then add explicitly marked mutable-RAM compression using the tested
+   v1451 bitmap codec where feasible. Establish header admission, read-only
+   size/spill preflight, source ownership, overlap-safe encode/decode,
+   direction selection, interrupted-transaction recovery and safe fallback.
+   Prioritize functional native PDP-6 and real-guest tests rather than a
+   standalone codec speed/efficiency benchmark. Do not link duplicate codecs.
+   Keep the whole-system linked-size/peak-RAM gate for production activation.
 5. Integrate scheduler reclamation and VM/BRK/EXEC teardown, prove bounded
    memory-pressure progress, then run mixed PURE/non-PURE,
    compressible/incompressible, multiple inactive processes, provider
