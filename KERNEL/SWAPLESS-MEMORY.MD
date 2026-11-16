@@ -14,6 +14,43 @@ runtime VM vtable is added on PDP-6. See
 `KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
 `DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
 
+## 2026-11-16 v1614: fix host/native DLINK PURE address proof
+
+The first physical pressure experiments uncovered a
+linker defect and an invalid test setup. The old
+pressure test's DXR had `purity=UNKNOWN`, because
+the test did not link with `dlink --pure`; such an
+image is ineligible for P1-E immutable-prefix
+reclamation. In the actual host linker, direct
+accumulator stores such as `POP 17,10` were
+misidentified as TEXT writes, while direct writes
+to the last relocated TEXT words could evade the
+check: the predicate compared absolute EA against
+TEXT length rather than the absolute TEXT interval.
+The native linker also needed the AC0..17 exception.
+
+Both source linkers now reject definite direct
+TEXT writes using the absolute linked TEXT range,
+while recognizing the accumulator register bank.
+Strict C89 source-built host tests and native
+PDP-6 execution tests PASS, including relocated
+targets and an unsafe native mutant.
+
+The corrected physical 48K no-AUX TSFS guest has
+DXR `purity=PURE`. SIMH breakpoint evidence shows
+two calls into production reclaim and four entries
+each into v1381 RAW DROP and MM rebase. The BRK
+allocation still fails, however: entering these
+routines does **not** prove successful owner
+publication, slot-0 restoration or net RAM saved.
+The next step is to diagnose exact physical extent
+geometry and allocator refusal before modifying
+production MM. No kernel or module memory growth.
+P1-E remains disabled by default.
+
+See DAIMOS
+`design/kcore-p1e-linker-pure-address-v1614.md`.
+
 ## 2026-11-16 v1613: physical 64K no-AUXST1 PURE boot
 
 The source-selected opt-in PDP-6 PURE service now installs

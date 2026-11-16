@@ -1,4 +1,26 @@
-## Current KCORE feature increment: v1613 (2026-11-16)
+## Current KCORE feature increment: v1614 (2026-11-16)
+
+- [x] **DLINK PURE correctness:** both host and
+  native source predicates now recognize AC0..17
+  writes and compare direct EA against the
+  absolute linked TEXT range. Host C89 and
+  native PDP-6 tests PASS; unsafe mutant rejected.
+- [x] **Valid physical PURE DXR pressure setup:**
+  `dlink --pure` plus `dxrcheck purity=PURE`
+  required before boot. The earlier UNKNOWN DXR
+  was not eligible for RAW reclamation. Physical
+  48K no-AUX guest reached reclaim and v1381
+  DROP/rebase entries.
+- [ ] **Exact physical MM acceptance:** the BRK
+  request still failed. Determine extent layout,
+  typed allocator refusal and whether a RAW
+  suffix was actually published before changing
+  kernel logic. Slot-0 restore, PIPE/WAIT,
+  immutable-source lifetime and net/peak RAM
+  remain open. PURE remains OFF by default.
+
+DAIMOS details:
+`design/kcore-p1e-linker-pure-address-v1614.md`.
 
 - [x] **P1-E no-AUX KINIT v1613 fix:** absent
   AUXST1 discovery (-1) now selects experimental
