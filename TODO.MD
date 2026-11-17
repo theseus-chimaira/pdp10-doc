@@ -1,3 +1,23 @@
+## v1639: matched physical 48K six-owner PURE RAM result (2026-11-17)
+
+- [x] Source-identical ON/OFF PDP-6 48K TSFS/no-AUX C89 guest,
+  executable INIT DXR and fixed KCORE map, both admit six children,
+  refuse seventh RUN, then verify six original PIPE/private-data/
+  EXIT-057/exact PID/WAIT status checks and normal HALT.
+- [x] Original source-linked MM B/A: ON six unpinned PACKED suffix
+  owners, occupied/free 066433/006564 octal; OFF six full resident
+  process APRs, occupied/free 074433/004122. ON +1314 decimal
+  physical free words at equal six-owner state after including
+  1758 decimal installed PURE MRES. Six omitted 512-word prefixes
+  gross 3072; net sample 3072 - 1758 = 1314. Final Z both
+  child-owner free, but ON now -1887 decimal free due MRES plus
+  129 extra valid BCACHE words at ON-only terminal cache state.
+  Forged process owner and false parent-WAIT controls rejected.
+- [ ] Still need matched TRANSIENT physical peak while FULL v1391
+  holds source + destination simultaneously; source/unmount and
+  PI6/MM failure-atomic rollback, 32K/64K BCACHE regression,
+  P1-E feature acceptance. PURE OFF, strict 32K size HOLD.
+
 ## v1638: physical compressed PURE FULL relocated v1391 (2026-11-17)
 
 - [x] Source-matched 48K PDP-6 TSFS/no-AUX/PURE with six

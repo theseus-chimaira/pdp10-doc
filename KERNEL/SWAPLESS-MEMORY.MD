@@ -1,3 +1,34 @@
+## 2026-11-17 v1639: matched six-owner physical RAM savings verified
+
+Original 48K PDP-6 TSFS/no-AUX low-BCACHE C89 guest, compiled
+INIT DXR and fixed KCORE linker map are byte-identical between
+PURE-on and PURE-off builds. Both admit six children, refuse
+seventh RUN, and complete all six exact original PIPE/mutable
+sentinel/EXIT-057 and parent PID/WAIT/status checks, normal HALT.
+
+Read-only source-linked complete MM snapshots at B/A: ON has
+six 007000-word PACKED suffixes, occupied/free 066433/006564
+octal; OFF has six complete 010000-word PROCESS APRs, occupied/
+free 074433/004122. ON has +1314 decimal physical free RAM
+words at equal six-child state, including installed 1758-decimal
+PURE MRES. The 3072-decimal gross omission of six 512-word
+prefixes less the 1758-word MRES gives exact +1314 physical gain.
+
+After all six child WAITs, Z snapshots are child-owner clean,
+but ON free 063461 vs OFF 067220 octal (-1887 decimal) reflects
+1758 still-resident PURE words and the additional valid 0201-
+octal/129-word BCACHE slab in the ON-only terminal snapshot.
+Original MM/guest audit and two falsified owner/WAIT witnesses
+PASS/reject. These are physical sampled free words, NOT matched
+time-resolved peak RAM while the v1391 FULL loader pins both
+source and destination. No production code changed in v1639.
+
+OPEN: actual transient memory peak, source lifetime/unmount
+failures, PI6/MM loader rollback, 32K/64K cache profiles and
+final feature acceptance. PURE OFF by default; strict 32K
+optimization HOLD. DAIMOS report:
+`design/kcore-p1e-six-owner-physical-ram-v1639.md`.
+
 ## 2026-11-17 v1638: original physical FULL v1391 relocation accepted
 
 Testkit uses the unchanged low-BCACHE PDP-6 kernel and its
