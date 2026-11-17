@@ -1,3 +1,23 @@
+## v1652: independent native PDP-6 64K nine-PACKED profile (2026-11-17)
+
+- [x] Actual original 64K no-AUX/TSFS/secondary-DTFS
+  physical guest source-derived from v1643, nine
+  admitted RUNs, refused tenth, compressed DXR2
+  source match, exact original DATA/PIPE/EXIT057/
+  WAIT and normal HALT. Preliminary 10-child
+  over-capacity test refused as expected.
+- [x] Original source-linked B/A/Z MM replay:
+  arena octal 042601..200000, nine unique pin0
+  type4 PACKED_PROCESS slots2..10, suffix006600,
+  B/A free9404 decimal/maxgap4155. Z zero child
+  MM owners, free42769. Three physically falsified
+  type/owner/WAIT cases rejected. See
+  KERNEL/PURE-64K-OWNERS-V1652.MD.
+- [ ] Matched 64K PURE ON/OFF, continuous FULL peak,
+  32K original profile, uncertain MM owner recovery,
+  and KA10 VM still OPEN. No production change;
+  PURE OFF, strict 32K optimization HOLD.
+
 ## v1651: original 48K physical MM snapshot accounting (2026-11-17)
 
 - [x] Original v1643 accepted source-linked 48K physical
