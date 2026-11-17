@@ -1,3 +1,21 @@
+## v1649: original executable owner guard in FULL two-pin callback (2026-11-17)
+
+- [x] Native PDP-6 real compiled v1391 FULL callback has
+  simultaneously pinned original RAW PACKED and separate
+  complete PROCESS APR, with exact transition/backing.
+  Original source-extracted assembler guards refuse owning
+  DTFS mount and executable vnode, but not unrelated sources.
+  Original descriptors and backing remain unchanged; full
+  restoration succeeds with exact writable suffix and text.
+- [x] Two independently compiled invalid guard predicates
+  execute and fail at octal 002002. Existing v1563 ownership
+  tests pass 26 native cases and reject six mutants.
+  `KERNEL/PURE-FULL-MOUNT-GUARD-V1649.MD`.
+- [ ] Physical independent UNMOUNT actor under real PI6 during
+  blocked FULL provider I/O, uncertain MM ownership, total
+  transient peak RAM and 32K/48K/64K/KA10 profiles remain OPEN.
+  No production changes; PURE OFF, strict 32K optimization HOLD.
+
 ## v1648: native FULL MM source-release and destination-pin rollback (2026-11-17)
 
 - [x] Real compiled v1391 FULL/PDP-6 MM transaction safely
