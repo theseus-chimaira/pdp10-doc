@@ -1,3 +1,25 @@
+## v1641: test-injected FULL loader error and physical MM rollback (2026-11-17)
+
+- [x] Original source-built PDP-6 48K no-AUX TSFS v1638
+  compressed PURE guest, MRES and backing unchanged. At original
+  v1391 post-loader callback PC 034361, real loader returned
+  AC1=0; slot3 owns separate pinned PACKED source
+  111000..120000 and full PROCESS target 120000..130000.
+  Testkit SIMH changes ONLY AC1 to -1 once at this boundary;
+  this is NOT a genuine VFS or DECtape failed read.
+- [x] Original v1391 returns -4 at PURE service PC 032461;
+  slot3 PACKED source remains exact and unpinned, and its
+  temporary full target was freed. Next observed original FULL
+  callback for compressed slot4 returns success. All six child
+  PIPE/mutable data/EXIT-057 and exact parent WAIT checks pass,
+  final Z/HALT and zero child PROCESS/PACKED MM owners. Source-
+  linked physical audit and two forged pin/loader-return traces
+  PASS/reject; no permanent production code change.
+- [ ] Actual VFS failure, source removal/unmount and immutable
+  backing lifetime; PI6/uncertain MM failure rollback; broad
+  32K/64K low-BCACHE layouts and complete matched physical
+  transient peak RAM. PURE OFF; strict 32K size HOLD.
+
 ## v1640: real physical FULL allocation NOMEM and retry (2026-11-17)
 
 - [x] Source-built PDP-6 48K TSFS/no-AUX six-PACKED guest:

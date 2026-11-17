@@ -1,3 +1,34 @@
+## 2026-11-17 v1641: physical rollback after one injected loader error
+
+The original 48K PDP-6 no-AUX TSFS compressed PURE executable,
+MRES and kernel remain unchanged. Read-only MM at the genuine
+bounded FULL callback return PC 034361 confirms real loader
+AC1=0, with slot3 simultaneously pinned PACKED source
+111000..120000 and PROCESS full APR destination
+120000..130000 octal words. Testkit deliberately injects
+ONE error by setting ONLY simulator AC1=-1 before returning to
+the existing v1391 transaction. This models an error returned
+by a loader, not a real DECtape/VFS read failure or altered
+immutable executable source.
+
+The original transaction returns -4 to PURE service PC 032461.
+At this breakpoint slot3's exact PACKED suffix remains owned
+and unpinned, while the distinct PROCESS target no longer exists.
+Other child extents and pins are unchanged. Another successful
+FULL callback is later observed for slot4. All six original
+child PIPE/private data/EXIT-057 and exact parent WAIT checks
+finish with normal HALT and no remaining child MM owner at Z.
+Source-linked physical auditor PASSes, rejecting a fake retained
+source pin and a fake original loader error before injection.
+
+This closes test-injected callback-failure owner cleanup,
+in addition to v1640 natural FULL allocator NOMEM rollback.
+Real VFS/source-loss/immutable-unmount failure, concurrent PI6/
+uncertain MM rollback, 32K/64K cache regressions and matched
+transient peak remain OPEN. PURE OFF by default; strict 32K
+optimization HOLD. DAIMOS report:
+`design/kcore-p1e-full-loader-error-rollback-v1641.md`.
+
 ## 2026-11-17 v1640: actual physical FULL NOMEM rollback and retry
 
 The original 48K PDP-6 TSFS/no-AUX low-BCACHE PURE kernel/MRES
