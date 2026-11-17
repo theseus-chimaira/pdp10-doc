@@ -1,3 +1,23 @@
+## v1640: real physical FULL allocation NOMEM and retry (2026-11-17)
+
+- [x] Source-built PDP-6 48K TSFS/no-AUX six-PACKED guest:
+  first compressed PURE child, second plain PURE child, four
+  other compressed children. Source-linked v1391 MM allocation
+  return PC 034336: genuine -1 NOMEM, slot2 retains its single
+  pinned PACKED suffix 121000..130000, no destination APR.
+- [x] Actual v1391->v1612 return PC 032461: same six original
+  PACKED owners, all zero pins, -1 return preserved. Later SAME
+  slot2 at bounded FULL loader PC 035252: pinned PACKED source
+  121000..130000 plus independently pinned PROCESS destination
+  110000..120000, AC4 010000. Entire six-child original PIPE/
+  mutable data/EXIT-057 and parent WAIT statuses pass, HALT;
+  final physical MM Z no child owner. Source-linked and two
+  falsified owner-pin/return machine witnesses PASS/reject.
+- [ ] Actual physical failed VFS reads/source loss/unmount;
+  concurrent PI6 and uncertain MM rollback, 32K/64K general
+  BCACHE regressions and complete matched transient peak RAM.
+  PURE default OFF; strict 32K whole-KCORE optimization HOLD.
+
 ## v1639: matched physical 48K six-owner PURE RAM result (2026-11-17)
 
 - [x] Source-identical ON/OFF PDP-6 48K TSFS/no-AUX C89 guest,

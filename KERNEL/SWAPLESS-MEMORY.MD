@@ -1,3 +1,33 @@
+## 2026-11-17 v1640: actual physical FULL NOMEM rollback and retry
+
+The original 48K PDP-6 TSFS/no-AUX low-BCACHE PURE kernel/MRES
+was not modified. One compiled C89 guest runs compressed PURE
+children in slots 2,4..7 and plain PURE slot3, all six
+actually PACKED before the seventh RUN is correctly refused.
+The original v1391 full-APR MM allocation returns NOMEM -1 at
+physical PC 034336. Only the slot2 PACKED source 121000..130000
+has a pin; no destination was allocated. The original service
+return PC 032461 preserves that -1, the identical six PACKED
+owners, ALL pins zero, and no premature resident publication.
+
+After the plain child restores and releases an APR, original
+bounded FULL loader PC 035252 executes for SAME compressed
+slot2. At the call, MM has separately pinned PACKED source
+121000..130000 and PROCESS destination 110000..120000 octal,
+with AC4=010000 trusted allocated APR words. Original six
+child PIPE/private mutable sentinels/EXIT-057 and six parent
+exact PID/WAIT/status-057 checks all pass, terminal LwwwwwwZ,
+normal simulator HALT; final Z has NO child MM owner.
+
+The source-linked physical audit PASSes and rejects a forged
+still-pinned RAW owner and fabricated success at the original
+NOMEM instruction. Natural FULL refusal/unpin/retry/cleanup
+is now accepted. Physical VFS failure/source-loss/unmount and
+concurrent PI6/MM uncertain rollback remain OPEN, as do 32K/
+64K cache regressions and transient matched peak RAM. PURE OFF
+by default, strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-full-nomem-physical-v1640.md`.
+
 ## 2026-11-17 v1639: matched six-owner physical RAM savings verified
 
 Original 48K PDP-6 TSFS/no-AUX low-BCACHE C89 guest, compiled
