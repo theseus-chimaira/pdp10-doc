@@ -1,3 +1,44 @@
+## 2026-11-17 v1643: real secondary DTFS FULL read fault recovered
+
+The original physical PDP-6 48K no-AUX/TSFS/PURE guest is
+source-derived from v1638 without modifying KCORE/MM/MRES/VFS.
+PID1 copies the original compressed DXR2 from the selected TSFS
+root to a real native DTC3 DTFS file `/MOUNT/COMP` on separate
+public mount2, closes the file, CHMODs 0555, performs checked
+CLEAN unmount and remounts the SAME reel read-only. The selected
+TSFS ROOT (provider7/mount1, DTC0..2) remains physically online.
+The first wrong test-only target `/MOUNT/DT0` was absent from
+the immutable root; correcting the guest to the existing
+`/MOUNT` fixed that mount failure. No kernel workaround.
+
+Original B/A MM shows six genuinely PACKED unpinned children,
+each RAW `006600` octal words. This different source includes
+extra text: compiled DXR2 TX2 `001227`, actual original PDP-6
+skip `(text+020)&~0177=001200`, retained `010000-001200=006600`.
+Do not confuse this with earlier v1638 `007000` RAW words.
+
+At source-linked original FULL loader PC 035252, slot3 owns
+concurrent pinned source PACKED 111200..120000 and full PROCESS
+APR 120000..130000. The test simulator physically detaches ONLY
+DTC3. The original non-root backing read fails; v1391 returns
+`-4` at v1612 service PC 032461, RAW suffix unchanged/pin0,
+full destination freed. The unchanged TSFS root never HALTs.
+The same DTC3 reel is reattached. A subsequent original bounded
+FULL callback for compressed slot4 returns 0, and all six
+original PIPE/private mutable sentinel/EXIT-057 and exact
+PID/WAIT/status checks succeed; `LwwwwwwZ`, normal HALT and
+final MM no child owner. Source-linked physical audit and
+forged pin/fake success controls PASS/reject. No production edit.
+
+Open: physical immutable source modification/unmount guards,
+PI6/uncertain MM rollback, 32K/64K profiles and matched complete
+transient peak RAM including both pinned FULL extents. Original
+READ_SUSPECT media bit was not sampled. Older native DTFS v1522
+testkit source extraction is stale after v1575/v1561; it has
+NOT been accepted as a current-tree PASS. PURE disabled by
+default; strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-secondary-backing-physical-v1643.md`.
+
 ## 2026-11-17 v1642: real selected-root read failure during PURE FULL
 
 Source audit of current TSFS/VFS and the fixed v1538 root

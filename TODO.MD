@@ -1,3 +1,32 @@
+## v1643: recoverable REAL secondary DTFS FULL read loss (2026-11-17)
+
+- [x] Source-derived original 48K PDP-6 no-AUX TSFS/PURE guest
+  runs one plain child from selected TSFS root, five compressed
+  PURE children from native DTC3 DTFS public mount2, after actual
+  RW file copy, CLEAN owner-safe unmount and RO remount. Root
+  DTC0..2/provider7/mount1 remains unchanged. Six actual
+  unpinned PACKED owners (2..7), new guest TX2 text 001227,
+  skipped 001200, retained 006600-octal suffix each. Honest
+  seventh RUN refusal, unchanged PIPE/BRK/WAIT assertions.
+- [x] Original physical v1391 bounded FULL PC 035252: slot3
+  pinned RAW 111200..120000 plus independently pinned PROCESS
+  APR 120000..130000. Real physical DETACH ONLY secondary DTC3
+  returns original -4 at service PC 032461: same RAW owner pin0,
+  full destination freed. Reattach exact same DTC3 reel: later
+  original compressed FULL callback slot4 returns 0. All six
+  PIPE/private data/EXIT-057 and exact PID/WAIT/status-057
+  outcomes pass, `LwwwwwwZ`/HALT, Z no child owner. Source/real
+  MM/original DXR audit + two forged pin/success traces PASS/
+  reject. Unmodified production source; v1395/v1612 native PASS.
+- [ ] Immutable backing rename/remove/unmount protection while
+  PACKED, concurrency PI6/uncertain MM errors, full temporal
+  physical peak RAM and 32K/64K cache regressions. The old
+  DTFS v1522 standalone testkit must be separately updated for
+  v1575 source anchor and v1561 original write-gate linkage;
+  it does NOT currently pass on the newest combined source.
+  The actual READ_SUSPECT media bit was not sampled directly.
+  PURE default OFF; strict 32K whole-KCORE size HOLD.
+
 ## v1642: physical selected-root TSFS FULL read fail-stop (2026-11-17)
 
 - [x] Original source-backed PDP-6 48K TSFS/no-AUX/PURE guest
