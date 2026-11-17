@@ -1,3 +1,32 @@
+## v1654: correct PURE FULL MM commit and defer 32K acceptance (2026-11-17)
+
+- [x] Correct original opt-in PDP-6 v1391 FULL:
+  destination unpin checked BEFORE freeing the
+  PACKED RAW source and before RESIDENT publication.
+  The small destructive commit is PI-atomic, with
+  no device I/O/allocation under PI disable.
+  One-shot refusal exact rollback/retry PASS; unknown
+  permanent pins remain transition-held and fail closed.
+- [x] Native v1395/v1397/v1648 and new permanent
+  source/target unpin cases PASS; executed old-order
+  target-unpin mutant fails the native MM oracle.
+  New original physical 48K PDP-6 DTC3 failed read
+  confirms dual pin, source preservation, full target
+  rollback, same-reel subsequent FULL, six exact
+  WAIT/EXIT and no MM child leak. Two forged
+  physical witnesses rejected. Fixed KCORE
+  unchanged; optional MRES transient +8 words.
+  KERNEL/PURE-FULL-COMMIT-V1654.MD.
+- [x] **DEFER 32K strict boot and footprint acceptance**
+  until PDP-6 functional KCORE freeze, preserving
+  v1653 6289-word shrink goal and full stack/MRES.
+- [ ] Finish complete transient RAM accounting, immutable
+  fail-closed MM/PI owner acceptance, optional mutable
+  compression measured yes/no, stale standalone DTFS
+  fixture, source-matched functional release freeze.
+  KA10/KI10 ports remain distinct later tasks.
+  No blanket KCORE completion or 32K acceptance claim.
+
 ## v1653: original 32K PURE ON/OFF KINIT size refusal (2026-11-17)
 
 - [x] Original minimal C89 PURE self-RUN/
