@@ -1,3 +1,28 @@
+## v1657: genuine physical RAW suffix bitmap feasibility (2026-11-17)
+
+- [x] Actually capture 20,736 original physical
+  36-bit words in six PACKED_PROCESS extents
+  of a source-built 48K PDP-6 TSFS/DTC3 guest;
+  six PIPE/EXIT/WAIT and HALT pass.
+- [x] Validate v1451 candidate bitmap output:
+  each 3,456-word RAW source has 65 nonzero
+  literals, 96 bitmap masks, total 161 packed.
+  Gross potential six-owner reduction 19,770
+  36-bit words; full reconstruction and two
+  distinct exact source checksums PASS.
+  Three invalid trace mutations rejected.
+  Testkit 5cbe205,
+  KERNEL/PURE-PHYSICAL-SUFFIX-DENSITY-V1657.MD.
+- [ ] Prototype a proper bounded optional
+  bitmap MM state ONLY if exact source and
+  compressed-output ownership, mode3
+  publication, failure/PI/EXEC/WAIT/EXIT
+  recovery and end-to-end physical net peak
+  are justified. No actual MM compression
+  or 19,770-word RAM saving claimed.
+  Final KCORE feature freeze OPEN; strict
+  32K acceptance explicitly DEFERRED.
+
 ## v1656: original current DTFS integration reaccepted (2026-11-17)
 
 - [x] Original v1518 raw DTC read/write/BCACHE
