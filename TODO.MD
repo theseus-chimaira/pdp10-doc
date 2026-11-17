@@ -1,3 +1,37 @@
+## v1645: physical PI6 staged wake with five surviving PACKED owners (2026-11-17)
+
+- [x] Source-derived original PDP-6 48K no-AUX/TSFS/PURE guest;
+  real native DTC3 RW executable mode0777, six sleeping PACKED
+  children with original source-sized `006400` octal suffixes
+  (compiled TX2 text001454, omit001400). Original parent
+  passes all v1644 RW executable mutation/unmount checks.
+- [x] Parent writes ONE shared PIPE token (`H`) while keeping
+  writer open and repeats original RW source guards. Real
+  `dsys_sleep(0200)` yields via original PI6; precisely one
+  child completes DATA/PIPE/EXIT-057 (`w`) before `T`, five
+  still PACKED on exact original extents and pin0. Another
+  RW source guard passes before closing the writer.
+- [x] Source-linked physical CLK PI6 and `proc_timer_clock` both
+  advance 1691 real ticks between H=8673 and T=10364.
+  Post-H guard at tick9098 still sees six matching RAW owners;
+  post-T guard at tick11015 sees EXACTLY FIVE matching owners.
+  Root remains TSFS provider7/mount1 and secondary DTC3 mount2
+  is RW (VFS policy000000000001). Original mount/vnode guard
+  PCs003431/003322 entered with correct mount2/file slot0.
+- [x] Remaining five EOF/exit and six exact PID/WAIT/status-057
+  checks PASS, native DTC3 unmount succeeds, normal HALT and
+  physical U/Z MM contains zero child owners. Console ends
+  `LHPwTPwwwwwUZ`. Source-linked physical auditor and forged
+  clock/source pin/RO-policy controls PASS/reject. Native PI6
+  v1086, staged PURE v1563 and rename/PI6 v468 PASS. No
+  production KCORE/MM/VFS/PI6 edit, no added resident RAM.
+- [ ] OPEN: true overlapping sleeping DTFS WRITE/UNLINK/UNMOUNT
+  vs new PURE RUN/EXEC backing publication and simultaneously
+  pinned FULL target; uncertain MM error rollback, general
+  32K/64K layout and matched transient physical peak RAM.
+  Older DTFS v1522 source-only fixture remains stale, NOT PASS.
+  PURE default OFF; strict 32K whole-KCORE optimization HOLD.
+
 ## v1644: real physical RW executable content and mount guards (2026-11-17)
 
 - [x] Original PDP-6 48K TSFS/no-AUX/PURE user guest source-built

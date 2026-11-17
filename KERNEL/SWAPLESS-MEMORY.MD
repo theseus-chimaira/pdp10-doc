@@ -1,3 +1,54 @@
+## 2026-11-17 v1645: physical PI6 partial wake under immutable PURE backing
+
+Unmodified original 48K PDP-6 no-AUX TSFS/PURE kernel with C89
+source-derived guest executing mode0777 compressed PURE from a
+real native DTC3 READ/WRITE DTFS mount2. Six actual sleeping
+PACKED child owners with exact retained `006400` octal words
+each (this source's DXR2 TX2 text001454, omitted001400).
+
+Before waking any child, the parent performs the v1644 UNMOUNT,
+UNLINK, TRUNCATE, O_TRUNC and data WRITE refusal checks plus
+the safe in-place native DTFS rename COMP->SAFE->COMP (`P`).
+It publishes EXACTLY ONE real PIPE word (`H`) while the writer
+stays OPEN; it repeats all source guards (`P`) during the ensuing
+real PI6 clock progression. A true `dsys_sleep(0200)` gives the
+awakened child scheduling time; that child reads the token,
+validates private writable DATA and EXIT-057 (`w`) before the
+parent's `T`. The other FIVE cannot see EOF because the PIPE
+writer remains open; parent repeats the same guard checks (`P`)
+while their original PACKED RAW sources remain immutable.
+
+Physical original `clk_tick_count` and `proc_timer_clock`
+both advance 1691 qualified PI6 ticks from H=8673 to T=10364.
+The post-H guard at tick9098 still shows all SIX original
+unchanged unpinned RAW owners. At T tick10364 and the next
+guard tick11015, only child2 has retired; original RAW owners
+3..7 remain unchanged and pin0. The original ROOT remains
+TSFS mount1; native DTC3 mount2 RW (`vfs_mount_policy=1`).
+Unmodified original KCORE `proc_swap_mount_busy` PC003431 and
+`proc_swap_backing_busy` PC003322 are entered with correct
+public mount2 and provider5/mount2/file slot0. The subsequent
+final PIPE EOF lets the five other children run/EXIT-057;
+all six exact parent PID/WAIT/status-057 checks pass. Parent
+unmounts DTC3 successfully (`U`), then `Z` and normal HALT.
+Source-linked U/Z physical MM zero child PROCESS/PACKED owners
+or leaked pins. Full console ends `LHPwTPwwwwwUZ`.
+
+The physical auditor reuses v1644's strict backing guard oracle,
+adds real PI6/CLK/owner tests, and rejects forged CLK, owner pin
+and RO-policy traces. Native v1086 PI6, v1563 PURE and v468
+rename/PI6 tests PASS. No production or resident RAM changes.
+
+This ACCEPTS genuine single-child user/PI6 wake with five still
+PACKED immutable sources. It does not prove an instruction-
+level in-flight WRITE/UNLINK or UNMOUNT vs NEW PURE RUN/EXEC
+admission race, or simultaneous bounded FULL target at a
+guard checkpoint. Those, uncertain MM rollback, 32K/64K
+regressions and complete transient peak RAM remain OPEN.
+The old native DTFS v1522 source fixture remains stale.
+PURE OFF by default; strict 32K optimization HOLD. DAIMOS:
+`design/kcore-p1e-pi6-staged-backing-v1645.md`.
+
 ## 2026-11-17 v1644: writable PURE backing guard and owner release
 
 Original source-built PDP-6 48K PURE/TSFS/no-AUX guest, unmodified
