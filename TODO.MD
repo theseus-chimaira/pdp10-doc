@@ -1,3 +1,24 @@
+## v1658: fail-closed PURE MM ownership (2026-11-17)
+
+- [x] Atomic PREFIX commit retypes the exact singly pinned PACKED
+  descriptor into an unpinned PROCESS before APR/RESIDENT publication.
+  DROP failure revalidates exact unpinned RESIDENT or PACKED ownership;
+  pinned, duplicate and permanently uncertain owners remain excluded
+  by TRANSITION. No extra permanent KCORE state or ownership registry.
+- [x] Original source-linked native v1654 FULL and v1612 service
+  regressions, actual v1658 DROP/fast-prefix cases and executed unsafe
+  pin-leak mutation PASS/reject. A fresh original GCC 48K TSFS-root/
+  DTC3 six-child guest also completed PIPE/WAIT/EXIT/HALT; the fixed
+  KCORE stream is byte-identical to the accepted v1654 stream.
+  See KERNEL/PURE-MM-UNCERTAIN-V1658.MD.
+- [x] New original source-linked physical 48K FULL DTC3 read loss:
+  -4 error, exact RAW preserved, provisional APR released, same-reel
+  recovery, six WAIT/HALT. Original source audit and both executed
+  forged pin/success trace negatives PASS/reject, runner exit zero.
+- [ ] Finish new source-matched 64K owner, terminal faults/negative mutants.
+  Continuous RAM peak, real mode3 bitmap compression YES/NO and final
+  PDP-6 functional freeze remain OPEN. Strict 32K acceptance DEFERRED.
+
 ## v1657: genuine physical RAW suffix bitmap feasibility (2026-11-17)
 
 - [x] Actually capture 20,736 original physical
