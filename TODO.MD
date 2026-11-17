@@ -1,3 +1,30 @@
+## v1644: real physical RW executable content and mount guards (2026-11-17)
+
+- [x] Original PDP-6 48K TSFS/no-AUX/PURE user guest source-built
+  with a separate genuine DTC3 native DTFS RW mount2, executable
+  `/MOUNT/COMP` mode0777, root DTC0..2 provider7/mount1 online.
+  Six sleeping PACKED child suffixes have 006400 octal RAW words
+  (compiled TX2 text001420, skip001400) and no pins at B/A/
+  guard-entry/P. Same original sorted physical MM owners throughout.
+- [x] Executed original `proc_swap_mount_busy` PC003431 (AC1=2)
+  and `proc_swap_backing_busy` PC003322 (AC1=050202000000:
+  DTFS provider5, public mount2, file slot0) while six PACKED.
+  VFS policy `000000000001` independently proves DTC3 writable.
+  Genuine UNMOUNT, UNLINK, TRUNCATE, O_TRUNC and WRITE refused.
+  In-place native RENAME COMP->SAFE->COMP allowed (same underlying
+  slot), with UNLINK SAFE still refused; no immutable data change.
+- [x] All original six PIPE/private mutable sentinel/EXIT-057
+  and PID/WAIT/status-057 checks pass. Only AFTER final child
+  teardown can parent UNMOUNT the DTC3 filesystem successfully;
+  final `LwwwwwwUZ`, normal HALT, U/Z physical MM zero child owners.
+  Source-linked audit and forged RO-policy, RAW pin, other mount
+  reject. v1382/v1563 native backing tests PASS; no KCORE edit.
+- [ ] Still OPEN: concurrent PI6 source-mutation/retirement races,
+  uncertain MM failure cleanup, 32K/64K profiles and matched
+  transient physical RAM peak. Previous native DTFS v1522 source
+  fixture remains stale after v1575/v1561 (NOT a current PASS).
+  PURE default OFF; strict 32K whole-KCORE optimization HOLD.
+
 ## v1643: recoverable REAL secondary DTFS FULL read loss (2026-11-17)
 
 - [x] Source-derived original 48K PDP-6 no-AUX TSFS/PURE guest

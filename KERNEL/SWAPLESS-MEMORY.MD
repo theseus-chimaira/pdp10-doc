@@ -1,3 +1,42 @@
+## 2026-11-17 v1644: writable PURE backing guard and owner release
+
+Original source-built PDP-6 48K PURE/TSFS/no-AUX guest, unmodified
+KCORE, MM, VFS and DTFS. Unlike v1643's read-only secondary
+backing, v1644 mounts real DTC3 native DTFS **READ/WRITE** with
+the compiled compressed PURE source at `/MOUNT/COMP`, mode0777.
+The fixed VFS policy word is `000000000001`: bit0 selected ROOT
+RO, bit1 secondary DTC3/RW. Six actual RAW PACKED_PROCESS
+children, each retained suffix 006400 octal words (different
+source: original compiled TX2 text001420, omitted prefix001400).
+
+Source-linked original KCORE physical breakpoints show
+`proc_swap_mount_busy` PC003431 AC1=2, and
+`proc_swap_backing_busy` PC003322 AC1=050202000000 (provider5,
+public mount2, native file slot0). Original B/A/mount-entry/
+vnode-entry/P physical MM snapshots retain six exactly matching
+unpinned PACKED owners; the selected TSFS root remains unchanged.
+
+Actual user syscalls refuse UNMOUNT, UNLINK of original or
+renamed vnode, TRUNCATE, O_TRUNC, and WRITE_WORDS even through
+an O_RDWR file descriptor. RENAME COMP->SAFE->COMP succeeds:
+native DTFS preserves the existing file slot/content and merely
+changes its directory name, so the backing record still refers
+to the same immutable source. All six original child PIPE/private
+DATA/EXIT-057 and exact parent PID/WAIT/status-057 checks pass.
+Only AFTER those child owners retire does normal native DTFS
+UNMOUNT succeed. Console ends `LwwwwwwUZ` and normal HALT;
+final MM U/Z has no child PROCESS/PACKED owner or child pin.
+The source-linked auditor PASSes and rejects forged RO-policy,
+still-pinned source and wrong mount identity witnesses.
+
+No production edit or additional resident KCORE RAM. This
+accepts sequential PURE backing lifetime, not concurrent PI6
+race freedom or uncertain MM rollback. General 32K/64K
+regressions, matched transient peak RAM and old native DTFS
+v1522 fixture modernization remain open. PURE OFF by default;
+strict 32K optimization HOLD. Detailed DAIMOS report:
+`design/kcore-p1e-backing-guards-physical-v1644.md`.
+
 ## 2026-11-17 v1643: real secondary DTFS FULL read fault recovered
 
 The original physical PDP-6 48K no-AUX/TSFS/PURE guest is
