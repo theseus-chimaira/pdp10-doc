@@ -1,3 +1,27 @@
+## v1656: original current DTFS integration reaccepted (2026-11-17)
+
+- [x] Original v1518 raw DTC read/write/BCACHE
+  and native directory test runs on present
+  source with unmodified v1561 physical-unit
+  write-intent gate and valid published V1
+  DTC3 mount2; four source mutants rejected.
+- [x] Original v1522 native 72-bit volume-ID,
+  V1/V2 recovery, real BCACHE and FSINFO tests
+  use current source and original v1561 gate,
+  reject eight source mutations including
+  changed high/low IDs and the saved mount slot.
+- [x] v1656 aggregated original integration
+  plus v1655 82 cases runs successfully;
+  51 unsafe native source mutations rejected.
+  Testkit a507c17, documentation
+  KERNEL/DTFS-ORIGINAL-INTEGRATION-V1656.MD.
+  No production source/RAM change.
+- [ ] Finish whole-system transient RAM peak,
+  permanently uncertain MM owner policy,
+  conditional mutable compression yes/no
+  and full PDP-6 release matrix. Strict
+  32K acceptance DEFERRED by direction.
+
 ## v1655: original current-source DTFS matrix (2026-11-17)
 
 - [x] Repair original v1556 PDP-6 native fixture for
