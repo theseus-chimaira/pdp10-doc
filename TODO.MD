@@ -1,3 +1,24 @@
+## v1642: physical selected-root TSFS FULL read fail-stop (2026-11-17)
+
+- [x] Original source-backed PDP-6 48K TSFS/no-AUX/PURE guest
+  stops at v1391 bounded FULL PC 035252 with concurrently pinned
+  compressed slot3 PACKED suffix 111000..120000 and separate
+  PROCESS full target 120000..130000 octal. Physically detach
+  all three selected root Type-551 members DTC0/1/2 and verify
+  missing device attachments before resuming original executable.
+- [x] Actual TSFS read error reaches KCORE root classifier
+  PC 003761, provider 7, public mount 1 equal namespace ROOT;
+  terminal root-specific HALT PC 003776 with original MM source
+  and target still owned. No false child WAIT/normal FULL rollback
+  claims. Source-linked MM/guest/TSFS audit PASSes, rejecting
+  falsified other-mount and wrong-HALT machine witnesses.
+- [ ] Test recoverable physical FULL backing read failure on a
+  SECONDARY non-root filesystem, where existing v1538 policy
+  returns an error instead of halting. Immutable source guards,
+  PI6 and uncertain MM errors, 32K/64K BCACHE profiles and
+  matched transient peak RAM remain OPEN. PURE default OFF;
+  strict 32K whole-KCORE optimization HOLD.
+
 ## v1641: test-injected FULL loader error and physical MM rollback (2026-11-17)
 
 - [x] Original source-built PDP-6 48K no-AUX TSFS v1638

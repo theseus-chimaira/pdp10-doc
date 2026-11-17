@@ -1,3 +1,35 @@
+## 2026-11-17 v1642: real selected-root read failure during PURE FULL
+
+Source audit of current TSFS/VFS and the fixed v1538 root
+classifier confirms that an otherwise valid failed I/O from
+selected namespace ROOT must HALT rather than return a normal
+filesystem error to the restore transaction. In the original
+48K PDP-6 TSFS/no-AUX/PURE six-PACKED mixed executable guest,
+original bounded FULL callback PC 035252 is reached with
+compressed slot3 owning pinned RAW suffix 111000..120000 and
+separately pinned complete PROCESS APR 120000..130000.
+
+Testkit physically detaches all three actual Type-551 root
+DECtapes DTC0, DTC1 and DTC2 at the suspended callback. Each
+device reports no attachment. Next real TSFS read failure
+executes fixed KCORE classifier PC 003761, AC1=7 TSFS and
+AC2=1 public root mount, matching source-linked
+`vfs_namespace_root`. Original MM extents/pins remain unchanged
+until root-specific terminal HALT PC 003776. Neither normal
+PURE rollback nor user EXIT/WAIT is permitted on this path.
+
+Source-linked physical testkit auditor PASSes and rejects
+forged non-root mount and altered root HALT witnesses. A
+testkit detach-marker indentation bug was fixed and the full
+physical run repeated before accepting. No production change.
+
+Still OPEN: a recoverable physical FULL failure using a SECONDARY
+non-root source; immutable source/unmount protections; concurrent
+PI6/uncertain MM rollback; general 32K/64K cache layouts and
+matched transient peak RAM. PURE OFF by default, strict 32K
+optimization HOLD. DAIMOS report:
+`design/kcore-p1e-tsfs-root-read-failstop-v1642.md`.
+
 ## 2026-11-17 v1641: physical rollback after one injected loader error
 
 The original 48K PDP-6 no-AUX TSFS compressed PURE executable,
