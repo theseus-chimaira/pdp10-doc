@@ -1,3 +1,22 @@
+## v1647: physical P1-E DTFS V2 quiescence / new PURE RUN PASS
+
+- [x] Original PDP-6 48K source-built real DTVOL2/CLEAN RW
+  secondary DTFS mount and compressed DXR2 PURE new RUN.
+  Original FSINFO -1 barrier refuses RUN with exact original
+  MM/backing intact. Original PI6 CLK advances 1004 ticks;
+  unmount, same-reel remount, successful RUN/EXIT/WAIT and
+  final no-MM-owner HALT PASS. Seven physical invalid-volume
+  cases and three forged clock/backing/RO witnesses rejected.
+  Disposable kernel only adds real test scheduling interval;
+  no production edit or permanent RAM. Both initial children
+  are RESIDENT, not PACKED, and the result is an admission
+  test, not a new compression/RAM-saving result. See
+  `KERNEL/PURE-DTFS-QUIESCE-V1647.MD`.
+- [ ] P1-E still OPEN for simultaneous pinned FULL and DTFS
+  I/O/concurrent mutation, uncertain MM rollback, 32K/64K,
+  transient peak RAM, and KA10 VM acceptance. PURE OFF by
+  default, strict 32K optimization HOLD.
+
 ## v1645: physical PI6 staged wake with five surviving PACKED owners (2026-11-17)
 
 - [x] Source-derived original PDP-6 48K no-AUX/TSFS/PURE guest;
