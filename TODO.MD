@@ -1,3 +1,32 @@
+## v1653: original 32K PURE ON/OFF KINIT size refusal (2026-11-17)
+
+- [x] Original minimal C89 PURE self-RUN/
+  EXIT/WAIT DXR compiled. Matching real
+  original 32K lowmem KINIT PURE ON/OFF
+  links have byte-identical KCORE and
+  fixed low end024253. Host mkimage
+  correctly refuses BOTH images before
+  actual boot.
+- [x] Original core100000 octal,
+  reserve0400, safe end077400. OFF
+  end110052 exceeds physical core by
+  4,138 decimal, safe end by 4,394.
+  ON end113621 exceeds core by 6,033,
+  safe end by 6,289. PURE only adds
+  03547 octal=1,895 transient words;
+  OFF baseline is already too large.
+  All three false map/log/KCORE witnesses
+  rejected. See
+  KERNEL/PURE-32K-KINIT-CAPACITY-V1653.MD.
+- [ ] Correct genuine KINIT transient
+  footprint without suppressing required
+  modules or reducing the stack reserve.
+  Rebuild and actually boot/run 32K PURE
+  before claiming acceptance. Do not
+  mislabel size refusal as runtime/MM bug.
+  P1-E OPEN, PURE default OFF,
+  strict 32K optimization HOLD.
+
 ## v1652: independent native PDP-6 64K nine-PACKED profile (2026-11-17)
 
 - [x] Actual original 64K no-AUX/TSFS/secondary-DTFS
