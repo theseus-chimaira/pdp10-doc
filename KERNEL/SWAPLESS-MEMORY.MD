@@ -1,3 +1,32 @@
+## 2026-11-17 v1638: original physical FULL v1391 relocation accepted
+
+Testkit uses the unchanged low-BCACHE PDP-6 kernel and its
+optional PURE MRES in 48K no-AUX TSFS simulation. A plain first
+PURE child and five compressed PURE copies of the SAME linked C89
+executable are admitted. Seventh RUN refusal forces all six into
+actual PACKED storage. The original parent then verifies all six
+PIPE/private sentinel/EXIT-057 and PID/WAIT/status results,
+`LwwwwwwZ`, and normal HALT.
+
+At parent B and A there are six unpinned 007000-word PACKED
+suffixes. The original MRES code at physical PC 035252 is
+authenticated as the source-linked `exec_image_full_bounded_v1391`
+loader (opcode 200000000004). The slot-zero scheduler calls it
+with AC2=120000 full APR target and AC4=010000 trusted capacity.
+At the SAME physical breakpoint, compressed child slot 3 owns
+both PINNED original PACKED suffix 111000..120000 and distinct
+PINNED PROCESS destination 120000..130000. No owner overlap or
+fake prefix reconstruction; all children later EXIT/WAIT and
+are released in final MM Z. The original physical testkit auditor
+and forged FULL-owner/WAIT controls PASS/reject. v1630 had already
+proven the FAST v1384 path. No new production code in v1638.
+
+Still OPEN: interrupted/failed FULL and PI6/MM owner rollback,
+immutable source loss/unmount, broad 32K/64K cache regression,
+matched peak/net physical RAM and full P1-E feature freeze.
+PURE default OFF; strict 32K KCORE optimization HOLD.
+DAIMOS report `design/kcore-p1e-physical-full-relocation-v1638.md`.
+
 ## 2026-11-16 v1637: six physical 48K PACKED child restorations
 
 With v1636 low BCACHE, the original PDP-6 48K no-AUX TSFS/PURE

@@ -1,3 +1,25 @@
+## v1638: physical compressed PURE FULL relocated v1391 (2026-11-17)
+
+- [x] Source-matched 48K PDP-6 TSFS/no-AUX/PURE with six
+  children: first plain PURE, five compressed PURE. Seventh RUN
+  refuses, parent survives and checks all original six child
+  PIPE/data/EXIT-057 and exact PID/EXITED/status-057 WAITs,
+  terminal `LwwwwwwZ`, normal simulator HALT.
+- [x] Physical B/A: six distinct unpinned PACKED suffixes,
+  each 007000 words. Original linked FULL v1391 loader breakpoint
+  PC 035252 with authenticated opcode and slot-zero scheduler,
+  AC2 target 120000, AC4 010000 capacity. At this instruction
+  child slot 3 simultaneously owns pinned PACKED suffix
+  111000..120000 and separate pinned full PROCESS APR
+  120000..130000. After all six WAITs no child PROCESS/PACKED
+  owners remain; forged target-owner and false-WAIT controls
+  rejected. v1630 FAST and v1638 FULL success are both proven.
+- [ ] Physical source-loss/unmount and executable backing guards;
+  interrupted FULL/PI6/MM failure rollback and concurrency;
+  32K/64K BCACHE layout regressions; matched physical net/peak
+  RAM and full P1-E feature acceptance. PURE default OFF;
+  strict 32K whole-KCORE size pass still HOLD.
+
 ## v1637: six physical 48K PACKED restores after seventh RUN (2026-11-16)
 
 - [x] Original source-built PDP-6 48K no-AUX TSFS/PURE kernel
