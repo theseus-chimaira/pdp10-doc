@@ -1,3 +1,25 @@
+## v1651: original 48K physical MM snapshot accounting (2026-11-17)
+
+- [x] Original v1643 accepted source-linked 48K physical
+  secondary-DTFS read failure, later FULL and all EXIT/WAIT
+  reaudited PASS. Six original managed MM snapshot totals
+  validated against one 31,375-word arena, exact type/
+  owner/pin geometry and complete occupied/free accounting.
+- [x] B/A occupied27,163/free4,212; FULL_PINNED27,668/
+  free3,707; failed FULL rollback23,572/free7,803;
+  LATER_FULL27,668/free3,707; final Z4,958/free26,417.
+  Largest FULL contiguous gap 883 words, only 640 after
+  02000 APR alignment. Full checkpoint net +505 words
+  reflects a 4096-word APR, prior child -3456 suffix
+  and a -135-word dynamic MM release. Three forged
+  arena/dynamic/target-pin witnesses all rejected.
+  `KERNEL/PURE-48K-MM-SNAPSHOT-V1651.MD`.
+- [ ] Still OPEN: continuous whole-system physical peak
+  including MRES/KCORE/provider scratch; matched 48K
+  PURE ON/OFF for this larger source; 32K/64K layouts,
+  uncertain MM ownership and distinct KA10 VM.
+  No production/RAM change. PURE OFF, strict 32K HOLD.
+
 ## v1650: native slot-0 FULL scheduler exclusion (2026-11-17)
 
 - [x] Original PDP-6 PI6 idle-PC interval and swap ownership
