@@ -1,3 +1,26 @@
+## v1655: original current-source DTFS matrix (2026-11-17)
+
+- [x] Repair original v1556 PDP-6 native fixture for
+  accepted V2/CLEAN RW unarmed and RO/ARMED safety
+  after v1572, with 30 current V1/V2 cases and
+  fourteen rejected unsafe-source mutations.
+- [x] Current source-linked v1554 physical DIRTY
+  17 cases/10 negative mutants, v1561 actual
+  mount/MM owner 35/13, and v1575 original
+  poisoned-owner drain 2/2 invalid mutants.
+  Complete matrix totals 82 enumerated cases
+  and 39 executed mutants; all PASS/refuse.
+  Testkit a048ab3, report
+  KERNEL/DTFS-CURRENT-SOURCE-MATRIX-V1655.MD.
+- [ ] Historical v1518/v1522 combined raw
+  DTC failure/BCACHE + mounted identity
+  scripts still fail current-source extraction.
+  Their original historical results are not
+  refreshed by this test. Modernize or prove
+  exact equivalent source-accurate integration.
+  Full KCORE freeze and peak RAM still OPEN;
+  strict 32K acceptance explicitly DEFERRED.
+
 ## v1654: correct PURE FULL MM commit and defer 32K acceptance (2026-11-17)
 
 - [x] Correct original opt-in PDP-6 v1391 FULL:
