@@ -1,3 +1,22 @@
+## v1650: native slot-0 FULL scheduler exclusion (2026-11-17)
+
+- [x] Original PDP-6 PI6 idle-PC interval and swap ownership
+  verified by eleven native cases, including positive idle
+  dispatch. All three unsafe clock-path mutations rejected.
+- [x] Existing original physical v1643 48K source-linked
+  trace/map confirms slot0 bounded FULL at 035252 outside
+  idle017216..017264, with real pin1 RAW and full APR.
+  Both forged slot/pin physical witnesses rejected; original
+  read-error/rollback/recovery audit rerun and passes.
+  This is reuse of an accepted physical trace, not a new run.
+  `KERNEL/PURE-SLOT0-SERIAL-V1650.MD`.
+- [x] Close impossible independent-user UNMOUNT-during-FULL
+  interleaving under existing scheduler; no test-only bypass.
+- [ ] P1-E remains OPEN for real device/media failure,
+  permanently uncertain MM ownership, 32K/48K/64K
+  physical transient RAM peak and separate KA10 backend.
+  No production/RAM change; PURE OFF, optimization HOLD.
+
 ## v1649: original executable owner guard in FULL two-pin callback (2026-11-17)
 
 - [x] Native PDP-6 real compiled v1391 FULL callback has
