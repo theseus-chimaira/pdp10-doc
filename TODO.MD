@@ -1,3 +1,20 @@
+## v1648: native FULL MM source-release and destination-pin rollback (2026-11-17)
+
+- [x] Real compiled v1391 FULL/PDP-6 MM transaction safely
+  rejects PACKED source-free BUSY/INVAL and new full APR pin
+  BUSY. Existing RAW contents, backing, one unpinned MM owner
+  and TRANSITION stay intact, temporary PROCESS allocation is
+  gone, and a later retry restores the exact complete user image.
+- [x] Both executed invalid-code controls fail as required:
+  missing RAW overlay `0706`, leaked target `01004` (octal).
+  Native v1395/v1397 rollback and v1611/v1612 service regressions
+  PASS. No production KCORE/VM/MM/ABI or resident data changes.
+  `KERNEL/PURE-FULL-ATOMIC-V1648.MD`.
+- [ ] Physical pinned FULL reload vs actual concurrent DTFS
+  source I/O/mutation/unmount, ambiguous permanent MM ownership,
+  complete transient peak RAM in 32K/48K/64K and a real KA10
+  VM backend remain open. PURE default OFF, 32K optimize HOLD.
+
 ## v1647: physical P1-E DTFS V2 quiescence / new PURE RUN PASS
 
 - [x] Original PDP-6 48K source-built real DTVOL2/CLEAN RW
