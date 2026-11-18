@@ -1,3 +1,38 @@
+## v1659: bounded opt-in PURE bitmap MM probe (2026-11-18)
+
+- [x] Validate exact v1451 30-word PDP-6 source assembler in the
+  DAIMOS test-only tree. No new permanent KCORE, MRES or KINIT link.
+- [x] Real C89 bounded disjoint-MM probe counts exact RAW nonzeros,
+  reserves minimal bitmap without reclaim, verifies every decoded
+  36-bit RAW word and short-mask padding, then checks temporary
+  MM unpin/free and original source ownership without publication.
+- [x] Native v1658 baseline plus twelve v1659 real KCC/PDP-6
+  positive and MM fault cases PASS, including 3,456 RAW / 65
+  literals -> 161 packed words. Executed verification-bypass source
+  mutant rejected. Standalone codec 30 and probe 586 TEXT words.
+  Documentation: KERNEL/PURE-BITMAP-PROBE-V1659.MD.
+- [x] Fix REAL original no-reclaim MM rejecting declared
+  MM_TYPE_PACKED_PROCESS=4. Accept exactly types 1..4; preserve
+  rejection of reserved 5..7 and invalid high bits. The unmodified
+  source-linked MM allocator leaves allocate a disjoint 161-word
+  compressed candidate in the 883-word gap, then pin/free it;
+  shortage and descriptor exhaustion are distinguished. Native
+  invalid-type matrix and two executed unsafe type-guard mutants
+  PASS/reject. Original real-MM v1111/v1552 still PASS.
+  Fixed KCORE low end grows `024253` to `024255` (+2 words),
+  KINIT staging end `113641` to `113643` (+2 words).
+- [x] Fresh source-derived GCC 48K selected TSFS ROOT and secondary
+  DTC3 PURE six-child PIPE/WAIT/EXIT and normal HALT PC000000 PASS
+  with corrected allocator. Fixed KCORE and KINIT +2 words; new
+  KCORE stream SHA256 recorded in PURE-BITMAP-PROBE-V1659.MD.
+- [ ] Source-match new 64K allocator/terminal acceptance and physical
+  compressed-mode3 gate; bitmap compression remains OFF.
+- [ ] Create a REAL compressed mode3 owner and complete terminal
+  EXIT/WAIT, safe FULL restore, PI6 and MM failure atomicity before
+  first production or physical source-RAM compression claim.
+- [ ] Source-matched 48K/64K physical failure tests, continuous peak
+  RAM comparison with RAW/PURE-OFF, complete freeze. 32K DEFERRED.
+
 ## v1658: fail-closed PURE MM ownership (2026-11-17)
 
 - [x] Atomic PREFIX commit retypes the exact singly pinned PACKED
