@@ -1,3 +1,28 @@
+## 2026-11-18 v1672: physical post-user RUN/EXIT/WAIT and zombie words
+
+- [x] Correct native `SYS_MEMINFO` and `PROCINFO` when VM_SPACE_NONE
+  marks an EXITed zombie. Native PDP-6 source tests and both
+  unsafe sentinel-guard mutations PASS; four fixed KCORE words
+  added for correctness, zero additional permanent data fields.
+- [x] Actual 48K TSFS/PURE four-child RUN/EXIT/WAIT lifecycle:
+  MM free 27441 -> 18193 -> 27441, APRs 1 -> 5 -> 1.
+- [x] Actual 64K TSFS/PURE seven-child RUN/EXIT/WAIT lifecycle:
+  MM free 43793 -> 27609 -> 43793, APRs 1 -> 8 -> 1.
+- [x] Physical general/strict images have identical installed MM
+  memory, free/largest extents, APR owners and pins at all three
+  CTY-synchronized checkpoints. Original SYS_MEMINFO counters
+  match actual APR and 264-word u-area ownership.
+- [x] Four unsafe physical evidence/summary variants rejected.
+  User virtual-PC SIMH breakpoints are forbidden: they may alias
+  unrelated KCORE PCs; the executable CTY barrier is verified.
+- [x] Patched KCC FULL ROOT=auto links; fixed KCORE +4 words in
+  both compiler profiles, KINIT pruning still saves 1877 GCC
+  transient words in the source-matched strict tape build.
+- [ ] Continuous post-user high-water and *forced* RAW PURE MM
+  reclaim; compressed mode3 RUN/EXIT/WAIT/PI6 remains disabled.
+- [ ] Physical general ROOT=auto/disk/drum and strict physical
+  32K memory acceptance remain separate gates.
+
 ## 2026-11-18 v1671: real KINIT stack high-water, TSFS/PURE 48K/64K
 
 - [x] Source-matched watermarked KINIT images run in real PDP-6
@@ -10,8 +35,10 @@
   **1877** transient words. Four unsafe evidence mutations reject.
 - [ ] Do NOT reduce default 0400 octal stack reserve without
   separate fatal/media/root stack measurements and safety bounds.
-- [ ] Next: true post-user 48K/64K MM and process pressure,
-  compressed mode3 RUN/EXIT/WAIT/PI6, and strict physical 32K.
+- [x] v1672 true post-user 48K/64K ordinary PURE MM pressure,
+  real child RUN/EXIT/WAIT and full owner/pin restoration.
+- [ ] Next: forced RAW PURE reclaim, continuous post-user memory
+  high-water, compressed mode3 RUN/EXIT/WAIT/PI6 and strict 32K.
 
 ## 2026-11-18 v1670: KINIT MM event-boundary high-water at 48K/64K
 
@@ -28,9 +55,10 @@
   permanent low resident: 48K free 26421, 64K free 42773.
   No additional permanent free core from transient candidate
   pruning; v1669's intermediate +66 remains a distinct stage.
-- [ ] Instruction-level allocator micropeak, KINIT stack high-
-  water, and real 48K/64K RUN/EXIT/WAIT/PI6 pressure after user
-  entry with bitmap mode3; strict 32K deferred.
+- [x] v1671 KINIT stack high-water and v1672 ordinary PURE
+  48K/64K real RUN/EXIT/WAIT pressure, both physically accepted.
+- [ ] Instruction-level allocator micropeak, continuous user
+  pressure, compressed mode3 and PI6, strict 32K deferred.
 
 ## 2026-11-18 v1669: physical 48K/64K MM pre-reclaim checkpoint
 
