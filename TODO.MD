@@ -1,3 +1,24 @@
+## 2026-11-18 v1664: compressed PURE FULL APR restore
+
+- [x] Opt-in bounded FULL restore validates exact unique compressed
+  mode3 MM owner, immutable executable backing and original APR;
+  allocates aligned APR using original no-reclaim MM, loads text
+  through bounded ABI, preflights/decompresses retained RAW suffix.
+- [x] New PDP-6 MM finish leaf validates two once-pinned owners,
+  deletes compressed source and consumes APR pin atomically;
+  nonfallible PI-excluded publication of VM base, mode0, backing
+  and TRANSITION follows without any late unpin/free.
+- [x] Native actual PDP-6 MM restores all 4,096 APR words, including
+  all-zero 96-mask source, SRUN slot-0 restore, full 136 descriptors,
+  reversed MM owner order and independent MODULE owner.
+- [x] 62 new native tests (8 valid, 54 corrupt/refused), two
+  independently executed unsafe mutants rejected, complete
+  v1663/v1662/v1661/v1660/v1659 native baseline PASS.
+- [ ] Wire compressed terminal and scheduler/PI6 EXIT/WAIT/RUN
+  dispatch. Keep fixed KCORE mode3 rejection until safe.
+- [ ] Test real full-guest 48K/64K physical net/peak RAM and VFS;
+  PURE default OFF, strict 32K physical acceptance deferred.
+
 ## 2026-11-18 v1663: bounded bitmap compressor frontend
 
 - [x] Opt-in C89 frontend validates inactive mode2 RAW owner, pins
