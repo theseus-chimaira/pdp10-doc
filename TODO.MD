@@ -1,3 +1,27 @@
+## 2026-11-18 v1665: root-aware exclusive memory backend
+
+- [x] KINIT installs drivers, selects actual root, then chooses
+  swap service. TSFS without validated BACKSTORE selects optional
+  PURE; TSFS with validated nonzero swap and DSK/DRM roots select
+  original disk MRES. Unresolved/unsupported roots install neither.
+- [x] ROOT=auto links the PURE candidate when TSFS and explicit
+  PURE support are enabled; ROOT=disk/drum excludes PURE.
+- [x] Six strict C89 source-selector combinations, root-before-SWAP
+  MINIT order, six top-level Make policy checks and two executed
+  wrong-root/order mutants PASS. Prior v1613 selector tests PASS.
+- [x] Full KCC ROOT=auto PURE=1 links both candidates; genuine
+  PDP-6 GCC lowmem 64K ROOT=tape/no-AUXSTORE boots with PURE
+  LOADED and INIT V1. Old v1613 smoke bound 024254 is stale on
+  v1664+ sources; v1665 source-built bound 024255 octal.
+- [ ] Install backend-specific terminal release through one KINIT
+  patched entry; keep compressed mode3 disabled until safe.
+- [ ] Introduce dedicated TSFS swapless-only build profile that
+  omits disk candidate and refuses positive BACKSTORE; measure
+  KINIT overhead, physical peak, 48K/64K net installed RAM.
+- [ ] Real auto-root no-AUXSTORE/validated-swap physical boot and
+  full compressed mode3 RUN/EXIT/WAIT integration remain open.
+  Default PURE OFF; strict 32K physical acceptance deferred.
+
 ## 2026-11-18 v1664: compressed PURE FULL APR restore
 
 - [x] Opt-in bounded FULL restore validates exact unique compressed
