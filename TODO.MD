@@ -1,3 +1,29 @@
+## 2026-11-18 v1667: isolated bitmap compressed PURE MRES stage
+
+- [x] Opt-in `DAIMOS_PBM_V1667=1` only with TSFS-capable PURE;
+  DISK MRES and fixed KCORE unchanged. Ordinary builds do not
+  compile mode3 terminal/codec/FULL restore or extra owner state.
+- [x] PURE terminal dispatch mode2 -> original v1609 RAW MM ASM,
+  mode3 -> original v1661 compressed MM terminal; slot-0 PURE
+  service dispatches mode3 -> v1664 bounded FULL restore and shared
+  authoritative unpinned compressed-owner retry proof.
+- [x] 21 native C/ASM terminal mode cases and executed unsafe
+  RAW-mode mutation rejected. Original v1664 MM/FULL regression
+  and 16 integrated slot-0 service cases PASS. KCC/GCC PURE-only
+  symbol linkage and unchanged fixed KCORE verified.
+- [x] Executed unsafe retry/owner mutation rejected; physical
+  64K PDP-6 TSFS/no-AUXST1 with staged PURE boots to INIT V1
+  without enabling real compressed processes.
+- [x] Staged bitmap code costs +1685 installed words KCC FULL,
+  +1323 GCC lowmem; transient KINIT +1778 KCC/+1396 GCC words;
+  NOT actual net RAM savings.
+- [x] Separate normal KCC FULL PURE=1/bitmap=0 build retains
+  v1666 KCORE 024353 and PURE MRES 2307 words exactly.
+- [ ] Enable compressed production reclaim/terminal only after
+  real mode3 VM EXIT/WAIT/RUN and PI6 atomic acceptance.
+- [ ] Physical 48K/64K actual net/peak MM RAM, dedicated swapless
+  TSFS-only KINIT pruning, strict 32K physical acceptance later.
+
 ## 2026-11-18 v1666: terminal backend installed by KINIT
 
 - [x] One fixed default-refusing `proc_swap_term_v1666` JRST,
