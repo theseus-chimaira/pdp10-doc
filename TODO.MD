@@ -1,3 +1,18 @@
+## 2026-11-18 v1671: real KINIT stack high-water, TSFS/PURE 48K/64K
+
+- [x] Source-matched watermarked KINIT images run in real PDP-6
+  at 48K and 64K for both general and strict swapless TSFS/PURE.
+- [x] Original KINIT high-water counter plus all 256 physical
+  stack words show highest touched offset **129** and **126**
+  untouched upper words in every guest; no added strict depth.
+- [x] One diagnostic-only KCORE word (024076->024077 octal),
+  production unchanged, strict instrumented KINIT still shrinks
+  **1877** transient words. Four unsafe evidence mutations reject.
+- [ ] Do NOT reduce default 0400 octal stack reserve without
+  separate fatal/media/root stack measurements and safety bounds.
+- [ ] Next: true post-user 48K/64K MM and process pressure,
+  compressed mode3 RUN/EXIT/WAIT/PI6, and strict physical 32K.
+
 ## 2026-11-18 v1670: KINIT MM event-boundary high-water at 48K/64K
 
 - [x] Trace actual physical MM state at each known KINIT arena,
