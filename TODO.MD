@@ -1,3 +1,21 @@
+## 2026-11-18 v1662: prepared bitmap MM commit
+
+- [x] Opt-in PDP-6 exact two-owner MM commit deletes once-pinned RAW
+  atomically with no fallible unpin/free gap; independently validates
+  encoded candidate, size, type, owner, pins and uniqueness.
+- [x] Opt-in C89 wrapper revalidates canonical RAW/bitmap and immutable
+  executable backing; PI-excluded MM commit publishes mode2 -> mode3
+  with no fallible operation after RAW deletion.
+- [x] Original native PDP-6 allocator fits 161 encoded words in the
+  original 883-word gap and later reuses 02000 octal words of RAW
+  RAM at 040000 octal. Complete decode/terminal MM release PASS.
+- [x] 24 C and 21 direct MM refusal cases, two executed unsafe
+  source/assembler mutants, and full v1661/v1660/v1659 baseline PASS.
+- [ ] Wire bounded compressor preparation and rollback, compressed
+  FULL restoration and terminal/PI6 scheduler dispatch before
+  enabling live mode3 or claiming production physical RAM savings.
+  PURE OFF by default; strict 32K physical acceptance deferred.
+
 ## 2026-11-18 v1661: compressed PURE terminal proof
 
 - [x] Opt-in C89 compressed terminal MM release deriving packed base
