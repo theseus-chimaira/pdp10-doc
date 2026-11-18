@@ -1,3 +1,22 @@
+## 2026-11-18 v1670: KINIT MM event-boundary high-water at 48K/64K
+
+- [x] Trace actual physical MM state at each known KINIT arena,
+  extent, permanent reservation and possible resizing entry,
+  from initialized MM to first user VM entry, without guest code.
+- [x] Real PDP-6 general/strict x 48K/64K: 53/52 event samples,
+  exact MM capacity/owner/arena conservation and three executed
+  unsafe corruptions rejected.
+- [x] Sampled physical KINIT maximum nonfree reduction **1877
+  words** at 48K (37208->35331) and 64K (37224->35347).
+  Maxima occur at initialized `mres_init` boundary in all runs.
+- [x] Exact same post-reclaim first-user-entry free/owners and
+  permanent low resident: 48K free 26421, 64K free 42773.
+  No additional permanent free core from transient candidate
+  pruning; v1669's intermediate +66 remains a distinct stage.
+- [ ] Instruction-level allocator micropeak, KINIT stack high-
+  water, and real 48K/64K RUN/EXIT/WAIT/PI6 pressure after user
+  entry with bitmap mode3; strict 32K deferred.
+
 ## 2026-11-18 v1669: physical 48K/64K MM pre-reclaim checkpoint
 
 - [x] Four actual PDP-6 TSFS/PURE KINIT source-matched snapshots:
