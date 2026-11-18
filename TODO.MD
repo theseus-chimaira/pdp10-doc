@@ -1,3 +1,18 @@
+## 2026-11-18 v1661: compressed PURE terminal proof
+
+- [x] Opt-in C89 compressed terminal MM release deriving packed base
+  and encoded size from the unique unpinned MM owner, with no
+  permanent registry; exact backing, APR, mode3, TRANSITION checks.
+- [x] Source-linked original PDP-6 MM `free/delete/find` leaves
+  successfully release 161-word owner for 3,456 RAW words. Eighteen
+  invalid states retain owner/mode, including late MM-free refusal;
+  executed duplicate-owner-bypass mutant rejected.
+- [x] Correct legal exclusive end-of-physical-core check in unlinked
+  v1660 FULL decoder; original v1660/v1659 native baseline PASS.
+- [ ] Implement mode3 RAW retirement/publication, bounded compressed
+  FULL restore, terminal dispatch and PI6 scheduler fault matrix;
+  then physical 48K/64K RAM savings. Strict 32K deferred; PURE OFF.
+
 ## 2026-11-18 v1660: bounded FULL bitmap decoder
 
 - [x] Source-audit permanent mode map and RAW-only terminal, fast
