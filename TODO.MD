@@ -1,3 +1,24 @@
+## 2026-11-18 v1663: bounded bitmap compressor frontend
+
+- [x] Opt-in C89 frontend validates inactive mode2 RAW owner, pins
+  it, counts nonzeros, rejects no-gain without allocation, allocates
+  exact disjoint HIGH bitmap with original no-reclaim MM, encodes
+  using unchanged 30-word PDP-6 codec and calls v1662 atomic commit.
+- [x] Fail-closed rollback frees candidate before RAW unpin; after
+  each fallible step it verifies exact MM owners, pins and mode2.
+  Unknown state remains TRANSITION-held, never repaired blindly.
+- [x] Real original PDP-6 MM sparse 3,456/65 ->161 and all-zero
+  3,456 ->96 encoded words; full decode/terminal and separate MM
+  allocation inside reclaimed RAW region PASS. Dense no-gain PASS.
+- [x] 44 v1663 native tests (three positive, 41 refused/no-gain)
+  and two executed unsafe mutation controls PASS/reject. Full
+  original v1662/v1661/v1660/v1659 regression PASS.
+- [ ] Implement compressed mode3 FULL APR restoration, terminal
+  dispatch and PI6 scheduler fault handling. Keep fixed-KCORE
+  mode3 rejection until all lifecycle paths are integrated.
+- [ ] Measure physical 48K/64K net and peak RAM before accepting
+  production compression; PURE default OFF, strict 32K deferred.
+
 ## 2026-11-18 v1662: prepared bitmap MM commit
 
 - [x] Opt-in PDP-6 exact two-owner MM commit deletes once-pinned RAW
