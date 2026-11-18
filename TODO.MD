@@ -1,3 +1,29 @@
+## 2026-11-18 v1668: strict swapless TSFS KINIT candidate removal
+
+- [x] Explicit ROOT=tape, PURE-enabled, swapless-only option
+  removes disk-swap MRES candidate from both GCC lowmem and KCC
+  full KINIT candidate link sets. Ordinary ROOT=auto/disk/drum
+  retain their existing disk-backed process service packages.
+- [x] Strict MINIT table uses zero disk-swap package address.
+  Actual positive AUXST1 BACKSTORE and unexpected root fail-stop;
+  later full-profile AUXSTORE rediscovery cannot enable backing.
+- [x] Original source-extracted KINIT C89 selector and second
+  AUXSTORE tests, two executed unsafe fatal-bypass mutations,
+  Makefile policy and historical v1665/v1613 regressions PASS.
+- [x] Source-built 64K PDP-6 strict TSFS/no-AUXSTORE guest
+  reaches PURE LOADED and INIT V1; SAME source image with actual
+  DRM0 positive BACKSTORE prints SWAP FAIL and HALTs first.
+- [x] Source-matched GCC lowmem fixed KCORE and resident PURE
+  unchanged, with KINIT end 113732->110205 octal: **1877
+  transient words removed**. Not yet physical peak RAM proof.
+- [x] Source-matched KCC FULL fixed KCORE 024353, PURE MRES
+  2307 words unchanged; KINIT end 131475->125775 octal:
+  **1856 transient words removed**, disk-swap candidate absent.
+- [ ] Measure whole-guest 48K/64K net/temporal-peak MM and
+  KINIT memory under matched RAW and compressed process loads.
+- [ ] Finish production mode3 reclaim, RUN/EXIT/WAIT and PI6
+  transactions; strict physical 32K deferred, PURE OFF by default.
+
 ## 2026-11-18 v1667: isolated bitmap compressed PURE MRES stage
 
 - [x] Opt-in `DAIMOS_PBM_V1667=1` only with TSFS-capable PURE;
@@ -40,10 +66,13 @@
   native chain and physical TSFS 64K no-AUXSTORE boot PASS.
 - [x] KCC FULL installed savings: 72 words DISK, 24 PURE;
   GCC lowmem TSFS PURE: 21 words. KCC transient KINIT +44 words.
-- [ ] Integrate mode3 terminal, scheduler/PI6 and FULL restore
-  exclusively into PURE MRES, retaining disk-swap isolation.
-- [ ] Dedicated swapless-only KINIT image and real physical
-  48K/64K peak RAM accounting; strict 32K deferred.
+- [x] v1667 staged mode3 terminal and FULL scheduler restore
+  exclusively into PURE MRES, retaining disk-swap isolation;
+  real production mode3/PI6 admission still unimplemented.
+- [x] v1668 dedicated swapless-only KINIT image links no DISK
+  swap MRES candidate and rejects positive BACKSTORE physically.
+- [ ] Real physical 48K/64K peak RAM and full mode3 PI6 lifecycle;
+  strict 32K deferred.
 
 ## 2026-11-18 v1665: root-aware exclusive memory backend
 
@@ -60,11 +89,12 @@
   PDP-6 GCC lowmem 64K ROOT=tape/no-AUXSTORE boots with PURE
   LOADED and INIT V1. Old v1613 smoke bound 024254 is stale on
   v1664+ sources; v1665 source-built bound 024255 octal.
-- [ ] Install backend-specific terminal release through one KINIT
+- [x] v1666: install backend-specific terminal release through one KINIT
   patched entry; keep compressed mode3 disabled until safe.
-- [ ] Introduce dedicated TSFS swapless-only build profile that
-  omits disk candidate and refuses positive BACKSTORE; measure
-  KINIT overhead, physical peak, 48K/64K net installed RAM.
+- [x] v1668: dedicated TSFS swapless-only build profile omits
+  disk candidate and refuses positive BACKSTORE; KCC/GCC exact
+  transient word savings measured, permanent memory unchanged.
+- [ ] Physical temporal peak and matched 48K/64K net MM memory.
 - [ ] Real auto-root no-AUXSTORE/validated-swap physical boot and
   full compressed mode3 RUN/EXIT/WAIT integration remain open.
   Default PURE OFF; strict 32K physical acceptance deferred.
