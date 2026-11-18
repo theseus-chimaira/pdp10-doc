@@ -1,3 +1,20 @@
+## 2026-11-18 v1669: physical 48K/64K MM pre-reclaim checkpoint
+
+- [x] Four actual PDP-6 TSFS/PURE KINIT source-matched snapshots:
+  general/strict x 48K/64K, breaking at kinit_late_start and
+  reading unmodified MM arena/extent fields directly from core.
+- [x] Source-map, sorted ownership, MM word conservation,
+  capacity/size validation and three executed unsafe MM reading
+  mutants rejected. No new kernel or resident probe words.
+- [x] Measured net managed free **+66 words** at 48K and 64K,
+  but largest contiguous free **+1877** in both, from the
+  1877 higher free arena offset by 1811 smaller middle arena.
+- [x] Strict 48K no-AUX TSFS/PURE physical guest reaches INIT V1
+  and survives an 85-second controlled timeout.
+- [ ] Measure continuous KINIT/MM peak including source reclaim,
+  INIT construction and true process pressure, bitmap-mode3
+  RUN/EXIT/WAIT/PI6, and strict physical 32K acceptance.
+
 ## 2026-11-18 v1668: strict swapless TSFS KINIT candidate removal
 
 - [x] Explicit ROOT=tape, PURE-enabled, swapless-only option
