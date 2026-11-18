@@ -1,3 +1,24 @@
+## 2026-11-18 v1666: terminal backend installed by KINIT
+
+- [x] One fixed default-refusing `proc_swap_term_v1666` JRST,
+  patched by KINIT to DISK MRES index 7 or PURE MRES index 2.
+- [x] Move disk block accounting/free and mode1 publication to
+  disk MRES. Move v1609 exact RAW packed-MM release from fixed
+  KCORE into PURE MRES with a new pre-free mode2 check.
+- [x] Common `proc_swap_detach` only finalizes existing per-slot
+  metadata after backend success. No second resident policy
+  registry or per-call backend selection; default stub fails closed.
+- [x] Source-linked native KCORE/ASM disk/RAW/default terminal
+  tests, two executed unsafe mutants, historical v1609/v880/v957
+  and v1613/v1665 KINIT regressions, v1659..v1664 FULL bitmap
+  native chain and physical TSFS 64K no-AUXSTORE boot PASS.
+- [x] KCC FULL installed savings: 72 words DISK, 24 PURE;
+  GCC lowmem TSFS PURE: 21 words. KCC transient KINIT +44 words.
+- [ ] Integrate mode3 terminal, scheduler/PI6 and FULL restore
+  exclusively into PURE MRES, retaining disk-swap isolation.
+- [ ] Dedicated swapless-only KINIT image and real physical
+  48K/64K peak RAM accounting; strict 32K deferred.
+
 ## 2026-11-18 v1665: root-aware exclusive memory backend
 
 - [x] KINIT installs drivers, selects actual root, then chooses
