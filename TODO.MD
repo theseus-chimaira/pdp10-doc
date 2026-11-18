@@ -1,3 +1,17 @@
+## 2026-11-18 v1660: bounded FULL bitmap decoder
+
+- [x] Source-audit permanent mode map and RAW-only terminal, fast
+  PREFIX and FULL restore assumptions; retain mode3 rejection.
+- [x] Test-only source-linked PDP-6 C89 bitmap preflight validates
+  all input before original 30-word unchecked native decode.
+  Native 73 RAW/6 encoded test and malformed/overlap refusal cases
+  PASS without output mutation. Executed unsafe stream-consumption
+  mutant rejected; v1659 original MM/bitmap baseline PASS.
+- [ ] Implement compressed MM mode3 exact ownership, atomic RAW
+  retirement, bounded FULL recovery, terminal EXIT/WAIT/EXEC and
+  PI6 failure matrix before any physical net-RAM acceptance.
+  48K/64K physical compression and strict 32K remain open.
+
 ## v1659: bounded opt-in PURE bitmap MM probe (2026-11-18)
 
 - [x] Validate exact v1451 30-word PDP-6 source assembler in the
