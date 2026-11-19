@@ -49,6 +49,1270 @@ remain unaccepted. See DAIMOS
 `design/kcore-pure-raw-reclaim-48k-v1673.md` and testkit
 `tests/validation/pure-runtime-reclaim-v1673/README-v1673.md`.
 
+## 2026-11-17 v1645: physical PI6 partial wake under immutable PURE backing
+
+Unmodified original 48K PDP-6 no-AUX TSFS/PURE kernel with C89
+source-derived guest executing mode0777 compressed PURE from a
+real native DTC3 READ/WRITE DTFS mount2. Six actual sleeping
+PACKED child owners with exact retained `006400` octal words
+each (this source's DXR2 TX2 text001454, omitted001400).
+
+Before waking any child, the parent performs the v1644 UNMOUNT,
+UNLINK, TRUNCATE, O_TRUNC and data WRITE refusal checks plus
+the safe in-place native DTFS rename COMP->SAFE->COMP (`P`).
+It publishes EXACTLY ONE real PIPE word (`H`) while the writer
+stays OPEN; it repeats all source guards (`P`) during the ensuing
+real PI6 clock progression. A true `dsys_sleep(0200)` gives the
+awakened child scheduling time; that child reads the token,
+validates private writable DATA and EXIT-057 (`w`) before the
+parent's `T`. The other FIVE cannot see EOF because the PIPE
+writer remains open; parent repeats the same guard checks (`P`)
+while their original PACKED RAW sources remain immutable.
+
+Physical original `clk_tick_count` and `proc_timer_clock`
+both advance 1691 qualified PI6 ticks from H=8673 to T=10364.
+The post-H guard at tick9098 still shows all SIX original
+unchanged unpinned RAW owners. At T tick10364 and the next
+guard tick11015, only child2 has retired; original RAW owners
+3..7 remain unchanged and pin0. The original ROOT remains
+TSFS mount1; native DTC3 mount2 RW (`vfs_mount_policy=1`).
+Unmodified original KCORE `proc_swap_mount_busy` PC003431 and
+`proc_swap_backing_busy` PC003322 are entered with correct
+public mount2 and provider5/mount2/file slot0. The subsequent
+final PIPE EOF lets the five other children run/EXIT-057;
+all six exact parent PID/WAIT/status-057 checks pass. Parent
+unmounts DTC3 successfully (`U`), then `Z` and normal HALT.
+Source-linked U/Z physical MM zero child PROCESS/PACKED owners
+or leaked pins. Full console ends `LHPwTPwwwwwUZ`.
+
+The physical auditor reuses v1644's strict backing guard oracle,
+adds real PI6/CLK/owner tests, and rejects forged CLK, owner pin
+and RO-policy traces. Native v1086 PI6, v1563 PURE and v468
+rename/PI6 tests PASS. No production or resident RAM changes.
+
+This ACCEPTS genuine single-child user/PI6 wake with five still
+PACKED immutable sources. It does not prove an instruction-
+level in-flight WRITE/UNLINK or UNMOUNT vs NEW PURE RUN/EXEC
+admission race, or simultaneous bounded FULL target at a
+guard checkpoint. Those, uncertain MM rollback, 32K/64K
+regressions and complete transient peak RAM remain OPEN.
+The old native DTFS v1522 source fixture remains stale.
+PURE OFF by default; strict 32K optimization HOLD. DAIMOS:
+`design/kcore-p1e-pi6-staged-backing-v1645.md`.
+
+## 2026-11-17 v1644: writable PURE backing guard and owner release
+
+Original source-built PDP-6 48K PURE/TSFS/no-AUX guest, unmodified
+KCORE, MM, VFS and DTFS. Unlike v1643's read-only secondary
+backing, v1644 mounts real DTC3 native DTFS **READ/WRITE** with
+the compiled compressed PURE source at `/MOUNT/COMP`, mode0777.
+The fixed VFS policy word is `000000000001`: bit0 selected ROOT
+RO, bit1 secondary DTC3/RW. Six actual RAW PACKED_PROCESS
+children, each retained suffix 006400 octal words (different
+source: original compiled TX2 text001420, omitted prefix001400).
+
+Source-linked original KCORE physical breakpoints show
+`proc_swap_mount_busy` PC003431 AC1=2, and
+`proc_swap_backing_busy` PC003322 AC1=050202000000 (provider5,
+public mount2, native file slot0). Original B/A/mount-entry/
+vnode-entry/P physical MM snapshots retain six exactly matching
+unpinned PACKED owners; the selected TSFS root remains unchanged.
+
+Actual user syscalls refuse UNMOUNT, UNLINK of original or
+renamed vnode, TRUNCATE, O_TRUNC, and WRITE_WORDS even through
+an O_RDWR file descriptor. RENAME COMP->SAFE->COMP succeeds:
+native DTFS preserves the existing file slot/content and merely
+changes its directory name, so the backing record still refers
+to the same immutable source. All six original child PIPE/private
+DATA/EXIT-057 and exact parent PID/WAIT/status-057 checks pass.
+Only AFTER those child owners retire does normal native DTFS
+UNMOUNT succeed. Console ends `LwwwwwwUZ` and normal HALT;
+final MM U/Z has no child PROCESS/PACKED owner or child pin.
+The source-linked auditor PASSes and rejects forged RO-policy,
+still-pinned source and wrong mount identity witnesses.
+
+No production edit or additional resident KCORE RAM. This
+accepts sequential PURE backing lifetime, not concurrent PI6
+race freedom or uncertain MM rollback. General 32K/64K
+regressions, matched transient peak RAM and old native DTFS
+v1522 fixture modernization remain open. PURE OFF by default;
+strict 32K optimization HOLD. Detailed DAIMOS report:
+`design/kcore-p1e-backing-guards-physical-v1644.md`.
+
+## 2026-11-17 v1643: real secondary DTFS FULL read fault recovered
+
+The original physical PDP-6 48K no-AUX/TSFS/PURE guest is
+source-derived from v1638 without modifying KCORE/MM/MRES/VFS.
+PID1 copies the original compressed DXR2 from the selected TSFS
+root to a real native DTC3 DTFS file `/MOUNT/COMP` on separate
+public mount2, closes the file, CHMODs 0555, performs checked
+CLEAN unmount and remounts the SAME reel read-only. The selected
+TSFS ROOT (provider7/mount1, DTC0..2) remains physically online.
+The first wrong test-only target `/MOUNT/DT0` was absent from
+the immutable root; correcting the guest to the existing
+`/MOUNT` fixed that mount failure. No kernel workaround.
+
+Original B/A MM shows six genuinely PACKED unpinned children,
+each RAW `006600` octal words. This different source includes
+extra text: compiled DXR2 TX2 `001227`, actual original PDP-6
+skip `(text+020)&~0177=001200`, retained `010000-001200=006600`.
+Do not confuse this with earlier v1638 `007000` RAW words.
+
+At source-linked original FULL loader PC 035252, slot3 owns
+concurrent pinned source PACKED 111200..120000 and full PROCESS
+APR 120000..130000. The test simulator physically detaches ONLY
+DTC3. The original non-root backing read fails; v1391 returns
+`-4` at v1612 service PC 032461, RAW suffix unchanged/pin0,
+full destination freed. The unchanged TSFS root never HALTs.
+The same DTC3 reel is reattached. A subsequent original bounded
+FULL callback for compressed slot4 returns 0, and all six
+original PIPE/private mutable sentinel/EXIT-057 and exact
+PID/WAIT/status checks succeed; `LwwwwwwZ`, normal HALT and
+final MM no child owner. Source-linked physical audit and
+forged pin/fake success controls PASS/reject. No production edit.
+
+Open: physical immutable source modification/unmount guards,
+PI6/uncertain MM rollback, 32K/64K profiles and matched complete
+transient peak RAM including both pinned FULL extents. Original
+READ_SUSPECT media bit was not sampled. Older native DTFS v1522
+testkit source extraction is stale after v1575/v1561; it has
+NOT been accepted as a current-tree PASS. PURE disabled by
+default; strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-secondary-backing-physical-v1643.md`.
+
+## 2026-11-17 v1642: real selected-root read failure during PURE FULL
+
+Source audit of current TSFS/VFS and the fixed v1538 root
+classifier confirms that an otherwise valid failed I/O from
+selected namespace ROOT must HALT rather than return a normal
+filesystem error to the restore transaction. In the original
+48K PDP-6 TSFS/no-AUX/PURE six-PACKED mixed executable guest,
+original bounded FULL callback PC 035252 is reached with
+compressed slot3 owning pinned RAW suffix 111000..120000 and
+separately pinned complete PROCESS APR 120000..130000.
+
+Testkit physically detaches all three actual Type-551 root
+DECtapes DTC0, DTC1 and DTC2 at the suspended callback. Each
+device reports no attachment. Next real TSFS read failure
+executes fixed KCORE classifier PC 003761, AC1=7 TSFS and
+AC2=1 public root mount, matching source-linked
+`vfs_namespace_root`. Original MM extents/pins remain unchanged
+until root-specific terminal HALT PC 003776. Neither normal
+PURE rollback nor user EXIT/WAIT is permitted on this path.
+
+Source-linked physical testkit auditor PASSes and rejects
+forged non-root mount and altered root HALT witnesses. A
+testkit detach-marker indentation bug was fixed and the full
+physical run repeated before accepting. No production change.
+
+Still OPEN: a recoverable physical FULL failure using a SECONDARY
+non-root source; immutable source/unmount protections; concurrent
+PI6/uncertain MM rollback; general 32K/64K cache layouts and
+matched transient peak RAM. PURE OFF by default, strict 32K
+optimization HOLD. DAIMOS report:
+`design/kcore-p1e-tsfs-root-read-failstop-v1642.md`.
+
+## 2026-11-17 v1641: physical rollback after one injected loader error
+
+The original 48K PDP-6 no-AUX TSFS compressed PURE executable,
+MRES and kernel remain unchanged. Read-only MM at the genuine
+bounded FULL callback return PC 034361 confirms real loader
+AC1=0, with slot3 simultaneously pinned PACKED source
+111000..120000 and PROCESS full APR destination
+120000..130000 octal words. Testkit deliberately injects
+ONE error by setting ONLY simulator AC1=-1 before returning to
+the existing v1391 transaction. This models an error returned
+by a loader, not a real DECtape/VFS read failure or altered
+immutable executable source.
+
+The original transaction returns -4 to PURE service PC 032461.
+At this breakpoint slot3's exact PACKED suffix remains owned
+and unpinned, while the distinct PROCESS target no longer exists.
+Other child extents and pins are unchanged. Another successful
+FULL callback is later observed for slot4. All six original
+child PIPE/private data/EXIT-057 and exact parent WAIT checks
+finish with normal HALT and no remaining child MM owner at Z.
+Source-linked physical auditor PASSes, rejecting a fake retained
+source pin and a fake original loader error before injection.
+
+This closes test-injected callback-failure owner cleanup,
+in addition to v1640 natural FULL allocator NOMEM rollback.
+Real VFS/source-loss/immutable-unmount failure, concurrent PI6/
+uncertain MM rollback, 32K/64K cache regressions and matched
+transient peak remain OPEN. PURE OFF by default; strict 32K
+optimization HOLD. DAIMOS report:
+`design/kcore-p1e-full-loader-error-rollback-v1641.md`.
+
+## 2026-11-17 v1640: actual physical FULL NOMEM rollback and retry
+
+The original 48K PDP-6 TSFS/no-AUX low-BCACHE PURE kernel/MRES
+was not modified. One compiled C89 guest runs compressed PURE
+children in slots 2,4..7 and plain PURE slot3, all six
+actually PACKED before the seventh RUN is correctly refused.
+The original v1391 full-APR MM allocation returns NOMEM -1 at
+physical PC 034336. Only the slot2 PACKED source 121000..130000
+has a pin; no destination was allocated. The original service
+return PC 032461 preserves that -1, the identical six PACKED
+owners, ALL pins zero, and no premature resident publication.
+
+After the plain child restores and releases an APR, original
+bounded FULL loader PC 035252 executes for SAME compressed
+slot2. At the call, MM has separately pinned PACKED source
+121000..130000 and PROCESS destination 110000..120000 octal,
+with AC4=010000 trusted allocated APR words. Original six
+child PIPE/private mutable sentinels/EXIT-057 and six parent
+exact PID/WAIT/status-057 checks all pass, terminal LwwwwwwZ,
+normal simulator HALT; final Z has NO child MM owner.
+
+The source-linked physical audit PASSes and rejects a forged
+still-pinned RAW owner and fabricated success at the original
+NOMEM instruction. Natural FULL refusal/unpin/retry/cleanup
+is now accepted. Physical VFS failure/source-loss/unmount and
+concurrent PI6/MM uncertain rollback remain OPEN, as do 32K/
+64K cache regressions and transient matched peak RAM. PURE OFF
+by default, strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-full-nomem-physical-v1640.md`.
+
+## 2026-11-17 v1639: matched six-owner physical RAM savings verified
+
+Original 48K PDP-6 TSFS/no-AUX low-BCACHE C89 guest, compiled
+INIT DXR and fixed KCORE linker map are byte-identical between
+PURE-on and PURE-off builds. Both admit six children, refuse
+seventh RUN, and complete all six exact original PIPE/mutable
+sentinel/EXIT-057 and parent PID/WAIT/status checks, normal HALT.
+
+Read-only source-linked complete MM snapshots at B/A: ON has
+six 007000-word PACKED suffixes, occupied/free 066433/006564
+octal; OFF has six complete 010000-word PROCESS APRs, occupied/
+free 074433/004122. ON has +1314 decimal physical free RAM
+words at equal six-child state, including installed 1758-decimal
+PURE MRES. The 3072-decimal gross omission of six 512-word
+prefixes less the 1758-word MRES gives exact +1314 physical gain.
+
+After all six child WAITs, Z snapshots are child-owner clean,
+but ON free 063461 vs OFF 067220 octal (-1887 decimal) reflects
+1758 still-resident PURE words and the additional valid 0201-
+octal/129-word BCACHE slab in the ON-only terminal snapshot.
+Original MM/guest audit and two falsified owner/WAIT witnesses
+PASS/reject. These are physical sampled free words, NOT matched
+time-resolved peak RAM while the v1391 FULL loader pins both
+source and destination. No production code changed in v1639.
+
+OPEN: actual transient memory peak, source lifetime/unmount
+failures, PI6/MM loader rollback, 32K/64K cache profiles and
+final feature acceptance. PURE OFF by default; strict 32K
+optimization HOLD. DAIMOS report:
+`design/kcore-p1e-six-owner-physical-ram-v1639.md`.
+
+## 2026-11-17 v1638: original physical FULL v1391 relocation accepted
+
+Testkit uses the unchanged low-BCACHE PDP-6 kernel and its
+optional PURE MRES in 48K no-AUX TSFS simulation. A plain first
+PURE child and five compressed PURE copies of the SAME linked C89
+executable are admitted. Seventh RUN refusal forces all six into
+actual PACKED storage. The original parent then verifies all six
+PIPE/private sentinel/EXIT-057 and PID/WAIT/status results,
+`LwwwwwwZ`, and normal HALT.
+
+At parent B and A there are six unpinned 007000-word PACKED
+suffixes. The original MRES code at physical PC 035252 is
+authenticated as the source-linked `exec_image_full_bounded_v1391`
+loader (opcode 200000000004). The slot-zero scheduler calls it
+with AC2=120000 full APR target and AC4=010000 trusted capacity.
+At the SAME physical breakpoint, compressed child slot 3 owns
+both PINNED original PACKED suffix 111000..120000 and distinct
+PINNED PROCESS destination 120000..130000. No owner overlap or
+fake prefix reconstruction; all children later EXIT/WAIT and
+are released in final MM Z. The original physical testkit auditor
+and forged FULL-owner/WAIT controls PASS/reject. v1630 had already
+proven the FAST v1384 path. No new production code in v1638.
+
+Still OPEN: interrupted/failed FULL and PI6/MM owner rollback,
+immutable source loss/unmount, broad 32K/64K cache regression,
+matched peak/net physical RAM and full P1-E feature freeze.
+PURE default OFF; strict 32K KCORE optimization HOLD.
+DAIMOS report `design/kcore-p1e-physical-full-relocation-v1638.md`.
+
+## 2026-11-16 v1637: six physical 48K PACKED child restorations
+
+With v1636 low BCACHE, the original PDP-6 48K no-AUX TSFS/PURE
+guest admits six sleeping children, refuses a seventh RUN and
+keeps the parent alive to check all six child PIPE/private data,
+EXIT-057 and exact PID/WAIT/status checks (`LwwwwwwZ`, HALT).
+Same compiled guest replayed with original source-linked MM B/A
+tables contains six unpinned PACKED_PROCESS suffixes, each 007000
+octal words, owners 7..2. Parent APR stays 130000..140000.
+Final Z contains no child PACKED or PROCESS owner and no pin leak.
+BCACHE is reclaimed under pressure and can return at low memory.
+Original physical testkit auditor PASSes and rejects forged
+PACKED ownership and false WAIT success. No new production code.
+FULL relocated restore, source failure/unmount, concurrent PI6/
+MM rollback, 32K/64K cache regression and matched net/peak RAM
+remain OPEN. PURE remains OFF by default; strict 32K HOLD.
+DAIMOS report `design/kcore-p1e-bcache-pressure-restoration-v1637.md`.
+
+## 2026-11-16 v1636: physically recovered six-child 48K capacity
+
+BCACHE now allocates its unchanged owner6, 0201-word private
+clean slab using low instead of high MM preference. A general
+small-cache placement fix leaves complete aligned high user APRs
+free and retains identical source-key/cache invalidation/reclaim
+behavior. An independent source-built 48K PDP-6 TSFS/no-AUX/PURE
+guest admits SIX child RUNs, completes parent no-growth BRK,
+all original child PIPE/private sentinels/EXIT-057 plus six exact
+parent PID/EXITED/status WAITs, terminal `LwwwwwwZ`, HALT.
+
+Original live B/A/Z MM owner snapshots prove the parent moved
+from former 126000..136000 to `130000..140000` octal, BCACHE
+resides low and six complete PROCESS owners are present at B/A,
+none remain after WAIT. Source-linked physical audit and forged
+parent/success mutants PASS/reject; native BCACHE reclaim/I-O
+and multisource tests PASS. No child was PACKED in this fitting
+six-child workload, so subsequent seventh-RUN RAW pressure/
+restoration and source/PI6/FULL, 32K/64K, physical net/peak
+RAM gates remain OPEN. PURE OFF by default, strict 32K HOLD.
+See DAIMOS `design/kcore-p1e-bcache-low-physical-v1636.md`.
+
+## 2026-11-16 v1635: physical BCACHE high slab displaces first parent
+
+The original v1629 48K PDP-6 TSFS/no-AUX/PURE first-VM
+breakpoint stops at `vm_space_create` PC 022472 for parent slot1.
+At that exact moment the source-authentic MM table has the
+un-pinned KERNEL_DYNAMIC owner6 `137577..140000`, the 0201-word
+private BCACHE tag+data slab. BCACHE source requests MM_ALLOC_HIGH.
+The parent's 007067-word VM needs 010000 APR-aligned words,
+forcing highest legal base 126000 while that slab occupies the
+physical end 140000; later MM snapshot confirms parent at 126000.
+The same arena with no high slab could instead place the parent
+at 130000. This identifies physical placement rather than a
+necessary 389-word PURE MRES reduction as a possible remedy
+for the fixed-parent admission regression. Two forged physical
+cache owner/span controls rejected by testkit v1635. No production
+change is made here: validate any general-purpose low placement
+on complete original 48K/64K/32K process and cache workloads.
+PURE default OFF; strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-bcache-parent-placement-v1635.md`.
+
+## 2026-11-16 v1634: original PURE MRES compiler-only size test
+
+The original PDP-6 GCC 3.2 -Os PURE MRES can be reproduced
+byte-for-byte in testkit using the original kernel map, `p10fold`
+and assembler `das -F -C -O`. It is 003336 octal/1758 decimal
+resident words. The initial separate diagnostic missed `-F` and
+reported a spurious +4-word result; this was corrected in the
+test script, with no production bug. Seven alternative compiler
+settings were measured: O1/O2 made the image larger and the
+best `-Os -fno-strength-reduce` saved only ONE word. None reaches
+the required >=389 decimal word low-core footprint reduction
+under the v1633 fixed parent APR geometry. No production flags
+or code were changed. Next consider validated source helper
+consolidation, with all restoration/rollback behavior preserved.
+PURE OFF by default, strict 32K HOLD. DAIMOS report:
+`design/kcore-p1e-mres-compiler-size-v1634.md`.
+
+## 2026-11-16 v1633: physical APR corridor threshold under PURE
+
+The original source-linked 48K MM table has a PURE-enabled low-
+core KERNEL_DYNAMIC high of 046605 octal, vs 043247 with the
+same guest and KCORE but no PURE module. The gap 003336 octal
+is exactly 1758 decimal resident PURE MRES words. The parent
+remains a full APR at 126000..136000 with a 002000 upper tail.
+Six other simultaneously runnable full 010000-word APRs require
+the dynamic boundary at or below 046000. The installed PURE
+low-core boundary is 000605 octal/389 decimal words too high,
+even if presently PACKED suffixes could be moved safely.
+Original MM/source auditor and two forged boundary/span tests
+PASS/reject in daimos-testkit v1633. A module-size improvement
+is only a hypothesis pending complete physical guest validation;
+no MM owner or process allocation workaround was introduced.
+PURE OFF by default; strict 32K HOLD. See DAIMOS
+`design/kcore-p1e-apr-corridor-bound-v1633.md`.
+
+## 2026-11-16 v1632: physical equal-five-owner RAM comparison
+
+Source-identical 48K PDP-6 original INIT DXR and KCORE map are
+compared with five live children and parent in both modes. ON has
+five unpinned PACKED suffixes, occupied/free MM=057023/016173
+octal; OFF has five full PROCESS owners, occupied/free
+=064224/014330. The physical sampled free-memory difference ON
+minus OFF = +001643 octal / 931 decimal words, accounting for the
+installed PURE MRES as a 003336 octal arena-start difference.
+The largest aligned free gap is ON 007000, OFF 012000; a sixth
+RUN needs 010000 and physically succeeds only in the OFF guest.
+Prior history differs (ON after a refused sixth RUN, OFF before
+the sixth), so these are sampled, not complete physical peaks.
+The source-linked MM audit and fake-owner mutants PASS/reject.
+No production changes. Design report in DAIMOS:
+`design/kcore-p1e-equal-five-memory-v1632.md`. PURE remains OFF
+by default; strict 32K size optimization HOLD.
+
+## 2026-11-16 v1631: PURE increases aggregate free but reduces admission
+
+In an original physical PDP-6 48K no-AUX TSFS experiment the same
+byte-identical C89 INIT DXR and KCORE map were booted with the
+optional PURE MRES on versus off. With PURE on, five children
+retain PACKED mutable suffixes and the sixth RUN cannot find a
+010000 contiguous aligned APR. With PURE off, the SAME source
+prints `aaaaa!uwwwwww`: sixth RUN unexpectedly succeeds, parent
+exits via the test's `!u` assertion, six children subsequently
+complete their original `w` markers and simulator HALT.
+
+The physical OFF MM snapshot at `!u` shows seven unpinned full
+PROCESS APRs, owner slots 7..1 occupying consecutive 010000-word
+regions `046000..136000`. There is no PACKED owner; the arena is
+037224..140000, occupied/free 074634/003720 octal. The source-
+matched ON five-PACKED case has arena 042562..140000, free 016173
+but the largest aligned hole only 007000, too small for another
+complete 010000 APR. The arena start delta is precisely 003336
+octal, matching the 1758-decimal-word installed PURE MRES image.
+
+Thus RAW PURE's individual 001000-word prefix holes fail to form
+useful contiguous physical VM space, and for this 48K guest the
+optional module worsens RUN admission capacity. This is a real
+feature-performance limitation, NOT demonstrated compiler/MM
+corruption. The compared snapshots have different child counts;
+do not claim equal-load net or peak savings until measured.
+Default PURE OFF, strict 32K optimization HOLD. See DAIMOS
+`design/kcore-p1e-matched-capacity-regression-v1631.md`.
+
+## 2026-11-16 v1630: physical slot-2 in-place PURE claim and commit
+
+The original v1629 five-PACKED-child 48K PDP-6 TSFS/no-AUX guest
+was replayed with debugger breakpoints at original installed PURE
+MRES code, source-matched to the MRES map and DXR instruction bytes.
+The first restored slot 2 enters v1384 MM CLAIM at PC 034610 with
+AC1..4 = 117000, 2, 001000, 010000 (octal suffix/owner/prefix/
+complete APR). It then reaches genuine v1384 MM COMMIT PC 034614
+with AC1..4 = 116000, 2, 001000, 010000 (original APR/owner/
+prefix/complete APR). No FULL v1391 call preceded commit. After
+the debugger resumes, all five original child PIPE/data checks
+and EXIT 057, five parent WAIT statuses, parent Z and simulator
+HALT succeed. Source-backed physical auditor rejects forged AC1
+and false-FULL-PC witnesses; original v1395/v1397 native rollback
+and v1612 service tests PASS. Thus the FIRST restored child's
+fast in-place path is accepted; full-APR fallback and failure
+atomicity still require independent physical acceptance. No
+production code or MRES layout change, PURE default OFF.
+See DAIMOS `design/kcore-p1e-first-inplace-restore-v1630.md`.
+
+## 2026-11-16 v1629: real 48K PACKED to user execution/WAIT accepted
+
+The new actual 48K PDP-6 TSFS/no-AUX PURE guest keeps the parent
+alive after a sixth RUN's expected VM allocation refusal. Its
+first five sleeping children have source-authentic PIPE input,
+private mutable sentinels and EXIT status 057. The parent uses a
+no-growth BRK and preserves all five exact PID/EXITED/status-057
+WAIT checks. Full physical console:
+`aaaaax[B013060/042502]<010000+010000>[A013060/042502]{013060-013060}LwwwwwZ`
+followed by normal HALT. The `x` is expected sixth RUN refusal,
+and L is lifecycle-only, not a RAM-size savings claim.
+
+Same compiled guest replayed with actual source-linked MM at B/A:
+022 octal extents and five distinct unpinned PACKED suffixes,
+each 007000 words (owners 6..2), occupied/free 057023/016173.
+At parent Z after five WAITs there are 010 extents, no PACKED
+and no child PROCESS owners, occupied/free 011536/063460. The
+physical original owner audit and false-owner/WAIT mutations
+PASS/reject. This is real PACKED -> restored user code -> EXIT/WAIT
+and physical MM cleanup, not a 64K resident-only test.
+
+Five omitted 001000-word prefixes total 2560 decimal gross words.
+Installed GCC PURE MRES costs 1758 words; positive whole-system
+net/peak saving is NOT yet established. Exact fast/full restore
+and concurrent immutable source/failure rollback remain OPEN.
+Default PURE OFF, strict 32K optimization HOLD. DAIMOS report:
+`design/kcore-p1e-48k-packed-lifecycle-v1629.md`.
+
+## 2026-11-16 v1628: no RAW omissions during accepted 64K lifecycle
+
+The same genuine v1627 full-guest 64K source/DXR was replayed
+under SIMH, taking original MM ownership snapshots at parent B,
+parent A and final Z. The MM arena stays `042602..200000` octal;
+extents B/A/Z number 025/025/010, with occupied/free respectively
+`074654/040322`, `104654/030322`, `021556/113420`. All three
+stages have **zero physical PACKED process extents**. The full
+six-child WAIT/EXIT output remains accepted as an ordinary resident
+process lifecycle, not a proof of RAW PURE packing/restoration or
+net/peak savings. Testkit validates all physical descriptors and
+rejects an overlapping extent and a missing final snapshot.
+
+To accept real RAW restore under a live parent, use the previously
+observed 48K five-PACKED-child resource-pressure case. Keep the
+parent alive after the sixth RUN's expected VM creation refusal,
+then prove every child restore/WAIT/EXIT and physical MM cleanup.
+Default PURE OFF, 32K optimization HOLD. See DAIMOS
+`design/kcore-p1e-64k-physical-owner-matrix-v1628.md`.
+
+## 2026-11-16 v1627: six-child 64K physical process lifecycle passes
+
+A separate source-backed physical PDP-6 64K TSFS/no-AUX PURE
+guest retains the original child PIPE read, two mutable sentinels
+and EXIT status 057, and the parent's six exact WAIT/EXITED/PID/
+status-057 checks. The only new parent success marker `L` means
+the lifecycle is tested independently of *additional* PURE drops
+specifically during its BRK. Genuine console:
+`aaaaaa[B073470/042522]<010000+017000>[A103470/042522]{073470-103470}LwwwwwwZ`
+followed by normal simulator HALT. Final Z is after all WAIT
+statuses and parent sentinels. Source/physical testkit checks and
+mutated success/word-count negative controls PASS. The full
+functional lifecycle is accepted on this 64K profile, but
+physical PACKED MM owner snapshots, concurrent backing loss,
+full/relocated restore failures and net/peak RAM remain OPEN.
+No production kernel/MM/MRES/ABI code change, PURE OFF by default.
+See DAIMOS `design/kcore-p1e-64k-full-lifecycle-v1627.md`.
+
+## 2026-11-16 v1626: physical PURE MM fit and six-child 64K BRK
+
+The actual v1625 48K physical source-matched MM snapshot has a
+single arena `042562..140000`, five unpinned `007000`-word PACKED
+owners and six separated free gaps totalling `016173` octal words.
+The largest `02000`-aligned free run is `007000`; the exact
+booted PURE DXR image `001043` + BSS `004001` + user stack/origin
+`002020` needs a rounded complete VM of `010000` octal words.
+The sixth RUN therefore cannot fit the current 48K physical owner
+layout. This is not a compiler error or a source admission failure.
+The testkit proves these physical facts and rejects changed owner
+and overlapping-extent mutants; it does not claim a new PACKED
+relocation/compaction feature or positive net RAM.
+
+An independently rebuilt physical 64K no-AUX TSFS/GCC PURE guest
+admits all six children and completes the parent BRK 010000 ->
+017000. Process-word counters grow only by the `010000`-word APR
+allocation: `B073470/042522` to `A103470/042522`. The original
+additional-BRK-reclaim assertion correctly reports `!R`; the six
+child completions follow failed parent cleanup, not full WAIT.
+The next independent lifecycle gate must check parent WAIT/EXIT
+without confusing *when* PURE omission happened with correct
+process termination. Whole-system RAM and 32K remain unaccepted.
+See DAIMOS `design/kcore-p1e-mm-geometry-v1626.md`.
+
+## 2026-11-16 v1625: physical RUN VM-creation refusal, not scheduler timeout
+
+Current opt-in PDP-6 RAW PURE has physically restored a child and
+executed its first original user-mode PIPE/data checks (v1621),
+but the full parent BRK/WAIT/EXIT and net RAM gate remain OPEN.
+Source-built 48K TSFS/no-AUX six-child v1624 guest isolates the
+sixth refusal as failed RUN (`aaaaa!rwwwww`), before BRK and before
+any child sleep-poll check. A separate five-child BRK 017000 run
+does not return successfully; neither is a passing pressure case.
+
+The v1625 original PDP-6 RUN error-stage replay breaks at linked
+`proc_run_claimed_bad` PC 017725 with AC1 = -2
+(`EXEC_LOAD_NOMEM`). This is the genuine `exec_load.s` return from
+failed `vm_space_create`, not a later u-area/startup error or full
+process-slot table. Source-linked physical/negative auditors PASS.
+Exact free-run/MM admission geometry remains to be captured. Do
+not change VM or scheduler code based solely on this expected
+resource error, and do not claim a positive RAM saving before
+counting the installed 1758-word GCC PURE MRES plus scratch.
+Default PURE OFF; strict 32K size work remains deferred.
+DAIMOS design reports:
+`design/kcore-p1e-physical-run-admission-v1624.md` and
+`design/kcore-p1e-exec-load-nomem-v1625.md`.
+
+## 2026-11-15 v1605: PURE owner contract for KA10/KI10 portability
+
+P1-E v1604 staged preflight now isolates common stopped-process
+TRANSITION/immutable-backing eligibility from the PDP-6-only
+sector-rounded omitted PURE prefix calculation. No production
+scheduler PURE reclaim/restore is linked yet; v1451 mutable-RAM
+compression remains test-only. A KA10 with optional protected
+high segment must independently own shared immutable code and
+private low mutable state, not drop/reload another process's high
+segment. KI10 uses 512-word noncontiguous physical page frames:
+the same immutable backing and lifecycle contract applies, but
+PDP-6 physical extent and prefix algorithms do not. No
+runtime VM vtable is added on PDP-6. See
+`KERNEL/MULTI-CPU-PORTABILITY-V1605.MD` and
+`DAIMOS/design/kcore-p1e-ka10-portable-boundary-v1604.md`.
+
+## 2026-11-16 v1621: restored child executes user code on PDP-6
+
+The previously source-proven physical 48K TSFS/no-AUX
+PDP-6 PURE restoration was continued beyond the v1620
+MM commit/pin release, READY_ONCE publication and
+selection of child slot 2. After that scheduler write,
+the guest printed an isolated lower-case 'w' before
+the first of two bounded CPU continuation intervals.
+
+The saved pressure-test C source and exact /SYSTEM/INIT
+image named in the TSFS manifest were checked against
+the installed executable, which has DXR2 purity=PURE.
+There is exactly one user-code 'w' path: the child
+returns from its PIPE read, verifies BOTH private
+writable-data sentinels and prints the marker, then
+requests exit status 057 octal. The marker did not
+appear before selecting the restored slot.
+
+This confirms actual successful user-code execution
+after PURE prefix restoration. The testkit rejects a
+missing signal and a wrong-source mutation and also
+rechecks the entire v1620 physical MM/scheduler
+write sequence. It does NOT yet prove that the
+parent has finished WAIT/EXIT for all children.
+
+Separately, a real 48K four-child physical build
+with a smaller, fitting BRK target 016000 octal
+succeeded in BRK but did not provide evidence of
+RAW physical savings: the logical process-word
+count changed 052450 -> 060450, exactly the
+006000-octal parent BRK growth from 010000
+to 016000. The original test correctly emitted
+!R and refused to credit any net mapped-process
+reduction. Four child completion markers followed
+failure cleanup, NOT a successful parent WAIT.
+The dedicated testkit negative-control auditor
+rejects an unsafe altered memory-growth word.
+
+A second actual 48K/no-AUX guest requested
+six children with the same target. Five
+children reached the original ready/sleep
+check, but the sixth produced !c before
+BRK was reached. The source uses !c both
+for an invalid RUN pid and for a child
+that fails to enter SLEEP within bounded
+polling. The available console cannot
+classify which occurred; do not attribute
+it to a compiler or memory allocator
+defect. The source-linked negative-control
+auditor accepts this early refusal and
+rejects a mutated refusal marker.
+
+At the original restore boundary, three remaining
+omitted 001000-word prefixes total 1536 decimal
+gross words, below the installed 1758-decimal-word
+GCC PURE MRES footprint. Even four simultaneously
+packed prefixes offer only 2048 - 1758 = 290
+decimal gross words before other resident costs;
+this is not a measured positive physical net.
+
+Full PIPE/WAIT/EXIT, immutable source lifetime,
+truly pressure-inducing but fitting BRK, and
+48K/64K exact peak/net physical RAM acceptance
+remain OPEN. No permanent KCORE, removable
+module, MM, driver or user ABI was changed.
+PURE stays OFF by default.
+
+DAIMOS source:
+design/kcore-p1e-physical-user-resume-v1621.md.
+
+## 2026-11-16 v1620: real PURE MM commit, unpin, READY_ONCE and selection
+
+P1-E's experimental RAW PURE restoration was followed through
+the original code in a full 48K PDP-6 TSFS/no-AUX guest. After
+the v1619 Type-551 RBN/DCT transfer, the original VFS prefix
+loader returns successfully and the CPU enters
+mm_pure_commit_prefix_v1384 at 034614 octal. The matching
+rollback entry at 034612 was not the selected path.
+
+The real commit arguments are owner slot 2, original APR
+base 116000, immutable prefix length 001000 and full
+process length 010000 octal words. The current executing
+slot is zero. Source-linked v1384 MM descriptor word
+024307 then changes in physical memory:
+
+    000014000002   PACKED_PROCESS, pin 1, owner 2
+    000011000002   PROCESS,        pin 1, owner 2
+    000001000002   PROCESS,        pin 0, owner 2
+
+Both writes are observed by native PDP-6 memory write
+watchpoints, not inferred from a function entry or C
+unit test. The physical 116000..126000 APR remains
+in place with no second mutable-suffix copy.
+
+The scheduler then makes two separately verified
+physical writes:
+
+    PC 032477  proc_sched_cursor (024235) = 001002
+               READY_ONCE | restored owner slot 2
+    PC 016770  proc_current_slot (024233) = 000002
+               slot 2 selected for context restoration
+
+At both stops, slot 2 is still PROCESS, pin zero.
+The original READY_ONCE path therefore works with the
+new PURE restoration mode and fixed KCORE without
+additional resident metadata. This is stronger
+physical evidence than merely entering the v1384
+DROP/restore code or finding an RBN block.
+
+The testkit v1620 auditor checks the exact PURE MRES
+linked map/DXR bytes and physical MM/process context.
+It rejects executed wrong-owner, missing-pin,
+retained-pin and incorrect scheduler cursor/current
+mutations. No production KCORE, MRES, MM, driver or
+boot-selection code was changed.
+
+The native watchpoints stop before full user-context
+return, so successful PIPE/WAIT/EXIT, stable executable
+source lifetime and physical peak/net RAM benefit
+remain OPEN. At this snapshot the three other omitted
+prefixes reclaim 1536 decimal gross words compared
+with 1758 resident words for the installed GCC PURE
+MRES; a positive net RAM gain is NOT established.
+P1-E remains disabled by default.
+
+Canonical DAIMOS report:
+design/kcore-p1e-physical-prefix-commit-v1620.md.
+
+## 2026-11-16 v1619: genuine Type-551 RBN and DCT block read
+
+The 48K PDP-6 TSFS/no-AUX PURE pressure guest
+had been observed searching backward for
+physical DECtape block 000004. Two source-
+authentic direct controller tests now use a
+private read-only copy of its actual root
+DTC0 tape. Both a near block-4 read and
+a long seek from block 0341 followed by
+reverse read of block 4 PASS in the
+original Type-551 and Type-136 drivers.
+The 0200-word destination contains data,
+and the test media remain byte-identical.
+
+The same real full PURE guest now proves
+that its own PI3 handler eventually finds
+the requested block. A physical breakpoint
+at PC 031046 catches
+dtc_search_pi_found with unit 0,
+reverse direction, target 000004 and
+last RBN mark 000004. The next breakpoint
+at 031106 catches the original PI3 read
+setup, and PC 030555 catches the
+Type-136 DCT reverse-read completion.
+The latter has storage_state=-1 and
+storage_count=0200 octal, with the
+completion event still unposted.
+
+The original DECtape read completes
+on the DCT path, not on the general
+PI5 tape_pi_done label. An initial
+PI5-only test was therefore corrected;
+there was no production driver bug.
+Temporary extra assembler symbol exports
+were shown to leave every word of the
+linked production tape MRES unchanged.
+The testkit audits these physical
+registers and rejects deliberate
+mutations of both the matched RBN
+and data-completion state.
+
+This closes the question of whether
+the target block can be found and
+transferred. It does NOT prove VFS
+prefix reload completion, the MM
+PACKED-to-PROCESS commit/rollback,
+pin release, slot-0 READY_ONCE,
+PIPE/WAIT/EXIT or positive net RAM.
+The next physical breakpoints are
+the original PURE MRES
+mm_pure_release_prefix_v1384 at
+034612 and mm_pure_commit_prefix_v1384
+at 034614 octal. No permanent
+kernel, driver, MRES or process
+storage code changed in v1619.
+PURE remains disabled by default.
+
+Canonical DAIMOS design record:
+design/kcore-p1e-physical-dct-read-v1619.md.
+
+## 2026-11-16 v1618: 120-second Type-551 search/reversal timeout
+
+The original Type-551 DECtape search timeout was
+only 45 seconds (05214 octal ticks at 60 Hz).
+A real rewind or direction reversal can take
+as long as a minute, so the original deadline
+could reject a healthy physical transport.
+
+v1618 increases the search/reversal timeout to
+**120 seconds** (016040 octal ticks), allowing
+a full minute plus another full minute of
+headroom. This is a per-search timeout aged by
+PI6; successful RBN matching and data transfer
+are not delayed by the larger failure bound.
+The PI3 block-mark handler still restarts
+the timeout on search progress. The Type-516
+MTC rewind/spacing bound remains 15 minutes,
+and both DTC/MTC data watchdogs are unchanged.
+
+Compiling the historical v1617 and new v1618
+Type-551 driver against one KCORE map changes
+exactly two linked MRES instruction words:
+the original search command and PI3 mark rearm
+at image offsets 000343 and 000405. Native
+image/BSS/relocation word counts remain
+000607/000017/000013 (octal). Fixed 48K GCC
+KCORE DXR remains byte-identical to v1617,
+low end 024254 octal; no additional process
+fields or permanent memory allocation.
+
+The completely rebuilt v1618 48K no-AUXST1
+PDP-6 TSFS guest confirms three real physical
+Type-551 search samples:
+
+    clk_tick_count: 015435 -> 015441 -> 015446
+    dtc_last_mark:  0341   -> 0133   -> 0126
+    storage_count:  777777761740 at all samples
+
+All values are octal. The 60-Hz clock advanced
+4 and 5 ticks, block marks changed and PI3
+rearmed the new negative 120-second timeout.
+The testkit also rejects the obsolete compiled
+45-second module and a mutation of the live
+physical countdown. Historical v1617 evidence
+remains tied to its original 45-second DXR.
+
+The measurement confirms that the search timer
+and controller progress remain active, but
+does not demonstrate successful RBN/data
+completion, PURE prefix commit or rollback,
+slot-0 READY_ONCE, PIPE/WAIT/EXIT or positive
+net physical RAM savings. P1-E is still
+disabled by default. See DAIMOS
+design/kcore-p1e-dtc-timeout-v1618.md.
+
+## 2026-11-16 v1617: physical DECtape search during PURE restore
+
+The physical PDP-6 module origin of the previously
+interrupted PC 030762 has now been resolved.
+Actual scheduler trampoline words show PURE
+MRES installed at base 032027 octal: original
+reclaim and service offsets 000210 and 000346
+lead to installed targets 032237 and 032375.
+Therefore PC 030762 is outside the PURE module.
+
+The unmodified linked TAPE MRES image contains
+SKIPN 0,storage_count at offset 000331,
+matching the same exact physical opcode at
+030762. It gives tape MRES base 030431.
+The original tape_io.s source places this
+instruction in dtc_search_wait, after the
+Type-551 controller status checks and before
+block-search timeout or retry handling.
+
+A second real 48K no-AUX physical PDP-6
+breakpoint at PC 030762 stopped with
+storage_state=0200 and storage_count equal
+signed -05214 octal ticks: the exact
+initialized 45-second RBN search timeout
+at 60 Hz. The idle current slot was zero.
+Thus restoration was waiting for a real
+DECtape search. A single sample does
+not prove either a deadlock or completed
+diskless prefix reload.
+
+The accompanying physical MM table showed
+three 007000-word, unpinned PACKED suffixes
+(slots 5, 4, 3) and a full 010000-word
+PACKED prefix claim with one pin (slot 2).
+The latter is a legal intermediate stage
+while immutable text is loaded from VFS,
+not proof of a permanent pin leak.
+
+All measurements are source-map-backed and
+cross-checked against the original tape
+DXR and guest memory; the testkit rejects
+mutations shifting the PURE service export
+or the original initialized tape countdown.
+No production KCORE, module, driver,
+MM or process format has changed.
+
+The next gate is to observe line-clock
+aging and Type-551 PI3 mark/data progress
+until the prefix read completes or returns
+a bounded error. This must precede any
+claim of successful slot-0 RUN/WAIT,
+net/peak RAM savings or a driver bug.
+The experimental PURE MRES remains OFF
+by default. Full findings in DAIMOS:
+design/kcore-p1e-physical-dtc-wait-v1617.md.
+
+## 2026-11-16 v1616: genuine physical RAW PACKED owners
+
+The experimental 48K PDP-6 TSFS no-AUX guest now
+demonstrates actual RAW PACKED MM extents in physical
+core after BRK pressure. Source-linked DROP entry
+evidence alone had not established this in v1614.
+
+An executable CPU breakpoint at the exact linked
+vm_space_brk_current address 022104 stopped the real
+initial BRK(0) query. A less intrusive SIMH console
+EXPECT trigger then stopped directly before the
+020000 BRK with five resident PROCESS owners and
+zero PACKED. The parent image was 016000 octal
+words; each of four sleeping children was 010000.
+The largest APR-aligned physical gap was 011577,
+insufficient to allocate a second 020000-word image
+without reclamation or compaction.
+
+The source-DXR-checked, deferred BRK return breakpoint
+020761 was not reached before the second guest was
+interrupted at its controlled timeout. At that later
+instant the MM table showed child 5 as PACKED at
+067000..076000, 007000 words, pin count zero;
+child 4 was PACKED at 076000..106000, 010000 words,
+pin count one. There were no resident PROCESS
+extents and slot zero was active. These are actual
+physical allocations; they are not a reading of
+logical mapped-process MEMINFO.
+
+The full-size pinned PACKED representation is
+intentional in original v1384 restoration: while
+the immutable prefix is being reloaded from VFS,
+MM claims the expanded full image but keeps its
+PACKED type and one pin until commit or rollback.
+The interrupted snapshot matches that intermediate
+shape. It does not prove either a successful restore
+or a persistent MM pin leak.
+
+The v1616 testkit replay wrappers and read-only
+audit verify the exact before/after owner geometry
+against the matching physical KCORE map. The
+snapshots came from separate executions of the
+same preserved image; the late one was stopped
+asynchronously. They are not a complete atomic
+transaction trace. BRK return/AC2, restored RUN,
+PIPE/WAIT/EXIT, executable-source lifetime,
+peak RAM and positive net savings remain open.
+
+DAIMOS design and physical evidence:
+design/kcore-p1e-physical-packed-v1616.md.
+No production KCORE/MRES changes. PURE default OFF.
+
+## 2026-11-16 v1615: physical BRK geometry and OOM observability
+
+A controlled 48K PDP-6 no-AUX PURE guest BRK to
+`014000` halted before cleanup. The real MM table
+contained five PROCESS owners, no PACKED owners,
+and an APR-aligned adjacent lower gap of `02000`
+words. That BRK succeeded without RAW reclaim.
+
+The stepped guest then requested `014000`, `016000`
+and `020000`. The parent disappeared, four sleeping
+pipe readers printed `wwww`, and the eventual
+simulator halt occurred after process cleanup.
+The final MM table contained no process owners;
+it is not a live failure snapshot.
+
+The existing BRK dispatcher invokes fatal process
+close on `MM_ERR_NOMEM` instead of returning to
+user mode. Therefore the test-only BRK cause veneer
+cannot print AC2 on that path. Fatal OOM is
+consistent with the physical trace, but AC2 has
+not yet been independently sampled at failure.
+The next diagnostic must stop at the fatal branch
+before cleanup to capture AC2 and the exact MM
+owner state. No production ABI or KCORE/MRES code
+changed, and PURE remains default OFF.
+
+See DAIMOS `design/kcore-p1e-brk-geometry-v1615.md`.
+
+## 2026-11-16 v1614: fix host/native DLINK PURE address proof
+
+The first physical pressure experiments uncovered a
+linker defect and an invalid test setup. The old
+pressure test's DXR had `purity=UNKNOWN`, because
+the test did not link with `dlink --pure`; such an
+image is ineligible for P1-E immutable-prefix
+reclamation. In the actual host linker, direct
+accumulator stores such as `POP 17,10` were
+misidentified as TEXT writes, while direct writes
+to the last relocated TEXT words could evade the
+check: the predicate compared absolute EA against
+TEXT length rather than the absolute TEXT interval.
+The native linker also needed the AC0..17 exception.
+
+Both source linkers now reject definite direct
+TEXT writes using the absolute linked TEXT range,
+while recognizing the accumulator register bank.
+Strict C89 source-built host tests and native
+PDP-6 execution tests PASS, including relocated
+targets and an unsafe native mutant.
+
+The corrected physical 48K no-AUX TSFS guest has
+DXR `purity=PURE`. SIMH breakpoint evidence shows
+two calls into production reclaim and four entries
+each into v1381 RAW DROP and MM rebase. The BRK
+allocation still fails, however: entering these
+routines does **not** prove successful owner
+publication, slot-0 restoration or net RAM saved.
+The next step is to diagnose exact physical extent
+geometry and allocator refusal before modifying
+production MM. No kernel or module memory growth.
+P1-E remains disabled by default.
+
+See DAIMOS
+`design/kcore-p1e-linker-pure-address-v1614.md`.
+
+## 2026-11-16 v1613: physical 64K no-AUXST1 PURE boot
+
+The source-selected opt-in PDP-6 PURE service now installs
+in a genuinely diskless dedicated TSFS boot. The KINIT
+selection previously returned immediately when AUXST1
+discovery returned -1, so the earlier zero-BACKSTORE
+branch could never handle absent media. v1613 selects
+PURE whenever there is no positively validated
+BACKSTORE: absent descriptor (-1) or a valid descriptor
+with zero backing blocks. A validated nonzero BACKSTORE
+continues to select the original DISK swap module.
+The default `DAIMOS_PURE_MRES_ENABLED=0` is unchanged.
+
+The actual KINIT source selection is tested under C89
+for absent, zero and positive AUX capacity, both boot
+families and the disabled flag. A mutant restoring the
+old early return is rejected by the executed test.
+KINIT now prints `PURE LOADED` only after the new
+module is installed and its two original scheduler
+trampolines are patched. This is transient boot
+diagnostics, not resident kernel memory.
+
+The first full 64K PDP-6 SIMH TSFS root with all DSK/DRM
+media **unattached** has successfully booted to
+`DTC OK`, `PURE LOADED`, and `INIT V1`, remaining
+alive until controlled test termination. The test
+is reproducible in daimos-testkit
+`tests/validation/pure-boot-v1613/run-v1613.sh`.
+GCC fixed KCORE is byte-identical to v1612,
+`__kcore_low_end=024254` octal. The installed PURE
+MRES remains 1758 words with no BSS.
+
+This verifies physical boot/install, **not** a successful
+RAW pressure, PI6 restoration or positive net RAM gain.
+Two test-only adaptations of the historical whole-image
+DISK pressure guest could not allocate their third
+oversized process; they failed before actual RAW
+reclaim/wakeup validation. Their octal MEMINFO
+snapshots cannot measure exact physical RAM savings:
+`MEMINFO.process_words` omits retained PACKED raw
+suffixes whenever the process's APR base is zero.
+The failing experiment remains isolated under
+`daimos-testkit/tests/diagnostics/pure-pressure-v1613`,
+not in the required passing suite.
+
+Next is a smaller BRK/MM allocation after sleeping
+owners are established, with exact physical
+MM extent accounting, real slot-0 RUN/WAIT/EXEC
+acceptance and immutable VFS-source lifetime.
+PURE remains OFF by default. DAIMOS implementation
+and results: `design/kcore-p1e-noaux-boot-v1613.md`.
+
+## 2026-11-16 v1612: measured smaller experimental PURE module
+
+The separate opt-in PDP-6 PURE MRES has been reduced from
+**2275 to 2196 KCC words** (79 words saved, 3.47%),
+and **1864 to 1758 GCC lowmem words** (106 saved, 5.69%).
+The v1612 CPU-specific service removes one duplicate
+MM extent traversal from the retained-PACKED failure
+path, while still enforcing exactly one nonzero physical
+owner of correct type, word count and pin state.
+Wrong/duplicate/zero-base/pinned owners cannot release
+TRANSITION or publish READY_ONCE.
+
+The existing `p10fold` identifies a 49-word relocation-
+safe zero-cost equivalence in the original v1381 DROP
+and v1391 FULL transaction objects. The generated v1612
+fold plan merges that shared code without an extra JRST
+and without changing fixed KCORE, swap formats or
+the historical disk service. The service policy itself
+also saves 30 KCC words (412 -> 382).
+
+A source-level common helper was tested but resulted in
+**2356** total MRES words because of compiler-generated
+call overhead. The experiment was discarded after
+measuring the complete linked MRES, not because the
+common-preflight idea was invalid. No extra process
+table, CPU vtable, RAM registry or helper survives.
+
+The v1612 native PDP-6 tests execute actual DROP,
+fast-prefix and bounded FULL restoration and refused
+backing/source/loader cases, including duplicate MM
+owners, pinned suffix, and unsafe READY_ONCE mutation.
+The updated OFF -> ON -> OFF KINIT test requires the
+v1612 package, 2196-word folded size and fixed KCORE
+binary identity. `__kcore_low_end` remains octal
+`024534` (GCC `024254`), with no additional BSS or
+per-process words. The fixed GCC lowmem KCORE also
+remains byte-identical to its v1611 image.
+
+P1-E remains **experimental and default OFF**. No
+complete physical no-AUXST1 PDP-6 guest, real PI6
+schedule/EXEC/WAIT/EXIT lifecycle or successful
+net/peak physical RAM acceptance has yet been
+demonstrated. Compression remains deferred. The
+source/measurement record is DAIMOS
+`design/kcore-p1e-pure-mres-minimize-v1612.md`.
+
+## 2026-11-16 v1611: experimental no-BACKSTORE PURE MRES (default OFF)
+
+DAIMOS now builds a separate PDP-6 swapless PURE MRES containing
+the real v1381 zero-copy inactive RAM DROP, v1384 same-base prefix
+restore, v1391 capacity-bounded FULL fallback, its two physical
+MM primitives and the shared v1386 executable image reader.
+KINIT can install this MRES on a dedicated TSFS root with **no**
+AUXST1 backing, or the existing DISK SWAP MRES when AUXST1
+does exist. Both install through the existing two resident
+scheduler trampolines, with no new persistent registry or
+process storage mode.
+
+**Production activation is deliberately disabled:** the
+compile-time switch `DAIMOS_PURE_MRES_ENABLED` defaults to
+zero. It requires explicit value 1 to link and offer the
+new module. All source-linked native PDP-6 DROP/slot-0
+prefix/FULL, source refusal and retry tests PASS, and
+both opt-in KCC KINIT and PURE MRES link successfully.
+The default KINIT omits PURE entirely; default KCORE DXR
+is byte-identical to v1610 with low end `024534` octal.
+
+The experimental PURE MRES costs **2275 KCC or 1864 GCC
+words**, BSS zero, no extra per-process storage. This
+must be subtracted from gross PURE prefixes reclaimed.
+The preliminary strict 16K single-root placement report,
+which sums the mutually exclusive DISK and PURE packages,
+FAILS for experimental KCC full
+(`PERMANENT_LAST=055660` octal, 7089 words over)
+and GCC lowmem (`046702`, 3523 over). The matched
+default KCC full is itself 4814 words over. Thus no
+physical installed-runtime fit or net RAM benefit is
+established by these aggregate link reports.
+
+The independent KINIT Makefile stack-watermark mode stamp
+definition-order issue was corrected, and the historical
+TSFS swapless MINIT v490 GCC test passes again. Full
+no-AUX hardware/simulator physical-guest acceptance,
+immutable executable source lifetime, peak allocator
+memory, EXEC/EXIT/WAIT/BRK and owner-failure tests
+remain open. Compression and other CPU backends are
+not enabled.
+
+Source, size and acceptance detail:
+`design/kcore-p1e-swapless-service-v1611.md` in DAIMOS.
+
+## 2026-11-16 v1610: authoritative slot-0 DISK/PACKED selection
+
+Production PDP-6 `proc_swap_mres_service_v481` now checks
+the original two-bit per-slot storage map before calling
+the disk swap-in transaction. DISK retains the original
+I/O, pressure, fatal error and READY_ONCE handling.
+PACKED **cannot** be passed to DISK: the service instead
+keeps the inactive raw MM suffix and executable backing
+record intact, raises the existing 0100-octal cooldown
+and clears the pending request. It issues neither a disk
+read/free nor TERM or READY_ONCE. Invalid modes refuse.
+This is a safe interim service state; it does NOT restore
+RAW memory or authorize an un-restored APR for execution.
+No production path creates PACKED at v1610.
+
+The staged PURE common lifecycle preflight now has three
+explicit actions: DROP (0), TERMINAL (1), RESTORE (2).
+RUN is admissible only for RESTORE when the processor is
+executing in slot 0 with the target TRANSITION-held; DROP
+remains restricted to SLEEP/STOP. Both the v1384 fast
+prefix and v1391 bounded FULL source-linked transactions
+use this common check, followed by their existing PACKED
+mode/executable/MM identity verification.
+
+Real PDP-6 compiled MRES mode test, unsafe DISK-routing
+mutation, slot-0 RUN prefix/FULL tests, and historical
+v1316/v1317 disk-swap/rollback tests PASS. The full KCC
+ROOT=tape KCORE and SWAP MRES package build/link PASS.
+Permanent KCORE DXR/map remain byte-identical to v1609,
+`__kcore_low_end = 024534` octal. The mode selection
+costs 11 instructions in the removable SWAP MRES only.
+
+The next work remains a correctly retained immutable
+executable, a small no-BACKSTORE PURE service, live
+zero-copy inactive DROP and complete prefix/FULL slot-0
+wakeup with PI6/EXEC/WAIT/failure tests. Compression
+is still deferred. DAIMOS source/evidence:
+`design/kcore-p1e-slot0-mode-v1610.md`.
+
+## 2026-11-16 v1609: production terminal PACKED/RAW owner cleanup
+
+KCORE now has a correctly owned PDP-6 EXIT/VM destroy path
+for a future inactive RAW PURE process, before enabling real
+reclamation. `vm_space_destroy` admits storage mode PACKED
+only with zero APR base; `proc_swap_detach` dispatches the
+new PDP-6-only `pdp6_pure_detach_v1609` physical MM leaf
+when mode 2 is authoritative. It checks TRANSITION, stable
+u-area, saved executable identity, original PURE geometry
+and exactly one unpinned MM_TYPE_PACKED_PROCESS extent with
+matching process owner and suffix word count. It never
+interprets a saved PURE executable record as a DISK run.
+
+On refusal the inactive owner, mode and record survive for
+PREVM retry. On success the exact MM extent is freed,
+PACKED->RESIDENT is published, the saved backing is cleared
+and VM_SPACE_NONE is committed. Terminal release does not
+require the executable mount to survive. The existing disk
+swap and resident XIP paths retain their previous behavior.
+The physical leaf is source-selected via the existing PDP-6
+architecture manifest, without new process or RAM state.
+
+The first correct C scan grew the linked KCORE by 169 words.
+The accepted compact PDP-6 assembly scan costs 104 words:
+`__kcore_low_end` `024364` -> `024534` octal, zero new
+DATA/BSS or per-process words. Full KCC ROOT=tape build and
+native PDP-6 actual VM destroy / proc_swap_detach / MM leaf
+positive and negative tests PASS, including an intentionally
+unsafe saved-backing mutant. Historical v880/v957 DISK and
+v1129 VM_NONE tests PASS. Staged in-place v1384 restore
+now also checks v1608 live executable-source admissibility
+before any MM prefix claim; v1384/v1385/v1395 tests PASS.
+
+This does **not** create PACKED processes in production.
+P1-E1 real immutable VFS lifetime, E2 slot-0 RAW DROP,
+E3 complete prefix/FULL restoration, E4 scheduler/PI6/
+RUN/EXEC/EXIT/WAIT and E5 full physical PDP-6 tests
+remain OPEN. No RAM codec or paging is enabled.
+See DAIMOS `design/kcore-p1e-packed-terminal-v1609.md`.
+
+## 2026-11-15 v1608: staged P1-E1 source admission
+
+The first P1-E implementation increment now adds a non-sleeping
+swapless and live executable-mount check to the already staged
+v1381 RAW DROP and v1391 bounded FULL RESTORE. It rejects
+enabled or still-owned BACKSTORE, missing mount slab/identity,
+unsupported provider and mismatched high mount-ID bit before
+any MM pin, rebase or destination allocation. Terminal
+PACKED teardown remains possible when backing is missing.
+
+Native PDP-6 source-linked v1381, v1384, v1385 and v1395/v1397
+and v1604 boundary tests PASS, plus the v1608 refused
+source/admission cases and a deliberate bypass mutant rejected
+by the testkit. Full KCC PDP-6 ROOT=tape image and map are
+byte-identical to the v1606 baseline. No production scheduler
+calls the staged transactions; no physical swapless boot,
+VFS provider lifetime or PI6 process reclamation is accepted
+by this test. P1-E1 production and E2-E5 remain OPEN.
+DAIMOS design and exact evidence:
+`design/kcore-p1e-source-admission-v1608.md`.
+
+## 2026-11-15 v1607: source-matched KCORE completion checklist
+
+The active task is **production uncompressed P1-E RAW PURE**
+and its native/real PDP-6 scheduler, owner, PI6, full APR
+restore, OOM, source identity and rollback acceptance.
+The v1604 lifecycle/geometry split remains staged only.
+Compression is a later measured yes/no decision; generic
+segmentation/paging, strict 32K optimization and CPU ports
+are not active. See
+`STATUS/KCORE-REMAINING-WORK-V1607.MD`.
+
+## 2026-11-15 v1606: PDP-6-first PURE lifecycle and memory mapping
+
+The P1-E staged v1604 implementation now separates common
+quiescent-process lifecycle admission from PDP-6-only APR PURE
+prefix geometry. PDP-6 remains the ONLY implemented CPU target.
+Finish and physically validate its RAW swapless PURE reclamation,
+source immutability, full and fast restore, PI-safe publication,
+EXEC/EXIT/WAIT, owner rollback and peak RAM before attempting
+compression. Production scheduler linkage is not yet accepted.
+
+A noncontiguous/segmented mapping is a future backend concern:
+common policy retains writable state and executable ownership,
+not a presumed physical APR prefix or single contiguous user
+pointer. No future CPU port is planned, and no paging or shared
+segment code is part of the current P1-E work.
+See `KERNEL/MULTI-CPU-PORTABILITY-V1606.MD`.
+
 ## 2026-11-11 v1488: active swapless PURE integration boundary
 
 Production raw disk swap is unchanged. The v1381 in-place PURE drop,
@@ -860,6 +2124,54 @@ PURE DXR is still copied to a private APR extent while executing, whereas
 restricted XIP executes from a pinned MEMFS-owned extent under a different
 trusted no-write policy. Neither feature adds general shared text mappings.
 
+## 2026-11-16 v1622: optional mutable bitmap compression contract (TODO)
+
+The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
+words, zero BSS) is tested independently, not production-linked.
+Only a validated executable explicitly marked
+COMPRESSIBLE_MUTABLE may compress its mutable suffix. PURE
+prefix omission is independent of this opt-in. EXEC replaces
+eligibility, fork inherits it, and the stored RAW/BITMAP format
+is tracked separately. No such executable flag or process
+compression transition has been implemented. The existing DXR
+COMPRESSED flag identifies the file payload, not RAM eligibility;
+the three occupied flag bits above the 15-bit BSS field require
+an audited backward-compatible header extension.
+
+Prefer an ownership-preserving, overlap-safe in-place encoder
+instead of allocating another full mutable image. Preflight
+exact bitmap size and scratch needs read-only; incompressible
+images remain RAW. Before any in-place source overwrite,
+prove non-failing completion under an exclusive process lease
+or exact recovery of a partially transformed stream. No
+intermediate representation may become runnable or published.
+
+The preferred temporary spill location during encoding is
+the process's own still-owned and pinned reconstructible PURE
+prefix, released only after the last scratch read. Restore
+obtains an independent lease, because the original prefix and
+compressed tail may already be partially reused by other
+processes. The resident fs_block_workspace is 0200 octal words
+and also serves serialized VFS/BCACHE: it is NOT free scratch.
+Borrow it only with a verified exclusive, cache-invalidating
+lease that excludes nested filesystem I/O, callbacks and
+deadlock. A pinned no-reclaim dynamic MM extent is a fallback;
+avoid a new permanent scratch slab by default. Prove the
+precise forward/reverse/shifted overlap bounds rather than
+assuming one 36-word-group bitmap per group suffices.
+
+Every reconstruction destination must be fully MM-owned and
+pinned before writing. Test forward and reverse decode (including
+restoration from the end), partially reused prefix or tail,
+another owner occupying a gap, and safe disjoint full-APR
+relocation when overlap cannot be proved. Preserve the only
+valid encoded image and immutable backing on every refusal.
+Prioritize native and physical functional/rollback tests in
+daimos-testkit; do not impose a standalone codec efficiency
+benchmark during this integration phase. This does not change
+the later production linked-size and peak-RAM acceptance gates.
+Authoritative checklist: DAIMOS KCORE.MD and TODO.MD v1622.
+
 ## Hardware and layout invariants
 
 The PDP-6 APR provides one contiguous process mapping, one relocation base
@@ -902,17 +2214,22 @@ A process must never be marked resident while its full APR image is absent.
   define eligibility inheritance. The actual RAM representation is recorded
   independently from eligibility.
 - **Reclaim:** quiesce the candidate with valid scheduler, PI6 and MM owner
-  state. Prepare a distinct managed-RAM retention extent, copy or compress
-  the mutable image, and validate exact reconstruction/count before
-  changing published ownership. Only then free the original process
-  extent. No in-place overwrite of the only copy, hidden disk write, or
-  release of pinned memory is permitted.
+  state. Either retain an independent MM destination as previously specified,
+  or use the v1622 overlap-safe in-place design only after proving exclusive
+  ownership, sufficient spill and non-failing/recoverable source transformation.
+  Validate complete encoding/count before publishing the shorter extent or
+  releasing any original process words. Never publish a partial stream,
+  overwrite another owner's memory, write hidden disk backing or release
+  pinned scratch while it is live.
 - **Benefit test:** reject non-shrinking compression *after* accounting for
   encoded words, metadata, preserved context and temporary peak RAM. Try
   PURE omission without compression when beneficial. If there is no
   provable net gain, keep the original resident image.
 - **Restore:** reserve a complete APR-aligned process extent (including
-  writable words), reconstruct immutable PURE from the guarded vnode,
+  writable words), including the overlap source only under an explicitly
+  proven safe MM transaction. Choose forward/reverse reconstruction or
+  disjoint relocation based on present ownership, not the former address
+  range. Reconstruct immutable PURE from the guarded vnode,
   restore/decompress mutable words, validate exact counts and ownership,
   then atomically publish runnable process state. On failure, retain the
   original inactive representation and its backing guards; do not run a
@@ -943,11 +2260,13 @@ A process must never be marked resident while its full APR image is absent.
    bytes retained verbatim in RAM and **no** compression requirement.
    Verify native PDP-6 resume, repeated cycles, executable protection,
    low-memory and failure rollback.
-4. Only then add explicit opt-in mutable-RAM compression using an already
-   validated native lossless codec where feasible. Benchmark the whole
-   KCORE+MRES growth, stack/scratch, peak temporary RAM, compression time
-   and restore time. A codec shared with executable decoding must not be
-   linked a second time. Reject negative net RAM on 32K profiles.
+4. Only then add explicitly marked mutable-RAM compression using the tested
+   v1451 bitmap codec where feasible. Establish header admission, read-only
+   size/spill preflight, source ownership, overlap-safe encode/decode,
+   direction selection, interrupted-transaction recovery and safe fallback.
+   Prioritize functional native PDP-6 and real-guest tests rather than a
+   standalone codec speed/efficiency benchmark. Do not link duplicate codecs.
+   Keep the whole-system linked-size/peak-RAM gate for production activation.
 5. Integrate scheduler reclamation and VM/BRK/EXEC teardown, prove bounded
    memory-pressure progress, then run mixed PURE/non-PURE,
    compressible/incompressible, multiple inactive processes, provider
