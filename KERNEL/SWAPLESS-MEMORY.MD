@@ -1,3 +1,22 @@
+## 2026-11-19 v1673: development-branch physical RAW reclaim PASS (48K only)
+
+The unmerged DAIMOS branch `kcore-pure-reclaim-pressure-v1673-20261118`
+(commit `ae84bb37`) has source-matched original physical PDP-6
+48K evidence for PURE RAW-suffix reclamation under APR fragmentation.
+Two retained general/strict comparison pairs pass the original testkit
+oracle; nine PACKED owners save 128 words each (1152 total). Original
+MM free words are 27441 before RUN, 2794 under reclaim, and 27441
+again after all EXIT/WAIT. The largest free extent at pressure is
+only 1641 words. Stable physical MM owners, pins and native MEMINFO
+are validated; five physical witness mutations and a forged summary
+are executed and rejected. This is source-linked physical evidence,
+not a mainline production acceptance, not a newly completed paired
+simulator invocation, and not a continuous runtime high-water proof.
+Bitmap mode3 is OFF. PI6 fault pressure, other root classes and KA10
+remain unaccepted. See DAIMOS
+`design/kcore-pure-raw-reclaim-48k-v1673.md` and testkit
+`tests/validation/pure-runtime-reclaim-v1673/README-v1673.md`.
+
 ## 2026-11-11 v1488: active swapless PURE integration boundary
 
 Production raw disk swap is unchanged. The v1381 in-place PURE drop,
