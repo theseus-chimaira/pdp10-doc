@@ -1,3 +1,34 @@
+## 2026-11-19 v1684: two RAW PURE executable owners during FULL (C89 native PASS)
+
+The source-linked daimos-testkit `pure-multiowner-source-v1684`
+PDP-6 C89 test executes two original zero-copy `proc_pure_ram_drop_v1381`
+transactions, original MM PURE rebase assembly, source-backed
+`proc_swap_mount_busy` and `proc_swap_backing_busy` assembler, and the
+bounded `proc_pure_ram_restore_v1391` transaction. Two independent
+PACKED processes own executable identities on different mounts.
+During the first process's FULL callback, the original MM contains
+its PINNED RAW suffix, PINNED full APR target, and an independent
+unpinned PACKED second suffix. The guards protect both executable
+sources without changing any original MM owner. On returning from
+FULL, the restored RESIDENT process **continues** to protect its
+executable identity, because it can become PACKED again. The second
+owner's descriptor and retained writable words remain unchanged.
+When its mount root is absent, the original FULL source admission
+returns `MM_ERR_INVAL` without consuming its RAW suffix or clearing
+its TRANSITION. Mount-root return restores its original guarded
+backing identity.
+
+Two test-only mutations of the **original** mount and vnode/backing
+guard assembler are rejected by the new-only C89 PDP-6 oracle, with
+exact guest exit codes `000000004004` and `000000004200`. The
+existing v1649 single-owner FULL guards and the v1648/v1395 rollback
+prerequisites also pass. No production KCORE/MM/MRES source, ABI, RAM
+or boot image was modified. Acceptance is **native component scope**;
+this is not the nine-owner physical PI6/secondary-DTFS loss/unmount/
+rename or intermediate high-water release gate. See DAIMOS
+`design/kcore-pure-multiowner-source-lifetime-v1684.md` and
+`daimos-testkit/tests/validation/pure-multiowner-source-v1684/README-v1684.md`.
+
 ## 2026-11-19 v1674: 48K PDP-6 physical RAW PURE high-water PASS
 
 On the unmerged DAIMOS PURE development branch, the completed v1674
