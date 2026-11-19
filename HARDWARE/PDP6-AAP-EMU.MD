@@ -1,3 +1,17 @@
+# 2026-11-19 APR read-only diagnostic interface
+
+For PDP10-testkit's bounded instruction probes, PDP-6 emulator local
+commit `b60b1e4` restores `cpustatus` and `aprclass` as read-only
+simulation-thread console queries. They report START_PENDING/RUNNING/
+HALTED and coherent APR exception/PI latches, respectively. Neither
+command reinstates the retired AAP pulse-clock, timestamps, or class
+event trace, nor changes the CPU execution path. The ordinary JRST
+controls in the illegal-relocation diagnostic now halt with no ILLOP
+latch; seven other mode/relocation candidates remain unresolved
+because they do not halt within the bounded test. This is not a
+positive ILLOP pulse validation. The PDP-6 emulator commit was made
+locally; publishing it requires working GitHub credentials.
+
 # AAP PDP-6 EMULATOR INTEGRATION
 
 DATE: 2026-10-01
