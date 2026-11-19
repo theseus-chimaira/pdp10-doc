@@ -1,3 +1,35 @@
+## 2026-11-19 v1674: 48K PDP-6 physical RAW PURE high-water PASS
+
+On the unmerged DAIMOS PURE development branch, the completed v1674
+physical PDP-6 GENERAL/STRICT swapless 48K high-water test replays
+**all 3122 original MM physical descriptor writes** from CTY A through
+B to C against source-built kernel symbols. Both runs use byte-identical
+KCORE and PURE MRES images; no DSK/DRM swap media is attached. Test-only
+PID1 uses deterministic native PIPE-blocked children, not an expiring
+SLEEP, and does not instrument KCORE or the production scheduler.
+
+Both profiles pass the source-linked native RUN/EXIT/WAIT and original
+MM process/owner/pin/SYS_MEMINFO tests. Nine PURE RAW 128-word prefixes
+are dropped then restored. The tenth real RUN is refused under APR
+fragmentation. Original free MM words are **27339 -> 2692 -> 27339**,
+with a largest extent of 1539 at B. The lowest observed valid
+*committed* MM free count anywhere between A and C is **1255 words**;
+maximum nonfree physical RAM is **47897 of 49152 words**. Each profile
+has 194 extent-count commits, five in-place BRK changes, and nine PURE
+reclamation plus nine restoration span writes. The general/strict
+comparison and both independent physical verifiers PASS; each original
+physical recording rejects five physical mutations plus a forged
+summary. Their accepted high-water and state reports are byte-identical.
+
+This result is an **event-commit high-water** for the stated 48K
+workload, not an execution-time-neutral scheduler worst-case proof.
+SIMH write watches affect elapsed time; intermediate descriptor-array
+shifts are replayed but not mistaken for actual committed allocations.
+This does **not** close PI6 fault-injection, ROOT=auto/DSK/DRM, KCC
+FULL-profile, compressed mode3, KA10, 32K boot or mainline integration.
+See DAIMOS `design/kcore-pure-runtime-highwater-48k-v1674.md` and
+daimos-testkit `tests/validation/pure-runtime-highwater-v1674/README-v1674.md`.
+
 ## 2026-11-19 v1673: development-branch physical RAW reclaim PASS (48K only)
 
 The unmerged DAIMOS branch `kcore-pure-reclaim-pressure-v1673-20261118`
