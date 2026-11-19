@@ -1,3 +1,20 @@
+## 2026-11-19 independent local relocation retest
+
+The Termux `$PDP10_PREFIX` contained a stale host P10FOLD that still
+proposed a cross-object `LOCAL TEXT` fold. Rebuilding current DAIMOS
+sources exposed the same unsafe comparison in both P10FOLD and DLINK;
+fixing only the analyzer was insufficient because the linker also
+accepted an explicitly injected unsafe plan. DAIMOS commit `01e58f2`
+rejects non-internal local relocations across object identities in
+both programs. Internal relocations still match by relative offset.
+
+The two corrected programs compile with strict C99 warnings and pass
+`p10fold-local-section-v1141`, `p10fold-io-skip-v1`, and the complete
+standalone P10FOLD/DLINK link contract. Their validated binaries were
+installed into the Termux `$PDP10_PREFIX/bin`; prior versions were
+preserved under `*.pre-local-reloc-v1`. This is host toolchain code
+only, not a guest KCORE size or boot-acceptance result.
+
 ## v1277: Linux installed-tool regression repaired (2026-11-07)
 
 The source-level v1141 correction described below was committed,
