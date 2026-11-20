@@ -1,3 +1,29 @@
+## 2026-11-20 v1698: atomic PDP-6 MM pin and unpin updates
+
+`mm_pin_adjust` historically read a physical MM descriptor, verified
+the count and wrote the incremented or decremented pin field while
+global PI was enabled. An interrupt-side MM free between lookup and
+pin publication could leave a pin in a freed MM slot; an interrupt-side
+extra pin between a read and an unpin store could be overwritten by
+the old zero-count result. The v1697 free-side lock alone did not
+close the reverse pin-side interrupt window.
+
+The v1698 pin-adjust routine now uses a short inline `CONI/CONO PI`
+critical section around descriptor lookup, pin validation and count
+publication. It restores precisely the caller's previous global PI
+state after success, missing/underflow `MM_ERR_INVAL` (-4) or saturated
+pin `MM_ERR_BUSY` (-5). This introduces no permanent RAM, process
+fields, alternative owner representation or additional helper calls.
+
+The source-linked native PDP-6 `daimos-k01-mm-pin-pi-v1698` regression
+tests sequential pins and unpins, exhausted and missing pins, a
+simulated free at the pin-store boundary, a second pin at the unpin
+store, and restoration of both initially enabled and disabled global
+PI states using actual simulator PI instructions. Removing the PI
+disable is rejected by an unsafe mutant. Earlier K01 pin/restore and
+MM/TTY/DPY/FIFO/DTFS tests remain regression coverage. Full physical
+guest PI6 fault injection and K01 bounded recovery remain open.
+
 ## 2026-11-20 v1697: serialize physical MM free with interrupt-side pins
 
 The PDP-6 KCORE `mm_free` previously checked the matching MM extent's
