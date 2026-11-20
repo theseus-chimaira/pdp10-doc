@@ -1,3 +1,31 @@
+## 2026-11-20 v1699: pinned PROCESS transfer and extent-size PI exclusion
+
+The PDP-6 `mm_process_transfer_pinned`, `mm_process_shrink_pinned` and
+`mm_process_grow_pinned` helpers validated their sole physical pin,
+PROCESS type and owner with global PI enabled. Transfer and shrink
+could therefore overwrite a descriptor modified by an interrupt-side
+pin or release; grow could use an already-obsolete next-extent gap
+while publishing a larger physical span. v1697-v1698 fixed core MM
+free/pin updates, but these three leaves had their own check-to-store
+windows.
+
+All three now save the previous global PI state and exclude interrupts
+through their full descriptor-validation and publication sequences.
+Grow includes the containing-arena and successor extent checks under
+the same exclusion and preserves its required AC10/AC11 registers.
+The previous PI state and original typed error are preserved on exit.
+No persistent RAM, additional owner table or automatic recovery state
+is introduced.
+
+`daimos-k01-pinned-mutate-pi-v1699` source-links all three real MM
+leaves to native PDP-6 fixtures. It injects a conflicting pin before
+owner-transfer and shrink stores, and a neighbor intruding into grow's
+gap before the new length is published. Removing PI disable from each
+routine is detected by a separate unsafe mutant. Existing native
+v767/v768/v769 transfer/shrink/grow and v1684 register preservation
+tests remain valid. Complete guest PI6 fault-pressure and bounded
+administrative owner recovery are still outstanding for K01.
+
 ## 2026-11-20 v1698: atomic PDP-6 MM pin and unpin updates
 
 `mm_pin_adjust` historically read a physical MM descriptor, verified
