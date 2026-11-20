@@ -35,6 +35,15 @@ dependency; it is not counted as passing acceptance. The strict F07
 physical swap-in bitmap-refusal test remains unaccepted after its
 independent RUN-admission failure at 6 of 18 children.
 
+The v1707a follow-up corrected the test-only TSFS decoder owner value
+to the real octal 011, asserted against the production constant. The
+legacy v1538 source-linked TSFS I/O fixture now supplies a distinct
+unreachable MM invariant-HALT stub because the production decoder
+references the KCORE fail-stop entry. All v1538 root/auxiliary I/O
+cases and four mutants pass. The separate v899 full physical PDP-6
+PIPE test also passes with a retained pinned FILE owner, checked -5
+refusal, unpin and valid later release, without errors.
+
 ## 2026-11-20 v1705-v1706: swap fault-gate audit and EXEC MM release
 
 ### v1705: correct the test-only F07 swap-failure injection point
