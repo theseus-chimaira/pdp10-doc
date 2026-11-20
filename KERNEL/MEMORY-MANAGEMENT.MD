@@ -1,3 +1,41 @@
+## 2026-11-20 v1704: full-guest transient MM recovery with live PI6
+
+The v997/v1106/v1153 physical recovery injector previously patched an
+obsolete `mm_free` success tail ending directly in `POPJ 17,`.
+Production v1697 moved the successful physical release through
+`mm_free_restore_pi_v1697` to restore the caller's global PI state.
+The test-only injection code now preserves the actual return path at
+both VM and mixed-DPY hook sites; no production KCORE source was
+modified for this stage.
+
+`daimos-k01-recovery-injection-v1704.sh` verifies the source-linked
+test transformations in base, VM, integrated PIPE/VM and mixed
+PIPE/DPY/VM/u-area modes, rejecting an intentionally obsolete POPJ
+mutation. All injection-only cases pass on v1703 DAIMOS source.
+
+The v1153 **real 256K PDP-6 guest** then passed its full physical
+PIPE/DPY/VM/u-area MM recovery matrix, including v997/v1103/v1106/
+v1117/v1144/v1153 assertions. Each of the four distinct MM owners
+underwent one pinned refusal and one accepted checked release after a
+matching unpin. Process VM recorded two MM free attempts, one exact
+MM_BUSY refusal, one accepted free and one backing detach; its own
+pin/unpin counts were 1/1. FILE/PIPE/DPY were released before VM,
+u-area released after VM, and ZOMB/WAIT published only after valid
+completion. All diagnostic error counters remained zero.
+
+Real PI6 clock advanced **55 ticks** while a separate user made three
+recorded progress steps; the bystander counter reached 36, and
+48 stale WAIT/PID/event refusal checks passed without MM/slot growth.
+The guest used a disposable injected kernel, retained the original
+foreign FS provider lease, and reached its explicit HALT.
+
+This validates transient physical MM refusal followed by exactly-once
+recovery and continued PI6/user progress. It does not prove every
+asynchronous interleaving. K01 remains open for physical swap-in/
+restore MM refusal coverage, final cross-subsystem source audit and
+release sign-off; no additional permanent RAM or forced release was
+introduced by v1704.
+
 ## 2026-11-20 v1703: physical PDP-6 permanent-MM refusal acceptance
 
 Three disposable 256K PDP-6 full-system guests were booted against
