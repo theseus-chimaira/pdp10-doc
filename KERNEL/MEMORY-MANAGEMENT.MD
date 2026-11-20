@@ -1,3 +1,29 @@
+## 2026-11-20 v1697: serialize physical MM free with interrupt-side pins
+
+The PDP-6 KCORE `mm_free` previously checked the matching MM extent's
+type, owner and zero pin count before calling `mm_delete`, all with
+global PI enabled. A pin acquired by a device interrupt between the
+zero-pin check and descriptor deletion could be discarded while the
+physical consumer still owned the image. The extent would then appear
+free to a subsequent allocation.
+
+`mm_free` now brackets the complete MM find/type/owner/pin/delete
+transaction with the existing global PI disable and restore helpers.
+It preserves the exact previous PI enable state and the original
+success, `MM_ERR_INVAL` (-4) or `MM_ERR_BUSY` (-5) return. No extra
+permanent kernel RAM, bitmap or owner table is introduced, and no
+refused physical owner is force-released.
+
+The native source-linked PDP-6 `daimos-k01-mm-free-pi-v1697` regression
+checks wrong-owner and pinned refusal, a pin arriving at lock entry,
+a simulated interrupt at the delete boundary, PI balance and normal
+release. Deleting the exclusion fails a deliberate mutant. Related
+swap, TTY, u-area, FIFO, DPY and DTFS scratch tests link the actual
+production PI routines; the legacy source-linked pin test's extraction
+was tightened to avoid unrelated allocation/rebase code. KCC builds
+with PURE verification on/off pass. Full-guest interrupt injection and
+the independent `mm_pin_adjust` race audit remain open under K01.
+
 ## 2026-11-20 v1696: stop early BRK pressure on a hard MM refusal
 
 The PDP-6 `vm_space_brk_current` rebase path tries adjacent in-place
