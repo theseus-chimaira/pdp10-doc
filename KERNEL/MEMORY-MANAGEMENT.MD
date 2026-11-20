@@ -1,3 +1,25 @@
+## 2026-11-20 v1712: corrected F07 swap TERM diagnostic stack slot
+
+The strict v1494 physical swap-in BACKSTORE bitmap-fault test had an
+independent test-only stack-witness defect. The scheduler service's
+pending slot is saved before `PUSHJ`; the witness pushes AC4, AC5 and
+AC6 before reading it. The slot therefore resides at -4(17), not
+-3(17). The production swap service and MM owner state were not
+changed by this correction.
+
+`daimos-k01-f07-term-stack-v1712.sh` injects the real v1494 diagnostic
+leaf into a disposable source copy, extracts its TERM witness and
+runs it in native PDP-6 with the exact simulated service call stack.
+It checks matching slot, TRANSITION, PREVM and disk-run identity,
+rejection of an unrelated slot, and reporting of a genuinely missing
+PREVM marker. The unsafe -3(17) mutant fails.
+
+This validates the test witness only. The separate complete physical
+F07 run still failed strict acceptance with two TERM events and five
+diagnostic errors; none of these counters are reclassified or ignored.
+The extended v1495 diagnostic run is required before deciding whether
+any remaining discrepancy is a kernel fault or test assumption.
+
 ## 2026-11-20 v1710: do not compact the currently executing PROCESS
 
 `mm_compact` previously tried to relocate every unpinned PROCESS
