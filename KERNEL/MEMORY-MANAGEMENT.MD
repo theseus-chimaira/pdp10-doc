@@ -1,3 +1,30 @@
+## 2026-11-20 v1692: bound MM relocation owners by runtime process slots
+
+In the PDP-6 KCORE relocation path, `mm_move_extent` supplies a process
+owner from an MM descriptor. Before v1692, `vm_extent_move` used this
+owner to index the runtime-allocated process table before testing the
+old physical base against the descriptor. A corrupted owner could read
+past that table, and a forged neighboring record could make the source
+base appear valid. The source-base guard alone was insufficient.
+
+The production VM leaf now rejects any owner greater than or equal to
+`proc_slots` before computing the process-record address. For a valid
+slot it retains the existing source-base, transition, current-process,
+mapping-hold, runqueue and physical-move protections. Refusal returns
+`MM_ERR_BUSY` without touching the owner or destination. No additional
+permanent data words are required.
+
+The source-linked native PDP-6 `daimos-k01-relocate-slot-v1692` test
+constructs a matching process-shaped record just beyond a two-slot
+table. The invalid owner must not copy or publish anything; a legal
+owner must still move. The guard-removal mutant is rejected. The
+affected relocation/compaction fixtures and KCC KCORE builds in both
+PURE verification configurations pass. The legacy v541 user-HALT test
+was repaired to stop at a mapped logical user-mode breakpoint; v548
+was corrected to link the actual arena-fit helper. These are native
+source-linked validations, **not** full physical guest fault acceptance.
+K01 recovery/teardown auditing remains open in DAIMOS `kcore-todo.md`.
+
 ## 2026-11-09 v1375: swapless-only process-memory reclamation plan
 
 The old opt-in compressed **disk-swap** design (decision 5) is
