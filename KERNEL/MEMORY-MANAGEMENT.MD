@@ -1,3 +1,31 @@
+## 2026-11-20 v1695: independent MM and backing teardown checkpoints
+
+The PDP-6 `vm_space_destroy` non-XIP path performed a typed physical
+MM release before calling `proc_swap_detach`. On a backing-detach
+refusal, it returned -1 while retaining the old process VM base.
+The MM extent had nevertheless been freed and could have been
+reallocated. Repeating PREVM teardown could free the same base again,
+or keep a stale VM owner record for already-released physical memory.
+
+After a successful `mm_free`, the normal destructor now commits the
+full `VM_SPACE_NONE` sentinel before invoking the separately fallible
+backing detach. An MM refusal leaves both VM and backing ownership
+intact. A subsequent detach refusal retains only backing ownership,
+allowing retry without repeating physical MM free; the full VM_NONE
+sentinel is already the existing idempotent no-physical-owner marker.
+The MEMFS XIP detach-before-unpin v1471 path and DISK-mode teardown
+remain unchanged. No new permanent RAM or process fields are needed.
+
+`daimos-k01-vm-retire-v1695.sh` runs the actual VM destructor on the
+native PDP-6 with MM refusal, accepted physical release, refused
+backing detach and successful retry. It verifies exact MM/free and
+backing call counts, unchanged resident VM on MM refusal, VM_NONE
+after accepted MM free, and an unsafe early-publication deletion
+mutant. Related v880 DISK retry, v1129 VM_NONE, v1094/v1471 MEMFS XIP
+release tests and both KCC KCORE source-build configurations pass.
+Full guest pressure/fault injection and K01 bounded recovery remain
+separate acceptance requirements.
+
 ## 2026-11-20 v1694: atomic PI exclusion before relocation ownership check
 
 In the PDP-6 MM compactor, the candidate's type and pin count were
