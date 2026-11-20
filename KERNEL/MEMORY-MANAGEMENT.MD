@@ -1,3 +1,30 @@
+## 2026-11-20 v1696: stop early BRK pressure on a hard MM refusal
+
+The PDP-6 `vm_space_brk_current` rebase path tries adjacent in-place
+growth and a downward-in-gap move before asking `proc_swap_reclaim`
+for one bounded victim-reclamation pass. The old BRK code ignored that
+call's typed result and rescanned MM regardless. Yet the production
+reclaim service deliberately preserves `MM_ERR_INVAL` (-4) or
+`MM_ERR_BUSY` (-5) when compaction cannot prove process ownership.
+Ignoring a hard refusal could enter subsequent full-image allocation,
+compaction and swap pressure despite that earlier ownership failure.
+
+BRK now returns immediately for a typed hard MM refusal, reporting the
+exact cause in AC2 and the existing syscall failure in AC1. It restores
+the previous PI enable state and leaves the current physical process
+extent, VM descriptor and BRK value intact. Ordinary no-victim `-1`
+still takes the existing bounded full-allocation fallback. No added
+persistent state, new recovery table or policy change is involved.
+
+`daimos-k01-brk-reclaim-v1696` source-links the production BRK and MM
+arena-feasibility leaves on the native PDP-6, forcing early reclaim
+with physical neighbors on both sides. -4 and -5 do not invoke a later
+allocator, move or free; -1 invokes the bounded allocator fallback.
+The unsafe refusal-guard removal fails. The earlier v1074 BRK MM
+rollback and v1260 impossible-extent tests also pass. Both KCC KCORE
+PURE verification configurations build; full-guest fault injection
+and K01 administrative recovery are not yet complete.
+
 ## 2026-11-20 v1695: independent MM and backing teardown checkpoints
 
 The PDP-6 `vm_space_destroy` non-XIP path performed a typed physical
