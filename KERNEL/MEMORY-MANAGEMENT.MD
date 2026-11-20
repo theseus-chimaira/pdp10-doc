@@ -1,3 +1,41 @@
+## 2026-11-20 v1718: K01 permanent-MM failure handling CLOSED
+
+The final `daimos-k01-integrated-acceptance-v1717.sh` acceptance gate
+was rerun on the completed physical PDP-6 guest evidence for the
+accepted v1716 production kernel; all six independent checks passed.
+The **clean** 256K F07 guest passed v1336 independent owner release,
+v1303 no-partner swap/cooldown and v1349 exact owner lifecycle. It
+completed 34 swap-outs and 34 swap-ins, released all independent
+physical owners and left no BACKSTORE allocation. The separate
+**faulted** F07 guest passed v1713: one real bitmap-refusal injection,
+two deferred TERM events, exact repair and no leaked backing; 16
+negative verifier mutations were rejected. Both guests reached HALT.
+
+The same integrated gate accepted 33 distinct source-linked native
+PDP-6 MM/VM/swap/PI/provider regression tests and v1716's audit of
+all 26 direct `mm_free` callers in 12 production assembler files,
+including five rejected unsafe changes. Earlier v1703 physical guests
+also proved permanent busy (-5), wrong-owner (-4), quarantined WAIT
+and independent provider leases. The v1704 physical mixed provider,
+VM and u-area guest demonstrated an initial refusal followed by one
+accepted release after unpin, while PI6 and a separate user advanced.
+
+The accepted operating contract is to **preserve exact physical MM
+ownership** on refused release, pin, relocation or restore; retain
+diagnostics and quarantine; retry safely with a bounded 16..512-tick
+backoff; and require controlled offline repair/restart for ownership
+that cannot be proved. Do not force-unpin, force-free or publish a
+false successful transition. No persistent KCORE RAM or new recovery
+table was added at sign-off. Acceptance does not exhaust every possible
+interrupt interleaving.
+
+**K01 is CLOSED at v1718.** This does not close separate K02 process
+resource cleanup, K03 OOM policy or unrelated KCORE feature work.
+The detailed checksums, revision stamps and source-linked evidence are
+recorded in testkit `tests/validation/daimos-k01-closure-v1718.md` and
+DAIMOS `design/kcore-k01-mm-refusal-v1678.md`. Older dated OPEN notes
+below remain as historical stage reports, superseded by this sign-off.
+
 ## 2026-11-20 v1713-v1716: F07 fault recovery and native K01 gates
 
 The v1713 **fault-specific** 256K PDP-6 F07 guest passed the original
