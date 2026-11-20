@@ -1,3 +1,20 @@
+## 2026-11-20 v1714: repaired transactional PIPE-close regression
+
+The historical `daimos-pipe-close-v870.sh` native PDP-6 test had
+started failing to link after a later DTFS administrative-abandon
+routine was added adjacent to `file_close_entry_v865`. The v870
+source extraction included both functions through the subsequent
+`file_dup` heading and therefore incorrectly required DTFS-only
+`file_find` and poisoned-slot dependencies, although the test
+exercises only PIPE/FIFO close, release refusal, and retry.
+
+The testkit extraction now stops at the intervening DTFS-abandon
+heading, preserving the real production FILE-close leaf without
+fabricating any missing DTFS runtime service. The native PDP-6 v870
+transactional final PIPE close / failed-MM retry regression passes.
+No production KCORE code or permanent RAM changed. The independent
+physical v1713 F07 swap-refusal acceptance remains a separate gate.
+
 ## 2026-11-20 v1712: corrected F07 swap TERM diagnostic stack slot
 
 The strict v1494 physical swap-in BACKSTORE bitmap-fault test had an
