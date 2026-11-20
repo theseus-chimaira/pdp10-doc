@@ -1,3 +1,25 @@
+## 2026-11-20 v1693: require exact resident VM length for relocation
+
+The PDP-6 MM compactor supplies a physical source base, process owner
+and extent word count to `vm_extent_move`. Even after the v1687 source
+base and v1692 owner-slot checks, a corrupt MM extent length could
+copy too many words into another owner's physical memory, or publish
+an incomplete process image after copying too few words.
+
+The VM relocation leaf now compares the requested extent word count
+with the resident process table's VM-state left half before any STOP_MM,
+TRANSITION, runqueue, memory-copy or VM-base publication. A mismatch
+returns `MM_ERR_BUSY`, leaving MM descriptor rollback to the existing
+compaction transaction. The matching case is unchanged. No permanent
+RAM words are added.
+
+`daimos-k01-relocate-length-v1693` source-links the real VM/FS copy
+code on the native PDP-6, checks that a mismatched length cannot move
+or publish memory, checks a matching-length move, and rejects an
+unsafe mutation bypassing the guard. Related native fixtures now
+initialize the true resident length. K01 is still open; this is not
+full physical guest fault-injection acceptance.
+
 ## 2026-11-20 v1692: bound MM relocation owners by runtime process slots
 
 In the PDP-6 KCORE relocation path, `mm_move_extent` supplies a process
