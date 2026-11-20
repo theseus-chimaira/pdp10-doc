@@ -1,3 +1,30 @@
+## 2026-11-20 v1700: atomic pinned PROCESS verifier snapshot
+
+`mm_process_verify_pinned_v792` is used by swap-out, swap-in and
+process exchange to confirm the exact PROCESS owner, physical length
+and one pin. Its earlier implementation compared the extent length and
+then owner/type/pin words without excluding PI. A concurrent
+interrupt-side MM mutation between those two reads could make a
+mixed-time descriptor appear valid when no single descriptor actually
+matched the whole request.
+
+The v1700 verifier disables global PI from descriptor lookup through
+all length, owner, type and pin checks, then restores the caller's
+original enable state on success or refusal. Invalid argument checks
+still fail immediately. Return values (0 or -1), AC10/AC11 preservation
+and RAM footprint remain unchanged. The check establishes one atomic
+snapshot, not an indefinite lease: swap callers still retain their
+existing physical pin and TRANSITION protocol after verification.
+
+The source-linked native PDP-6 `daimos-k01-verify-pi-v1700` test
+injects an extent-length change between length and metadata reads
+when PI is enabled. It confirms no such change while protected,
+preservation of both initial PI states and AC10/AC11, and the existing
+wrong-size, wrong-owner and multiple-pin refusals. A mutant omitting
+the PI exclusion fails. Native v792 and v1682 verifier regressions and
+both KCC KCORE PURE build configurations also pass. Full physical
+guest PI6 fault injection and bounded K01 recovery remain open.
+
 ## 2026-11-20 v1699: pinned PROCESS transfer and extent-size PI exclusion
 
 The PDP-6 `mm_process_transfer_pinned`, `mm_process_shrink_pinned` and
