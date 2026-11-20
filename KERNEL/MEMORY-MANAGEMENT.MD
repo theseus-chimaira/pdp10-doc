@@ -1,3 +1,21 @@
+## 2026-11-20 v1730: K02 process-resource cleanup CLOSED
+
+DAIMOS v1730 closes K02's failure-safe process lifetime for
+MM/VM, FILE, anonymous PIPE, named FIFO and executable/backing
+ownership across EXIT, EXEC and failed/unpublished RUN. The final
+testkit matrix passed nine source-linked PDP-6 regressions and
+four physical 256K PDP-6 guests (post-MM-free backing refusal,
+concurrent RUN owners, permanent D6FS/session HUP with fatal EXEC,
+and named FIFO pinned close). No production kernel source changes
+or persistent/per-process RAM additions occurred after v1720.
+
+The strict 32K permanent-address gate remains over budget and
+is not accepted by this cleanup sign-off. K03 automatic OOM killing
+stays disabled; K04 permanently refused owner recovery remains OPEN.
+Full accepted behavior, counter evidence and source baselines:
+STATUS/KCORE-K02-PROCESS-CLEANUP-V1730.MD. The K01 v1718
+sign-off below remains valid and independent.
+
 ## 2026-11-20 v1718: K01 permanent-MM failure handling CLOSED
 
 The final `daimos-k01-integrated-acceptance-v1717.sh` acceptance gate
