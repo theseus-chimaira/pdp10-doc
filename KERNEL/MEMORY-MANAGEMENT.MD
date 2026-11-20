@@ -1,3 +1,51 @@
+## 2026-11-20 v1705-v1706: swap fault-gate audit and EXEC MM release
+
+### v1705: correct the test-only F07 swap-failure injection point
+
+The strict v1494 physical swap-in BACKSTORE bitmap-fault injector was
+still anchored to the old `proc_swap_service_failed` TERM sequence.
+Production v1507 records an owner-specific swap retry epoch first and
+only then applies TERM at `proc_swap_service_failed_event_v1507`.
+The v1494 instrument now records its read-only TERM witness at the
+current event boundary, preserving that retry state. The testkit's
+`daimos-k01-swap-restore-injection-v1705.sh` verifies the v1494 and
+v1495 disposable source transformations and rejects a stale-event
+mutation. Seven native K01 swap/restore tests and twelve v1494
+final-owner verifier negative controls pass.
+
+The physical 256K PDP-6 F07 guest booted but **did not pass**. Its
+original v1207 workload stopped at 6 of 18 expected RUN child
+acknowledgments (`fail('n')`) before the bitmap-fault injection armed.
+The live sampler observed 10 swap-outs and 3 swap-ins, but the test
+counter was `v1494_armed=0` and `v1494_faults=0`. Final BACKSTORE
+usage was nonzero because the full workload stopped early. Neither
+v1494 physical restore-refusal nor original F07 acceptance is claimed.
+The 18-child admission failure requires separate investigation.
+
+### v1706: fail closed if destructive EXEC cannot release its copy
+
+The PDP-6 low-memory destructive EXEC path allocates a temporary
+kernel-dynamic copy of its validated launch block under MM owner 013.
+`exec_lowmem_free` formerly discarded a failed `mm_free` result and
+returned the EXEC completion status, despite owning no persistent
+reference after its stack frame was dropped. This could abandon a
+still-owned physical MM extent after exact -4 (invalid owner/type) or
+-5 (pinned) refusal.
+
+The cleanup now transfers any refused release to the existing
+`proc_swap_storage_invariant_v30` HALT instead of reporting a false
+EXEC success or fatal-after-commit completion. Accepted release still
+returns the unchanged original result. No force-unpin, invented owner
+or permanent RAM is added. This is a fail-closed check, not a new
+general process teardown/recovery mechanism.
+
+The native PDP-6 source-linked
+`daimos-k01-exec-launch-free-v1706.sh` validates ordinary cleanup,
+the exact -4/-5 refusal paths, and rejection of a mutant returning
+from an unproven free. Existing v200 EXEC rollback, v1 ABI and v20
+PURE tests pass; both KCC KCORE PURE build variants pass. K01 remains
+open for the F07 restore fault gate and residual physical owner paths.
+
 ## 2026-11-20 v1704: full-guest transient MM recovery with live PI6
 
 The v997/v1106/v1153 physical recovery injector previously patched an
