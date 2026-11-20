@@ -1,3 +1,31 @@
+## 2026-11-20 v1694: atomic PI exclusion before relocation ownership check
+
+In the PDP-6 MM compactor, the candidate's type and pin count were
+examined with PI enabled. `mm_move_extent` then captured its source MM
+descriptor before calling `mach_pi_disable`. A pin acquired between
+those operations could be lost when relocation later restored the
+original, stale descriptor, or the pinned image could be copied and
+reallocated despite an outstanding physical user.
+
+The v1694 relocation leaf now disables global PI **before** reading
+the descriptor. It validates the table count and capacity, nonnegative
+source slot, PROCESS type and zero pin count within the protected
+critical section. Invalid table/type/slot returns `MM_ERR_INVAL` (-4);
+an extent pinned at the boundary returns `MM_ERR_BUSY` (-5). Refusal
+leaves descriptor count, base, type, pins and process image untouched,
+then restores the previous PI state. Successful moves retain the same
+descriptor publication and fail-stop contract. No persistent words
+were added.
+
+`daimos-k01-relocate-pin-race-v1694.sh` executes the real MM relocation
+leaf on the native PDP-6 with an interrupt-side pin injected at the
+PI-disable boundary. The test checks exact pin ownership, balanced PI,
+no VM mutation and rejection of an unsafe pin-check removal, plus
+invalid-type and negative-slot refusal and normal rollback/success.
+Existing relocation rollback, publication, capacity and VM full-path
+native cases and KCC KCORE builds with PURE verification on/off pass.
+This is a source-linked test, not yet a full guest PI6 fault injection.
+
 ## 2026-11-20 v1693: require exact resident VM length for relocation
 
 The PDP-6 MM compactor supplies a physical source base, process owner
