@@ -1,3 +1,26 @@
+## 2026-11-20 v1711: atomic swap-victim advisory MM pin lookup
+
+`mm_is_pinned` is the physical pin preflight used while selecting a
+possible process swap victim. It previously matched an MM extent by
+base, then read the selected descriptor's pin count with global PI
+enabled. An interrupt-side mutation between these instructions could
+produce a stale or mixed-time advisory decision.
+
+The source-linked PDP-6 leaf now saves the previous PI state, excludes
+global PI from `mm_find_base` through the pin field inspection, and
+restores the caller's original state on every exit. Its boolean 0/1
+result, including missing-base behavior, stays unchanged. No permanent
+KCORE RAM or new MM metadata is added. This is one atomic advisory
+snapshot, not a pin lease: the later swap-out path still must pin and
+verify exact physical ownership before using the image.
+
+The native `daimos-k01-is-pinned-pi-v1711.sh` regression injects a
+conflicting MM pin immediately after base lookup if PI is enabled.
+The protected leaf preserves the original descriptor; an unsafe mutant
+without PI exclusion fails. Pinned, unpinned, missing-base, and both
+prior PI states are checked. Native v1698 atomic pin updates and the
+v1710 compactor-current-owner test pass alongside this regression.
+
 ## 2026-11-20 v1707: fail-closed temporary PIPE/D6FS/TSFS MM releases
 
 The K01 source-wide `mm_free` caller audit found four more routines
