@@ -1,3 +1,32 @@
+## 2026-11-20 v1701: coherent GETTEARDOWN u-area MM diagnostic
+
+`mm_uarea_probe_v887` implements the read-only physical MM detail for
+`GETTEARDOWN(pid|0400)`. It finds the u-area extent by its physical
+base and then reads the slot's type, process owner and pin count.
+Previously, global PI was enabled between the descriptor lookup and
+metadata read. An interrupt-side release, move or owner change could
+invalidate the slot and produce misleading diagnostic information
+during permanent-MM failure investigation.
+
+The probe now saves the caller's previous PI state and excludes PI
+from MM lookup through its final owner/type/pin comparison. All
+existing diagnostic codes are preserved: 0..255 live pins, 0400 missing
+extent, 0401 wrong type, 0402 wrong owner. The previous PI state is
+restored on every exit. No permanent RAM or new owner/recovery state
+is added. This guarantees a coherent MM snapshot, not an indefinite
+lock on the process control query after the probe returns.
+
+The source-linked native PDP-6
+`daimos-k01-uarea-probe-pi-v1701.sh` injects an owner change precisely
+after lookup and before the metadata read if PI is enabled. It checks
+unchanged valid metadata, the exact live pin count, wrong type/owner,
+missing base, zero pins, restoration of both initial PI states, and
+rejection of an unsafe mutant without PI exclusion. Existing v887,
+v886 and v894 GETTEARDOWN diagnostic tests, v888 MM error, v955 MM
+failure matrix and v956 u-area lifetime tests pass. KCORE builds in
+both PURE verification configurations pass. Full physical guest PI6
+fault injection and bounded recovery still prevent K01 closure.
+
 ## 2026-11-20 v1700: atomic pinned PROCESS verifier snapshot
 
 `mm_process_verify_pinned_v792` is used by swap-out, swap-in and
