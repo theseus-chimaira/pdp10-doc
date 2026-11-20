@@ -1,3 +1,38 @@
+## 2026-11-20 v1703: physical PDP-6 permanent-MM refusal acceptance
+
+Three disposable 256K PDP-6 full-system guests were booted against
+DAIMOS f7e8450a (v1702) to verify permanent MM ownership refusal,
+reaper backoff and continued independent process progress. No
+production kernel checkout or authoritative MM owner was force-edited
+at runtime: tests injected a real physical pin or a wrong-owner
+descriptor only in a disposable fault-injection guest copy.
+
+* v909: 7 actual u-area MM frees rejected with `MM_ERR_BUSY` (-5), one
+  physical pin retained, 6 reaper attempts, unreaped WAIT, runnable
+  bystander and zero witness errors.
+* v1101: 7 actual u-area MM frees rejected with `MM_ERR_INVAL` (-4),
+  one wrong-owner descriptor retained, correct diagnostic owner code
+  0402, 6 reaper attempts, live bystander and zero witness errors.
+* v1125: the v1101 wrong-owner scenario plus an independently held
+  filesystem-provider lease, preserved across 80 observed provider
+  waits and the final MM-refusal inspection. The original u-area and
+  independent runnable process remained intact; zero errors.
+
+`daimos-k01-physical-owner-gate-v1703.sh` is the versioned testkit
+selection/report driver for these guests. Its single-case `invalid`
+and `foreign` selectors passed; the original v909 full-guest runner
+passed `busy` before the wrapper was finalized. These are three
+separate successful guest executions, not a claim that the combined
+`all` selector was run. Source-linked native v1098/v1102 bounded
+reaper-backoff and v887 GETTEARDOWN tests also passed.
+
+K01 retains the existing allocation-free, 16..512-tick capped retry
+clock and the controlled offline-repair/restart policy when ownership
+cannot be established. No new resident recovery table or forced MM
+release was added. Full-guest transient VM/u-area refusal followed by
+real completion, qualified PI6 interleavings and the final integrated
+cross-subsystem owner/refusal audit remain outstanding for K01.
+
 ## 2026-11-20 v1702: atomic MM gap selection and extent insertion
 
 The PDP-6 `mm_alloc_aligned_noreclaim` routine used to search the
