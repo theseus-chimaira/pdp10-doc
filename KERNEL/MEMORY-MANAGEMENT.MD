@@ -1,3 +1,45 @@
+## 2026-11-20 v1702: atomic MM gap selection and extent insertion
+
+The PDP-6 `mm_alloc_aligned_noreclaim` routine used to search the
+sorted physical MM extent table for a free aligned gap, determine its
+insertion index and publish a new owner without excluding global PI.
+An interrupt-side allocator or release could invalidate the chosen
+gap before the new descriptor was inserted, risking overlapping
+physical owners.
+
+After argument validation, the allocator now excludes global PI
+through both `mm_find_fit` and `mm_extent_insert`. It restores the
+caller's previous PI enable state for ordinary no-memory (-1),
+fragmentation (-2), descriptor capacity (-3) and success; invalid
+arguments (-4) never acquire the lock. No permanent RAM words, MM
+descriptors or owner policies are added. One additional **temporary
+stack word** holds the saved PI state at -011(17), outside the seven
+saved AC10..AC16 words at -010(17)..-2(17).
+
+The source-linked native PDP-6 `daimos-k01-alloc-publish-pi-v1702`
+regression injects an overlapping allocation at the insert boundary,
+verifies exact physical owner and descriptor count, all relevant
+refusals, both initial PI states, and preserved caller AC16. Two
+negative mutations are rejected: disabled PI exclusion and corruption
+of the saved AC16 stack word. The first implementation did mistakenly
+place the PI snapshot in saved AC16; full-path v545 immediately found
+that error. It was corrected before commit. Native v545/v548/v538
+MM-compaction/VM tests and KCC KCORE builds in both PURE modes pass.
+
+### Reviewed existing bounded recovery contract
+
+No new automatic or root-triggered MM owner release was introduced.
+The existing slot-0 `proc_finish_service_v881` and
+`proc_finish_backoff_advance_v885` provide bounded **retry frequency**
+(16, 32, 64, up to 512 clock ticks), preserving quarantined owners
+until verified release succeeds. Native v1098/v1102 tests pass. This
+does not guarantee finite completion under permanent owner corruption.
+The existing `KERNEL/OOM-FAIL-CLOSED-RECOVERY-V1185.MD` operator policy
+requires offline repair and controlled restart when exact ownership
+cannot be re-established, explicitly prohibiting fabricated completion
+or forced unpin/free. Full physical guest PI6/fault injection and the
+remaining K01 cross-subsystem audit are still outstanding.
+
 ## 2026-11-20 v1701: coherent GETTEARDOWN u-area MM diagnostic
 
 `mm_uarea_probe_v887` implements the read-only physical MM detail for
