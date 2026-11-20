@@ -1,3 +1,30 @@
+## 2026-11-20 v1713-v1716: F07 fault recovery and native K01 gates
+
+The v1713 **fault-specific** 256K PDP-6 F07 guest passed the original
+18-child RUN workload, the v1203/v1207 process/VM ownership checks,
+the independent v1349 owner-lifecycle postflight and the v1160 D6FS
+physical-media release checks. The guest reached a real HALT with
+two failed swap-in restores, two properly deferred TERM events, three
+checked BACKSTORE release calls, one exact bitmap repair and zero
+final BACKSTORE blocks in use. Independent source-linked inspection
+validated eight original resident PROCESS extents and the final MM
+owner relationships. The fault verifier rejected sixteen unsafe
+mutations. The **unfaulted** clean v1336/v1349 F07 profile is still
+a separate acceptance gate and has not been relaxed to accept faults.
+
+The v1715 consolidated native K01 source-linked acceptance suite
+passed all 33 PDP-6 cases. It retained per-case logs with the DAIMOS
+and testkit revisions and explicitly excludes full-guest acceptance.
+The v1716 structural audit checked all 26 direct mm_free call sites
+in 12 production assembler files for their reviewed typed refusal
+branches, rejecting four deleted guards and an extra unreviewed
+caller. This source-level canary complements, but cannot replace,
+the existing full-guest and negative-mutation tests.
+
+No new KCORE RAM or production MM code was added in v1713-v1716.
+K01 is not signed off until the clean F07 guest and final integrated
+ownership review are accepted.
+
 ## 2026-11-20 v1714: repaired transactional PIPE-close regression
 
 The historical `daimos-pipe-close-v870.sh` native PDP-6 test had
