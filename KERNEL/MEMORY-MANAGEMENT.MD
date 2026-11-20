@@ -1,3 +1,40 @@
+## 2026-11-20 v1707: fail-closed temporary PIPE/D6FS/TSFS MM releases
+
+The K01 source-wide `mm_free` caller audit found four more routines
+which could silently abandon the physical base of an extent that MM
+explicitly refused to free. Each owned the physical buffer only in a
+temporary stack word or scratch accumulator, rather than a durable
+filesystem or process descriptor:
+
+* `pipe_create_free`: rollback of an unpublished anonymous PIPE object
+  after FILE descriptor creation fails (MM owner 5).
+* `d6fs_mount_free`: rollback of an uninstalled read-only D6FS reader
+  after mount registration refuses (MM owner 010 octal).
+* `tsfs_read_words` successful compressed decode: release of the local
+  decoder buffer (TSFS decoder MM owner).
+* `tsfs_read_block_free`: decoder-error cleanup of that same buffer.
+
+Previously each discarded the ephemeral allocation pointer without
+checking `mm_free` for `MM_ERR_INVAL (-4)` or `MM_ERR_BUSY (-5)`.
+Returning would falsely imply the extent was retired while its only
+owning reference no longer existed. These four paths now enter the
+existing resident `proc_swap_storage_invariant_v30` HALT if release is
+refused. They do not try to force an unpin or free, and do not create a
+new persistent quarantine table. Successful frees retain their exact
+original control flow; permanent KCORE RAM consumption is unchanged.
+
+The source-linked native PDP-6
+`daimos-k01-temp-owner-free-v1707.sh` regression verifies all four
+production leaves with accepted release and independent wrong-owner
+(-4) and pinned (-5) refusals. It checks expected owner/type/base,
+normal return versus invariant stop, and rejects an unsafe mutant for
+each of the four branches. Both KCC KCORE builds, with PURE verification
+enabled and disabled, pass. A separate legacy v870 pipe-close test
+currently fails at linking because its extraction omits a later VFS
+dependency; it is not counted as passing acceptance. The strict F07
+physical swap-in bitmap-refusal test remains unaccepted after its
+independent RUN-admission failure at 6 of 18 children.
+
 ## 2026-11-20 v1705-v1706: swap fault-gate audit and EXEC MM release
 
 ### v1705: correct the test-only F07 swap-failure injection point
