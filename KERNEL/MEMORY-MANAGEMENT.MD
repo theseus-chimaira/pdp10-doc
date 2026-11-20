@@ -1,3 +1,31 @@
+## 2026-11-20 v1710: do not compact the currently executing PROCESS
+
+`mm_compact` previously tried to relocate every unpinned PROCESS
+extent, including the process whose APR mapping and instruction stream
+were active. The genuine `vm_extent_move` helper correctly refused the
+active owner with `MM_ERR_BUSY (-5)`, but the compactor remembered this
+expected immovability as a hard failure. Fragmented allocations could
+then refuse instead of proceeding to the existing bounded swap-reclaim
+stage, even if the remaining MM ownership was valid.
+
+The compactor now excludes the nonzero `proc_current_slot` before
+calling `mm_move_extent`. All other PROCESS candidates preserve their
+existing exact checked relocation; a genuine different-owner `-5`
+still fails closed. No persistent RAM or per-owner retry state is
+added. Native PDP-6 `daimos-k01-compact-current-v1710.sh` verifies the
+active-owner skip, a hard refusal from another owner and a successful
+movable owner, rejecting a mutant without the skip. Source-linked
+allocator/pressure and VM compaction regressions also pass, and both
+KCC KCORE PURE build modes pass with this change present.
+
+The subsequent diagnostic full PDP-6 F07 workload admitted and reaped
+all 18 children, up from the prior 6/18 failure, and used actual
+swap-out/swap-in. This does not constitute the strict F07 bitmap fault
+acceptance: that run's v1494 verifier observed two TERM events instead
+of the required one and five additional diagnostic errors. Exact
+failure semantics are being investigated separately, without weakening
+the verifier or claiming the complete guest passed.
+
 ## 2026-11-20 v1711: atomic swap-victim advisory MM pin lookup
 
 `mm_is_pinned` is the physical pin preflight used while selecting a
