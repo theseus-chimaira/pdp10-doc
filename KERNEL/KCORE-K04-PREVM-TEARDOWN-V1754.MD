@@ -383,3 +383,37 @@ next launch booted normally. Treat this as an unresolved host
 emulator anomaly, not proof of a guest kernel fault. Full record:
 DAIMOS design/kcore-k04-repeated-child-reuse-v1772.md,
 commit 6769687d. K04 physical refusal/multi-owner acceptance OPEN.
+
+## 2026-11-21 v1773: fatal WAIT_CHILD wakeup, PDP-6 negative control
+
+DAIMOS `6d99565a` corrects a deferred fatal-event deadlock.
+`proc_event_fatal_other_defer_term_v926` queued INT/TERM/HUP/PIPE
+without waking a sleeping `PROC_WAIT_CHILD` owner, although that
+owner's saved `proc_wait_intr_return` continuation already tests
+the fatal bits. If a child never exited, its parent's fatal event
+could never reach the private owner-stack cleanup at user return.
+Additionally `proc_wait_child` checked only ALRM before entering
+sleep, so a previously pending fatal event could suffer the same
+indefinite wait.
+
+The correction wakes WAIT_CHILD through the existing interruptible
+SLEEP-to-RUN path and checks ALRM/INT/TERM/HUP/PIPE at WAIT entry.
+Foreign FILE/MM release remains prohibited; STOP and internal EVENT
+wait semantics remain unchanged. The full production 256K PDP-6
+image and native DAS passed. `__kcore_low_end` changed from octal
+025121 to 025126, adding five resident TEXT words and zero DATA/BSS.
+
+Real dual-terminal CTY/DCS0 PDP-6 comparison: CTY USER PID 2
+entered WAIT for a blocked foreground CAT PID 5. DCS `KILL 2`
+returned successfully. Under the unchanged v1770 executable,
+repeated DCS PS still showed USER PID 2 and CAT PID 5 sleeping.
+Under v1773, DCS PS instead showed PID 2 replaced by LOGIN,
+CAT absent and PID 5 reused by PS. Both trials used isolated
+clean disk media and finished with guest HALT and D6FS CLEAN
+(v1773 PC 022471, seq=3; v1770 PC 022464, seq=11).
+
+Detailed source and physical evidence: DAIMOS
+`design/kcore-k04-fatal-wait-child-wakeup-v1773.md` (`3ee406a0`).
+The external testkits were not touched. K04 **remains OPEN** for
+actual FILE/MM refusal, simultaneous owners, clock wrap, and
+WAIT/PID release under refused ownership.
