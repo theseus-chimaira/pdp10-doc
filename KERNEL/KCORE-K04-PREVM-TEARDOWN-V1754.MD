@@ -540,6 +540,30 @@ exact first retry timing** gate. SIDL/PREVM, 17-bit clock wrap,
 FILE, HUP and dying-parent WAIT cases remain OPEN. Full evidence:
 DAIMOS `design/kcore-k04-max-delay-reset-v1778.md`.
 
+## 2026-11-21 v1780: physical SIDL VM rollback
+
+DAIMOS `ee597108` records a disposable PDP-6 image that forces
+one RUN child (PID 5) into the existing SIDL rollback path after
+VM/u-area ownership is established. Scratch-only instrumentation
+pins the child's exact VM extent with real `mm_pin`, allowing
+unchanged `vm_space_destroy` to encounter real MM refusal. After
+five discard attempts, real `mm_unpin` permits the ordinary
+rollback to finish. The injection is disabled automatically after
+the first completed rollback so normal commands can execute.
+
+Read-only SIMH monitor inspection: VM pin base 0, attempt count
+octal 005, completion all ones. The next PS reused PID 5 with
+TD/RETRY/PVM/DETAIL/ERR zero. Guest HALT PC 022536 and read-only
+D6FS CLEAN seq=3 PASS. No production source, ABI, fixed RAM or
+testkit changes. The first repeating-failure v1779 fixture was
+discarded because it prevented guest HALT; the accepted v1780
+run used fresh clean media and a one-shot failure trigger.
+
+This passes one real SIDL VM-refusal/rollback/PID-reuse scenario.
+Permanent refusal, SIDL/post-VM simultaneous ordering, PREVM EXIT,
+clock wrap, FILE/HUP and dying-parent WAIT remain OPEN. Full
+evidence: `design/kcore-k04-sidl-real-vm-pin-v1780.md`.
+
 ## 2026-11-21 v1776: actual physical MM pin/refusal/recovery
 
 K04's post-VM retry now has **real PDP-6 physical pin evidence**.
