@@ -598,3 +598,23 @@ This closes the **single physical u-area pin refusal/recovery**
 scenario only. It does not establish two independent owners,
 exact backoff progression, clock wrap, SIDL discard, HUP, FILE
 refusal, or dying-parent WAIT. K04 therefore remains OPEN.
+
+## 2026-11-21 v1781: real PREVM EXIT VM pin recovery
+
+DAIMOS `066858df` records a disposable 256K PDP-6 EXIT PREVM
+test with real `mm_pin` of the exact slot-5 VM extent immediately
+before the ordinary `vm_space_destroy` call. Four destroy attempts
+encountered pinned-extent refusal; the fifth invoked real
+`mm_unpin`, and the existing deferred finalizer completed cleanup.
+The fixture disables itself after the first successful recovery.
+
+Read-only SIMH inspection: scratch base=0, attempts=005, done=all
+ones. A subsequent PS reused PID5 with all teardown fields zero.
+Guest HALT PC 022532 and read-only D6FS CLEAN seq=3 PASS. Native
+DAS and full boot-image build PASS. No production source, fixed RAM,
+ABI or testkit changes. Evidence:
+`design/kcore-k04-prevm-exit-real-vm-pin-v1781.md`.
+
+Permanent PREVM refusal, simultaneous independent owners, clock
+wrap, FILE/HUP and dying-parent WAIT remain OPEN. The fixture does
+not measure exact retry tick intervals.
