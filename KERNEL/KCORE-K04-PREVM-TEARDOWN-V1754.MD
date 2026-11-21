@@ -207,3 +207,21 @@ This adds no permanent RAM, process slot or new user ABI. The SIDL
 no-u-area pre-VM retry remains unchanged. Native PDP-6 DAS
 assembly PASS; live overlapping-refusal, clock-wrap, WAIT/PID
 reuse and permanent-provider acceptance remain OPEN.
+
+## 2026-11-21 v1764: WAIT and HUP inconsistent-owner guards
+
+`proc_wait_status` previously checked only that a non-ZOMB child
+retained its u-area before reporting STOP/CONT. Deferred EXIT and
+unpublished RUN rollback both retain a u-area under TRANSITION;
+their old job-control report could therefore be consumed while
+terminal MM cleanup remained refused. DAIMOS `42ded8c3` excludes
+TRANSITION owners from STOP/CONT reports, without hiding them as
+children or reaping them before ZOMB. A zero u-area base is also
+rejected before the report read.
+
+The session HUP member scan likewise checked the u-area flag but
+not its base before reading session identity. An inconsistent
+zero-base member now causes session teardown failure, preserving
+the TTY owner rather than inspecting low memory and potentially
+committing an incomplete HUP. No extra resident RAM or ABI change.
+Isolated PDP-6 DAS PASS; physical K04 acceptance remains OPEN.
