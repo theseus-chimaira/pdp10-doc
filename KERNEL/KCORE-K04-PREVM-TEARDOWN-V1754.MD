@@ -127,3 +127,22 @@ that ownership. When the marks are absent, the original FILE-stage
 check runs; exact PREVM EXIT owners still outrank the stale fatal
 bit. DAIMOS `68200592` assembled with PDP-6 DAS. No ABI or
 resource-lifetime changes; physical acceptance remains OPEN.
+
+## 2026-11-21 v1760: committed PREVM fatal HUP ownership
+
+A foreign fatal event can finish FILE closure but fail on TTY or VM
+release. The failing finalizer retains TRANSITION and an exact EXIT
+FINALIZE|PREVM marker for slot-zero retry. Previously the foreign
+event path treated only VM_NONE+FINALIZE as committed delivery;
+PREVM remained reported as failed. If session HUP was retried, its
+member scanner also recognized only VM_NONE finalization, so it
+attempted another HUP on the PREVM owner. Event delivery rejects
+TRANSITION and the session leader could stay blocked indefinitely
+under a persistent provider refusal.
+
+DAIMOS `d29efc4d` makes an exact, non-DISCARD PREVM owner count as
+committed fatal delivery and skips it during later session HUP
+passes. Unmarked or pre-commit failures continue to be reported;
+no resource is freed without provider acceptance. Isolated PDP-6
+DAS assembly PASS. K04 remains OPEN for live fault-injection,
+multiple-owner, clock-wrap and WAIT/PID reuse acceptance.
