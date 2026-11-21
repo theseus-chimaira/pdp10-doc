@@ -58,6 +58,10 @@ instead of the older CTY-only harness reached LOGIN and halted at
 the same PC.  Preflight D6FS was CLEAN; the halted writable copy
 was DIRTY afterward.  This is an unresolved root-I/O acceptance
 blocker, not evidence of a DSH instruction-size or ABI failure.
+An attempted full-image comparison using the previous installed KCC
+could not reach a guest: its build failed in native DAS with
+`das2: malformed private DASIR2 phase state`.  Therefore no old/new
+compiler guest-behavior equivalence is claimed for this root failure.
 The tests above establish only the stated ABI and image gates; they
 do not establish a complete 256K login/DSH boot or 32K low-memory
 acceptance.
