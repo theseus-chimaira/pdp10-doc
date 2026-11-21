@@ -365,3 +365,21 @@ multi-owner progress, retry clock wrap, deferred HUP,
 orphan WAIT/PID reuse and owner-preserving operator recovery.
 No external testkit was run or modified and no permanent kernel
 RAM was added by the bootstrap packaging corrections.
+
+## 2026-11-21 v1772: repeated normal child reuse
+
+Using the clean v1770 256K PDP-6 image, a live ROOT/DSH session
+executed five consecutive TRUE children successfully. The next
+PS ran as PID 5 and showed no TD, RETRY, PVM, DETAIL or ERR
+ownership for the normal processes. This is evidence of normal
+child completion and slot reuse, **not** reuse while an MM/FILE
+provider refuses teardown. Guest HALT at PC 022464 completed;
+read-only D6FS check reported superblock 742, seq=7, CLEAN,
+179196 blocks and 360 FCBs.
+
+The first emulator launch in this session died with host signal
+11 after TTY LOADED; the filesystem was still CLEAN, and the
+next launch booted normally. Treat this as an unresolved host
+emulator anomaly, not proof of a guest kernel fault. Full record:
+DAIMOS design/kcore-k04-repeated-child-reuse-v1772.md,
+commit 6769687d. K04 physical refusal/multi-owner acceptance OPEN.
