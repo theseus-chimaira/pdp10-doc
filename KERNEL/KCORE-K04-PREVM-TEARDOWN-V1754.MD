@@ -63,3 +63,26 @@ reuse remain required before K04 can close. Automatic OOM killing
 (K03) remains disabled.
 
 Source detail: `DAIMOS/design/kcore-k04-prevm-diagnostics-v1754.md`.
+
+## 2026-11-21 v1755: diagnostic precedence and first retry epoch
+
+Two source-path correctness defects were corrected in DAIMOS
+`8b32e91e` without changing ownership, memory allocation or the
+legacy query contract:
+
+1. A fatal APR/post-commit EXEC owner retains `PROC_FATAL_CLOSE_BIT`
+   after its FILE/session close completes and EXIT publishes
+   `FINALIZE|PREVM`. If the subsequent VM destroy refuses, the
+   opt-in query must report stage 3 with PVM=1, not a stale FILE
+   stage. The PREVM check now precedes the FILE bit for opt-in calls
+   only. Unmarked private FILE retries remain stage 1; legacy
+   queries retain their previous precedence.
+2. A newly refused SIDL rollback formerly initialized its shared
+   020-octal-tick retry interval using an earlier owner's stale
+   epoch. It now records the current masked `proc_timer_clock`,
+   so its first delay starts at the actual refusal. Already-pending
+   owners preserve their shared backoff.
+
+Isolated native PDP-6 DAS assembly PASS; physical fault injection
+and the ongoing testkit sweep remain separate. K04 stays OPEN.
+See `DAIMOS/design/kcore-k04-retry-diagnostic-corrections-v1755.md`.
