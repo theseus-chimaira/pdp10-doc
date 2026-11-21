@@ -146,3 +146,26 @@ passes. Unmarked or pre-commit failures continue to be reported;
 no resource is freed without provider acceptance. Isolated PDP-6
 DAS assembly PASS. K04 remains OPEN for live fault-injection,
 multiple-owner, clock-wrap and WAIT/PID reuse acceptance.
+
+## 2026-11-21 v1761: session membership after VM teardown
+
+The shared session scanner previously counted a process that had
+committed VM destruction but still retained its pinned u-area as a
+live session participant. If process A reached post-VM FINALIZE
+while B remained in the session, A could leave the TTY intact.
+When B later exited, it could see A as a member and skip TTY
+retirement; A's later u-area retry never revisited TTY cleanup.
+This path also applies to unpublished RUN rollback with retained
+post-VM MM ownership.
+
+DAIMOS `95fd5e65` makes `proc_tty_session_has` exclude only an
+exact TRANSITION+VM_NONE+FINALIZE owner **without PREVM**. PREVM
+continues to count because its TTY cleanup may still require retry.
+The post-VM process still retains its u-area, slot and identity
+until MM accepts its release. An inconsistent UAREA flag with a
+zero base now returns -1 rather than reading low memory: TTY release
+conservatively retains ownership, while SETFG rejects that error.
+
+No additional persistent state or forced release. Isolated PDP-6
+DAS assembly PASS; the ordered A/B TTY case and other physical K04
+acceptance scenarios remain unverified. K04 stays OPEN.
