@@ -248,3 +248,22 @@ pending marker from the existing clock word.
 No added resident RAM, scheduler ABI or forced provider release.
 Native PDP-6 DAS PASS; physical concurrent-refusal, wraparound,
 WAIT/PID reuse and permanent-owner acceptance remain OPEN.
+
+## 2026-11-21 v1766: queued HUP is not completed HUP
+
+The foreign fatal-event API returns zero when HUP is queued for
+an owner with a suspended private executive continuation. The
+session leader previously treated this as completed HUP delivery,
+allowing controlling-TTY retirement while the member still owned
+open FILE entries, VM, and its u-area. This violated the session
+teardown ordering requirement.
+
+DAIMOS `047a4ac1` verifies the target after `proc_event_apply`.
+No-u-area terminal publication succeeds; a retained u-area must
+have TRANSITION and an exact FINALIZE, non-DISCARD marker (with
+PREVM if VM remains live). An otherwise still-live member leaves
+the session teardown unsuccessful, retaining the TTY and the
+leader's private-stack retry owner. Pending HUP coalesces until
+the target can complete it; the general asynchronous event-send
+contract is unchanged. No new permanent RAM. Isolated PDP-6 DAS
+PASS; physical deferred-HUP and multi-owner acceptance OPEN.
