@@ -330,3 +330,38 @@ versioned `$TMPDIR` build root passed, including the five Stage-1
 artifacts. This is a full-system compile/build gate, **not** a
 booted or fault-injected K04 acceptance result. No testkit run,
 permanent RAM increase or KCORE size optimization was performed.
+
+## 2026-11-21 v1770: production boot and clean reboot smoke
+
+The first fresh 256K PDP-6 DSK boot-image build after v1769
+assembled and linked KCORE but failed native KCC source staging.
+DAIMOS staging requested unversioned startup/runtime object names,
+whereas KCC installed `crt0-v1.dobj`, `daimos-bootstrap-v1.dobj`,
+and `syscall-helpers-v1.dobj`. DAIMOS `c1155cd6` makes the
+consumer use those authoritative installed names. KCC `fe6dff8`
+also installs the previously omitted
+`runtime/fp36-conversions-v1750.a` native bootstrap archive.
+The repaired KCC `make install-native` and fresh DAIMOS image build
+both completed successfully.
+
+Real Open SIMH PDP-6 smoke: DAIMON V0.5, 256K, 60-Hz clock,
+D6FS LOADED and INIT V1 reached `LOGIN:`. ROOT entered DSH V1;
+PS showed TD/RETRY/PVM/DETAIL/ERR columns with normal zero
+teardown state. A TRUE child returned normally, followed by PS.
+Guest HALT completed at octal `022464`. Read-only D6FS checking
+reported superblock 742 seq=3 CLEAN (179196 blocks, 360 FCBs).
+A clean reboot repeated INIT, ROOT login, PS, guest HALT and D6FS
+CLEAN seq=5. Detailed evidence: DAIMOS
+`design/kcore-k04-native-boot-smoke-v1770.md` (`de20f1be`).
+
+An earlier host-forced SIMH stop at LOGIN left the disposable
+D6FS root DIRTY (superblock 743 seq=2); a subsequent boot
+refused it with `?RT` as specified by root validation. Fresh
+media restored CLEAN seq=1, and guest-controlled shutdowns
+preserved clean media thereafter. This is not K04 fault injection.
+
+K04 remains OPEN for refused FILE/MM owners, independent
+multi-owner progress, retry clock wrap, deferred HUP,
+orphan WAIT/PID reuse and owner-preserving operator recovery.
+No external testkit was run or modified and no permanent kernel
+RAM was added by the bootstrap packaging corrections.
