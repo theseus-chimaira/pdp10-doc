@@ -492,6 +492,12 @@ The separate initial 020-tick delay, SIDL/PREVM orderings, clock
 wrap, FILE refusal, HUP and dying-parent WAIT remain OPEN.
 Details: `design/kcore-k04-two-physical-owners-v1777.md`.
 
+The same guest subsequently completed PID 5's twenty-fourth
+cleanup attempt: both fixture pin bases were zero, both completion
+flags were all ones, and CTY's foreground TRUE returned. Guest
+HALT PC 022566 and final read-only D6FS CLEAN seq=3 PASS.
+DAIMOS evidence completed in `a22dd30d`.
+
 ## 2026-11-21 v1776: actual physical MM pin/refusal/recovery
 
 K04's post-VM retry now has **real PDP-6 physical pin evidence**.
