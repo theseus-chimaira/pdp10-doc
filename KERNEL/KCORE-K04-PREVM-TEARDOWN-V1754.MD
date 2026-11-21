@@ -708,3 +708,39 @@ Only disposable generated scratch sources and BSS were changed;
 no production KCORE, fixed RAM, ABI or testkit edits. Reverse
 SIDL-A/post-VM-B ordering, SIDL/PREVM combinations, clock wrap,
 FILE/HUP, dying-parent WAIT and permanent refusal remain OPEN.
+
+## 2026-11-21 v1785: unpublished SIDL A with post-VM B PASS
+
+DAIMOS `design/kcore-k04-sidl-postvm-mixed-v1785.md` records a
+live physical MM test reversing the v1784 ordering. PID 5
+failed the first RUN hierarchy step and remained an unpublished
+SIDL rollback owner with its exact VM extent physically pinned
+using real `mm_pin`; the owner was not prematurely reused even
+though the failed CTY `TRUE` returned to its shell. Once A's
+shared retry delay saturated at octal `01000`, an independent
+PID 6 `TRUE` exited through normal post-VM u-area cleanup with
+its own real MM pin.
+
+Read-only SIMH monitor snapshots show A's pinned VM base
+`760000`, its pre-B pending retry word `401000007063`, and all
+B fixture words initially zero. B's first failure reset the
+shared word to `400020007120`. B's first and second real
+MM free attempt clocks were `007120` and `007140` octal,
+exactly `020` (16 decimal) qualified ticks apart. B unpinned
+on attempt `005`; DCS `PS` reused PID 6 with all teardown
+diagnostics zero while A remained unpublished SIDL (`S=1`,
+`TD=3`, `RETRY=512`, `DETAIL=2051`).
+
+A ultimately unpinned on attempt `030` (24 decimal). Both
+exact MM base words were zero, both real MM-unpin completion
+flags were set, and the pending retry bit cleared. CTY `PS`
+reused PID 5 with zero teardown fields. Guest HALT PC 022616,
+normal SIMH exit and final read-only D6FS CLEAN seq=3 PASS.
+Native DAS/full 256K image build and initial D6FS CLEAN seq=1
+also PASS. All instrumentation and BSS were disposable;
+production source, fixed RAM, ABI and testkit unchanged.
+
+Both physical **post-VM A / SIDL B** (v1784) and **SIDL A /
+post-VM B** (v1785) orderings now PASS. SIDL/PREVM ordering,
+17-bit clock wrap, FILE/HUP, dying-parent WAIT and permanent
+refusal remain OPEN; K04 as a whole remains OPEN.
