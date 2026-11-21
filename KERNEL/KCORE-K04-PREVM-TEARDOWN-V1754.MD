@@ -225,3 +225,26 @@ zero-base member now causes session teardown failure, preserving
 the TTY owner rather than inspecting low memory and potentially
 committing an incomplete HUP. No extra resident RAM or ABI change.
 Isolated PDP-6 DAS PASS; physical K04 acceptance remains OPEN.
+
+## 2026-11-21 v1765: reaper retry phase ordering
+
+The first-refusal registration introduced in v1763 reset a new
+owner's shared retry interval to 020 octal ticks. But when that
+registration happened *inside* a slot-zero reaper scan, the idle
+caller then invoked `proc_finish_backoff_advance_v885` after the
+scan, immediately doubling the freshly registered 020 interval
+to 040. This could affect a PREVM owner which first encounters
+MM refusal during reaping, or an owner that crosses from PREVM to
+post-VM u-area retry within the scan.
+
+DAIMOS `419ed004` advances the already pending owners' interval
+**before** servicing the scan, under the existing PI6 inhibition.
+This lets an owner first registered during the scan preserve its
+020 interval and current epoch; older persistent failures continue
+to back off at 020, 040, 0100 ... 01000 octal ticks. If no owner
+remains pending, the reaper clears the unused delay as well as the
+pending marker from the existing clock word.
+
+No added resident RAM, scheduler ABI or forced provider release.
+Native PDP-6 DAS PASS; physical concurrent-refusal, wraparound,
+WAIT/PID reuse and permanent-owner acceptance remain OPEN.
