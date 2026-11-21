@@ -267,3 +267,27 @@ leader's private-stack retry owner. Pending HUP coalesces until
 the target can complete it; the general asynchronous event-send
 contract is unchanged. No new permanent RAM. Isolated PDP-6 DAS
 PASS; physical deferred-HUP and multi-owner acceptance OPEN.
+
+## 2026-11-21 v1767: dying INIT cannot adopt orphan children
+
+The orphan reparenting path formerly selected INIT (slot 1) if
+its state was anything except FREE/ZOMB. A deferred EXIT retains
+its scheduler state and u-area while the MM provider refuses
+release, and a fatal FILE-close owner can retain a private stack
+before TRANSITION publication. Neither can execute WAIT again.
+If another parent terminated during this period, its children
+were assigned to this nonreturning INIT, potentially leaving
+completed zombie slots unreapable under persistent refusal.
+
+DAIMOS `821d8be5` allows INIT adoption only for RUN/SLEEP/STOP
+with a flagged nonzero u-area, no TRANSITION and no fatal FILE
+close. Otherwise the existing parentless-orphan fallback handles
+the children: live processes become parentless and orphan zombies
+are immediately reaped. Normal live INIT adoption is unchanged.
+The parent CHLD notifier now also validates u-area flag and base
+before accessing the control word, avoiding a low-core write on
+an invalid parent.
+
+No permanent RAM, process-table layout or ABI change. Isolated
+PDP-6 DAS PASS; real orphan/INIT refusal, WAIT/PID reuse and
+recovery acceptance remain OPEN. External testkit untouched.
