@@ -291,3 +291,27 @@ an invalid parent.
 No permanent RAM, process-table layout or ABI change. Isolated
 PDP-6 DAS PASS; real orphan/INIT refusal, WAIT/PID reuse and
 recovery acceptance remain OPEN. External testkit untouched.
+
+## 2026-11-21 v1768: late child EXIT under dying parent
+
+v1767 protected orphan adoption when a parent *successfully*
+finished, but a child could still exit while its parent retained
+TRANSITION+FINALIZE (or an irreversible fatal FILE-close owner)
+under provider refusal. The native `proc_finish_slot` published
+the child as ZOMB under that now-nonreturning parent, and
+`proc_notify_parent` could queue CHLD into the parent's preserved
+u-area. Indefinite refusal left the child's PID and slot pinned
+even though the child's own resources had been completely released.
+
+DAIMOS `0a15e82b` shares one WAIT-capability check between INIT
+adoption and child terminal publication. Eligible parents are
+RUN/SLEEP/STOP with a flagged nonzero u-area, without TRANSITION
+or fatal FILE-close ownership. If a child's original parent is
+ineligible, a healthy INIT receives the zombie. If INIT is also
+ineligible, the child is reclaimed immediately instead of being
+published as an uncollectable zombie. The notifier now suppresses
+CHLD and WAIT wakeup to irreversible teardown owners.
+
+No new resident RAM fields or process-table ABI; isolated native
+PDP-6 DAS PASS. Physical refused-parent, healthy-INIT fallback,
+both-parents-dying, WAIT/PID reuse and clock-wrap tests remain OPEN.
