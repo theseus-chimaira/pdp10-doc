@@ -100,11 +100,13 @@ fault injection remains outstanding. K04 remains OPEN.
 ## 2026-11-21 v1757: pre-VM zero-base guard
 
 The v1756 guard covered the VM_NONE finalizer path, but the
-non-NONE VM PREVM path still dereferenced `PROC_FINALIZE_OFFSET`
-before reaching that check. DAIMOS `0f7a783f` now rejects a zero
-stable-u-area base before the PREVM marker read, preserving the
-shared pending owner and bounded retry. This is defensive descriptor
-validation, not a claim that a valid execution creates a zero base.
+non-NONE VM PREVM path had a zero-base branch that skipped the
+owner rather than registering an unsuccessful release. That old
+branch **already prevented the low-memory dereference**. DAIMOS
+`0f7a783f` changed SKIP to FAILED so an inconsistent stable-u-area
+owner does not silently clear the shared pending bit. This is
+defensive descriptor validation, not evidence that a valid path
+creates a zero base.
 Isolated PDP-6 DAS assembly PASS; physical acceptance outstanding.
 
 ## 2026-11-21 v1758: EXIT versus unpublished DISCARD owner
@@ -182,3 +184,26 @@ branch. A rollback owner cannot satisfy fatal HUP completion;
 ordinary delivery reports its TRANSITION state as busy, retaining
 the session leader's retry owner. Valid committed EXIT owners are
 still skipped. Isolated PDP-6 DAS PASS; physical acceptance OPEN.
+
+## 2026-11-21 v1763: first-refusal owner arming under shared pending
+
+`proc_exit_current` publishes FINALIZE|PREVM before attempting to
+release VM resources. With another owner already pending, the old
+registration helper interpreted that prepublished marker and the
+global pending bit as an existing refusal. A newly failed EXIT
+owner therefore inherited the old owner's (possibly saturated)
+retry delay and epoch, rather than starting a 020-octal-tick delay.
+
+DAIMOS `36859b24` assigns an armed marker to each FINALIZE owner
+upon its first failed release. The bit comes from the otherwise
+exclusive swapped-RUN retry-tag field (bit 32 of existing u-area
+word 067); it is interpreted as armed only when FINALIZE is set.
+Unarmed owners reset the shared retry clock to the present epoch
+and 020-octal-tick delay, even if another owner is pending. Armed
+owners preserve the current backoff on further failures. The swap
+and finalization lifetimes cannot coexist in one process.
+
+This adds no permanent RAM, process slot or new user ABI. The SIDL
+no-u-area pre-VM retry remains unchanged. Native PDP-6 DAS
+assembly PASS; live overlapping-refusal, clock-wrap, WAIT/PID
+reuse and permanent-provider acceptance remain OPEN.
