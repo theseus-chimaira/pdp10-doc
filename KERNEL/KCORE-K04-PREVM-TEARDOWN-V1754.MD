@@ -445,6 +445,32 @@ MM pin accounting or precise retry timing. K04 remains OPEN for
 physical pin, multiple independent owners, clock wrap, FILE
 refusal, and HUP acceptance.
 
+## 2026-11-21 v1776: actual MM extent pin and deferred release
+
+DAIMOS `7f179594` records a live Open SIMH PDP-6 test with a
+scratch-only assembled `proc_uarea_release` fixture. For PID 5,
+the fixture calls real `mm_pin` on the descriptor's owned u-area,
+then invokes the ordinary `mm_free` on each cleanup attempt. It
+checks the same base and calls real `mm_unpin` on attempt ten.
+No provider return-code substitution, direct MM extent metadata
+edit, production source change or external testkit edit was used.
+
+With CTY foreground TRUE blocked, DCS PS observed PID 5 retained
+in teardown (TD=2, RETRY=512, PVM=0, DETAIL=6). Read-only SIMH
+inspection showed the same pinned u-area base 054377 through
+release counts 5, 6, 7 and 9. After real unpin, the CTY parent
+resumed and DCS PS reused PID 5 with all teardown diagnostics
+zero. Final fixture memory: base=0, attempts=octal 012 (ten),
+done=all ones. Guest HALT PC 022527 and D6FS CLEAN seq=3 PASS.
+
+The scratch KCORE low-end 025167 includes the test code and three
+test words; it is **not** a production memory-size change.
+The physical pin test demonstrates owner preservation, retry and
+eventual real provider release, but does not close independent
+multi-owner, clock wrap, FILE refusal, HUP or other-stage gates.
+K04 remains OPEN. Full test evidence is in DAIMOS
+`design/kcore-k04-physical-mm-pin-v1776.md`.
+
 ## 2026-11-21 v1776: actual physical MM pin/refusal/recovery
 
 K04's post-VM retry now has **real PDP-6 physical pin evidence**.
