@@ -498,6 +498,48 @@ flags were all ones, and CTY's foreground TRUE returned. Guest
 HALT PC 022566 and final read-only D6FS CLEAN seq=3 PASS.
 DAIMOS evidence completed in `a22dd30d`.
 
+## 2026-11-21 v1778: first refusal resets saturated physical owner delay
+
+DAIMOS `ea875bbf` records a third, uncontaminated real PDP-6
+two-owner physical-pin trial that closes the remaining **maximum
+shared-delay / new-owner first-refusal timing** scenario. The
+disposable v1778 image keeps the real `mm_pin`, `mm_free` and
+`mm_unpin` paths for both post-VM u-areas. Four scratch-only BSS
+snapshots capture the retry word before and after B's first
+refusal and the qualified APR clock at B's first and second
+release attempts. Production KCORE and the testkit are unchanged.
+
+CTY foreground TRUE pinned owner A (PID 5) until a read-only
+SIMH examine directly confirmed a saturated shared retry word
+`401000005134` (octal). No DCS child ran before this point;
+PID 6's base, counter, completion and timing snapshots were all
+zero. The DCS TRUE command then started owner B (PID 6).
+Read-only guest memory captured:
+
+    B before first refusal    401000005134  ; pending + 01000
+    B immediately after mark  400020005477  ; pending + 020
+    B first refusal clock     000000005477
+    B second release clock    000000005517
+
+The second minus first clock is exactly octal 020 ticks (16
+decimal). Therefore the real first B retry was not delayed by
+A's saturated 01000 interval. B's fifth real release attempt
+unpinned/freed its u-area, its parent resumed, and DCS PS reused
+PID 6 with teardown diagnostics zero. The same PS still showed
+owner A retained with TD=2, RETRY=512 and DETAIL=6. Operator
+guest HALT PC 022607 and read-only D6FS CLEAN seq=7 PASS.
+
+Two preliminary trials used DCS PS to check A's delay, but PS
+itself was PID 6 and prematurely activated B's fixture. They
+correctly measured a 0400 -> 020 reset but are not accepted as
+maximum-delay tests. The final trial avoided that harness error
+by using only read-only SIMH examine before launching B.
+
+This closes K04's **two post-VM owner maximum-delay reset and
+exact first retry timing** gate. SIDL/PREVM, 17-bit clock wrap,
+FILE, HUP and dying-parent WAIT cases remain OPEN. Full evidence:
+DAIMOS `design/kcore-k04-max-delay-reset-v1778.md`.
+
 ## 2026-11-21 v1776: actual physical MM pin/refusal/recovery
 
 K04's post-VM retry now has **real PDP-6 physical pin evidence**.
