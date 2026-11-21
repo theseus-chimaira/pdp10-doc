@@ -71,3 +71,15 @@ transitions but no permanent data. Further RAM/code-size analysis
 should quantify the increment before the strict 32K KCORE budget
 can be accepted. The other short MM PI masks and K04 permanent
 provider refusal policy remain separate open work.
+
+Direct native DAS object comparison against the preceding DAIMOS
+`4c73bcb0` source, using identical assembler options, quantifies
+the unfurled code-size cost: `mm_pdp6.s` text increases from 857 to
+862 words (+5), and `vm_pdp6.s` from 643 to 666 words (+23).
+Combined, the two source objects require **28 more executable words**;
+their data and BSS word counts are unchanged (MM data=1/BSS=6,
+VM data=0/BSS=1). This is an object-level comparison, not a claim
+that the fully folded KCORE image increases by exactly 28 words.
+The accepted full-profile KCORE DXR currently reports image `024227`
+and BSS `000415` (octal). The separate strict 32K system fit remains
+open despite this successful 256K execution.
