@@ -471,6 +471,27 @@ multi-owner, clock wrap, FILE refusal, HUP or other-stage gates.
 K04 remains OPEN. Full test evidence is in DAIMOS
 `design/kcore-k04-physical-mm-pin-v1776.md`.
 
+## 2026-11-21 v1777: two independent real MM-pinned owners
+
+DAIMOS `37bf2680` records a disposable PDP-6 image with two
+independent post-VM owners pinned through the actual `mm_pin`
+provider. PID 5 remains pinned for 24 cleanup attempts; PID 6
+is released by real `mm_unpin` on its fifth attempt. Neither
+production kernel source nor the external testkit is modified.
+
+Two ROOT/DSH terminals ran foreground TRUE. Read-only SIMH
+inspection initially showed PID 5 base 054441 at attempt 9 and
+PID 6 base 055051 at attempt 4, both still pinned. PID 6 then
+unpin/released, and its DCS parent resumed while PID 5 remained
+pinned. Subsequent PS reused PID 6 with zero teardown diagnostics,
+while PID 5 retained TD=2, RETRY=512, DETAIL=6. This is a
+**physical independent-owner progress PASS**, not merely a
+synthetic MM_ERR_BUSY return.
+
+The separate initial 020-tick delay, SIDL/PREVM orderings, clock
+wrap, FILE refusal, HUP and dying-parent WAIT remain OPEN.
+Details: `design/kcore-k04-two-physical-owners-v1777.md`.
+
 ## 2026-11-21 v1776: actual physical MM pin/refusal/recovery
 
 K04's post-VM retry now has **real PDP-6 physical pin evidence**.
