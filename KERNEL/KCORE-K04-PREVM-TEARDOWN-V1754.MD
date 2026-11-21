@@ -682,3 +682,29 @@ This closes both physical **PREVM A/post-VM B** (v1782) and
 kernel source, fixed RAM, ABI or external testkit changes.
 SIDL mixed-stage ordering, clock wrap, FILE/HUP and dying-parent
 WAIT remain OPEN; K04 itself is not closed.
+
+## 2026-11-21 v1784: post-VM A with unpublished SIDL B PASS
+
+DAIMOS `design/kcore-k04-postvm-sidl-mixed-v1784.md` documents
+a live 256K PDP-6 two-terminal test. PID 5 remained physically
+pinned in post-VM u-area teardown with its shared retry delay
+saturated at octal `01000`. The first PID 6 RUN was rejected
+on the original hierarchy rollback path; the exact SIDL VM
+extent was pinned using real `mm_pin` before the unmodified
+`vm_space_destroy` call. The first SIDL refusal reset the shared
+retry word from `401000004366` to `400020004471`. Its first
+and second actual destroy attempt clocks were octal `004471`
+and `004511`, exactly `020` (16 decimal) ticks apart.
+
+The SIDL VM was unpinned on attempt `005` and the unpublished
+slot was safely reused by DCS PS with zero teardown fields,
+while A remained TD=2 RETRY=512 DETAIL=6. A later unpinned on
+attempt `030`; CTY PS reused PID 5 with zero teardown fields.
+Both exact MM bases were zero and the shared pending retry flag
+cleared. Guest HALT PC 022617, read-only D6FS CLEAN seq=3,
+native DAS and full-image build PASS.
+
+Only disposable generated scratch sources and BSS were changed;
+no production KCORE, fixed RAM, ABI or testkit edits. Reverse
+SIDL-A/post-VM-B ordering, SIDL/PREVM combinations, clock wrap,
+FILE/HUP, dying-parent WAIT and permanent refusal remain OPEN.
