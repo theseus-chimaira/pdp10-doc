@@ -30,3 +30,16 @@ The permanent wrong-owner result intentionally does not promise
 automatic reclamation of unreleasable provider resources; that is
 K04 policy. This acceptance also does not close the 32K RAM budget
 or the separate default D6FS-root interactive login issue.
+
+## Post-PI6 allocator fix verification (v1743)
+
+The full three-guest K03 matrix was rerun against DAIMOS `03dcb0e9`
+after the PI6-only MM allocation change. All three gates passed again.
+The complete K01 native suite passed 33/33 tests, including the new
+PI6-only allocator test. The previously blocked full 256K D6FS ROOT
+login/DSH/TRUE/HALT/CLEAN guest also passed; see
+`MM-PI6-ALLOCATION-DCT-V1742.MD`. Exact post-change physical
+transcript SHA256 digests are in daimos-testkit report
+`daimos-k03-post-pi6-accept-v1743.md` (commit `ea27f7f`).
+The older root-login blocker statement above describes the original
+v1739 state, not the current result. K04 and strict 32K fit remain open.
