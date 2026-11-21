@@ -444,3 +444,38 @@ and subsequent owner release on the running PDP-6, **not** actual
 MM pin accounting or precise retry timing. K04 remains OPEN for
 physical pin, multiple independent owners, clock wrap, FILE
 refusal, and HUP acceptance.
+
+## 2026-11-21 v1776: actual physical MM pin/refusal/recovery
+
+K04's post-VM retry now has **real PDP-6 physical pin evidence**.
+A disposable v1773-derived 256K kernel contained a source-level
+test-only fixture within `proc_uarea_release` for PID 5. The
+fixture called the authoritative `mm_pin(uarea_base)` before
+the unmodified `mm_free(base, MM_TYPE_KERNEL_DYNAMIC, 01000+PID)`
+operation, then retained that pin through ten release attempts
+before calling the real `mm_unpin`. There was no substitute
+MM_ERR_BUSY result and no production source change. The three
+additional test state words are absent from production KCORE.
+
+While the CTY shell waited for foreground TRUE, DCS0 `PS`
+showed PID 5, TD=2, RETRY=512, DETAIL=6, with the slot still
+allocated. Detail 6 is stage 2 plus one physical MM pin shifted
+two bits, matching `SYS_TEARDOWN_MM_PINS`. Read-only SIMH memory
+inspection captured u-area base octal 054424, attempt counter
+octal 010 (eight) and incomplete flag zero. An additional PS
+still showed the pinned deferred owner; no premature PID reuse.
+
+After the tenth real release attempt, `mm_unpin` succeeded,
+ordinary `mm_free` completed, and the parent resumed. DCS PS
+reused PID 5 and showed all teardown fields zero. The final
+read-only fixture snapshot showed base zero, counter octal 012
+and completion flag all ones. Guest HALT PC 022527 completed,
+and read-only D6FS check reported CLEAN seq=3, 179196 blocks,
+360 FCBs.
+
+The full physical acceptance record is in DAIMOS
+`design/kcore-k04-physical-uarea-pin-v1776.md` (`6af842d9`).
+This closes the **single physical u-area pin refusal/recovery**
+scenario only. It does not establish two independent owners,
+exact backoff progression, clock wrap, SIDL discard, HUP, FILE
+refusal, or dying-parent WAIT. K04 therefore remains OPEN.
