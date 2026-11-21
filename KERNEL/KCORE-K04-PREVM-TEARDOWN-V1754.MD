@@ -417,3 +417,30 @@ Detailed source and physical evidence: DAIMOS
 The external testkits were not touched. K04 **remains OPEN** for
 actual FILE/MM refusal, simultaneous owners, clock wrap, and
 WAIT/PID release under refused ownership.
+
+## 2026-11-21 v1774: real PDP-6 post-VM MM_ERR_BUSY recovery
+
+An isolated v1773 PDP-6 boot image was subjected to a controlled
+SIMH instruction substitution at `proc_uarea_release`: octal
+013616 originally `PUSHJ 17,mm_free` (`260740002316`) was
+temporarily changed to `PUSHJ 17,kret_neg5` (`260740004715`).
+This returns typed `MM_ERR_BUSY` only for u-area release, leaving
+VM and other MM free operations unchanged. The production source,
+boot binary, and external testkit were not modified.
+
+The DCS ROOT shell ran foreground TRUE and remained blocked.
+SIMH inspection found child PID 5 with TRANSITION, live u-area
+054363, VM_SPACE_NONE, and FINALIZE+ARM word 067 (`440000000000`).
+After the APR clock advanced from octal 012752 to 014026
+(octal 01054, 556 decimal ticks), the same owner remained
+quarantined. Restoring the exact `PUSHJ 17,mm_free` instruction
+allowed the pending reaper retry to complete. The shell returned,
+and PS reused PID 5 with TD/RETRY/PVM/DETAIL/ERR all zero.
+Guest HALT PC 022471 and D6FS CLEAN seq=5 PASS.
+
+Evidence: DAIMOS `design/kcore-k04-postvm-refusal-simh-v1774.md`
+(`668d39f9`). This verifies synthetic post-VM provider refusal
+and subsequent owner release on the running PDP-6, **not** actual
+MM pin accounting or precise retry timing. K04 remains OPEN for
+physical pin, multiple independent owners, clock wrap, FILE
+refusal, and HUP acceptance.
