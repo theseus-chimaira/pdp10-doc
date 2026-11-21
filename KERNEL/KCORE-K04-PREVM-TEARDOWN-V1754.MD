@@ -618,3 +618,34 @@ ABI or testkit changes. Evidence:
 Permanent PREVM refusal, simultaneous independent owners, clock
 wrap, FILE/HUP and dying-parent WAIT remain OPEN. The fixture does
 not measure exact retry tick intervals.
+
+## 2026-11-21 v1782: independent mixed PREVM/post-VM MM owners
+
+DAIMOS `design/kcore-k04-mixed-prevm-postvm-v1782.md` records
+one live 256K PDP-6 acceptance for two **different** teardown
+stages. Owner A (PID 5) held its exact PREVM VM extent via real
+`mm_pin` across 24 retries. Once A was saturated at octal
+`01000` ticks, owner B (PID 6) independently pinned its post-VM
+u-area extent and encountered real `mm_free` MM_ERR_BUSY.
+
+Read-only SIMH observation before B ran: A pending retry word
+`401000010110`, A VM base `760000`, and every B fixture word
+zero. After B's first refusal, the retry word was
+`400020010154`; B's first and second clocks were octal
+`010154` and `010174` (exactly `020`, 16 decimal ticks).
+The second owner unpinned on its fifth attempt and DCS PS reused
+PID 6, while A remained PREVM (TD=3, PVM=1, RETRY=512).
+
+Finally A unpinned on attempt `030` octal (24 decimal), the
+shared retry pending state cleared, and CTY PS reused PID 5
+with all teardown diagnostics zero. Guest HALT PC 022612 and
+read-only D6FS CLEAN seq=3 passed. Native DAS/full image build
+passed. All instrumentation and BSS were confined to a
+disposable copy; production code, ABI, fixed RAM and external
+testkit did not change.
+
+This passes **PREVM A -> post-VM B** ordering, exact fresh B
+retry timing, B completion before A, and eventual independent
+release of both. Reverse **post-VM A -> PREVM B** and SIDL B
+ordering remain OPEN, along with clock wrap, FILE/HUP and
+dying-parent WAIT.
