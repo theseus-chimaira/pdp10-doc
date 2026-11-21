@@ -96,3 +96,13 @@ pending state and bounded retry instead of reading low memory or
 being silently treated as completed. Valid owners are unchanged.
 DAIMOS `6c1b3478` assembled with the native PDP-6 DAS tool; physical
 fault injection remains outstanding. K04 remains OPEN.
+
+## 2026-11-21 v1757: pre-VM zero-base guard
+
+The v1756 guard covered the VM_NONE finalizer path, but the
+non-NONE VM PREVM path still dereferenced `PROC_FINALIZE_OFFSET`
+before reaching that check. DAIMOS `0f7a783f` now rejects a zero
+stable-u-area base before the PREVM marker read, preserving the
+shared pending owner and bounded retry. This is defensive descriptor
+validation, not a claim that a valid execution creates a zero base.
+Isolated PDP-6 DAS assembly PASS; physical acceptance outstanding.
