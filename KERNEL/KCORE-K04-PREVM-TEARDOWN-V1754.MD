@@ -106,3 +106,14 @@ stable-u-area base before the PREVM marker read, preserving the
 shared pending owner and bounded retry. This is defensive descriptor
 validation, not a claim that a valid execution creates a zero base.
 Isolated PDP-6 DAS assembly PASS; physical acceptance outstanding.
+
+## 2026-11-21 v1758: EXIT versus unpublished DISCARD owner
+
+The foreign fatal-event path and the slot-zero reaper both invoke
+`proc_finish_slot`. Previously its TRANSITION resume check accepted
+any FINALIZE marker, including FINALIZE|DISCARD from an unpublished
+RUN rollback. The reaper ordinarily routes DISCARD to
+`proc_slot_discard`, but the EXIT entry point lacked that guard.
+DAIMOS `72ca8a9c` rejects DISCARD at EXIT resume, before VM/u-area
+release or zombie publication. Isolated PDP-6 DAS assembly PASS;
+physical acceptance remains outstanding and K04 stays OPEN.
