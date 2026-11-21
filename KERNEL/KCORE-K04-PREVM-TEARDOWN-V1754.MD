@@ -117,3 +117,13 @@ RUN rollback. The reaper ordinarily routes DISCARD to
 DAIMOS `72ca8a9c` rejects DISCARD at EXIT resume, before VM/u-area
 release or zombie publication. Isolated PDP-6 DAS assembly PASS;
 physical acceptance remains outstanding and K04 stays OPEN.
+
+## 2026-11-21 v1759: PREVM diagnostic fallback
+
+The opt-in GETTEARDOWN query now bypasses fatal FILE-stage
+precedence only when the descriptor contains both FINALIZE and
+PREVM marks. TRANSITION plus a live VM alone does not establish
+that ownership. When the marks are absent, the original FILE-stage
+check runs; exact PREVM EXIT owners still outrank the stale fatal
+bit. DAIMOS `68200592` assembled with PDP-6 DAS. No ABI or
+resource-lifetime changes; physical acceptance remains OPEN.
