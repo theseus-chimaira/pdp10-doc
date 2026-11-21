@@ -315,3 +315,18 @@ CHLD and WAIT wakeup to irreversible teardown owners.
 No new resident RAM fields or process-table ABI; isolated native
 PDP-6 DAS PASS. Physical refused-parent, healthy-INIT fallback,
 both-parents-dying, WAIT/PID reuse and clock-wrap tests remain OPEN.
+
+## 2026-11-21 v1769: full-system build gate
+
+Following the v1768 ownership correction, an isolated full
+`make -C system build` initially failed because all five PDP-6
+Stage-1 Makefiles (DSK, DTC, DRM, MTC, PTR) still depended on
+`common/decompressor.inc`, a file no longer present. Their Stage-1
+assembly sources actually include `common/block_decompressor_v1458.inc`.
+
+DAIMOS `5228712d` corrects these stale prerequisites without
+altering decoder code or image format. A fresh build under a
+versioned `$TMPDIR` build root passed, including the five Stage-1
+artifacts. This is a full-system compile/build gate, **not** a
+booted or fault-injected K04 acceptance result. No testkit run,
+permanent RAM increase or KCORE size optimization was performed.
