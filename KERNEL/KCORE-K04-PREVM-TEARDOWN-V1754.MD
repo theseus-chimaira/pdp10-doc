@@ -169,3 +169,16 @@ conservatively retains ownership, while SETFG rejects that error.
 No additional persistent state or forced release. Isolated PDP-6
 DAS assembly PASS; the ordered A/B TTY case and other physical K04
 acceptance scenarios remain unverified. K04 stays OPEN.
+
+## 2026-11-21 v1762: DISCARD is not a committed HUP
+
+The session HUP retry path introduced in v1760 skipped an already
+marked VM_NONE finalizer, but did not distinguish an unpublished
+RUN rollback's FINALIZE|DISCARD from a fatal EXIT's FINALIZE.
+The PREVM path excluded DISCARD; the post-VM path did not.
+
+DAIMOS `22278d35` checks DISCARD in the shared marked-owner
+branch. A rollback owner cannot satisfy fatal HUP completion;
+ordinary delivery reports its TRANSITION state as busy, retaining
+the session leader's retry owner. Valid committed EXIT owners are
+still skipped. Isolated PDP-6 DAS PASS; physical acceptance OPEN.
