@@ -86,3 +86,13 @@ legacy query contract:
 Isolated native PDP-6 DAS assembly PASS; physical fault injection
 and the ongoing testkit sweep remain separate. K04 stays OPEN.
 See `DAIMOS/design/kcore-k04-retry-diagnostic-corrections-v1755.md`.
+
+## 2026-11-21 v1756: invalid stable u-area address
+
+The slot-zero deferred finalizer now rejects a zero u-area base
+before reading the per-process FINALIZE marker. A set u-area flag
+does not prove a nonzero base. The invalid owner retains the shared
+pending state and bounded retry instead of reading low memory or
+being silently treated as completed. Valid owners are unchanged.
+DAIMOS `6c1b3478` assembled with the native PDP-6 DAS tool; physical
+fault injection remains outstanding. K04 remains OPEN.
