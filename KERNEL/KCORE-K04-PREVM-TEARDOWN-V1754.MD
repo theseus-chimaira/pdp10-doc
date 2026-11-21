@@ -649,3 +649,36 @@ retry timing, B completion before A, and eventual independent
 release of both. Reverse **post-VM A -> PREVM B** and SIDL B
 ordering remain OPEN, along with clock wrap, FILE/HUP and
 dying-parent WAIT.
+
+## 2026-11-21 v1783: reverse mixed post-VM/PREVM MM owners PASS
+
+DAIMOS `design/kcore-k04-reverse-mixed-postvm-prevm-v1783.md`
+records a live 256K PDP-6 test of the reverse stage ordering.
+Owner A (PID 5) held its exact post-VM u-area through real
+`mm_pin` while ordinary `mm_free` refused release; A's shared
+retry interval saturated at octal `01000`. Only then was owner
+B (PID 6) started in EXIT PREVM, with its exact VM extent
+physically pinned using real `mm_pin` before unmodified
+`vm_space_destroy`.
+
+The SIMH monitor confirmed that every B scratch word was still
+zero while A's pending retry word was `401000011655`. B's first
+refusal reset that word to `400020012126`. Its first and second
+qualified clock snapshots were `012126` and `012146` octal:
+the actual first retry occurred precisely `020` (16 decimal)
+ticks later. B unpinned and released its VM on attempt `005`;
+DCS PS reused PID 6 with zero teardown fields while A remained
+post-VM (TD=2, RETRY=512, DETAIL=6) and physically pinned.
+
+After attempt `030` (24 decimal), A also unpinned and released
+its u-area. SIMH final state showed both exact bases zero,
+both MM-unpin completion flags set, and the pending retry flag
+cleared. CTY PS reused PID 5 with zero teardown fields. Guest
+HALT PC 022613 and read-only D6FS CLEAN seq=3 PASS. Native DAS
+and full-image build PASS, initial D6FS CLEAN seq=1.
+
+This closes both physical **PREVM A/post-VM B** (v1782) and
+**post-VM A/PREVM B** (v1783) ordering tests. No production
+kernel source, fixed RAM, ABI or external testkit changes.
+SIDL mixed-stage ordering, clock wrap, FILE/HUP and dying-parent
+WAIT remain OPEN; K04 itself is not closed.
