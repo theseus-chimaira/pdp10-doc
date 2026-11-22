@@ -1,3 +1,18 @@
+## KCORE K01-K04 completion (2026-11-22 v1803)
+
+- [x] **K01** permanent MM refusal recovery: CLOSED v1718.
+- [x] **K02** process resource cleanup: CLOSED v1730.
+- [x] **K03** OOM policy: CLOSED v1803. Preserve requester-only
+  BRK physical OOM termination accepted at v1298; do not
+  implement cross-process victim killing. Existing swapping
+  remains the preferred nonfatal memory-pressure mechanism.
+- [x] **K04** process teardown recovery: CLOSED v1801 under
+  bounded physical owner-safety acceptance.
+
+See `KERNEL/KCORE-K01-K04-CLOSURE-V1803.MD`. Older dated
+OPEN assertions are historical; remaining KCORE feature work
+is K05-K16. No production RAM, ABI or kernel-code change.
+
 ## Current KCORE feature increment: v1604 (2026-11-15)
 
 - [x] **P1-E cross-machine architecture REVIEW v1604 (not a

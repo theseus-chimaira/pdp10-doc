@@ -58,8 +58,9 @@ claimed to have passed. Revisit them only if a related defect,
 provider change or operational incident warrants it.
 
 K04 closure does **not** enable automatic OOM victim killing.
-K03 still requires its own victim-selection, resource-safety
-and failure-policy acceptance. Existing KCORE documentation
+K03 was subsequently CLOSED at v1803 by explicitly rejecting
+cross-process victim killing; see
+`KERNEL/KCORE-K01-K04-CLOSURE-V1803.MD`. Existing KCORE documentation
 with earlier dated `K04 OPEN` statements records historical
 intermediate states; this v1801 closure supersedes those
 statements for the current implementation.
