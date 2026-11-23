@@ -77,3 +77,23 @@ phase transport, reference assembly, macro and conditional errors,
 numeric radix, C comments, relocations and symbol differences.
 The strict native size limits still fail, so the reduction is not
 yet a native acceptance.
+
+## Follow-up: native expression operator decoding (v1848)
+
+The native-only precedence-climbing expression parser decoded ten
+binary operators through a sequence of conditional branches. A
+single character switch now selects the operator and precedence,
+retaining the two-character shift-token check and the existing
+recursive expression evaluator. This is an implementation reduction,
+not a change to precedence, relocation or arithmetic semantics.
+
+| Phase | After v1847 | After v1848 | Further saved | Remaining excess |
+| --- | ---: | ---: | ---: | ---: |
+| DAS1 | 034653 | 034612 | 000041 | 000612 |
+| DAS2 | 032367 | 032326 | 000041 | 001326 |
+
+All values are octal image words. BSS remains 002103 (DAS1)
+and 001573 (DAS2). Relative to the original baseline, the three
+source reductions save 000404 words in DAS1 and 000402 in DAS2.
+Ten host DAS regression scripts passed. Both native image ceilings
+remain exceeded, so this is not native acceptance.
