@@ -97,3 +97,95 @@ and 001573 (DAS2). Relative to the original baseline, the three
 source reductions save 000404 words in DAS1 and 000402 in DAS2.
 Ten host DAS regression scripts passed. Both native image ceilings
 remain exceeded, so this is not native acceptance.
+
+## Follow-up: shared instruction encoder and text emission (v1849-v1850)
+
+In v1849, the ordinary phase-2 instruction statement path reused the
+instruction encoder already used for embedded instruction words in
+data and literals. Strict base-profile checks, privileged I/O checks
+and unknown pseudo-op diagnostics remain in the statement path. The
+shared encoder accepts an omitted operand for ordinary instructions,
+but a bare mnemonic inside a data expression still has to be
+distinguished from a symbol name. Phase2 saved 000204 octal words.
+
+In v1850, separate SIXBIT and 7-bit ASCII/ASCIZ data emitters became
+one word-oriented text packer. SIXBIT produces six 6-bit characters per
+word. ASCII and ASCIZ produce five 7-bit characters and a spare low
+bit; the pass-1 word count retains the ASCIZ terminator. Phase2
+saved another 000110 octal words. The DAS fast suite, full DXR/native
+self-test suite and DOBJ/DARC/DLINK integration passed for both changes.
+
+A second mnemonic helper experiment was rejected: it re-tokenized
+less source but grew phase2 by 000016 octal words. The production
+v1849 code avoids that additional helper.
+
+## Follow-up: computed OWGBP positions (v1851)
+
+The historical 21-element OWGBP selector lookup table contains five
+contiguous byte-width ranges (6, 7, 8, 9 and 18 bits). Computing
+`low = (selector - first_selector) * width` preserves the old table
+for every defined selector and avoids retaining the selector table
+in native phase2. This saves 000022 octal words.
+
+The versioned daimos-testkit
+`tests/validation/daimos-das-owgbp-compact-v1851.sh` checks all
+21 valid selectors against an independent DXR-word oracle and
+rejects eight gaps/invalid selectors. It passes with the revised
+assembler and with the original installed DAS. The DAS fast,
+full DXR/native, stream/bounded-store and DOBJ integration suites
+all pass.
+
+## Follow-up: SET names, BYTE widths and physical line reader (v1852-v1854)
+
+In v1852, SET snapshot names are formatted directly into their
+caller-provided buffers. All three callers provide at least 40
+characters; the seven-character prefix and an unsigned 36-bit
+decimal generation fit within 19 characters including NUL.
+This removes a temporary buffer and a second copy, saving 000056
+octal words from each native phase.
+
+An alternative iterative decimal-digit formatter was considered:
+its elimination of recursion could reduce stack depth, but the
+tested implementation grew both phase images by 000103 octal
+words. It was not retained. Simply substituting `char_distance`
+for `strlen` also grew both images by 000001 octal words and was
+reverted.
+
+In v1853, parenthesized first-field and subsequent-field BYTE
+widths share one bounded absolute-value parser that restores the
+closing delimiter even on parse errors. This saves 000006 octal
+words per phase.
+
+In v1854, physical source-line EOF and newline finalization share
+one path. The input limit is checked directly against `cap - 1`:
+when the limit is reached, the input length remains at `cap - 1`
+until the end of that physical line, preserving overlong-line
+recovery. The native `das_read_line` function shrank from 135
+to 105 instructions; the explicit 136-instruction acceptance limit
+passes, while the separate 104-instruction optimization target is
+still exceeded by one instruction. Native phase1 saved 000036
+octal words. Input, fast, full DXR/native and DOBJ integration tests
+pass.
+
+## Current exact sizes after v1854
+
+All numbers below are **octal native PDP-10 words**, measured by
+rebuilding the KCC native sources and reading the produced DXRs.
+The native image ceilings are unchanged and remain mandatory.
+
+| Version | DAS1 image | DAS2 image | DAS1 excess | DAS2 excess |
+| --- | ---: | ---: | ---: | ---: |
+| Original | 035216 | 032730 | 001216 | 001730 |
+| v1848 | 034612 | 032326 | 000612 | 001326 |
+| v1849 | 034612 | 032122 | 000612 | 001122 |
+| v1850 | 034612 | 032012 | 000612 | 001012 |
+| v1851 | 034612 | 031770 | 000612 | 000770 |
+| v1852 | 034534 | 031712 | 000534 | 000712 |
+| v1853 | 034526 | 031704 | 000526 | 000704 |
+| v1854 | 034470 | 031704 | 000470 | 000704 |
+
+Total cumulative image savings versus the original baseline are
+000526 in DAS1 and 001024 in DAS2. BSS remains 002103 and 001573.
+The strict native phase-image size check still fails on DAS1
+034470 > 034000 and also, independently, on DAS2
+031704 > 031000. No completed native acceptance is claimed.
