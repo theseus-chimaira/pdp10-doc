@@ -39,3 +39,21 @@ Git binary patch were preserved under
 The old worktree is now clean. No production staging, limit, or
 kernel source changed. Native compiler correctness and a safe
 real-guest self-host sequence remain open in DAIMOS TODO.MD.
+
+## V1826: Historical native dry-run and watchpoint test artifacts
+
+The detached testkit contained a further 23 untracked v1413-v1415
+files: source-read and MAKE `-N` install dry-run probes for KCC,
+DAS and MAKE; proposed SIMH suffix-index watchpoint/checkpoint
+harness copies; and three early DAS DOBJ relocation fixture files.
+The old probes depend on the staged source tree described above,
+which was never accepted in the current root image. They do not
+prove a completed native compiler build, and their two debug
+harness copies have not been validated as replacements for the
+active testkit harness.
+
+All 23 exact historical files were archived with per-file SHA256
+verification and retired from the detached worktree. The original
+files and branch remain recoverable at
+`~/backups/daimos-selfhost-testkit-v1413-v1415-diagnostic-v1826-20261123/`.
+No compiler test or excluded pdp10-testkit repository was modified.
