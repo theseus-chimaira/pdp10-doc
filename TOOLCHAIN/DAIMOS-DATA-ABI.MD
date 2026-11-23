@@ -216,3 +216,32 @@ facility.
 - floating-point variadic calls;
 - floating-point structure and union layout;
 - nondefault packing or alignment.
+
+---
+
+## 2026-11-23 measured floating and natural-byte aggregates (v1840-v1843)
+
+The lists of unresolved work above describe the original source
+documents. The later target-executed GCC/KCC v1840 and v1842
+regressions now establish a **specific additional common subset**:
+
+- Float- and double-containing structures occupying two, three, four,
+  five or eight 36-bit words, with the tested neighboring word members.
+  Direct and function-pointer return calls pass both mixed-compiler
+  directions, including hidden caller result buffers beyond four words.
+- C89 naturally aligned structures containing five 9-bit characters,
+  one 36-bit word and three 9-bit characters. The verified operations
+  include structure returns, by-value arguments, pointer mutation,
+  and field-value preservation.
+
+Each subset passes 32/32 target-executed cases across PDP-6, KA10,
+KI10 and KS10, with GCC -O0/-O1/-O2/-Os and KCC noopt/opt. The
+KI10/KS10 floating run required a RAM-neutral KCC GAS-output correction
+for double-word instruction literals. The original DAS source and
+binary remain unchanged.
+
+GNU packed/aligned attributes, cross-word bit fields, arbitrary
+floating-point unions, floating-point variadic calls and
+compiler-private va_list representation remain outside this proven
+subset. See
+`TOOLCHAIN/KCC-GAS-DOUBLE-LITERALS-FLOAT-AGGREGATE-20261123-V1843.MD`.
