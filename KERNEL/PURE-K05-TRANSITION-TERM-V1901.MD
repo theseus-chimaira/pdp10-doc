@@ -117,3 +117,13 @@ Production design analysis:
 `DAIMOS/design/kcore-k05-transition-term-v1901.md`.
 Accepted physical evidence:
 `$TMPDIR/daimos-k05-transition-term-v1901-physical-gated/`.
+
+**v1902 physical follow-up:** the missing bounded slot-0
+dual-owner rollback is now implemented. On the original 48K
+PDP-6, a real source-free -5 retains both MM owners; after
+the external pin is released, the native idle service frees
+only the provisional PROCESS target (MM18 -> MM17), clears
+TRANSITION, and the scheduler enters a new FULL retry (MM18).
+The original private u-area remains unchanged. This is scoped
+recovery, not proof of final FULL commit or WAIT/HALT. See
+`KERNEL/PURE-K05-RECONCILE-V1902.MD`.
