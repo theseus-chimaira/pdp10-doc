@@ -295,3 +295,49 @@ The v1869 experiment sharing a single quotient/remainder sign fixup
 was discarded because each native image grew by 000002 words; its
 original two-branch form was restored. This does not invalidate the
 arithmetic identity, but KCC produces smaller code from the original.
+
+## Follow-up: compact directive index and full process limit (v1870-v1871)
+
+V1870 changes phase-2 text emission to advance an input pointer and
+remaining-character counter instead of calculating `word_index *
+characters_per_word + slot` at every character. Its fixed-width text
+padding and ASCIZ NUL rules remain unchanged. This saves 000023 octal
+words in DAS2 and does not change DAS1.
+
+V1871 replaces the 43 pairs of 36-bit keyword keys and word-sized token
+identifiers with 43 single-word entries. Six alphabetic letters fit in
+30 bits at five bits each, leaving six bits for a token identifier
+(the maximum identifier is 30). The sorted binary search and six-letter
+prefix matching remain, including P2ALIGN's distinct seven-character
+recognition and historically accepted overlong EXTERN_ matches. An
+independent C89 oracle in daimos-testkit verifies all 43 spellings,
+lowercase variants, P2ALIGN, and invalid/misspelled keys. It passed,
+along with the host fast/full assembly suites, KCC self-assembly,
+directive/transport oracle and exhaustive OWGBP checks.
+
+| Version | DAS1 image | DAS2 image | DAS1 image excess | DAS2 image excess |
+| --- | ---: | ---: | ---: | ---: |
+| v1868 | 034114 | 031161 | 000114 | 000161 |
+| v1870 | 034114 | 031136 | 000114 | 000136 |
+| v1871 | 034054 | 031076 | 000054 | 000076 |
+
+V1871 saves **000040 octal words in each phase** relative to v1870.
+An additional v1872 probe-key local was neutral under KCC and was
+reverted. Total savings relative to v1845 are now 001142 for DAS1 and
+001632 for DAS2. BSS remains 002103 and 001573 respectively.
+
+The diagnostic profiler now reports the mandatory **040000-word total
+process ceiling**, including the 02000-word reserved stack, in addition
+to each phase's separate image limit:
+
+| Phase | Image | BSS | Reserved stack | Process total | Process excess |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| DAS1 | 034054 | 002103 | 002000 | 040157 | 000157 |
+| DAS2 | 031076 | 001573 | 002000 | 034671 | 000000 |
+
+All numbers above are octal PDP-10 words. The DAS1 process ceiling is
+more restrictive than its nominal image ceiling with current BSS:
+DAS1 must reduce its image to at most **033675** or reduce BSS by a
+corresponding amount. The strict image acceptance also remains open
+for DAS2. No new native guest PASS is claimed. The next optimization
+should account for both image and process limits; do not relax either.
