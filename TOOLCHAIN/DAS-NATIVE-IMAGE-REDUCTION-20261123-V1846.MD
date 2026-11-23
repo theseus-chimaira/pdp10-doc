@@ -239,3 +239,27 @@ LONG lists and file/pipe transport identity. The established fast and
 full host suites cover conditional and macro semantics, expression
 precedence, literal references and DXR/native selftests. No new DAS
 feature or resident allocation was introduced.
+
+## Follow-up: symbol return and phase-2 packing (v1862-v1864)
+
+V1862 makes numeric-local and ordinary expression names share a single
+symbol-resolution return tail, preserving their distinct lookup policy.
+V1863 reuses the first `,,` delimiter found in the phase-2 data parser
+instead of repeating the same string search. V1864 specializes the
+text word-packing width to the two supported inputs, 6 and 7 bits,
+instead of requiring native division by a parameter. All three changes
+reduce native TEXT without modifying BSS or supported syntax.
+
+| Version | DAS1 image | DAS2 image | DAS1 excess | DAS2 excess |
+| --- | ---: | ---: | ---: | ---: |
+| v1861 | 034173 | 031344 | 000173 | 000344 |
+| v1862 | 034135 | 031307 | 000135 | 000307 |
+| v1863 | 034135 | 031301 | 000135 | 000301 |
+| v1864 | 034135 | 031253 | 000135 | 000253 |
+
+All values are octal. The strict native phase limits still fail.
+The host fast/full, KCC self-assembly, native comment-scanner,
+independent directive word/transport, and exhaustive OWGBP tests pass.
+The `das_read_line` function is 105 instructions against its 136 hard
+limit and optional 104 target. Physical guest assembly acceptance has
+not been established for this checkpoint.
