@@ -148,3 +148,15 @@ The accepted 48K original physical evidence is in the versioned
 `$TMPDIR/daimos-k05-terminal-physical-v1900-real-v3/` run.
 
 K05-K09 remain OPEN. RAW PURE/mode3 stay disabled by default.
+
+**v1901 physical safety follow-up (2026-11-23):** A real user
+`SYS_PROCCTL_EVENT_PID`/`SYS_EVENT_TERM` sent AFTER original
+dual-owner source `mm_free(PACKED)` refusal is correctly refused:
+slot3 still holds TRANSITION, VMbase0, and original saved
+executive `CTX_PC=340000016664` with the USER-return bit CLEAR.
+Forcing foreign finalization would free its live private stack.
+The next step must reconcile the provisional PROCESS owner
+from a safe slot-0 context after pins release, preserving the
+executive continuation, not bypass the event guard. NINETEEN
+executed unsafe physical controls PASS. See
+`KERNEL/PURE-K05-TRANSITION-TERM-V1901.MD`.
