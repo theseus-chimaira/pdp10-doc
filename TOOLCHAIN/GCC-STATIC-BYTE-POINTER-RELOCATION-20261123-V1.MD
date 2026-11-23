@@ -63,5 +63,25 @@ Evidence and the A/B experiments are recorded in
 The testkit records live in its versioned `workdir` result folders.
 The installed compiler in `$PDP10_PREFIX` was left unchanged.
 
+## Verified additional upstream GCC linkage repair (v8)
+
+The unmodified GCC upstream test
+`tests/semantic/upstream/generic/20021101-1.c` contains global
+initializers casting a word pointer to `char *`, subtracting eight
+9-bit bytes, and casting back to `int *`. All its 44 previously
+registered `link_fail` cells were due to corrupt negative RH18
+relocation addends: `dlink` reported `RH18 relocation overflow`.
+
+After the compiler repair, all 44 original cell identities pass
+compilation, linking, and execution using the staged compiler.
+The exact original failure keys were compared to the 44 new
+checkpoints, and every new status is `pass`.
+
+Result table:
+`pdp10-testkit/workdir/static-pointer-upstream-link-20261123-v32/results-v1.tsv`.
+This establishes the repair of those 44 link failures only; other
+previous linker failures remain separate and require their own
+verification.
+
 This verification applies to local RH18 pointers; extended addressing
 and unrelated compiler/runtime behavior require their own acceptance.
