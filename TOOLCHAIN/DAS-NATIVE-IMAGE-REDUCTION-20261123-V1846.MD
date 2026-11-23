@@ -386,3 +386,48 @@ the 102-character path boundary. Both phase variants pass. The normal
 host DAS fast/full, KCC self-assembly, directive/transport, OWGBP and
 comment-scanner validations remain required independently. The native
 guest integration gate remains OPEN.
+
+## Follow-up: merge phase-2 opcode keys and metadata (v1877)
+
+The existing sorted 390-entry opcode index retained a full 36-bit
+mnemonic key plus separate packed ten-bit opcode/nonbase metadata. In
+phase 2, the 364 entries with three through five alphabetic characters
+now use one word per entry: a five-bit-per-letter mnemonic key and its
+ten-bit opcode/nonbase metadata fit into 35 bits. The 26 six-letter
+entries retain their exact 30-bit key and a separate compact nine-word
+metadata array. Phase 1 still uses its original table.
+
+The old phase-2 390+130=520-word constant tables became 364+26+9=399
+words, a reduction of 121 table words. Additional runtime decoding
+accounts for some of that reduction, so **measured** linked images must
+be used rather than treating table savings as total image savings.
+
+| Version | DAS1 image | DAS1 BSS | DAS2 image | DAS2 BSS |
+| --- | ---: | ---: | ---: | ---: |
+| v1876 | 034101 | 001655 | 031117 | 001346 |
+| v1877 | 034101 | 001655 | 031037 | 001346 |
+
+These are octal native words; v1877 saves 000060 in DAS2 with no BSS
+change. Both full-process budgets remain within 040000, but image
+limits are still exceeded by 000101 (DAS1) and 000037 (DAS2).
+
+The new independent `daimos-testkit` frozen oracle
+`daimos-das-opcode-map-v1877.tsv` records every pre-change opcode and
+nonbase flag; its ISO C89 checker also verifies lowercase aliases and
+invalid opcodes against the new implementation. It validates all 390
+records without generating expected output from the implementation
+being tested. Native guest acceptance remains OPEN.
+
+## v1878 correction: preserve the six-bit internal opcode interface
+
+The first compact prototype passed the public 390-opcode name oracle
+but failed the host JUMP/JRST optimizer regression. The optimizer and
+macro parser also call `lookup_op_mn()` directly with existing six-bit
+mnemonic keys; the prototype changed that internal argument encoding.
+V1878 restores the six-bit internal host interface by converting its
+keys to five-bit only at the decoder boundary. The native phase-2
+public lookup uses the compact decoder directly, so its resident image
+size remains 031037. The frozen oracle now checks BOTH lookup entry
+points and all 390 pre-change encodings and nonbase flags, to prevent
+this specific class of regression. Host fast/full and native scratch
+tests pass. Native phase-image ceilings still fail as above.
