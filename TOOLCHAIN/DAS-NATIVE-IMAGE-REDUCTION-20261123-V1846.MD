@@ -52,3 +52,28 @@ prints both image limits, BSS and the largest source assembly regions.
 The regions are source-line counts, not exact per-function word
 measurements. Further reductions must be measured against both
 native images and validated without changing the ceilings.
+
+## Follow-up: shared literal operator classification (v1847)
+
+The literal image-size calculation previously duplicated a leading
+opcode/operator classifier already present in the literal SET
+canonicalizer. It now reuses the classifier, retaining a mode
+distinction for exact special-operator tokens versus historical
+prefix recognition during canonicalization. The literal size path
+still treats doubled commas as single-word literal syntax and a
+single ordinary comma as two-word data.
+
+| Phase | After v1846 | After v1847 | Further saved | Remaining excess |
+| --- | ---: | ---: | ---: | ---: |
+| DAS1 | 035103 | 034653 | 000230 | 000653 |
+| DAS2 | 032620 | 032367 | 000231 | 001367 |
+
+All values are octal image words; BSS remains unchanged. Relative
+to the original baseline, the combined v1846/v1847 changes save
+000343 words in DAS1 and 000341 words in DAS2.
+
+Ten relevant host DAS regression scripts pass, covering phase IR,
+phase transport, reference assembly, macro and conditional errors,
+numeric radix, C comments, relocations and symbol differences.
+The strict native size limits still fail, so the reduction is not
+yet a native acceptance.
