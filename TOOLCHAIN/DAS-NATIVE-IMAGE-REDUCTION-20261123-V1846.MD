@@ -341,3 +341,48 @@ DAS1 must reduce its image to at most **033675** or reduce BSS by a
 corresponding amount. The strict image acceptance also remains open
 for DAS2. No new native guest PASS is claimed. The next optimization
 should account for both image and process limits; do not relax either.
+
+## Follow-up: shared scratch names and buffer lifetimes (v1874-v1876)
+
+The v1874 change removes a redundant full path array from each native
+scratch-wordfile. Each descriptor now keeps only an immutable suffix;
+the native assembler context keeps a pointer to the caller-owned output
+filename. Opens and cleanup reconstruct exactly the original basename
+plus suffix into the already resident `das_native_tmp` buffer, preserving
+the 102-character path limit and all six scratch-file suffixes.
+This buffer is unused during scratch initialization and again after the
+source pass has returned, so it cannot collide with line decoding.
+
+V1875 overlays native include-directory scratch space with the parser's
+`das_native_tmp` buffer, which is dead after `parse_include_line()` has
+extracted the include name. The full include depth and per-depth source
+filenames remain unchanged; no nested include capability was removed.
+The fixed-size native directory allocation is therefore unnecessary.
+
+V1876 fixes two independent native error branches (phase 1 and phase 2)
+that passed a format-string pointer as a numeric diagnostic code when
+rejecting unsupported `.DIRECTIVE` syntax. Using `DAS_DIAG` restores the
+existing host message and proper numeric native diagnostics, and also
+shrinks both phase images.
+
+| Version | DAS1 image | DAS1 BSS | DAS1 process | DAS2 image | DAS2 BSS |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| v1871 | 034054 | 002103 | 040157 | 031076 | 001573 |
+| v1874 | 034117 | 001707 | 040026 | 031134 | 001346 |
+| v1875 | 034116 | 001655 | 037773 | 031134 | 001346 |
+| v1876 | 034101 | 001655 | 037756 | 031117 | 001346 |
+
+All figures are octal PDP-10 words. DAS1 and DAS2 now both satisfy the
+040000-word complete process budget with their reserved 02000-word
+stacks. However the strict resident **image** ceilings 034000/031000
+still fail by 000101/000117 respectively. Do not interpret the
+full-process PASS as native guest acceptance.
+
+New independent `daimos-testkit` test
+`daimos-das-native-scratch-paths-v1875.sh` compiles both actual native
+phase configurations against mocked DAIMOS UUOs. It verifies all phase-1
+and phase-2 suffixes, open/unlink/close ownership, failure cleanup and
+the 102-character path boundary. Both phase variants pass. The normal
+host DAS fast/full, KCC self-assembly, directive/transport, OWGBP and
+comment-scanner validations remain required independently. The native
+guest integration gate remains OPEN.
