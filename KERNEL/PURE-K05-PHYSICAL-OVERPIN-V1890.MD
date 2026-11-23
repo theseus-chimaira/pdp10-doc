@@ -76,10 +76,14 @@ kernel data or feature flag was introduced by v1890.
 
 The simulator intentionally exits at the postfault physical clock
 checkpoint, **not** at native child WAIT or machine HALT. v1890
-does not physically read slot3's process TRANSITION bit, observe
-independent user child EXIT/WAIT after the fault, or show recovery
-of a permanently corrupt pin. These remain further acceptance
-gates, as do free/allocator uncertainty, other PI6 timings and
+does not physically read slot3's process TRANSITION bit; the
+**separately accepted v1891 physical run now does**. See
+`KERNEL/PURE-K05-PROCESS-QUARANTINE-V1891.MD` for verified original
+slot3 TRANSITION, VM base zero, unaffected peer process descriptors
+and four physical negative mutants. Independent user child EXIT/WAIT
+after the fault and recovery of a permanently corrupt pin remain
+further acceptance gates, as do free/allocator uncertainty,
+other PI6 timings and
 K05-K09 production integration. The fix itself is v1855;
 v1890 is its source-linked full-system physical fault witness.
 
