@@ -507,3 +507,20 @@ All values are octal. The steady-state process maximum is now 037741
 octal = 16,353 decimal words, or **31 words below 16K**. Strict
 individual native image limits still FAIL by 000316/000037 (octal),
 and the guest/transient-EXEC validation remains OPEN.
+
+## v1883: compact the phase-2 extended-opcode table
+
+The 24 non-base opcode names previously each used separate word-sized
+mnemonic and opcode fields. The 22 names of three through five letters
+now fit in one 36-bit word with the nine-bit opcode; the two six-letter
+names remain exact direct comparisons. The public lookup reuses its
+existing five-bit mnemonic key without encoding it twice. A new frozen
+24-opcode oracle independently checks original opcode values,
+non-base flags, lowercase aliases and invalid names.
+
+The measured linked DAS2 image shrinks **031037 -> 031022 octal words**
+(000015 saved), with unchanged BSS 001114. DAS1 remains 034316 image,
+001423 BSS, and a full process size of 037741 including the stack.
+Both native process budgets and the single-process steady-state 16K
+RAM ceiling remain satisfied. The separate image ceilings are still
+OPEN: DAS1 exceeds 034000 by 000316 and DAS2 exceeds 031000 by 000022.
