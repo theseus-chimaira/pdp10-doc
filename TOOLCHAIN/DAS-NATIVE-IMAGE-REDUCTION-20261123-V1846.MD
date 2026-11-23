@@ -524,3 +524,45 @@ The measured linked DAS2 image shrinks **031037 -> 031022 octal words**
 Both native process budgets and the single-process steady-state 16K
 RAM ceiling remain satisfied. The separate image ceilings are still
 OPEN: DAS1 exceeds 034000 by 000316 and DAS2 exceeds 031000 by 000022.
+
+## v1884: shorten the private phase-file basename; retain hard RAM gate
+
+When the output is `PROGRAM.DXR`, DAS1 now writes the DASIR2 transport
+to `PROGRAM.D2R`, and native DAS2 derives and removes that same path.
+The host file-backed two-phase path follows the same naming rule.
+For non-`.DXR` outputs the existing appended-suffix convention is
+preserved, importantly `PROGRAM.D2R` output still uses the distinct
+`PROGRAM.D2R.D2R` temporary filename. Source and destination paths
+are not conflated, and both phases derive their path from `-O`.
+
+The change is **not a memory optimization**. The pathname buffers have
+fixed bounds; changing the characters does not shrink them. The chosen
+`strrchr`/`strcmp` test reuses existing native helpers, and `strchr` finds
+the append point without generating expensive indexed byte-pointer
+arithmetic. This is smaller than the tested byte-indexed and
+shared-function variants, and adds only 000005 octal image words to
+each native phase. Measurements from
+fresh v1884 native binaries (all counts octal; stack reserves 002000):
+
+| Program | Image | BSS | Reserved process | Hard image limit |
+| --- | ---: | ---: | ---: | ---: |
+| DAS launcher | 000571 | 000000 | 002571 | n/a |
+| DAS1 | 034323 | 001423 | **037746** | 034000 (FAIL +000323) |
+| DAS2 | 031027 | 001114 | 034143 | 031000 (FAIL +000027) |
+
+`037746` octal = **16,358** decimal 36-bit words, leaving only **26**
+below `040000` octal/16,384 decimal. The v1880 static executable
+image+BSS+stack gate PASSes. Fast/full host DAS tests and the v1875,
+v1880, v1882, v1883 regressions PASS. The new versioned v1884 host
+marker-path test and mocked native DAS1/DAS2 monitor-path tests also
+PASS, including output-name collision avoidance.
+
+The requirement of **at most 16K total RAM at every instant** is
+STRONGER than the steady-state process gate. The normal kernel EXEC
+transaction constructs a staged VM before releasing the previous one,
+potentially exceeding 16K during driver -> DAS1 and DAS1 -> DAS2.
+The kernel's low-memory destructive fallback is triggered on a staging
+allocation failure, not unconditionally. No physical guest peak was
+measured in this checkpoint, and neither image-only gate passes.
+Absolute 16K physical RAM and complete guest acceptance therefore
+remain OPEN; do not reinterpret the steady-state PASS as that proof.
