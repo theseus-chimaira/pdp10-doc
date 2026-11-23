@@ -63,6 +63,15 @@ Evidence and the A/B experiments are recorded in
 The testkit records live in its versioned `workdir` result folders.
 The installed compiler in `$PDP10_PREFIX` was left unchanged.
 
+An additional independent test,
+`tests/semantic/p10-static-pointer-rh18-v1.c`, was incorporated
+from the previously untracked testkit source during repository
+consolidation. It compares dynamically computed pointers with
+standalone and aggregate static initializers after negative byte
+offsets and casts back to word pointers. All 44 registered GCC
+profiles passed in the emulator; see
+`pdp10-testkit/workdir/static-pointer-orphan-20261123-v1/results-v1.tsv`.
+
 ## Verified additional upstream GCC linkage repair (v8)
 
 The unmodified GCC upstream test
