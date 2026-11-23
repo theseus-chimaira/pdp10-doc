@@ -481,3 +481,29 @@ VM before loading the next one, but this does not establish a hard
 separate strict image ceilings 034000 for DAS1 and 031000 for DAS2
 still **fail** by 000331 and 000037 octal words. Native guest acceptance
 and transient-memory acceptance remain OPEN.
+
+## v1882: pair three-letter native phase-1 opcode keys
+
+The 59 three-character base-opcode names use exactly 18 bits in DAS's
+historical six-bit key encoding. Two now occupy one 36-bit constant
+word, with one unused half-word for the odd final entry. Longer base
+names retain their original full keys. The lookup still performs a
+sorted binary search and reconstructs the original full key before
+comparison, so the recognized opcode set is unchanged.
+
+This saves 29 table words but adds some lookup instructions. **Measured
+linked DAS1 image savings are 000015 octal words**, with no BSS change.
+The new independent native-phase1-only opcode oracle checks all 390
+frozen pre-change names plus unknowns, complementing the full phase-2
+opcode+nonbase oracle and host assembler regressions.
+
+| Phase | Image | BSS | Full process including stack |
+| --- | ---: | ---: | ---: |
+| DAS launcher | 000571 | 000000 | 002571 |
+| DAS1 | 034316 | 001423 | 037741 |
+| DAS2 | 031037 | 001114 | 034153 |
+
+All values are octal. The steady-state process maximum is now 037741
+octal = 16,353 decimal words, or **31 words below 16K**. Strict
+individual native image limits still FAIL by 000316/000037 (octal),
+and the guest/transient-EXEC validation remains OPEN.
