@@ -3061,3 +3061,33 @@ THIS MUST NOT BE GAMED BY MOVING EVERY REQUIRED CORE FACILITY INTO A MODULE AND
 COUNTING ONLY THE NUCLEUS.  SPECIALIZED OPTIONAL HARDWARE OR FILESYSTEM MODULES
 MAY INCREASE AN "EVERYTHING LOADED" CONFIGURATION BEYOND THE NORMAL V0.9
 RESIDENT SET.
+
+## 2026-11-20 v1708-v1710: F07 VM refusal and current-owner compaction
+
+Two separate disposable 256K PDP-6 full-system F07 guests reproduced
+the 6/18 RUN admission failure before the BACKSTORE bitmap fault armed.
+Test-only v1228 RUN diagnosis found EXEC_LOAD_NOMEM (-2) from VM
+creation. Test-only v1709 records show its exact MM_ERR_BUSY (-5),
+owner 015 octal, request 064000 octal words, 32 MM extents, no aligned
+HIGH fit and 0116423 octal total free words. A raw free-space sum does
+not establish a usable contiguous, aligned extent. The strict F07
+guest and injected bitmap refusal remain unaccepted.
+
+`mm_compact` could try relocating the executing PROCESS despite its
+active APR. The VM mover correctly refuses the current process with
+-5, but the compactor carried that ordinary, expected immobility into
+the allocator as a hard MM ownership refusal. v1710 skips the
+nonzero current owner before attempting a PROCESS relocation. Actual
+hard -4/-5 results from other owners are still propagated unchanged;
+no resident RAM or new owner/retry table is added.
+
+The source-linked native PDP-6 `daimos-k01-compact-current-v1710.sh`
+tests current-owner exclusion, genuine other-owner busy refusal and
+successful noncurrent relocation, and rejects an unsafe mutant that
+tries moving the current owner. Older v1678, v535 and v545 native MM
+compaction, VM and pressure regressions and both KCC KCORE PURE modes
+pass. At v1710 a physical F07 rerun was still needed to determine
+whether this was the sole source of the observed RUN failure.
+K01 was subsequently CLOSED under its bounded v1718 acceptance
+contract; see `KERNEL/KCORE-K01-K04-CLOSURE-V1803.MD`. Do not reopen
+that milestone based solely on this earlier diagnostic.

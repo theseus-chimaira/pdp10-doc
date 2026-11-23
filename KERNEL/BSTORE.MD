@@ -279,6 +279,31 @@ proof of live healthy swapped-process completion under fault.
 See `STATUS/KCORE-FEATURE-STATE-V1508.MD` and DAIMOS
 `design/kcore-backstore-persistent-physical-v1508.md`.
 
+## 2026-11-12 v1508: permanent checked refusal physical timer/owner PASS
+
+Disposable 256K KCC PDP-6 v1508 selected real DISK slot `010`
+after an actual swap-in read, then permanently refused checked
+release of exactly its original `02350`/`0330` BACKSTORE
+extent while retaining the real bitmap. Samples 19-21 captured
+failure counts 1/4/7 against real PI6 timer 36599/38542/40484
+(decimal). The v1507 per-owner 0100-octal-tick scheduler retry
+interval remains respected. Exact DISK record, nonresident RUN,
+stable u-area, retry tag, pending TERM and both backing-accounting
+ownerships remain. No false READY_ONCE, repair, fatal close,
+finish or zombie; strict physical verifier PASS and ten unsafe
+mutations rejected. F07 had 18 RUN acknowledgments, but this
+bounded diagnostic did not HALT, by design.
+
+**V1508 boundary:** independently runnable healthy bystander progress
+*after* the fault was not observed in these snapshots. The later
+v1509 physical test established independent *resident* bystander
+progress, not healthy swapped-child recovery or terminal reclaim.
+Actual DEVICE/media loss and safe recovery of a truly irreparable
+DISK owner require separate acceptance. Do not confuse bounded retry
+with released backing. No production KCORE source, ABI or data RAM
+modification in v1508.
+See `STATUS/KCORE-FEATURE-STATE-V1508.MD`.
+
 ## 2026-11-12 v1507: normal and RT failed-restore retry gating
 
 Native PDP-6 scheduler/slot-0/PI6 source-link v1507 now closes

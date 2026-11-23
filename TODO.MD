@@ -1,17 +1,25 @@
-## KCORE K01-K04 completion (2026-11-22 v1803)
+## Current accepted boundary and historical index (2026-11-23)
 
-- [x] **K01** permanent MM refusal recovery: CLOSED v1718.
-- [x] **K02** process resource cleanup: CLOSED v1730.
-- [x] **K03** OOM policy: CLOSED v1803. Preserve requester-only
-  BRK physical OOM termination accepted at v1298; do not
-  implement cross-process victim killing. Existing swapping
-  remains the preferred nonfatal memory-pressure mechanism.
-- [x] **K04** process teardown recovery: CLOSED v1801 under
-  bounded physical owner-safety acceptance.
+KCORE K01-K04 are CLOSED under their specific accepted contracts:
+K01 v1718, K02 v1730, K03 v1803 (requester-only OOM policy), and
+K04 v1801. See `KERNEL/KCORE-K01-K04-CLOSURE-V1803.MD`.
+Unresolved new cases belong in DAIMOS `TODO.MD`, rather than being
+treated as a reopening of these accepted boundaries.
 
-See `KERNEL/KCORE-K01-K04-CLOSURE-V1803.MD`. Older dated
-OPEN assertions are historical; remaining KCORE feature work
-is K05-K16. No production RAM, ABI or kernel-code change.
+- **P0-B CLOSED v1575:** trusted-operator DTVOL2 media policy; retain
+  genuine I/O, DIRTY/CLEAN, owner and cache checks. Earlier hardware
+  reel-interlock tasks are historical, not open release gates.
+- **P1-C CLOSED v1603; P1-D CLOSED v1601.**
+- **Full boot:** 48K-word de facto minimum. **Kernel-only tests:**
+  32K-word acceptance still required. Full 32K boot is deferred.
+- **Final KCORE size optimization:** deferred until feature freeze.
+
+The v1604 material below is a **historical mainline snapshot**. Later
+PDP-6 RAW PURE history was consolidated onto main at v1809; it remains
+default OFF pending K05-K08 production gates. The dated OPEN assertions
+below describe their own historical checkpoints. Current feature
+boundaries and unfinished acceptance are tracked by DAIMOS
+`PROJECT-STATE.MD` and `TODO.MD`.
 
 ## Current KCORE feature increment: v1604 (2026-11-15)
 
@@ -790,7 +798,7 @@ tasks. No KCORE optimization or 32K reduction is authorized.
   persistent snapshot and independent LOGSTORE fault activity;
   check backing bitmap, MM and cache ownership isolation.
 
-Latest stage: `STATUS/KCORE-FEATURE-STATE-V1567.MD`.
+Latest stage: `STATUS/KCORE-FEATURE-STATE-V1571.MD`.
 Critical fail-stop acceptance: `STATUS/KCORE-FEATURE-STATE-V1548.MD`.
 
 ## 2026-11-13 v1539: one TSFS root member physically lost (ACCEPTED)
@@ -1185,6 +1193,27 @@ version 0.9 scope. DTFS/TSFS implementation is temporarily deferred,
 not removed from release scope. No KCORE size sweep is underway.
 
 # PDP10-DOC TODO
+
+## 2026-11-12 v1508: persistent BACKSTORE physical scoped acceptance
+
+- [x] Real 256K KCC PDP-6 source-linked physical checked-release
+  refusal: exact original DISK slot `010`, extent
+  `02350`/`0330`, seven failed frees, real bounded PI6
+  cadence, stable u-area/TERM/accounting, no premature
+  READY_ONCE/finalization or bitmap repair. Three post-fault
+  samples PASS the strict current v1508 verifier; ten negative
+  mutations rejected. The historical source report also records
+  13 extended mutation checks.
+- [x] Independent *resident* bystander progress under sustained
+  refusal was physically proved subsequently in v1509.
+- [ ] Healthy *swapped* child progress under irreparable refusal
+  remains separate; v1508 itself had only the failed owner
+  runnable at its final snapshots.
+- [ ] Actual permanent DEVICE/media loss handling and safe
+  long-lived resource recovery/reclaim (no forced release).
+- [ ] Further fault combinations and PURE/APR acceptance follow
+  the current DAIMOS TODO. P0-B, P1-C and P1-D were subsequently
+  closed under their documented boundaries.
 
 ## 2026-11-12 v1507: per-owner BACKSTORE retry native PASS
 
