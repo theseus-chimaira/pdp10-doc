@@ -263,3 +263,35 @@ independent directive word/transport, and exhaustive OWGBP tests pass.
 The `das_read_line` function is 105 instructions against its 136 hard
 limit and optional 104 target. Physical guest assembly acceptance has
 not been established for this checkpoint.
+
+## Follow-up: phase-2 operand decoding and native I/O (v1865-v1868)
+
+V1865 strips the optional leading dot as the instruction mnemonic is
+copied, preserving the original 31-character input truncation, rather
+than copying it and shifting the name again. V1866 removes the second
+effective-address trim: the index-suffix parser always performs that
+trim, including when no index suffix exists. V1867 shares the native
+scratch-file short read/write transfer loop. V1868 also makes phase-2
+output writes use that same transfer path. Phase 1 retains its direct
+output writer because full sharing increased its image; nevertheless,
+the stream-parameter specialization adds 000004 words back to phase 1
+relative to v1867 while removing 000034 from phase 2. The trade-off
+reduces total resident code, does not increase BSS, and keeps the same
+short-transfer and error semantics.
+
+| Version | DAS1 image | DAS2 image | DAS1 excess | DAS2 excess |
+| --- | ---: | ---: | ---: | ---: |
+| v1864 | 034135 | 031253 | 000135 | 000253 |
+| v1865 | 034135 | 031244 | 000135 | 000244 |
+| v1866 | 034135 | 031242 | 000135 | 000242 |
+| v1867 | 034110 | 031215 | 000110 | 000215 |
+| v1868 | 034114 | 031161 | 000114 | 000161 |
+
+All values are octal native PDP-10 words. Compared with the first
+v1845 measurement, v1868 saves 001102 in DAS1 and 001547 in DAS2.
+BSS is unchanged (002103 and 001573). Both mandatory image ceilings
+continue to fail and no current native DAIMOS guest PASS is claimed.
+The v1869 experiment sharing a single quotient/remainder sign fixup
+was discarded because each native image grew by 000002 words; its
+original two-branch form was restored. This does not invalidate the
+arithmetic identity, but KCC produces smaller code from the original.
