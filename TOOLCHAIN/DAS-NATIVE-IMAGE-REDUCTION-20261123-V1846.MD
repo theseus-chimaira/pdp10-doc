@@ -189,3 +189,53 @@ Total cumulative image savings versus the original baseline are
 The strict native phase-image size check still fails on DAS1
 034470 > 034000 and also, independently, on DAS2
 031704 > 031000. No completed native acceptance is claimed.
+
+## Follow-up: reuse parsed operands and canonicalizer copies (v1855-v1861)
+
+The phase parser already supplies both a classified directive token and
+an operand pointer. Native DAS had nevertheless parsed the directive's
+mnemonic again in the ASCII/ASCIZ/SIXBIT word counters and text emitter,
+then in BYTE and LONG counting/emission paths. V1855-v1856 now pass the
+operand directly to those functions. The three text word counters use
+one bounded delimiter/count implementation; fixed-width division is
+preserved for the 5-character ASCII/ASCIZ and 6-character SIXBIT words.
+The existing BYTE first-width and subsequent-width rules are unchanged.
+
+In v1857, the literal SET snapshot canonicalizer shares one checked
+output copy for replaced and unreplaced names. V1858 classifies an
+IF/IFDEF/IFNDEF/ELSE/ENDIF once before processing phase-1 conditional
+state. V1860 uses one call to the relocation-aware expression
+addition/subtraction helper. V1861 eliminates a name buffer memmove
+in the literal operator classifier while retaining the original
+token-length distinction (including a leading dot).
+
+A v1859 experiment that scanned bounded literal text without first
+copying to a NUL-terminated temporary buffer was discarded: the KCC
+phase images grew from 034226/031400 to 034302/031453 (octal), even
+though the candidate could have used less temporary stack. Keeping
+the strict resident-image ceiling was more important than accepting
+that measured text growth.
+
+| Version | DAS1 image | DAS2 image | DAS1 excess | DAS2 excess |
+| --- | ---: | ---: | ---: | ---: |
+| v1854 | 034470 | 031704 | 000470 | 000704 |
+| v1855 | 034410 | 031521 | 000410 | 000521 |
+| v1856 | 034317 | 031430 | 000317 | 000430 |
+| v1857 | 034267 | 031400 | 000267 | 000400 |
+| v1858 | 034226 | 031400 | 000226 | 000400 |
+| v1860 | 034203 | 031355 | 000203 | 000355 |
+| v1861 | 034173 | 031344 | 000173 | 000344 |
+
+Measured savings from v1854 through v1861 are 000275 words in DAS1
+and 000340 in DAS2. Relative to the original v1845 baseline they
+are 001023 and 001364 words. Phase1/phase2 BSS remains 002103/001573.
+The unchanged mandatory ceilings are 034000/031000: **both still fail**.
+The source-built full DAIMOS guest has not accepted these images.
+
+The versioned, independent daimos-testkit fixture
+`tests/validation/daimos-das-directive-operands-v1856.py` checks
+ASCII/ASCIZ/SIXBIT word packing across boundaries, BYTE field sizes,
+LONG lists and file/pipe transport identity. The established fast and
+full host suites cover conditional and macro semantics, expression
+precedence, literal references and DXR/native selftests. No new DAS
+feature or resident allocation was introduced.
