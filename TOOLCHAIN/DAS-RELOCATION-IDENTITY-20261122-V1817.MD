@@ -56,11 +56,15 @@ The host test now supplies that bounded mock; its relocation-bit
 assertions are unchanged and pass. The original recovered untracked
 files were separately archived before retirement from the old tree.
 
-The source fix is committed locally on `das/main` as `ed2d2e5`, while
-the PDP10-testkit regression is published as `b8b6021`. The DAS
-repository's GitHub remote did not permit the current credentials to
-push: HTTPS had no authenticated credential and SSH reported push
-permission denied for its available identity. The earlier DAS local
-commit `aa74f42` is also ahead of remote, so publication of both
-commits remains open. No remote configuration or branch was changed.
-Full native/guest DAS execution is a separate source-matched gate.
+The source fix is published on `das/main` as `ed2d2e5`, together
+with the earlier DAS commit `aa74f42`. The PDP10-testkit regression
+is published as `b8b6021`. Publication of both DAS commits was
+completed on 2026-11-23 (v1827): the DAS repository was already
+using HTTPS, but lacked DAIMOS's local Android Git credential
+helper and `credential.useHttpPath=true`. Using the same helper as
+DAIMOS allowed the authorized push to
+`https://github.com/theseus-chimaira/das.git`; those local DAS
+Git settings are now persistent. `main` matches `origin/main`,
+with no changes to code or history in the publication step.
+Full native/guest DAS execution is still a separate source-matched
+acceptance gate.
