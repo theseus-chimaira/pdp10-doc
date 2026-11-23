@@ -73,6 +73,15 @@ independent already-resident peer or a rigorously selected larger
 memory-pressure fixture that still produces the original FULL
 transaction and its exact owner/pin fault.
 
+**v1892 scoped physical PASS:** an unchanged original KCORE/PURE
+image with a test-only INIT loop now demonstrates TWO newly emitted
+real resident-parent user `HB` events AFTER the same slot3 pin2/-5
+TRANSITION quarantine. Both physical snapshots show current slot1,
+resident parent APR `130000..140000`, slot3 source pin1/target pin2,
+and unchanged MM/ROOT, with advancing original PCLK.
+See `KERNEL/PURE-K05-RESIDENT-PARENT-V1892.MD`. The different
+PACKED child restoration and final WAIT/HALT remain OPEN.
+
 Other persistent MM source free/unpin/allocator uncertainty,
 terminal cleanup, PI6 interleavings and K05-K09 release remain
 OPEN. Preserve the v1658 permanent MM quarantine policy; never
