@@ -431,3 +431,53 @@ size remains 031037. The frozen oracle now checks BOTH lookup entry
 points and all 390 pre-change encodings and nonbase flags, to prevent
 this specific class of regression. Host fast/full and native scratch
 tests pass. Native phase-image ceilings still fail as above.
+
+## v1881: eliminate concurrent launcher and first pass
+
+The public native `das` launcher formerly used RUN to spawn DAS1 and
+waited for its exit, retaining the launcher's image and 02000-word
+reserved stack alongside DAS1. The measured v1878 combined peak was
+**042743 octal = 17,891 decimal words**, exceeding the fixed
+040000-word (= 16,384 decimal) budget.
+
+The corrected phase chain uses two process-image replacements:
+
+1. `das` constructs a counted-SIXBIT EXEC V1 argument block, marks
+   argv[0] with the private `DAS1CHAIN` identifier, and replaces its
+   own image with DAS1. It no longer launches a waiting child.
+2. DAS1 retains the original parser and scratch-backed DASIR2 writer.
+   Direct DAS1 invocations still execute only phase 1. With the private
+   marker, a successful, closed intermediate file triggers EXEC of DAS2
+   with the original output record. An error does not launch phase 2.
+3. DAS2 executes in the same process, so its exit status is reported to
+   the original caller without a resident driver.
+
+To accommodate the small transition routine, the native symbol hash
+index was resized from 128 to 64 bucket heads and the cache from 13
+to seven entries. They accelerate an otherwise unchanged spill-backed
+symbol store; symbol capacity and syntax remain unchanged. This saves
+000232 octal BSS words in each phase relative to preliminary v1879.
+
+| Process | Image | BSS | Reserved stack | Resident process |
+| --- | ---: | ---: | ---: | ---: |
+| Launcher | 000571 | 000000 | 002000 | 002571 |
+| DAS1 | 034331 | 001423 | 002000 | **037754** |
+| DAS2 | 031037 | 001114 | 002000 | 034153 |
+
+All figures are octal PDP-10 words. The maximum **steady-state** user
+allocation is **037754 octal = 16,364 decimal words**, 20 decimal words
+below the 040000-octal (16K) budget. The simultaneous 17,891-word
+driver+DAS1 residency no longer occurs.
+
+The independent daimos-testkit tests `daimos-das-exec-chain-v1880.sh`
+and `daimos-das-exec-peak-v1880.py` verify the native EXEC argument
+blocks, error behavior, and size budget for each DXR. Host assembler
+fast/full suites and the independent 390-opcode oracle pass.
+
+**Outstanding:** DAIMOS `exec_replace_current` can stage a replacement
+VM before freeing the old image. Its low-memory fallback frees the old
+VM before loading the next one, but this does not establish a hard
+16K-word transient physical-RAM bound without guest measurements. The
+separate strict image ceilings 034000 for DAS1 and 031000 for DAS2
+still **fail** by 000331 and 000037 octal words. Native guest acceptance
+and transient-memory acceptance remain OPEN.
