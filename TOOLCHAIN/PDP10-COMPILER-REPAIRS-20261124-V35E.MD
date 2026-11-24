@@ -406,3 +406,28 @@ across 91 sources. The 66 aligned memset/memcpy cases still fail.
 The versioned testkit manifests distinguish replay results from the
 unreplayed historical remainder. No full sweep, master merge,
 installation or native memory measurement is claimed.
+
+## GCC aligned memory operations (v53a/v53b)
+
+Reviews fcad43e and e64cb87 implement physical word transfers for
+word-aligned constant-length memcpy/memset on local-address targets.
+Tail operations use 9, 18 or 27 physical bits, never exact16 HImode.
+Large copies/fills use BLT. The original C return pointer and nine-bit
+fill values are preserved; independent operands are evaluated once.
+Native word pointer conversions are omitted when their byte-pointer
+values are not required. No new permanent target storage.
+
+Both candidates pass 318/318 cells: 66 historical failures, 44 new
+regressions, 208 prior guards. All 66 historical images shrink relative
+to the correct v53a baseline. Aggregate object word counts across 33
+configurations each: memset 6273 -> 4689, memcpy 9324 -> 6156.
+The original v52a images failed correctness and are not speed baselines.
+PDP-6 memcpy SIMH timing varies substantially on identical-image
+replays; speed acceptance remains unresolved.
+
+Hosted staged v53b cc1 SHA256:
+a18d9ae0bcb319597639875c2285399032f8a8c89ceff405f48780368ec0ebf5.
+The exact historical runtime remainder is 2399 cells across 89 sources.
+The v53b testkit manifests record hashes, recoveries and size evidence.
+Extended addressing, full sweep, installation and native compiler RAM
+measurements remain outstanding.
