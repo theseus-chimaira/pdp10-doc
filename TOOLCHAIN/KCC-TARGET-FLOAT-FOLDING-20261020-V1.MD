@@ -119,3 +119,16 @@ AAP 24-case disagreement regression must not be counted as passing.
 
 Authoritative test sources, exact expected values and recorded known
 failure are in `pdp10-testkit/docs/KCC-PDP6-TARGET-FLOAT-FOLDING-20261020-v1.md`.
+
+## Native exponent range and test applicability (2026-11-24, v35a)
+
+The historical GCC torture source `960405-1.c` requires a long-double
+constant near 5.948657e4931L. The native PDP-10 floating-point exponent
+is eight bits even in hardware double precision. Neither the native
+single nor double representation can encode this magnitude. This is a
+target representation limitation, not an obligation to implement a
+software extended-exponent format. The source remains unchanged and
+is classified unsupported in all GCC and KCC semantic matrix profiles.
+The separate KCC overflow-diagnostic validation remains applicable and
+passed for base and pdp6. Testkit commit e76200a records the 66 historical
+exclusions without counting them as passes.
