@@ -222,3 +222,25 @@ ec336dcde92a22311a2dba69d6940daea466a7296d4fc8668aebfef5106c6602.
 Testkit de81287 records exact source, assembly and report hashes.
 The tracked historical v28 KCC cohort has no active failures remaining.
 No full sweep or native execution/RAM measurement was performed.
+
+## GCC small repairs and target string reads (v44/v44b)
+
+Review 994fef8 selects a physical low word before extracting a narrow
+part of a wide memory value. All eleven historical conversion cells
+passed. Four historical alias cells passed with the previous .set
+correction, but weak linkage itself is still unsupported. Sixteen
+arithmetic failures were test-width selection errors: generic PDP-10
+target detection fixes the reference values without weakening the
+arithmetic assertions. All 198 arithmetic cells passed, including
+66 KCC guards. Testkit commit 1275250 records those repairs.
+
+Review f11b292 decodes the two-host-byte representation of target
+9-bit string elements at constant read sites and uses logical element
+bounds. Dynamic aggregate indexing retains the byte selector. The
+staged compiler SHA256 is
+ a56b1ff680229d1477819eeaca6bf0413d21b3d9823918700a5d3bffb93f1f09.
+All 132 string cells and 132 additional GCC guards passed, plus
+22 KCC string checks. Testkit d102d2c records exact hashes. The string
+repairs recover 77 historical cells, for 108 recoveries in v44/v44b.
+Staged backlog: 2726 cells. No merge, installation or full sweep;
+previous cumulative guard acceptance is incomplete.
