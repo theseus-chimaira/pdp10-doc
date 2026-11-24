@@ -146,3 +146,31 @@ c1182aaf18f2dad471794e82f32c93ff249ea372e13e6af627cb02dcc604f07d.
 Testkit commit edc3cfc records exact result hashes and the 704-cell
 remaining manifest. This is verification evidence, not a claim of
 complete packed aggregate support. No full sweep was performed.
+
+## GCC packed aggregate runtime repairs (v41b)
+
+GCC review commit d4867fe, based on 71d4100, preserves physical
+36-bit memory references for aggregate copies and uses the target
+extraction/insertion patterns directly. Constant packed integer
+references consume the declared field positions and array strides.
+Integer-only packed static constructors stream target bytes from
+that layout without a full aggregate buffer. Other constructor
+kinds retain the existing emission path.
+
+Staged hosted SHA256:
+60fed2b3a4ff38f83418333207f666c3e88b82b5c43d8e27031013bdff3b7c2a.
+Exact acceptance: 324/324 PASS, including 176 previously failing
+cells and 148 previously passing guards. All 165 former ICE cells
+now pass. The four recovered sources are packed unions, chained
+assignment, nested by-value, and nested whole-copy. New packed-slice
+regression 44/44 PASS; existing packed-record pointer guard 32/32
+PASS. Testkit commit 12ec30c records source, assembly and report
+hashes. 528 of the v40a runtime failures remain. No full sweep,
+installation or merge to GCC master. Native execution and RAM cost
+have not been measured.
+
+A separate diagnostic candidate 61b50b5 (v41c) prioritizes constant
+packed stores over the older exact16 logical-pointer expansion.
+The array-members test advances from assertion 2 to 7 on PDP-6 O0
+and O2, but all six focused probes still fail. It is not accepted;
+indirect packed pointer representation and arithmetic remain open.
