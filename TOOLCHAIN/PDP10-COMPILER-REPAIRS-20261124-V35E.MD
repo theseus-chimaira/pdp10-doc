@@ -347,3 +347,39 @@ configurations (138 comparisons). On the v50d-equivalent images,
 19/22 O2/O1 and 21/22 O2/Os comparisons pass. Four distinct cases
 remain, including the three one-tick KS10 regressions against O1.
 Historical provenance and simulated timing limitations still apply.
+
+## GCC historical exact-type cohort closure (v48g/v51d)
+
+Review 2f5a6f5 recovers 88 mixed packed-record layout and bit-field
+cells; all 265 selected cumulative guards passed. The last 44
+packed-array member cases reproduce on v50d. Review e7cf4fa
+(repair/exact32-pointer-v51d) preserves native word-addressed exact32
+slots and continuous packed S=1 pointers, including constant
+initializers, pointer differences, increments, signed access and
+narrowing on indirect stores. Direct native array references use their
+physical word slot rather than extracting the high 32 bits.
+Hosted staged cc1 SHA256:
+00f8536d86ea9f5f28b9bbc3e416f71e580db78d191b099b0152d4d320cad339.
+
+All 132 targeted cells and 265 cumulative guards pass. The exact
+remaining historical manifest is empty: all 852 original exact-type
+cells have staged recovery evidence. The other 2520 historical GCC
+runtime cells remain separate. Testkit a09f3e7 records sources, hashes,
+results and the empty remaining manifest.
+
+The new shared exact32 pointer regression fails at its first static
+packed-pointer assertion on all 22 KCC profiles, both installed v43
+and staged v49b. KCC emits POINT 32 for the cross-word packed element.
+This is a newly exposed defect, not a v49 optimization regression.
+
+All 132 targeted GCC executions were benchmarked using simulated
+ticks and object section word counts. All 33 O1/O0 speed, Os/O0 speed,
+Os/O0 size and O2/O1 speed comparisons pass. O2/Os: 12 faster, 21
+slower; no ties. These are current staged optimization violations,
+not runtime failures. The archive audit v5 (testkit 1498b90) contains
+1360 measured historical executions: O2/O1 201 faster, 42 equal,
+101 slower; O2/Os 108 faster, 28 equal, 208 slower. The 309 failing
+comparisons cover 212 distinct historical configurations. Historical
+compiler provenance remains incomplete. Native RAM and physical
+timing, extended-address acceptance, full sweep, merge and
+installation are not established by these results.
