@@ -1,5 +1,36 @@
 # PDP-6 PURE MM ownership: v1658 fail-closed commit and quarantine
 
+## Current FULL ownership contract (v1917)
+
+The optional RAW PURE FULL path preserves both original physical
+identities across a refusal, instead of reconstructing scratch identity
+from the current slot-owned descriptor set after the failure.
+During TRANSITION, u-area word 067 uses the existing bit32 retry tag,
+the low eleven bits of its left half for the original RAW physical
+base divided by 0200, and the right half for the provisional APR base.
+The RAW base is recorded before pinning; scratch is recorded immediately
+after allocation. Zero scratch denotes no allocation or checked
+retirement. This is not a clock epoch while TRANSITION is held.
+
+The same bounded MM owner proof serves FULL commit/rollback, retry
+unlock and deferred rollback. It checks descriptor capacity, original
+base, span, type, owner and exact pins, and refuses foreign overlapping
+claims. Only a proved original zero-pin RAW source with no remaining
+scratch may be unlocked; a source-only escrow cannot authorize a
+scratch free. Deferred rollback never frees RAW, even when a provisional
+APR appears complete. It cannot publish READY_ONCE. Invalid or
+permanently pinned owners remain excluded. Base-only unpins follow
+exact owner and pin checks under PI exclusion. The allocator's own
+gap search retains normal disk PI behavior.
+
+The source-linked native tests pass on repaired KCC cdcadb0, including
+the v1906/v1917 original identity cases and v1855/v1839/v1654
+pin/free/rollback regressions. Isolated FULL plus service object TEXT
+grows from 1608 to 1757 words, with no DATA/BSS or fixed KCORE growth.
+This is not an integrated size or current physical acceptance result.
+The historical v1658 and v1906 evidence below/in the testkit describes
+the earlier binaries, not the current escrow encoding.
+
 Date: 2026-11-17. Source base: DAIMOS v1657 2370e0b1.
 PURE RAM is opt-in and OFF by default. Strict 32K support remains
 deferred until a later KCORE size/boot campaign. This note describes
