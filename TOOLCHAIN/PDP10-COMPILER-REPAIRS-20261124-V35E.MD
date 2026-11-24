@@ -383,3 +383,26 @@ comparisons cover 212 distinct historical configurations. Historical
 compiler provenance remains incomplete. Native RAM and physical
 timing, extended-address acceptance, full sweep, merge and
 installation are not established by these results.
+
+## GCC constant-pool section integrity (v52b)
+
+Review ea38970 (repair/constant-pool-v52b), based on e7cf4fa,
+flushes pending partial words at the end of independent constant-pool
+objects in output_constant_def_contents. A short string previously
+received a label in text but its buffered data was emitted after a
+switch to data; the relocated pointer therefore addressed code.
+The boundary flush preserves nested constructor packing and requires
+no new permanent target storage.
+
+Hosted staged cc1 SHA256:
+14f2e5faadf8dec67c0a309a3b60112c1b292051f0c207f3826e59a4d0623832.
+All 16 historical fixed-string initializer failures now pass.
+Related guards: 164 semantic passes, 36 compile-only, zero failures;
+the original 20010924-1.c passes all 44 configurations. The earlier
+v51d memory replay passes 39/121, leaving 82 runtime failures before
+the initializer repair. Exact reconciliation removes 55 historical
+cells (including 12 previously passing strcmp cases), leaving 2465
+across 91 sources. The 66 aligned memset/memcpy cases still fail.
+The versioned testkit manifests distinguish replay results from the
+unreplayed historical remainder. No full sweep, master merge,
+installation or native memory measurement is claimed.
