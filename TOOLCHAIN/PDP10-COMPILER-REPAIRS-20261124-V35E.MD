@@ -101,3 +101,26 @@ measurements remain unverified. C-SIX source decoder regression passes.
 GCC was neither modified nor tested. No full sweep was run.
 Remaining original KCC cohort: 103 runtime failures, no compilation
 or linker failures. GNU empty aggregate policy is unchanged.
+
+## KCC runtime repairs v37d
+
+Hosted compiler commits b929249, f7d138c, c8618fb implement correct UL
+suffix typing, GNU-mode undeclared memcpy/memset prototype selection,
+floating addition constant checks, argument preservation across numeric
+conversion helper calls, and double comparison without the redundant
+continuation sign bit. Wide integer shifts consume the low count word,
+multiplication includes the contribution at bit 70, unsigned division
+compares the reconstructed remainder correctly, and scalar truth uses
+both words. Constant logical RHS folding avoids a synthetic comparison
+crash. No new permanent compiler data structures or runtime library ABI.
+
+Installed hosted SHA256:
+6cc10d24ce39ad7fe2b9362f63edafe06bc04ea9f9b4906e94266cd39fb5c2c4.
+Strict installed exact replay: 97 of 103 historical KCC runtime cells
+pass; all 66 new regression cells pass. Six remaining runtime cells:
+PDP-6 opt/noopt enum bit-field signedness, wide Karatsuba union case 4,
+and prime interval instruction budget. The optimized prime interval
+v37c assembly passes a diagnostic 1-billion-step run, but the standard
+100-million-step budget remains unchanged. No test exclusions, GCC
+work or full sweep. Native execution and RAM measurements unverified.
+See testkit's v37d results and six-cell remaining manifests.
