@@ -463,3 +463,37 @@ The cross-word pre/postincrement and switch byte-pointer tests still
 fail all 88 selected configurations on v54b. Full sweep, extended
 addressing, calibrated timing/native RAM and production installation
 remain outstanding.
+
+## GCC typed pointer difference and physical byte extraction (v55c)
+
+Master `8a214a9` retains typed C pointer subtraction until RTL
+expansion. Reassociation of encoded byte pointers as ordinary integers
+is invalid. Both operands are evaluated once. Local native nine-bit
+and halfword pointer subtraction now computes physical word and slot
+distances directly, in C storage units before division by element
+size. The invalid optimization-specific raw-pointer subtraction and
+its late compensating peephole are removed. The optimized first-byte
+global array path preserves the already selected physical word address.
+The new C tree code is appended, and c-common.def is an explicit
+frontend build dependency.
+
+Staged cc1 SHA256:
+cfad2531771dff435fec6d947409e2fff106c7535c77453e5b5eb94ab0f53035.
+The new regression passes all 44 profiles; v54b produced 44 ICEs
+on that same source. Related tests: 300 runtime passes, 36 compile-only,
+44 existing switch failures. All 844 cumulative guards pass. The
+historical runtime remainder is 2124 cells across 80 sources after
+99 exact-key recoveries. The 44 new regression ICE recoveries are
+separate and are not counted as historical runtime recoveries.
+
+Object size comparisons: 44 corrected cross-word images grow from
+7249 to 7412 aggregate words, relative to the failing baseline.
+844 previously correct guards grow from 381424 to 381539 aggregate
+words (22 smaller, 772 equal, 50 larger). These are object section
+counts, not native RAM measurements or calibrated speed results.
+
+The remaining switch/structure-array failure loses the enclosing
+record displacement when indexing a dynamic subword member. It is
+not fixed by the pointer-difference repair. Full matrix, extended
+addressing, C++ acceptance, calibrated timing/native RAM, and
+production installation remain outstanding.
