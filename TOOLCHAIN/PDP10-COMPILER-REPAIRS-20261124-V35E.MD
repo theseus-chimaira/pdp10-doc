@@ -308,3 +308,27 @@ The archived GCC speed audit now has 336 measured execution cells:
 regressions, 83 Os/O0 improvements. Simulated ticks are not physical
 CPU timing; historical compiler revision provenance is incomplete.
 The audit and GCC optimization regression repairs remain open.
+
+## GCC literal memcpy optimization (v50c/v50d)
+
+Review c50e5d5 lowers short literal copies to proven local first-byte
+addresses into physical word stores and partial-word insertions,
+reads counted characters after embedded NUL, and preserves the
+original destination pointer. Four aligned memcpy-bi cases regressed
+in this candidate. Review e0309bd retains typed word-address conversion
+and saves the destination expression to share evaluation. All 106
+acceptance cells pass. The 88 previously benchmarked assembly outputs,
+deposit images and normalized run scripts are identical on v50d.
+Staged hosted cc1 SHA256:
+ef87e463c314879d585d1e90bf0555ab8e4a2aa4e5bddc7794a9e1b0e6c8315d.
+Testkit 111ec38 records the results. All 11 historical GCC size
+regression configurations in 20011024-1.c improve: Os 38 words,
+versus 49 or 53 at O0. PDP6 Os ticks 556 -> 182; KS10 470 -> 173.
+Across the 22 profile pairs of both sources O1 and Os always improve
+on O0, and Os is smaller. O2 versus O1: 11 improvements, 8 ties,
+3 one-tick regressions. No new permanent target storage.
+Archived speed audit v3 (testkit 288b004) measures 848 historical
+cells: 206 O1/O0 improvements, 145 O2/O1 improvements, 39 ties,
+34 regressions, 204 Os/O0 improvements. Simulated ticks only;
+archive compiler provenance incomplete. No full sweep, installation,
+extended-address acceptance or native RAM measurement.
