@@ -189,3 +189,17 @@ previous passes), plus 44 packed-slice regression cells. Testkit
 The separate 2614 historical runtime cells were not replayed.
 Extended pointer semantics and native RAM cost remain unverified.
 No master merge, installation or full sweep.
+
+## GCC packed element counts (v42a)
+
+Review commit d30e21b separates explicit element-count adjustments
+from the older C storage-unit adjustment path. Direct packed array
+indexing and dynamic address expansion no longer divide already
+normalized counts. The one-word pointer representation is unchanged.
+Staged cc1 SHA256:
+3a978d119a1cf40ff6dbd0c7390dda2bcba1598a043e981c923d71eeb7be7c0e.
+All 544 historical acceptance cells passed, including 132 recoveries
+and 412 earlier passes. Testkit b099337 records the exact result
+hashes and 308 remaining cells. The separate earlier 2614 runtime
+failures remain untested. No master merge, installation or full
+sweep; native RAM and extended addressing remain unverified.
