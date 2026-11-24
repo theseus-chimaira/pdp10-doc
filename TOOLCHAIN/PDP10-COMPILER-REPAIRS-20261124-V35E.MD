@@ -283,3 +283,28 @@ further work. Staged backlog 2652; the 2520 other historical runtime
 cells remain separate. The v46 memory/string investigation is deferred.
 No full sweep, master merge or compiler installation; native RAM
 and cumulative acceptance remain unverified.
+
+## KCC optimization quality (v49a/v49b)
+
+57dbc60 removes an unreferenced shared epilogue after a proven
+non-fallthrough instruction and preserves the lexical return identity
+before evaluating the return expression. 44 affected profiles and
+169 historical runtime guards pass. The 12 assembly-policy failures
+in the separate epilogue suite also reproduce with installed v43.
+
+edff620 prevents unprofitable double-constant operand folding for
+PDP-6 long floating arithmetic, avoiding two scratch pushes and pops.
+82 targeted cells and 169 historical runtime guards pass. All 41
+size comparisons improve, including the 12 historical KCC size
+regressions. The PDP-6 wide-literal case decreases from 23 to 20
+words (unoptimized 22); the floating division case decreases from
+41 to 34 words (unoptimized 38). Staged hosted KCC SHA256:
+c62d1f2406d08f96e8ea6f2456daa8e00e02c27b6bb54f6cabd819944ea2a29d.
+No installation, native RAM measurement or full compiler sweep.
+Testkit edefe4d records the exact results and new regression.
+
+The archived GCC speed audit now has 336 measured execution cells:
+85 O1/O0 improvements, 56 O2/O1 improvements, 14 ties and 13
+regressions, 83 Os/O0 improvements. Simulated ticks are not physical
+CPU timing; historical compiler revision provenance is incomplete.
+The audit and GCC optimization regression repairs remain open.
