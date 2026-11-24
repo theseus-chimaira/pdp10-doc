@@ -174,3 +174,18 @@ packed stores over the older exact16 logical-pointer expansion.
 The array-members test advances from assertion 2 to 7 on PDP-6 O0
 and O2, but all six focused probes still fail. It is not accepted;
 indirect packed pointer representation and arithmetic remain open.
+
+## GCC packed pointer subtraction (v42)
+
+Review commit 3c547c4 handles local exact16 native S=16 and logical
+S=1 pointer subtraction separately. Logical subtraction uses the
+physical word and P-field difference, converted to C storage units.
+Constant logical adjustments scale element counts to bit counts.
+No persistent target storage was introduced. The staged hosted cc1
+SHA256 is bbceffb8a867162b0165edd2658159aed37c53fef23cb09541a19824a20bc3f8.
+All 412 historical acceptance cells passed (88 recovered and 324
+previous passes), plus 44 packed-slice regression cells. Testkit
+9e0b826 records exact hashes and the remaining 440-cell manifest.
+The separate 2614 historical runtime cells were not replayed.
+Extended pointer semantics and native RAM cost remain unverified.
+No master merge, installation or full sweep.
