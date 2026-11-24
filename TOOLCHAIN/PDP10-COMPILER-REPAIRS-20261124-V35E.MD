@@ -431,3 +431,35 @@ The exact historical runtime remainder is 2399 cells across 89 sources.
 The v53b testkit manifests record hashes, recoveries and size evidence.
 Extended addressing, full sweep, installation and native compiler RAM
 measurements remain outstanding.
+
+## GCC branch consolidation and native record arrays (v54b/v54c)
+
+Master was fast-forwarded from 4a71edc to e64cb87, integrating all
+20 cumulative repair commits. The obsolete local and remote repair
+branch names were removed only after verifying the exact branch tips
+are reachable from master; historical commit IDs remain valid and
+are recorded in the testkit consolidation manifest.
+
+Master 6716c5b preserves the physical word stride of native record
+arrays separately from each scalar field's bit position. The front
+end's actual type size and field layout are used; byte-pointer
+arithmetic is not applied to the word displacement. The repair is
+limited to local-address, nonvolatile native word-stride record
+arrays. Both historical byteptr2 sources pass all 88 configurations,
+44 new signed/unsigned static/automatic array guards pass, and 394
+distinct previous exact-width configurations pass. All 88 repaired
+object images are smaller; their earlier failing images are not speed
+baselines. Staged cc1 SHA256:
+80c73294ab96a3f2ab5bd5819370adc0af5bec4504ca03869c7045ffe9f4177c.
+
+GCC plain char is unsigned by default (DEFAULT_SIGNED_CHAR=0).
+Two historical test oracles incorrectly expected signed plain char;
+testkit 0f73d90 corrects the expectations according to the declared
+character mode. All 88 cells pass on unchanged v53b. These are test
+oracle corrections rather than compiler repairs.
+
+The historical GCC runtime remainder is 2223 cells across 85 sources.
+The cross-word pre/postincrement and switch byte-pointer tests still
+fail all 88 selected configurations on v54b. Full sweep, extended
+addressing, calibrated timing/native RAM and production installation
+remain outstanding.
