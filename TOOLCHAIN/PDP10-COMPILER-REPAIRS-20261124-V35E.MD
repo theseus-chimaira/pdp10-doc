@@ -124,3 +124,25 @@ v37c assembly passes a diagnostic 1-billion-step run, but the standard
 100-million-step budget remains unchanged. No test exclusions, GCC
 work or full sweep. Native execution and RAM measurements unverified.
 See testkit's v37d results and six-cell remaining manifests.
+
+## GCC exact-type cohort runtime verification (v40a)
+
+The staged candidate 71d4100, on GCC branch repair/packed-ice-v40a,
+was tested against all 852 historical exact-type compilation-failure
+cells. 148 passed and 704 failed runtime assertions; zero compilation,
+assembly or linker failures occurred. All 165 former packed-aggregate
+ICEs reached execution, but none passed. Of the remaining 687 cells,
+148 passed and 539 failed. The 32 existing packed-record pointer guard
+runs passed. No test was excluded or weakened. The separate historical
+2614 GCC runtime cells were not replayed.
+
+The review candidate addresses union field-position recursion,
+word-boundary aggregate bit transfers and byte-selector normalization
+for word-oriented bit-field expansion. Packed aggregate semantics are
+not yet accepted: a separate small packed-copy probe passes PDP-6 O2
+but fails O0. GCC master and the installed compiler remain unchanged.
+The staged cc1 SHA256 is
+c1182aaf18f2dad471794e82f32c93ff249ea372e13e6af627cb02dcc604f07d.
+Testkit commit edc3cfc records exact result hashes and the 704-cell
+remaining manifest. This is verification evidence, not a claim of
+complete packed aggregate support. No full sweep was performed.
