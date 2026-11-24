@@ -323,7 +323,7 @@ Staged hosted cc1 SHA256:
 ef87e463c314879d585d1e90bf0555ab8e4a2aa4e5bddc7794a9e1b0e6c8315d.
 Testkit 111ec38 records the results. All 11 historical GCC size
 regression configurations in 20011024-1.c improve: Os 38 words,
-versus 49 or 53 at O0. PDP6 Os ticks 556 -> 182; KS10 470 -> 173.
+versus 49 or 53 at O0. PDP6 Os ticks 556 -> 182; KS10 470 -> 174.
 Across the 22 profile pairs of both sources O1 and Os always improve
 on O0, and Os is smaller. O2 versus O1: 11 improvements, 8 ties,
 3 one-tick regressions. No new permanent target storage.
@@ -332,3 +332,18 @@ cells: 206 O1/O0 improvements, 145 O2/O1 improvements, 39 ties,
 34 regressions, 204 Os/O0 improvements. Simulated ticks only;
 archive compiler provenance incomplete. No full sweep, installation,
 extended-address acceptance or native RAM measurement.
+
+## Optimization acceptance policy v2 (audit v4)
+
+KCC optimized must use fewer total target words than unoptimized.
+GCC O1 must beat O0 in execution ticks. O2 must match or beat both
+O1 and Os. Os must beat O0 in both total words and ticks. Equality
+passes only the O2 comparisons. Unverified measurements cannot pass.
+The v2 audit preserves historical measurements and emits explicit
+acceptance and failure reports. Reclassifying 848 archived execution
+cells gives O2/O1 145 faster, 39 equal, 34 slower; O2/Os 73 faster,
+27 equal, 104 slower. There are 108 distinct historical O2 failure
+configurations (138 comparisons). On the v50d-equivalent images,
+19/22 O2/O1 and 21/22 O2/Os comparisons pass. Four distinct cases
+remain, including the three one-tick KS10 regressions against O1.
+Historical provenance and simulated timing limitations still apply.
