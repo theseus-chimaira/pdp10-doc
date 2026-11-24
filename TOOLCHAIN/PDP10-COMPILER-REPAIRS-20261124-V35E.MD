@@ -244,3 +244,22 @@ All 132 string cells and 132 additional GCC guards passed, plus
 repairs recover 77 historical cells, for 108 recoveries in v44/v44b.
 Staged backlog: 2726 cells. No merge, installation or full sweep;
 previous cumulative guard acceptance is incomplete.
+
+## GCC floating conversion repairs (v45b)
+
+Review 5c89d46 corrects unsigned SF conversion by reading the operand
+once, shifting right for high-bit inputs, retaining a sticky rounding
+bit, and scaling only that path. Integer-derived D-format values
+require normalization even under optimization; a dedicated RTL
+operation preserves it. The unsigned D-format exponent bias is
+corrected and a second shift of the 71-bit low continuation is
+removed. Negative SF-to-DF extension duplicates the sign bit.
+No persistent target storage is added. Hosted staged cc1 SHA256:
+3214735aa60ff2d270ddbb6c2e2a74b509eceb2784a0a568d404122ff6bd64a7.
+All 30 historical floating cells reproduced on v44b and passed on
+v45b; 44 new boundary regression cells and 76 existing guards pass.
+The 16 packed-unaligned complex cells still fail and remain in the
+aggregate backlog. Testkit 27b9a7b records the exact result hashes.
+Staged backlog 2696 cells. No full sweep, master merge or installation.
+G-format and native RAM/speed remain unverified, and the earlier
+cumulative acceptance run is incomplete.
