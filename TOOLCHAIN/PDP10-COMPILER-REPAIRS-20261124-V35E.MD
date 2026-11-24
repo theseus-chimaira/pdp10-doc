@@ -71,3 +71,33 @@ The current lexer uses the ordinary narrow literal type and refuses
 mixed-width concatenation. Wide literal storage, typing, emission and
 serialization remain to be implemented while preserving compact narrow
 literal storage. No compiler implementation changes were made in v36a.
+
+## KCC native-width literal implementation (2026-11-24, v36c)
+
+KCC commit c9e688e implements `wchar_t` as the existing 36-bit `int`.
+Wide character constants and wide string arrays use the native word
+representation. Adjacent mixed-prefix literals produce a wide array;
+array extent, address-taking, indexing and initialization retain the
+correct element type and count. Wide universal escapes use Unicode
+scalar values. Full multibyte source decoding and narrow universal
+character conversion are not claimed.
+
+The existing literal pool retains one octet per ordinary narrow
+character. Ninth-bit narrow literals and wide literals use two and
+five octets per element respectively. Promotion expands only the
+current literal; no new permanent pool or node fields are needed.
+KIR1 explicitly transports the storage flags and payload octets.
+The existing fixed pool capacity is unchanged. The host byte source
+reader no longer masks the high bit; packed seven-bit ASCII and C-SIX
+storage paths remain unchanged.
+
+Installed strict replay: 44/44 original KCC cells PASS (22 wide
+literal compilation failures and 22 high-byte runtime failures).
+The new `kcc-wide-literal-v36b.c` regression passes 22/22 KCC cells.
+Hosted split-phase tests preserve exact wide words through KIR1 and
+KPCODE2 in optimized and unoptimized modes. Four changed native
+PDP-6 phase modules cross-compile; native phase execution and RAM
+measurements remain unverified. C-SIX source decoder regression passes.
+GCC was neither modified nor tested. No full sweep was run.
+Remaining original KCC cohort: 103 runtime failures, no compilation
+or linker failures. GNU empty aggregate policy is unchanged.
