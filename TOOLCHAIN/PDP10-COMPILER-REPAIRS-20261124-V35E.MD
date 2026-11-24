@@ -263,3 +263,23 @@ aggregate backlog. Testkit 27b9a7b records the exact result hashes.
 Staged backlog 2696 cells. No full sweep, master merge or installation.
 G-format and native RAM/speed remain unverified, and the earlier
 cumulative acceptance run is incomplete.
+
+## GCC exact-type recheck and void-pointer repair (v47a)
+
+All 176 remaining exact-type runtime cells reproduced on v45b.
+Review eef83fe converts an incoming native record byte pointer to
+its selected member's byte size before applying the member-sized
+position adjustment. The dynamic address helper previously advanced
+using the old record selector, e.g. an 18-bit record pointer for a
+9-bit array member. No pointer-width or permanent storage change.
+Hosted staged cc1 SHA256:
+3bee8f496b13c3b7b5484ea78e6cdd9adb4558235a24267853198b7fc755518b.
+All 44 void-pointer roundtrip cells passed, along with 32 existing
+packed-record pointer guards and the mixed KCC/GCC pointer ABI suite.
+Testkit 2c914d2 records the exact 176-cell baseline and 44 recoveries.
+The three mixed packed-record sources still fail; 132 exact-type
+cells remain. Their noncanonical record and member positions require
+further work. Staged backlog 2652; the 2520 other historical runtime
+cells remain separate. The v46 memory/string investigation is deferred.
+No full sweep, master merge or compiler installation; native RAM
+and cumulative acceptance remain unverified.
