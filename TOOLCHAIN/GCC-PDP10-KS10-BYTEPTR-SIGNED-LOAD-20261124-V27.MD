@@ -39,7 +39,19 @@ were skipped or altered to suppress failures.
 Six adjacent regression sources, including packed-byvalue field
 extraction and four earlier byte-pointer/copy-loop cases, were also
 rerun: **224/224 PASS**, strict exit policy. The three independent
-selections thus pass **296/296 GCC cells** without skipped old greens.
+selections passed 296/296 GCC cells without skipped old greens.
+
+An expanded independent ten-source adjacent regression sweep also
+passed **392/392 GCC cells** under strict exit policy, including the
+same six source groups plus v17 unsigned division and historical
+wide-integer/control-flow coverage. The expanded result supersedes
+the six-source selection for counting distinct cells. Alongside the
+two primary 36-cell suites, v27 passed **464/464** fresh distinct
+GCC cells without skipped previous successes. This is not the full
+compiler matrix acceptance.
+
+Installed cc1 SHA256:
+`b4a24517da632efb8134b81c38f1f18d4779c0ee16dc51c2ddb89814b939e151`.
 
 The compiler change is in `gcc-pdp10/gcc/config/pdp10/pdp10.c`
 and `pdp10.md`. Testkit evidence is in
