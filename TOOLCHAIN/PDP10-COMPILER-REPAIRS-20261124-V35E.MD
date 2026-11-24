@@ -203,3 +203,22 @@ and 412 earlier passes. Testkit b099337 records the exact result
 hashes and 308 remaining cells. The separate earlier 2614 runtime
 failures remain untested. No master merge, installation or full
 sweep; native RAM and extended addressing remain unverified.
+
+## KCC historical runtime closure (v43)
+
+The installed compiler based on cdcadb0 still failed all six remaining
+historical PDP-6 cells. The uncommitted v38 patch was rebased onto that
+revision and committed as b57fa3e. Integral signed and unsigned 71-bit
+values use the duplicated sign bit at memory/ABI boundaries and a
+canonical low35 register representation. Nonnegative enum types use
+the unsigned compatible word type; enumerator constants remain int.
+The inline wide division path uses native IDIV for small magnitudes
+and retains the restoring divider for the general case.
+
+All six repaired cells and 169 staged regression guards passed, as did
+seven mixed-compiler ABI and language compatibility scripts. Installed
+recheck: 6/6 PASS at the original step budgets. Installed hosted SHA256:
+ec336dcde92a22311a2dba69d6940daea466a7296d4fc8668aebfef5106c6602.
+Testkit de81287 records exact source, assembly and report hashes.
+The tracked historical v28 KCC cohort has no active failures remaining.
+No full sweep or native execution/RAM measurement was performed.
