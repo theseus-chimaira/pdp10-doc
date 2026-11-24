@@ -51,3 +51,23 @@ claimed. Three original feature gaps remain active: weak linkage (4 GCC
 cells), GNU zero-size aggregates (22 KCC cells), and complete wide
 character/string semantics (22 KCC cells). They are not hardware-based
 exclusions and must not be counted as passes.
+
+## KCC-only repair scope (2026-11-24, v36a)
+
+The user has explicitly excluded GNU zero-sized aggregates from KCC's
+supported language subset. The 22 historical KCC cells of
+`20000801-3.c` are now unsupported; all 44 GCC cells remain active.
+This is an optional compiler-feature policy, not a PDP-10 hardware
+limitation and not a successful test. Retain the original source and
+historical records. Four additional historical C99 scope cells passed
+with the installed v35e KCC. The remaining KCC cohort is 147 cells:
+22 wide literal compilation failures and 125 runtime failures.
+
+KCC already supports `_KCCtype_char6`, `char7`, `char8`, `char9`,
+`char16`, `char18` (with the `_KCCtype_` prefix), `_KCCtype_int32`, and
+native 36-bit `int`. No new scalar representation is necessary for
+wide literals: reuse native `int` as `wchar_t`, consistent with GCC.
+The current lexer uses the ordinary narrow literal type and refuses
+mixed-width concatenation. Wide literal storage, typing, emission and
+serialization remain to be implemented while preserving compact narrow
+literal storage. No compiler implementation changes were made in v36a.
