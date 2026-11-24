@@ -48,3 +48,38 @@ code was changed for this result. This validates only the stated
 instructions and setup, not the complete KL10B instruction set or
 extended-address compiler correctness. All-selector and boundary
 tests and extended relocation support remain separate obligations.
+
+## Extended ISA verification (v56c)
+
+Testkit `fdc2d3d` adds `kl10b-global-isa-v56c`. The test passes 92
+instruction assertions and 20 physical memory observations using
+independently constructed architectural words. All 26 one-word
+global byte pointer selectors are exercised: five before-first
+selectors and 21 data-slot selectors across widths 6, 7, 8, 9 and
+18 bits. LDB/DPB preserve adjacent slots and trailing unused bits.
+IBP and signed ADJBP cross both word and section boundaries; the
+transition from section 2 offset 777777 to section 3 offset zero
+preserves the selector and accesses memory, not accumulator zero.
+XMOVEI returns the current-section and global indirect addresses.
+Forward and reverse XBLT copy two words between sections 2 and 3,
+with count exhaustion, final addresses and destination words checked.
+
+Run `./run-misc-tests.sh run-id kl10b-global-isa-v56c`. Both registered
+KL10B regressions pass. This completes the initial independent
+execution milestone EA01, not the extended compiler test matrix.
+
+## DAS baseline (v56c)
+
+Using an absolute address 2,,1000, the installed DAS binary SHA256
+2a22c152088a9cee6d3085ce787c0796d46b1b9e903217dc760b343c4997cfa1
+emits incorrect words for 21 data-slot selectors and rejects all
+five before-first selectors (0/26 correct). The nine-bit first-slot
+example emits 331100001000 instead of 700002001000. Results and
+source hashes are recorded in the testkit manifest
+`PDP10-DAS-OWGBP-BASELINE-20261124-v56c.tsv`. This is observed
+assembler output, not a compiler runtime failure count.
+
+The next stage must repair selector encoding and preserve 30-bit
+symbolic address relocation without modifying DAIMOS DXR formats
+or adding native resident state. Existing local-address objects
+and the DAIMOS loader remain outside this extended-address work.
