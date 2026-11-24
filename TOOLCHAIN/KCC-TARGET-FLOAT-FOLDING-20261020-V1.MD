@@ -132,3 +132,12 @@ is classified unsupported in all GCC and KCC semantic matrix profiles.
 The separate KCC overflow-diagnostic validation remains applicable and
 passed for base and pdp6. Testkit commit e76200a records the 66 historical
 exclusions without counting them as passes.
+
+V35b supersedes the all-unsupported matrix row: universally
+inapplicable semantic tests are retired rather than scheduled or
+retained as empty coverage rows. The exact source survives only as
+`tests/diagnostic/kcc-fp-range-960405-1-v35b.c` in pdp10-testkit,
+owned by the existing overflow-diagnostic script. Inventory and both
+KCC diagnostic profiles pass. Testkit commit a703fc5. Compiler defects
+and features supported by at least one target remain separate from
+this retirement policy.
