@@ -83,3 +83,39 @@ The next stage must repair selector encoding and preserve 30-bit
 symbolic address relocation without modifying DAIMOS DXR formats
 or adding native resident state. Existing local-address objects
 and the DAIMOS loader remain outside this extended-address work.
+
+## Independent KLH10 execution (v56e)
+
+KLH10 fork `theseus-chimaira/klh10`, source commit `a97d836`, builds
+both KL10-extend/T20 and KS10/T20 on the aarch64 Termux host.
+The portability changes use POSIX SEEK_SET in place of L_SET and
+enable libpcap only when the required headers and library exist.
+The build links with the installed Termux libandroid-shmem library
+(`LIBS=-landroid-shmem`) and disables bridge networking. Existing
+upstream warnings remain; network/device operations are not tested.
+
+The versioned distribution `klh10-build-20261124-v56e/local.tar.gz`
+under TMPDIR (SHA256
+2745b67365429c44c289e093c1e27e13cc8465379e319e00ce457b91cccb1871)
+is installed into PDP10_PREFIX without replacing SIMH. Versioned
+`bin/kn10-kl-v56e` and `bin/kn10-ks-v56e` have unversioned aliases.
+The matching device subprocesses and utilities are kept separately
+in `libexec/klh10-v56e/kl` and `libexec/klh10-v56e/ks`; for device
+configurations use the appropriate working directory or dppath.
+
+Testkit `013851c` registers the optional KLH10 runner. The same
+architectural input images from v56b/v56c are replayed with KLH10
+physical deposits/examines and its own HALT report. Both local CPU
+smokes pass, both KL10B section controls pass, and all 92 global ISA
+assertions and 20 physical words match. The checks require nonzero
+success sentinels and the correct termination state, not host exit
+status alone. Run:
+
+```sh
+./run-misc-tests.sh run-id klh10-isa-v56e --manual
+```
+
+KLH10_KL and KLH10_KS may override the executable paths. This is
+additional independent ISA coverage, not yet an alternative C matrix
+runner. Full extended relocation/linking and compiler acceptance
+remain open.
