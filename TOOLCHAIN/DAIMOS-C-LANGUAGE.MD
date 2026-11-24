@@ -148,3 +148,28 @@ Unsigned narrow values also promote to 36-bit `int`: every supported unsigned na
 The `DAIMOS_INT*_C` and `DAIMOS_UINT*_C` macros construct word-sized source constants. Assignment to an exact-width object performs the documented truncation. They do not create distinct narrow literal types.
 
 Exact 16- and 32-bit arithmetic remains outside the KCC common language subset.
+
+## Compiler-neutral PDP-10 test types (2026-11-24, v39b)
+
+The testkit's current shared integer interface is
+`support/common/pdp10-types.h`, replacing `daimos-language.h`. The
+canonical names are `pdp10_intN_t` and `pdp10_uintN_t` for N = 6, 7,
+8, 9, 16, 18, and 32. These are target/compiler facilities, independent
+of the operating system. KCC is selected by `__COMPILER_KCC__`, and
+PDP-10 GCC by `__GNUC__` and `__pdp10__`. Both support all these exact
+value widths. The older v1 width restrictions above are historical.
+Compiler attribute macros now reside in `test-compiler-compat.h`.
+
+Value width does not imply identical object layout or address units.
+KCC char16 has sizeof 1, whereas GCC's size(16) scalar has sizeof 2
+in nine-bit C units. The exact-width stride regression retains distinct
+size expectations. Cross-compiler ABI boundaries must continue to use
+explicit word adapters rather than incompatible narrow-object pointers.
+
+Twenty ported test sources now use the common type names. Installed
+compilation-only replay: 687 of 852 historical GCC cells compiled;
+165 expose actual packed-aggregate GCC ICEs. All 426 corresponding KCC
+cells compiled. Six existing language/representation compatibility
+scripts passed. No compiler modification, full sweep, or runtime PASS
+claim for the 687 newly compilable cells. Testkit commit 668a07d and
+v39b manifests record the exact source adaptations and compilation evidence.
