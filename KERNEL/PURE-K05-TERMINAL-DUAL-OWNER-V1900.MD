@@ -1,5 +1,11 @@
 # PDP-6 K05 v1900: exact two-owner RAW PURE terminal cleanup
 
+**Historical policy:** v1920 supersedes direct dual-owner terminal
+release. The current contract requires deferred ownership reconciliation
+before terminal destruction; see PURE-K06-TERMINAL-IDENTITY-V1920.MD.
+The results below describe the original v1900 source, not current
+production acceptance.
+
 Date: 2026-11-23. Scoped **original PDP-6 native terminal/MM/
 FINALIZE+PREVM integration PASS**. The production source correction
 is entirely in the opt-in removable PURE terminal MRES. K05-K09
