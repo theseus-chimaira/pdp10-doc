@@ -1,3 +1,41 @@
+## 2026-11-26 v1959: K09 functional integration CLOSED
+
+Current KCC GENERAL/STRICT v1959 images, v1954 SIMH:
+fresh complete 48K nine-child lifecycle and physical
+MM high-water PASS, using validated v1957 compact three-
+member fixture. A/B/C MM9/26/9, free24194/2619/24194,
+largest24194/1466/24194. Exact baseline MM and parent VM
+restored; nine WAIT/data checks and unchanged four tapes.
+Both reports byte-identical, 2931 writes, 170 count commits,
+18 PURE and 2 BRK changes, peak MM28/32, min free1182,
+max occupied/reserved47970/49152. Five unsafe trace variants
+and forged summary rejected per profile. Parent retains
+original coordination pipe; PID1 marker then harness stop.
+30-word DSK MRES growth vs v1957; fixed KCORE and PURE
+binary hashes unchanged.
+
+Fresh 64K disk root six-child actual swap PASS, free
+43633/1089/43647, MM9/20/8, bitmap0/64/0, reads50/129/193,
+writes1/65/65. Both partial-sector critical faults conserve
+original ownership and stop safely. Controller bounded
+admission, queue, timeout and peer data recovery PASS;
+see DSK270.MD. Six FULL root cases pass. Prior v1951/v1953
+mixed FULL 48K/64K, descriptor exhaustion and v1947 actual
+PI6/loss/reattach evidence retained; those unchanged
+subsystems' historical tests not all replayed in v1959.
+
+K09 scoped PDP-6 simulator functional acceptance closed
+after review of K01-K08 prerequisites and all K09 gates.
+No default enablement: RAW PURE/mode3 OFF. Deferred 16K
+ceiling and net memory optimization remain open; previous
+budget misses retained and add30 where DSK installed.
+Physical hardware/release qualification and repository
+branch retirement separate. Next mandatory K17 native
+KA10 contiguous low-segment backend, before optional
+K10-K16 compression.
+Evidence $TMPDIR/k09-address-v1959.1opCid/{general,strict}-48;
+testkit 2561080 and final closure record in DAIMOS.
+
 ## 2026-11-26 v1957: complete 48K nine-owner physical high-water
 
 Current KCC GENERAL and STRICT, v1954 installed SIMH,
