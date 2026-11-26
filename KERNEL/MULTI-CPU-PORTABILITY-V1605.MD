@@ -5,6 +5,15 @@ Current implementation update (v1961): PDP-6 KCORE and the shared
 the KA10 unassigned-instruction trap. The native KA10 backend is not
 yet implemented; the historical review below remains unchanged.
 
+Update v1962/v1963: PDP-6 reuses 060/061 for the APR shadow and idle
+stack base; KA10 must reserve them for its instruction trap. Aligned
+contiguous VM descriptors produce the same low-segment APR word on
+PDP-6 and KA10: LH = logical words minus 02000, RH = physical bias.
+With both halves aligned to 02000, KA10 high relocation/protection
+fields are zero. Native activation/bounds probes passed on PDP-6 and
+KA10 ONESEG/TWOSEG. First-user activation now uses the descriptor, not
+the stack offset. The full KA10 kernel remains unimplemented.
+
 Date: 2026-11-15. Accepted scope: source/build reorganization
 on PDP-6 only; no KA10/KI10 boot, paging or process support.
 No added resident words, per-process metadata or runtime dispatch.

@@ -25,7 +25,9 @@ ENTERS KINIT THERE.  KINIT CONTAINS THE BUILT-IN MINIT TABLE AND the packaged
 MRES images required by the selected build profile.
 
 KCORE BEGINS AT 000062 (v1961).  Locations 000060/000061 are reserved
-for the KA10 unassigned-instruction trap on both CPUs.  The first 53 words
+for the KA10 unassigned-instruction trap. On PDP-6, v1962 uses 060 for
+vm_pdp6_apr and 061 for mach_kernel_stack_base, cleared by disposable
+KINIT after copying KCORE. This reclaims two BSS words. The first 53 words
 (000062..000146) are the shared Stage1/runtime block decoder.
 KINIT INSTALLS PERMANENT MRES PACKAGES IMMEDIATELY
 ABOVE THE FIXED KCORE AREA so KCORE+MRES forms a packed low-memory resident

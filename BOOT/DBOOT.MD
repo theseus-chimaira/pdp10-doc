@@ -65,8 +65,9 @@ STAGE0 PAPER TAPE/RIM PROXY
 '''
 
 `000020..000057` remains architectural PDP-6 low memory. Since v1961,
-`000060..000061` is reserved in permanent low core for the KA10
-unassigned-instruction trap on both machines. The initial paper-tape
+`000060..000061` is reserved for the KA10 unassigned-instruction trap.
+On PDP-6, v1962 reuses those cells for the APR shadow and idle-stack base
+after KINIT clears them. The initial paper-tape
 Stage1 read-in still loads at `000060`; the decoder is installed only
 from the late, safe handoff above `000146`.
 KCORE links the same 53-word block decoder first at `000062` (52
@@ -74,6 +75,12 @@ instructions and one inline byte pointer). Stage1 copies exactly those
 words, whose internal transfers use `000062+offset`. The runtime VFS
 adapter uses a 32-word refill window and calls the same fixed decoder.
 No duplicate resident code or extra decoder state is required.
+
+The KA10 hardware read-in test v1963 reached KINIT using the unchanged
+DTC Stage1, a counted paper tape (`dxrconvert --ka10-readin -b 060`),
+and the Type 136/551 controller. The counted stream is IOWD, relocated
+Stage1 words, and a final JRST included in the count. It is not the
+PDP-6 executable read-in stream. No KA10 KINIT execution is claimed.
 The v1464 block-format cutover superseded D6LZ36.
 
 Stage1 still treats the expanded KINIT/KCORE image as opaque.  It does not
