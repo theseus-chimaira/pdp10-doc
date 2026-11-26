@@ -1,3 +1,36 @@
+## 2026-11-26 v1948: FULL KINIT disposable-prefix sizing
+
+KINIT must make a contiguous low region available to MINIT before
+installing the resident packages. This region includes the already
+copied KCORE source and the copied-out MINIT table, but must not
+overlap still-live KINIT instructions. The linked resident footprint
+rather than the encoded package footprint determines the bound.
+
+The PDP-6 boot build now computes the required prefix from the
+linked KCORE endpoint, the maximum MM extent table (two words per
+descriptor), and the largest allowed resident package combination.
+The alternatives are block-root with disk swap, tape-root with disk
+swap, and tape-root with PURE. Common optional packages are counted
+conservatively. Any deficit is emitted as disposable zero padding
+before the embedded KCORE slot. The KCORE slot itself retains its
+exact initialized size. KINIT reclaims the entire prefix through
+the existing MINIT arena publication; no new permanent word,
+runtime allocation or ABI is introduced.
+
+In the KCC FULL AUTO RAW image the original contiguous low arena
+was [047615,055172) at DTFS install; the package needed 005654
+words, ending at 055471. All addresses are octal. The old image
+correctly halted rather than installing across live KINIT.
+The new prefix ends at 057445, adding 1195 decimal transient words.
+The FULL RAW-disabled and 64K lowmem GENERAL/STRICT images need
+no padding. The fixed KCORE endpoint remains 025632; KCORE,
+PURE and SWAP binaries are unchanged. The corrected FULL image
+boots TSFS without auxiliary backing and installs PURE, and boots
+TSFS with valid DRM auxiliary backing and installs disk SWAP.
+Disk and drum roots also install disk SWAP. These observations
+verify root/service installation at INIT, not swap data traffic.
+The overall K09 production acceptance is separate.
+
 ## 2026-11-26 v1947: integrated K07/K08 physical acceptance
 
 K07 executable backing and K08 scheduler implementation are closed.
