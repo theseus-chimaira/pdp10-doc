@@ -2767,6 +2767,52 @@ No fixed KCORE or persistent process storage growth. Physical
 measurements precede RT correction. DAIMOS4b4982bb, testkit13aae53;
 see design/kcore-k15-physical-v1984.md. K15/K16 remain open. Default OFF.
 
+## 2026-11-26 v1985: atomic directory placement and matched 64K capacity
+
+Place the verified candidate during the original pinned DROP, before
+publishing mode3. Reuse existing read-only mm_find_fit under global PI
+exclusion and the original full owner. Prefer lowest free 0200-aligned
+gap below original APR; no fit retains original in-place commit.
+The shared atomic MM leaf validates destination arena/disjointness,
+original exact pinned PROCESS and sorted table before BLT and backward
+descriptor reorder. No additional descriptor, scratch, allocation,
+per-process word or fixed KCORE instructions. Proposed destination
+sector and encoded count saved in word067 with bit31 plus both kind
+bits and retry tag; original VM base persists until publication.
+Exact destination witness reconciles lost reply; false success or
+uncertain owner quarantined. On clean refusal exact original pinned
+owner authorizes original RAW cancellation. No generic movement of
+published type4 RAW or bitmap. FULL/unlock/terminal use sector-aligned
+source geometry in placement profile; RAW and full APR geometry unchanged.
+Dirty placement recovery remains open.
+
+Existing experimental directory flag selects the complete placement
+chain. Native GCC/KCC each25 DROP/commit/direct MM,4 FULL,2 terminal
+calls/CPU (PDP6/KA10); six mutants per compiler reject. Full descriptor
+table, independent namespace shift, exact old APR reuse and overwrite,
+actual moved-source bounded loader and PREVM terminal retry. All older
+placement-OFF native suites PASS. GCC/KCC linked directory5460/6504
+words (+101/+103 vs v1983 incl RT correction), RAW3258/3885 and fixed
+KCORE DXR byte-identical. No BSS/per-slot growth. No new toolchain defect.
+
+Matched source-built 64K PDP-6 physical SIMH with identical INIT/COMP
+fixture hashes:12 admitted children (fixture ceiling) vs9 RAW and8
+original bitmap. Four239-word bitmap owners at octal061400,062400,
+063400,064400, one3584 RAW and seven4096 resident children. 33 valid
+nonoverlapping extents;1837 free, largest aligned1024. Equivalent
+RAW saving13380 gross/11186 net after actual2194 overhead. Capacity
+regression eliminated in this matched workload, not a maximum claim.
+Actual slot3 restore and finish from061400/239 to160000/4096, each
+pinned once, peak4335. All12 sparse data and exact WAIT status checks,
+final child storage/user extents/u-areas absent, normal HALT. Independent
+verifier plus five corrupted final-state controls PASS. Simulator stopped.
+DAIMOS9729d2ef/361ad933, testkit4df3cf2/6028851; see
+design/kcore-k15-placement-v1985.md in DAIMOS.
+Matched 64K placement/capacity and successful RUN/SLEEP/restore/EXIT/
+WAIT/final MM subgates accepted. K15 actual PI6/READY_ONCE, EXEC,
+nonresident terminal and K16 dirty recovery, latency/stack, real DSH/48K
+remain open. Default OFF.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
