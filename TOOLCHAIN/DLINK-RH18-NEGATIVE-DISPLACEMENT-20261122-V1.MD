@@ -38,3 +38,19 @@ and out-of-range DOBJ addends remain rejected.
 
 No full test matrix was rerun. These results cover only the named
 sources and selected PDP-6 profiles.
+
+## 2026-11-26 v1977 integrated DAIMOS repair
+
+The standalone 48fc3df rule was absent from the consolidated DAIMOS
+host and native DLINK sources. A legitimate negative LOCAL_RH18
+relocation in the K11 native fixture reproduced the link failure.
+Both integrated linkers now apply the same bounded rule: a negative
+result with negative addend may wrap only for LOCAL_RH18/SYMBOL_RH18;
+positive overflow and LH18 underflow remain invalid. Host tool rebuilt
+and installed via local.tar.gz in PDP10_PREFIX. Native PDP6 tests
+execute actual LOCAL_RH18 and SYMBOL_RH18 indexed loads and host
+positive/LH18 guards pass. Actual DAIMOS native DLINK/archive/marked
+executable prints RH18 WRAP OK, MUTABLE TX2 OK and NATIVE LINK OK;
+all six native shell probes pass. The native negative guard cases
+were not separately executed. Testkit fcd228f. This is the integrated
+repair, not a second change to the retired standalone linker.

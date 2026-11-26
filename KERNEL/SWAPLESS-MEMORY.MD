@@ -2475,6 +2475,42 @@ within the current ABI. K11-K16 are separate gates: no mode3 publication,
 no installed bitmap codec, no net RAM or physical compressed lifecycle
 claim. RAW PURE and mode3 remain default OFF.
 
+## 2026-11-26 v1977: bidirectional bitmap directory codec (K11)
+
+The staged mode3 codec stores ceil(N/36) presence-mask words in a
+contiguous directory, followed by every nonzero literal in original
+RAW order. The first RAW word in each group corresponds to bit35;
+unused low bits of the last mask are zero. Literals must be nonzero,
+and exactly consumed. This has the same size as interleaved v1451,
+but is a different stream layout. No persistent disk representation
+is involved. Replace the old staged producer/verifier/decoder together
+when integrating; do not interpret a v1451 stream as the new directory.
+
+An exact read-only count and overlap preflight precede stores. Both
+forward and reverse traversal consume a RAW word before its literal
+store, and store a mask only after reading its complete group. Decode
+consumes masks and needed literals before writing RAW, checking their
+two independent unread intervals. Preflight uses the exact same
+native schedule as execution. Normal refusals preserve both spans
+and independent count. Unexpected write-pass failure is hard -6,
+not ordinary RAW fallback: source/count may already have changed,
+so future MM recovery must quarantine rather than resume or publish.
+No codec scratch array or additional per-process word. The caller must
+hold stable exclusive physical spans across both passes; preflight
+alone cannot prove MM ownership, source survival or atomic publication.
+
+Native PDP6 and KA10 each pass 2760 exact independent ledger/arena
+cases (1202 successful,862 overlap refusals,696 no gain), including
+50 reverse-only encodes and99 reverse-only decodes, and288 geometries
+unsafe in both directions. Synthetic5248-word zero/sparse inputs,
+end-aligned and in-place expansion, canonical checks, four executed
+unsafe mutants, and injected late write error pass. Final KCC frontend
+262 TEXT + native walker133 =395 staged words, zero DATA/BSS. No
+installed KCORE/MRES growth or live compression savings claimed.
+K11 leaf closed; K12-K16 ownership, atomic DROP, FULL restore,
+lifecycle and recovery remain open. RAW PURE/mode3 default OFF.
+Testkit fcd228f; DAIMOS design/kcore-k11-v1977.md.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
