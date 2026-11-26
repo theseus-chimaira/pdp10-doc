@@ -58,21 +58,23 @@ STAGE0 PAPER TAPE/RIM PROXY
   -> DEVICE STAGE1 (DSK270, DRM236, DTC551, MTC516, OR PTR)
   -> DEVICE-SPECIFIC STREAM DISCOVERY/TRANSFER
   -> READ THE THREE-WORD COMPRESSED DAIMON STREAM HEADER
-  -> STAGE THE D6LZ36 PAYLOAD ABOVE THE FINAL UNCOMPRESSED IMAGE
-  -> INSTALL THE COMMON 40-WORD RESUMABLE D6LZ36 CORE AT 000060
+  -> STAGE THE BLOCK LZ/RLE PAYLOAD ABOVE THE FINAL UNCOMPRESSED IMAGE
+  -> INSTALL THE COMMON 53-WORD BLOCK DECODER AT 000062
   -> EXPAND THE IMAGE DIRECTLY TO 030000
   -> ENTER KINIT AT 030000 + ENTRY_OFFSET
 '''
 
-`000020..000057` remains architectural PDP-6 low memory.  Address `000060` is the fixed D6LZ36 resumable-core entry and is part of the resident contract.
-KCORE links the exact same core source first, so `d6lz36_decode_core` is also
-physically `000060`; no trampoline or second resident token engine exists.
-Stage1 carries those exact 40 core words, whose internal transfers are encoded
-against `000060+offset`, copies them to low core, initializes the decoder state,
-and calls `000060` directly.  The generic memory-wrapper ABI is therefore a
-boot/test convenience only and consumes no permanent KCORE words.  At runtime
-the VFS frontend feeds eight-word windows to the same core and resumes only
-when a window empties, without a per-word input call.
+`000020..000057` remains architectural PDP-6 low memory. Since v1961,
+`000060..000061` is reserved in permanent low core for the KA10
+unassigned-instruction trap on both machines. The initial paper-tape
+Stage1 read-in still loads at `000060`; the decoder is installed only
+from the late, safe handoff above `000146`.
+KCORE links the same 53-word block decoder first at `000062` (52
+instructions and one inline byte pointer). Stage1 copies exactly those
+words, whose internal transfers use `000062+offset`. The runtime VFS
+adapter uses a 32-word refill window and calls the same fixed decoder.
+No duplicate resident code or extra decoder state is required.
+The v1464 block-format cutover superseded D6LZ36.
 
 Stage1 still treats the expanded KINIT/KCORE image as opaque.  It does not
 parse KINIT, MINIT, MRES, D6FS, or module metadata.  KINIT continues to own
@@ -86,7 +88,7 @@ The normal full-profile Stage1 stream is:
 0  SIXBIT DAIMON
 1  UNCOMPRESSED_WORDS18 ! KINIT_ENTRY_OFFSET18
 2  COMPRESSED_WORDS18   ! 0
-3+ RAW D6LZ36 PAYLOAD
+3+ BLOCK LZ/RLE PAYLOAD
 '''
 
 The compressed source is staged at `030000 + UNCOMPRESSED_WORDS`.  The image
@@ -112,11 +114,11 @@ entry they move AC17 to the first word after the expanded image, matching the
 DSK/DRM handoff contract.  This is required because both the expanded KINIT
 image and the subsequent KCORE low-memory copy can overwrite a fixed Stage1
 stack.  Post-decode fatal paths likewise remain above the installed
-`000060..000127` decoder image.
+`000062..000146` decoder image.
 
-The current full-profile measurement is 23202 uncompressed payload words and
-21756 D6LZ36 words, about 6.2 percent smaller.  This is only a dated image
-measurement; the compression ratio is not part of the boot ABI.
+Historical pre-v1464 D6LZ36 measurement: 23202 uncompressed payload
+words and 21756 compressed words. This does not describe the current
+block codec; compression ratio is not part of the boot ABI.
 
 ### 32K KINIT profile
 
@@ -124,7 +126,7 @@ The low-memory profile remains governed by `BOOT_PROFILE=lowmem`,
 `BOOT_CORE_WORDS=0100000`, and the configured KINIT stack reserve.  It writes a
 zero `compressed_words` header and streams the raw KINIT image directly to
 030000; this avoids simultaneous final-image plus compressed-staging storage on
-a 32K machine.  The full profile retains D6LZ36 compressed boot.
+a 32K machine.  The full profile uses block LZ/RLE compressed boot.
 
 ## BOOT FLOW
 
@@ -138,15 +140,14 @@ specific.  DRM maps one 128-word DAIMOS block to the Type-236 controller as
 
 After reading and validating the stream header, a nonzero `compressed_words`
 field selects the normal compressed path: Stage1 stages exactly that payload,
-installs the shared decoder at 000060, expands to 030000, and jumps to KINIT.
+installs the shared decoder at 000062, expands to 030000, and jumps to KINIT.
 A zero field selects the LOWMEM raw path and streams the declared uncompressed
 image directly to 030000 before entering KINIT.
 KINIT then reopens the selected boot medium and performs normal DAIMOS boot
 initialization.
 
-DTC, MTC, and PTR currently implement the normal compressed stream only; the
-explicit 32K raw LOWMEM path remains a DSK-oriented diagnostic/acceptance
-profile.
+DTC also implements raw LOWMEM and TSFS in-place hybrid raw boot.
+MTC and PTR use the compressed stream. DSK/DRM retain their raw paths.
 
 Stage1 is not a filesystem reader, module linker, or rescue OS.
 
@@ -256,7 +257,7 @@ Failure is reported as an AC1 numeric reason followed by HALT:
 2  no complete selected set
 3  invalid compressed-image header
 4  bootstream read failure
-5  D6LZ36 decompression or exact-consumption failure
+5  Block decompression or exact-consumption failure
 '''
 
 This keeps failure causes machine-readable while avoiding duplicate text-output

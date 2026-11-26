@@ -1,5 +1,10 @@
 # KCORE v1605: PDP-6, KA10 and KI10 source boundaries
 
+Current implementation update (v1961): PDP-6 KCORE and the shared
+53-word Stage1/runtime decoder use octal 000062, reserving 060/061 for
+the KA10 unassigned-instruction trap. The native KA10 backend is not
+yet implemented; the historical review below remains unchanged.
+
 Date: 2026-11-15. Accepted scope: source/build reorganization
 on PDP-6 only; no KA10/KI10 boot, paging or process support.
 No added resident words, per-process metadata or runtime dispatch.

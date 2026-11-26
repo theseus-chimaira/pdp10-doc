@@ -1,5 +1,10 @@
 # v1464: single-format block LZ/RLE production cutover
 
+Current address update (v1961): the shared 53-word decoder and KCORE
+now begin at octal 000062, reserving 000060/000061. The original
+measurements and addresses below describe the historical release. See
+`KERNEL/DAIMOD-LAYOUT.MD` for the current layout.
+
 Date: 2026-11-10.
 
 The explicit production decision supersedes the earlier v1395/v1462

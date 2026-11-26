@@ -24,7 +24,10 @@ STAGE1 LOADS OR DECOMPRESSES ONE COMPLETE KINIT/KCORE IMAGE AT 030000 AND
 ENTERS KINIT THERE.  KINIT CONTAINS THE BUILT-IN MINIT TABLE AND the packaged
 MRES images required by the selected build profile.
 
-KCORE BEGINS AT 000060.  KINIT INSTALLS PERMANENT MRES PACKAGES IMMEDIATELY
+KCORE BEGINS AT 000062 (v1961).  Locations 000060/000061 are reserved
+for the KA10 unassigned-instruction trap on both CPUs.  The first 53 words
+(000062..000146) are the shared Stage1/runtime block decoder.
+KINIT INSTALLS PERMANENT MRES PACKAGES IMMEDIATELY
 ABOVE THE FIXED KCORE AREA so KCORE+MRES forms a packed low-memory resident
 block.  MINIT code and other KINIT-only material are transient and are
 reclaimed after initialization.

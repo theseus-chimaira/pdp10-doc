@@ -1,5 +1,10 @@
 # Block decoder v1458: 53-word low-core PDP-6 component acceptance
 
+Current address update (v1961): the shared 53-word decoder and KCORE
+now begin at octal 000062, reserving 000060/000061. The original
+measurements and addresses below describe the historical release. See
+`KERNEL/DAIMOD-LAYOUT.MD` for the current layout.
+
 Date: 2026-11-10. **Component validated and committed as an isolated
 candidate, not production boot-integrated.** The D6LZ36-free block
 cutover baseline is v1452. This experiment preserves the v1421 block
