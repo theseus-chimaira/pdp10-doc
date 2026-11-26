@@ -2666,6 +2666,45 @@ PREVM identity, VM destroy and actual RUN/EXEC/EXIT/WAIT/scheduler
 lifecycle remain open. No new installed flag; fixed mode3 destroy
 refusal and default OFF remain. See DAIMOS design/kcore-k15-service-v1981.md.
 
+## 2026-11-26 v1982: directory terminal ownership and staged VM destroy
+
+The directory terminal export reuses u-area BRK word0407 as an exact
+encoded length,,physical base escrow only after nonreturning terminal
+exclusion. The caller must already have excluded returning executive
+stacks. Word067 LH records terminal bit31, both kind bits29/30 and
+original source sector; RH remains saved EXIT status. PREVM rearm
+preserves the identity. Neither executable backing identity is changed
+before exact release. No additional u-area word.
+
+Require an inactive noncurrent TRANSITION owner, exact stable u-area,
+mode3, marked saved backing, absent APR, no live FILE or user map,
+valid MM table and sole K13-geometry PACKED_PROCESS. Record original
+span even if pinned; refuse pins without retiring them. Retry uses
+exact escrow, never a replacement base/length. Reconcile MM free
+reply against absence of the entire original interval and all user
+owners. Foreign intersection or uncertain owner remains quarantined.
+No executable reload, bitmap decode or allocator is needed. On exact
+absence publish mode0, clear terminal escrow and BRK, preserving EXIT
+status/lifecycle flags. Common detach retires backing and credential
+identity; caller retains TRANSITION until terminal finalization.
+Mode2 uses unchanged RAW v1609 terminal.
+
+The staged VM destroy assembly selection delegates zero-APR
+nonresident release to the existing terminal gateway, reducing the
+routine from73 to65 TEXT words. The default VM gate and disabled RAW
+FULL objects are byte-identical. No installed target supplies the
+new terminal or VM selection. Native PDP6/KA10 each65 direct detach
+and65 staged VM operations, actual PREVM preservation instructions,
+real MM and common detach; six unsafe variants rejected. K14/service
+and v1920 RAW regressions PASS. +336 incremental MRES TEXT, cumulative
+2516, or2508 with the staged VM gate; zero DATA/BSS or per-slot growth.
+Testkit6d684e2, DAIMOS08b51176; see design/kcore-k15-terminal-v1982.md.
+
+This completes the staged terminal/VM subgate only. K15 still needs
+source-built package integration and actual scheduler/PI6, RUN/EXEC,
+EXIT/WAIT and complete finalizer stack exclusion. K16 deferred recovery,
+physical/latency/stack and net RAM acceptance remain open. Default OFF.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
