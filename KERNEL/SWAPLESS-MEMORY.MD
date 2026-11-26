@@ -2511,6 +2511,56 @@ K11 leaf closed; K12-K16 ownership, atomic DROP, FULL restore,
 lifecycle and recovery remain open. RAW PURE/mode3 default OFF.
 Testkit fcd228f; DAIMOS design/kcore-k11-v1977.md.
 
+## 2026-11-26 v1978: exclusive original-prefix lease (K12)
+
+The staged first mode3 preparation uses only the process's own
+still-allocated reconstructible PURE prefix. The exact full APR owner
+and separate unpinned KERNEL_DYNAMIC u-area (01000+slot,0410 words)
+are proved against the whole MM table. Reuse normal PURE lifecycle,
+mount identity and provider availability checks, with explicit marked
+mutable eligibility, no BACKSTORE, noncurrent SLEEP/STOP and no live
+RT lease. Caller owns TRANSITION, global PI exclusion and the same
+synchronous executive continuation until commit/cancel. Pin from zero
+to one and verify the actual original owner, not the reply alone.
+The candidate directory is written at original APR base, with capacity
+bounded by the PURE skip. The RAW suffix is untouched. No new extent,
+MM descriptor, scratch slab or permanent metadata. If the entire
+shrinking stream will not fit, refuse cleanly and use ordinary RAW.
+A separate dynamic scratch or VFS lease is not part of this design.
+
+Word067 initially retains the original suffix identity with old DROP
+kind for clean pin uncertainty. Before a possible store, set both old
+DROP/PREFIX kind bits (a new kind the old recovery refuses). RH is zero
+until successful encoding, then exact encoded count, not a provisional
+target address. The caller-stack lease holds original VM word, backing,
+u-area base and packed executable identity (four words). Normal refusal
+leaves bytes intact and clears escrow only after proving the unpinned
+original owner. Unexpected write-pass fault retains dirty RH0 and has
+no valid cancellation lease. Do not treat it as ordinary RAW fallback.
+
+Successful preparation is NOT a runnable resident image: PURE text
+has been overwritten. Cancel only in the same synchronous PI window,
+against the original identity and once-pinned full extent. Commit
+existing RAW rebase, prove exact pinned original suffix, publish
+mode2 with VM base0, and prove pin retirement before clearing escrow
+and TRANSITION. Refused rebase retains dirty full extent; refused
+unpin retains committed RAW under TRANSITION. Lost replies reconcile
+only with exact MM witnesses. Never release a dirty resident image
+merely because its pin is gone. Old RAW recovery/unlock rejects the
+combined dirty kind; deferred recovery requires separate design.
+
+Native PDP6/KA10 each72 prepare/cancel calls, actual MM and PI,
+real RAW fallback and exact released-prefix allocator reuse, six
+executed unsafe controls pass. Default RAW DROP object byte-identical;
+optional object adds414 TEXT, zero DATA/BSS, four temporary identity
+words (not total stack high-water). Testkit ea0be1b. K12 staged
+prefix-only lease accepted. K13-K16 still open: directory verification
+and mode3 atomic commit, FULL restore, scheduler/terminal lifecycle,
+deferred dirty recovery, live net RAM and interrupt latency. Full
+PI-off codec latency is not measured; no live activation or RT/device
+latency guarantee. RAW PURE/mode3 defaults OFF. See DAIMOS
+design/kcore-k12-v1978.md for exact evidence.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
