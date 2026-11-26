@@ -90,6 +90,19 @@ TSFS on DECtape, counted paper tape, and existing PDP-6 user binaries.
 It reaches INIT; complete interactive operation remains unqualified.
 The KA10 simulator configuration disables RH10 controllers because
 address 270 is reserved for Type 270 in this configuration.
+
+Since v1967 the KA10 LOWMEM build also accepts a Type 270 D6FS root:
+
+    make -C system/boot/pdp6 DAIMOS_MACHINE=ka10 ROOT=disk BUILD=build/ka10-disk image
+
+Use separate build directories for the two root profiles. The initial
+paper-tape read-in selects the existing disk Stage1, with no change to
+the DSK controller or driver. Both TSFS and D6FS without a drum reached
+INIT on a native 64K KA10; VFS provider readbacks were respectively 7
+and 6. The D6FS root supplied 1024 BACKSTORE blocks, TSFS none. Stopping
+a writable D6FS guest at INIT leaves DIRTY media; the normal CLEAN-only
+mount rule still applies. Use copied clean media for boot tests.
+RM10-present profiles are required for K17 but not yet implemented.
 The v1464 block-format cutover superseded D6LZ36.
 
 Stage1 still treats the expanded KINIT/KCORE image as opaque.  It does not
