@@ -2813,6 +2813,42 @@ WAIT/final MM subgates accepted. K15 actual PI6/READY_ONCE, EXEC,
 nonresident terminal and K16 dirty recovery, latency/stack, real DSH/48K
 remain open. Default OFF.
 
+## 2026-11-26 v1986: actual directory PI6 and first dispatch
+
+Validation only, unchanged v1985 kernel and MRES, no RAM growth.
+The actual native scheduler selector and directory service were
+source-linked with real MM/FULL/codec and an independent resident
+peer. GCC/KCC on PDP-6 and KA10 each pass44 selections and16 service
+calls; six unsafe selector mutants per compiler reject. READY_ONCE
+wins exactly one selection, including lost successful restore reply,
+then normal ranking resumes. Clean failure permits a peer and later
+retry; dirty uncertainty and stale READY cannot dispatch.
+
+The unchanged source-built GCC 64K physical image independently
+passes actual clock PI6 inside TAPE during relocated mode3 FULL.
+Slot3 source061400/239, destination160000/4096, exact once-pinned
+pair and all239 bitmap words preserved across interrupt. Saved
+executive PC032131; PI6 tick17905, finish/READY/dispatch/guest19058.
+Actual idle-service return020335 publishes READY01003; first dispatch
+020043 chooses slot3 and consumes the hint. The same guest emits
+its checked marker, all12 WAITs complete, exact final MM and normal
+HALT. All ten corrupted-trace controls reject. Earlier scoped run
+stopped at READY because the observer rearmed its current PC;
+isolated SIMH probe confirmed this monitor behavior, and the
+corrected observer guards service entry instead.
+
+Healthy physical PI6/READY_ONCE gate closed. Actual EXEC after
+restoration, genuinely nonresident terminal destruction and physical
+fault injection remain separate acceptance gates. A PIPE-held
+returning executive stack must not be remotely destroyed. K16
+uncertain recovery, latency/stack, real DSH/48K remain open.
+Experimental directory profile only, default OFF.
+
+DAIMOS865ea7e8, testkit96889a8.
+Evidence relative TMPDIR: pure-directory-pi6-v1986.aHbEE0,
+verified-final-v1986.txt and trace-controls-v1986.log.
+See design/kcore-k15-pi6-v1986.md in DAIMOS.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
