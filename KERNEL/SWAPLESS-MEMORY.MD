@@ -2604,6 +2604,42 @@ uncertain-owner recovery, PI latency/stack costs and net RAM payback.
 No installed mode3 support or live net-memory claim. See DAIMOS
 design/kcore-k13-v1979.md for exact evidence.
 
+## 2026-11-26 v1980: bounded directory FULL restoration (K14)
+
+Staged directory mode3 restore retains the original bitmap while a
+separate full APR extent is allocated, pinned and loaded using the
+existing v1391 bounded immutable DXR loader. Reuse the v1917 exact
+owner-pair proof, v1922 MM table validation and v1664 atomic finish.
+The original aligned bitmap length must fit the derived PURE prefix
+and shrink RAW. Exact stable u-area, executable identity and mode are
+required. Both pins are witnessed before payload I/O. Decode and
+compare run with normal PI behavior under pins and TRANSITION.
+
+Revalidate owners and private continuation identity after backing I/O
+and after codec passes. Atomic finish deletes the bitmap and consumes
+the destination pin; only an exact sole unpinned APR and original
+identity authorize mode0 publication. Clean rollback retires target
+before source pin, proving each mutation regardless of reply. Word067
+holds original source and target with both old kind bits, refusing
+legacy RAW recovery. Uncertainty retains escrow and TRANSITION.
+No checksum authenticates valid-shaped corrupted source data.
+
+Native PDP6/KA10 each52 calls: real K13 DROP, bounded DXR loader,
+plain/compressed backing with actual fixed decoder, exact mutable
+restore, allocator reuse, no-fit, descriptor exhaustion, I/O and
+ownership faults. Six executed unsafe variants and v1839/v1855/v1919
+RAW regressions PASS. Synthetic bitmap176 + APR1024 =1200 peak image
+words versus disjoint RAW FULL1792. One temporary full aligned extent
+and descriptor required; no separate scratch. K14 incremental TEXT872
+(739 frontend,133 existing finish), combined staged TEXT2007, zero
+DATA/BSS. Disabled RAW FULL DOBJ byte-identical. Testkit 333f07f;
+DAIMOS dd65001b, design/kcore-k14-v1980.md.
+
+K15/K16 still own actual dispatch, terminal/VM destroy, deferred
+uncertain-owner recovery, physical acceptance, PI latency, stack and
+net RAM. No installed target enables the directory restore. Mode3
+remains disabled in production builds.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
