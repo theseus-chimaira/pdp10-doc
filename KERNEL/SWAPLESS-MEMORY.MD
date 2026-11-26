@@ -1,3 +1,14 @@
+## 2026-11-26 v1950: AUTO DSK AUXSTORE selection
+
+The v1948 FULL AUTO/DSK root-selection failure is corrected
+in the simulator, not in DAIMOS. See DSK270.MD for the DEC
+H-270 octoflop contract and supersession of the speculative
+v1949 CLEAR reset. With corrected simulator cb6a255, all six
+FULL AUTO/explicit root cases pass on unchanged KCC images.
+AUTO TSFS with DSK AUXSTORE now selects disk SWAP with 512
+backing blocks, not PURE. Active swap/RAW pressure acceptance
+remains separate. No permanent kernel change.
+
 ## 2026-11-26 v1948: FULL KINIT disposable-prefix sizing
 
 KINIT must make a contiguous low region available to MINIT before
