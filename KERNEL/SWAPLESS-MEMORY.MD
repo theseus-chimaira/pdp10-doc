@@ -2561,6 +2561,49 @@ PI-off codec latency is not measured; no live activation or RT/device
 latency guarantee. RAW PURE/mode3 defaults OFF. See DAIMOS
 design/kcore-k12-v1978.md for exact evidence.
 
+## 2026-11-26 v1979: atomic compressed ownership (K13)
+
+The staged prefix-only DROP verifies the directory candidate against
+all original RAW words using the canonical decoder in read-only
+comparison mode. No second decoded buffer. The original full APR
+PROCESS owner remains pinned and unchanged until this comparison
+and the exact lease checks succeed. The new MM leaf verifies complete
+managed geometry, unique full original owner, sole pin, sector-rounded
+prefix and strictly shrinking encoded length contained in that prefix.
+Under global PI exclusion it shrinks the original descriptor in place,
+sets PACKED_PROCESS and consumes the sole pin. No separate unpin,
+allocation or physical move follows the MM commit. No extra owner
+record, permanent metadata or scratch allocation is required.
+
+The caller reconciles the exact sole unpinned encoded owner at the
+original base, not the MM reply alone. It publishes original backing,
+VM base0, mode3 in the existing map, and clears dirty escrow and
+TRANSITION in the same PI window. Candidate corruption or a refused
+MM commit with intact original lease selects RAW cancellation. False
+success, foreign owner, uncertain pin or failed RAW cancel remains
+quarantined. Hard codec write failure is not a clean RAW fallback.
+The original RAW suffix must not be accessed after bitmap publication.
+
+The actual reclaim source selects the staged transaction only under
+DAIMOS_PBM_COMMIT_V1979. Old interleaved v1667 restore is forbidden with
+that flag. No installed build enables it. Unmarked/no-fit/no-gain
+clean refusals may use ordinary RAW DROP after exact original-owner
+and zero-escrow proof. A live RT lease currently refuses this staged
+path, including RAW fallback. Default RAW service is unchanged.
+
+Native PDP6/KA10 each47 commit/reclaim calls, six executed unsafe
+controls, K11/K12 regression suites PASS. Actual allocator reuses
+all848 released words of a synthetic1024-word image; retained176
+words decode exactly after overwrite. Incremental staged TEXT1135:
+codec/verifier456, DROP object1281 vs RAW691 (+590), MM commit89.
+Reclaim service901 words unchanged in size. Zero DATA/BSS or per-slot
+growth. Disabled RAW DROP object byte-identical. Testkit d3759f8.
+K13 staged gate accepted; K14-K16 must complete directory FULL
+restore, actual scheduler/terminal lifecycle, deferred dirty and
+uncertain-owner recovery, PI latency/stack costs and net RAM payback.
+No installed mode3 support or live net-memory claim. See DAIMOS
+design/kcore-k13-v1979.md for exact evidence.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
