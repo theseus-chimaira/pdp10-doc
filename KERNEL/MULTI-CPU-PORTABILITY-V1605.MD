@@ -14,6 +14,17 @@ fields are zero. Native activation/bounds probes passed on PDP-6 and
 KA10 ONESEG/TWOSEG. First-user activation now uses the descriptor, not
 the stack offset. The full KA10 kernel remains unimplemented.
 
+Update v1964: `DAIMOS_MACHINE=ka10` selects a native kernel build
+with a separate build directory, the common aligned VM and PDP-6
+instruction subset, KA10-specific 060/061 trap installation and APR
+address-break handling. Native 64K ONESEG MAOFF-disabled paper-tape
+read-in and Type-136/551 hybrid TSFS boot reaches INIT. The PDP-6
+KCORE, KINIT and Stage1 remain byte-identical to v1963. INIT, LOGIN
+and DSH DXRs are identical across builds. The KA10 fixed image has
+nine additional initialized words and two additional BSS words
+versus PDP-6; no per-process overhead. Interactive shell, process
+lifecycle and complete fault cleanup qualification remain open.
+
 Date: 2026-11-15. Accepted scope: source/build reorganization
 on PDP-6 only; no KA10/KI10 boot, paging or process support.
 No added resident words, per-process metadata or runtime dispatch.

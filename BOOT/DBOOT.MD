@@ -80,7 +80,16 @@ The KA10 hardware read-in test v1963 reached KINIT using the unchanged
 DTC Stage1, a counted paper tape (`dxrconvert --ka10-readin -b 060`),
 and the Type 136/551 controller. The counted stream is IOWD, relocated
 Stage1 words, and a final JRST included in the count. It is not the
-PDP-6 executable read-in stream. No KA10 KINIT execution is claimed.
+PDP-6 executable read-in stream. v1964 builds and boots the native
+KA10 image with:
+
+    make -C system/boot/pdp6 DAIMOS_MACHINE=ka10 image
+
+The default KA10 profile is 64K ONESEG, MAOFF disabled, LOWMEM hybrid
+TSFS on DECtape, counted paper tape, and existing PDP-6 user binaries.
+It reaches INIT; complete interactive operation remains unqualified.
+The KA10 simulator configuration disables RH10 controllers because
+address 270 is reserved for Type 270 in this configuration.
 The v1464 block-format cutover superseded D6LZ36.
 
 Stage1 still treats the expanded KINIT/KCORE image as opaque.  It does not
