@@ -25,6 +25,14 @@ nine additional initialized words and two additional BSS words
 versus PDP-6; no per-process overhead. Interactive shell, process
 lifecycle and complete fault cleanup qualification remain open.
 
+Update v1968: both native KA10 no-drum root profiles boot to INIT
+with the APR shadow at 147 and a permanently allocated generic DF10
+pair at 150/151 (two net words). The pair is available to RM10;
+future DF10/RH10 channels may share it only with exclusive ownership.
+All existing and additional pdp10-ka devices are audited in
+`KA10-LOWCORE-DEVICE-OWNERSHIP-V1968.MD`. RM10 MRES integration remains
+open. No other future peripheral allocation is made.
+
 Date: 2026-11-15. Accepted scope: source/build reorganization
 on PDP-6 only; no KA10/KI10 boot, paging or process support.
 No added resident words, per-process metadata or runtime dispatch.

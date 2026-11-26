@@ -29,6 +29,10 @@ for the KA10 unassigned-instruction trap. On PDP-6, v1962 uses 060 for
 vm_pdp6_apr and 061 for mach_kernel_stack_base, cleared by disposable
 KINIT after copying KCORE. This reclaims two BSS words. The first 53 words
 (000062..000146) are the shared Stage1/runtime block decoder.
+On KA10 v1968 moves the APR shadow to 000147 and allocates an even
+DF10 command/completion pair at 000150/000151, with link-time checks.
+The remaining KCORE starts at 000152. Net additional fixed cost is
+two words; PDP-6 is unchanged. See KA10-LOWCORE-DEVICE-OWNERSHIP-V1968.MD.
 KINIT INSTALLS PERMANENT MRES PACKAGES IMMEDIATELY
 ABOVE THE FIXED KCORE AREA so KCORE+MRES forms a packed low-memory resident
 block.  MINIT code and other KINIT-only material are transient and are
