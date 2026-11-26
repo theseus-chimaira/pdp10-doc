@@ -1,3 +1,16 @@
+## 2026-11-26 v1945: K07 executable backing lifetime closed
+
+K07 closes after the v1940 native matrix, v1942 physical FULL/WAIT,
+v1944 real PI6 owner-admission orderings and v1945 physical DTC3
+source loss, foreign-volume refusal and original-medium recovery.
+Both failed FULL transactions retain the exact original unpinned
+2176-word PACKED suffix and original backing, retire the temporary
+target, and retain READ_SUSPECT. Original reel return permits five
+exact WAITs and leak-free retirement. No additional resident RAM or
+production image changes. See `PURE-K07-SOURCE-RECOVERY-V1945.MD`.
+K08/K09 and native KA10 K17 remain open; RAW PURE and mode3 remain
+OFF by default. Dated development-branch notes below are historical.
+
 ## 2026-11-19 v1684: two RAW PURE executable owners during FULL (C89 native PASS)
 
 The source-linked daimos-testkit `pure-multiowner-source-v1684`
