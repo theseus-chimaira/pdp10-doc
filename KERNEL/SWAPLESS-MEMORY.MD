@@ -2732,6 +2732,41 @@ trace. Package subgate accepted; actual scheduler/PI6, RUN/EXEC/EXIT/
 WAIT/finalizer and K16 dirty recovery, latency, stack/net RAM and
 physical acceptance remain open. No production qualification.
 
+## 2026-11-26 v1984: actual directory/RAW pressure and RT fallback
+
+Matched original v1983 source-built GCC 64K strict TSFS PDP-6 SIMH
+images, identical independently linked INIT/COMP bytes. Directory
+admitted8 sleeping children (1 RAW3584,7 bitmap239); RAW admitted9
+(9 RAW3584). Full APR4096, omitted prefix512. Exact stable u-area,
+map and all MM intervals independently verified. Equivalent RAW
+saving23415 gross,21322 net after measured resident overhead2093.
+Directory31078 free, largest 02000-aligned free span3584; RAW5908
+free, largest aligned1536. Admission capacity REGRESSION -1 despite
+large aggregate free memory. Clean bitmaps retain their original APR
+base; fixed mm_compact skips PACKED_PROCESS. Safe mode3 placement or
+consolidation is required before activation; do not make type4 RAW
+or dirty/pinned extents generically movable. Existing source escrow
+can represent 0200-aligned bases; placement redesign remains open.
+
+Actual slot-zero mode3 restore for slot3, original source150000/239,
+separate APR160000/4096, exact once-pinned pair at atomic finish.
+Peak image4335 words. Original RAW child exited first. All8 directory
+and all9 RAW guest sparse-data and exact WAIT status checks reached Z.
+Both original observers rejected concatenated ZV1983_Z_STOP and
+stopped before final MM/HALT. Parser corrected; independent transcript
+verifier and eight falsified traces reject as required. Physical
+PI6/READY_ONCE, EXEC, nonresident terminal and final MM acceptance
+remain open. Neither simulator left running.
+
+RT exclusion now belongs to codec admission/lease validation rather
+than shared ownership proof, preserving ordinary RAW fallback under
+live RT lease. KCC/GCC optional DROP +2 TEXT, default KCC byte-identical.
+K13 49/CPU both compilers plus8 mutants; K12 72/CPU KCC plus6 mutants;
+GCC FULL52/service46/terminal65/VM65 per CPU plus17 mutants PASS.
+No fixed KCORE or persistent process storage growth. Physical
+measurements precede RT correction. DAIMOS4b4982bb, testkit13aae53;
+see design/kcore-k15-physical-v1984.md. K15/K16 remain open. Default OFF.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
