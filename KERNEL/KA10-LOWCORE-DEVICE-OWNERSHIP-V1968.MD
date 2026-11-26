@@ -8,6 +8,19 @@ pdp10-ka. Sources: `system/kernel/drivers`, `modules/module_io.s`,
 and simulator `PDP10` device implementations at abb7ee6. This is a
 source-level ownership audit, not functional qualification of every device.
 
+## Current layout update (v1969)
+
+The approved generic channel workspace is now four words, comprising
+two independent even pairs at 150/151 and 152/153. APR shadow remains
+147; remaining KCORE starts at 154. All four channel words are initially
+zero. The linker checks every address. Fixed KA10 KCORE is 11124 words
+(10854 initialized, 270 BSS), two above v1968; PDP-6 is unchanged.
+Both pairs passed independent native 128-word DMA reads and writes,
+including sentinel preservation in the inactive pair. Concurrent
+controllers are not yet qualified. Each pair requires exclusive ownership
+through completion/quiescence. No allocator or future controller driver
+is introduced. The original v1968 single-pair audit below is historical.
+
 ## Fixed low core
 
 | Address | Ownership |

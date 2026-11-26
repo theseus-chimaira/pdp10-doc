@@ -32,6 +32,9 @@ future DF10/RH10 channels may share it only with exclusive ownership.
 All existing and additional pdp10-ka devices are audited in
 `KA10-LOWCORE-DEVICE-OWNERSHIP-V1968.MD`. RM10 MRES integration remains
 open. No other future peripheral allocation is made.
+v1969 extends the generic workspace to two pairs (150/151 and
+152/153), four words total. Both pass independent native DMA isolation;
+concurrent controllers remain unqualified.
 
 Date: 2026-11-15. Accepted scope: source/build reorganization
 on PDP-6 only; no KA10/KI10 boot, paging or process support.
