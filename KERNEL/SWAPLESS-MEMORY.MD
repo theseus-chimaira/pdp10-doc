@@ -1,3 +1,21 @@
+## 2026-11-26 v1953: organic descriptor exhaustion
+
+48K KCC GENERAL noaux with v1950 SIMH. Four native children
+each allocate three pipes and block on the coordination pipe.
+PID1 fills remaining MM entries using ordinary PIPE, closes and
+recreates one pipe, checks refusal again, releases children and
+checks four exact WAIT results. Original physical MM A/B/C/D:
+9/32/32/7 entries; free24247/14904/14904/24390. B/C largest14789.
+The exhausted table has capacity32, with abundant contiguous
+space and available FD pair capacity. Four additional parent
+pipes were admitted; the fifth refused. All children resident.
+No packed or child ownership remains after WAIT; exact baseline
+owners preserved except closed 14-word coordination pipe and
+reclaimed 129-word block cache. Baseline idle-stack pin remains.
+Guest completion marker followed by deliberate harness stop,
+not HALT. No production source change or instrumentation.
+Testkit 77a2a9c, evidence $TMPDIR/k09-descriptors-v1953.XFiqba.
+
 ## 2026-11-26 v1953: 64K active KCC lifecycle acceptance
 
 The unmodified v1951 64K nine-child mixed executable builds
