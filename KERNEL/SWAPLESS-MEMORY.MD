@@ -1,3 +1,37 @@
+## 2026-11-26 v1957: complete 48K nine-owner physical high-water
+
+Current KCC GENERAL and STRICT, v1954 installed SIMH,
+native nine-child fixture (two 3072-word and seven
+2048-word APRs). Compact three-member test TSFS retains
+the exact INIT/MOUNTALL/CONFIG files and boot words.
+Test-only formatter copy places file data on member1
+rather than behind boot tail on member0; stock tsfscheck
+and independent byte/sector equality verify both layouts.
+File/extent counts 13/11 decimal. No production formatter
+or controller timing change. Batch host monitor commands
+without reducing the 71 original physical MM watches.
+
+Both profiles PASS native RUN, nine packed owners, refused
+tenth RUN, nine child canary/token checks and exact WAIT,
+A/B/C physical conservation and exact baseline MM table
+restoration. MM9/26/9, free24224/2649/24224, largest
+24224/1496/24224, original parent APR/u-area unchanged,
+original coordination pipe still open as in the fixture.
+One idle-stack pin; no child owner. PID1 marker followed by
+harness stop, not guest HALT. All four tapes unchanged.
+Both complete high-water reports byte-identical: 2931
+original MM writes, 170 count commits, 18 PURE span
+changes (9/9), 2 BRK (2/0), 2741 staging writes.
+Max occupied or reserved47940/49152, min free1212,
+peak MM28/32. Five unsafe trace variants and forged
+summary rejected separately for both profiles.
+Prior member0 controls intentionally stopped after A;
+full original manifest lifecycle not claimed for them.
+Testkit bb33e3a, evidence
+$TMPDIR/k09-compact-v1957.BOOsmY/{general,strict}-locality.
+No production growth. 48K nine-owner lifecycle and physical
+MM write-watch gates accepted.
+
 ## 2026-11-26 v1955: active disk-backed swap
 
 Current KCC 64K D6FS lowmem disk root, v1954 SIMH. PID1
