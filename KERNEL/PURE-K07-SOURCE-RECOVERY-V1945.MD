@@ -1,3 +1,20 @@
+## 2026-11-26 v1946 acceptance correction
+
+K07 code complete, integrated foreign-to-original recovery/WAIT
+replay pending. The earlier v1945 same-PC foreign checkpoint
+was invalid: actual SIMH repeats a cleared/rearmed breakpoint
+without executing the stopped instruction. Genuine missing-medium
+rollback and original-medium recovery/WAIT remain valid.
+Independent v1946 physical verification establishes real pinned
+FULL PI6 at TAPE PC032067, actual 7200-tick device-search timeout
+and FULL -4, another child's execution with DTC3 absent, and
+a new foreign PREFIX -4 299 ticks after the missing refusal.
+All 2176 retained RAW words and original identity remain intact.
+The complete v1946 run exceeded its 260-second diagnostic deadline
+during recovery; no slot3 READY_ONCE dispatch or final WAIT claimed.
+No production code or RAM change. The v1945 closure and foreign
+witness statements below are historical and superseded by this note.
+
 # PDP-6 RAW PURE executable backing lifetime (K07), v1945
 
 2026-11-26. K07 implementation closed. This is the scoped acceptance
