@@ -2440,7 +2440,42 @@ PURE DXR is still copied to a private APR extent while executing, whereas
 restricted XIP executes from a pinned MEMFS-owned extent under a different
 trusted no-write policy. Neither feature adds general shared text mappings.
 
-## 2026-11-16 v1622: optional mutable bitmap compression contract (TODO)
+## 2026-11-26 v1976: executable admission accepted (K10)
+
+DXR2 TX2 left-half bit 17 (0400000 octal) is the independent
+COMPRESSIBLE_MUTABLE eligibility flag; the remaining 0377777 mask
+preserves the uncompressed text count. DAIMOS initialized-image bound
+remains 0300000 octal. Legacy DXR1/DXR2 are unchanged. The file's BSS,
+COMPRESSED payload and PURE flags remain independent. Old DAIMOS
+loaders reject marked files; new loaders accept old files. Marked
+RT_REQUIRED is invalid; raw XIP is a separate format. Host and native
+DLINK provide --COMPRESSIBLE-MUTABLE, and the host file compressor,
+INITFS/D6FS writers and uncompressed DAS DXR check/convert tools
+understand the marker. No system executable is marked by default.
+
+The existing EXEC reservation excludes concurrent backing mutation
+through STAT, validation, payload and attachment. The marked regular
+file must be root-owned and not group/other writable, but the caller
+need not be root. Credential bit31 holds the admitted current-image
+property, distinct from UID/GID/UMASK and the existing four-bit backing
+identity. SIDL RH040 stages the flag; RH02 remains rollback. RUN copies
+the child's new eligibility, EXEC commit/rollback replaces/restores it,
+late KINIT transfers staged identity before SRUN, terminal detach clears
+it only after success. No new per-slot/u-area word. Future FORK, absent
+from the current ABI, must inherit eligibility only, not storage mode.
+
+Matched native PDP-6 64K lowmem disk KCC KCORE: 10840 initialized +269
+BSS -> 10869+269 (+29 permanent instruction words; zero BSS or process
+word growth). Native loader/attach/detach 26 cases, RUN 64 cases and EXEC
+nine cases with executed negative mutants PASS. Full marked PDP6/KA10
+64K disk lifecycle PASS; actual non-root EXEC with 28 malformed cases
+and identity retention PASS. Native DLINK self-linked executable reads
+its own marked TX2 and runs. Testkit b67ca49; DAS d5b7696. K10 is closed
+within the current ABI. K11-K16 are separate gates: no mode3 publication,
+no installed bitmap codec, no net RAM or physical compressed lifecycle
+claim. RAW PURE and mode3 remain default OFF.
+
+## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
 words, zero BSS) is tested independently, not production-linked.
@@ -2448,8 +2483,8 @@ Only a validated executable explicitly marked
 COMPRESSIBLE_MUTABLE may compress its mutable suffix. PURE
 prefix omission is independent of this opt-in. EXEC replaces
 eligibility, fork inherits it, and the stored RAW/BITMAP format
-is tracked separately. No such executable flag or process
-compression transition has been implemented. The existing DXR
+is tracked separately. At v1622 neither the executable flag nor the compression transition
+was implemented; v1976 implements and validates admission only. The existing DXR
 COMPRESSED flag identifies the file payload, not RAM eligibility;
 the three occupied flag bits above the 15-bit BSS field require
 an audited backward-compatible header extension.
