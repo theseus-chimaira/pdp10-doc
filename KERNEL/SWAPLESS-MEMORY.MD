@@ -1,3 +1,33 @@
+## 2026-11-26 v1947: integrated K07/K08 physical acceptance
+
+K07 executable backing and K08 scheduler implementation are closed.
+The full uninstrumented 48K PDP-6 TSFS/PURE replay completed in
+284.728 seconds, with the same production images as v1945. At the
+actual FULL entry, slot3 PACKED113600..120000 and PROCESS122000..130000
+each have pin1. Real PCLK PI6 interrupts TAPE PC032060 without
+changing either MM owner or any of the 2176 retained RAW words.
+Actual DTC3 detach during tape search reaches the original 7200-tick
+timeout, and FULL returns -4 with source pin0, no destination,
+original backing and volume ID intact. The subsequent real PI6 and
+slot4 execution while DTC3 is absent establish independent progress.
+The foreign CLEAN DTVOL2 medium fails a new PREFIX restore at
+PC034446/-4, 302 ticks after the missing-source FULL failure.
+The original medium then permits READY_ONCE publication for slot5
+and slot3. Slot3's actual service return publishes cursor01003,
+sole unpinned PROCESS122000..130000 and stable u-area051274;
+the original scheduler consumes the hint, selecting AC1=3/cursor3
+without changing MM13. Exact five child data/EXIT/WAIT witnesses,
+parent data, final UNMOUNT, MM8, high slot2, mode word0, healthy
+retired medium0100003, root0, and normal HALT PC0 all pass.
+Both reels are unchanged. Independent full and supplementary
+oracles reject 14 altered observed traces (not additional guest
+fault injections). The v1945 same-PC repeated-stop witness remains
+withdrawn; the complete later v1947 replay replaces it. No code,
+image, ABI or resident RAM change. PI6 observed inside FULL and
+after rollback, not inside PI-disabled sections. Wider physical
+root/controller matrices and KCC production acceptance remain K09,
+KA10 remains K17. RAW PURE/mode3 remain OFF by default.
+
 ## 2026-11-26 v1946 acceptance correction
 
 K07 code complete, integrated foreign-to-original recovery/WAIT
