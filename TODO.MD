@@ -1,3 +1,12 @@
+## v1972 K17 update
+
+Native DCS enabled and both D6FS CTY/DCS0 simultaneous
+shell profiles PASS. Actual pre-DCS TSFS+RM10 swap PASS;
+fresh DCS-installed D6FS+RM10 swap PASS, idle DCS mailbox
+preserved. Full current TSFS shell/pressure, active
+contended DMA, process/BRK/protection/PI and full-kernel
+fault qualification remain OPEN. See KERNEL/KA10-DCS-V1972.MD.
+
 ## Current K17 boundary (2026-11-26 v1970)
 
 K01-K09 functional PDP-6 acceptance CLOSED v1959.
