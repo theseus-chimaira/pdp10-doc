@@ -2640,6 +2640,32 @@ uncertain-owner recovery, physical acceptance, PI latency, stack and
 net RAM. No installed target enables the directory restore. Mode3
 remains disabled in production builds.
 
+## 2026-11-26 v1981: directory slot-zero service (K15 staged subgate)
+
+Under the staged directory restore flag the existing PURE service
+selects v1980 FULL for mode3 and original RAW PREFIX/FULL for mode2.
+The old interleaved v1667 selection is incompatible. READY_ONCE is
+derived from the committed resident state, including lost successful
+restore replies. The shared clean mode3 retry proof checks exact sole
+unpinned bitmap geometry, stable u-area, backing and marked identity,
+VM0 and zero escrow under PI exclusion. Missing backing availability
+does not prevent safe inactive retry unlock. No payload writes or
+pin retirement occur at unlock. Dirty bitmap transactions remain held
+and do not arm legacy RAW recovery; the latter rejects combined kind.
+
+Native PDP6/KA10 each46 service/unlock operations and five executed
+unsafe controls PASS; K14 52/CPU and six controls PASS. Complete
+production service source linked to real MM and bounded loader with
+controlled scheduler requests/VFS/fault replies, not actual scheduler
+or PI6 delivery. FULL1785->1904 (+119), service901->955 (+54), total
+incremental staged2180 (+173) TEXT, zero DATA/BSS. Disabled objects
+byte-identical. Testkit2c48581, DAIMOS1a135f34.
+
+Only this staged service subgate is accepted. K15 terminal exact-span
+PREVM identity, VM destroy and actual RUN/EXEC/EXIT/WAIT/scheduler
+lifecycle remain open. No new installed flag; fixed mode3 destroy
+refusal and default OFF remain. See DAIMOS design/kcore-k15-service-v1981.md.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
