@@ -1,3 +1,47 @@
+## 2026-11-26 v1951: physical KCC resident budget
+
+Matched 64K lowmem KCC TSFS boots without AUXSTORE, using the
+v1950 simulator cb6a255, stop at actual INIT V1 and inspect the
+original MM table, arena, service jumps and resident immediate.
+No kernel instrumentation. Fixed KCORE bytes are identical.
+The installed code/data are 16966 words OFF and 20845 RAW.
+The runtime-selected 40-descriptor MM table consumes 80 words.
+SYS_MEMINFO already includes that table (17046 OFF / 20925 RAW);
+do not count it twice. The physical 060-word vector reserve is
+separate. Actual non-process boot kernel dynamic allocations
+are 614 words on both configurations; PID1 has 4096 VM words
+and a 264-word u-area. Managed arena sizes 48442 / 44563,
+allocated 4974 on both, free 43468 / 39589. The complete arena
+and resident partition conserve all 65536 physical words.
+
+The installed non-PURE modules total 5852 words: CTY116,
+CLK41, PCLK21, MONITORFS1597, DCS62, GE96, TTY165, TAPE406,
+DSK211, DRM149, DTFS2988. The linked software-clock fallback
+398 words is not installed with PCLK. Disk SWAP is not installed
+without BACKSTORE. PURE adds exactly 3879 words, zero separate
+managed allocation at this gate. A fixed resident 16K ceiling
+already fails by 662 words OFF and 4541 RAW at 64K, before
+managed scratch. The 48K RAW resident immediate is 20909,
+including the 64-word MM table. Neither endpoint nor guest
+free words alone proves the target's resident budget.
+
+Linked KINIT image at 030000 plus its 0400-word stack reserve:
+OFF 27911, GENERAL RAW 32056, STRICT RAW 30172 words.
+These are linked transient reservations, not observed peak live
+RAM or restore high-water. STRICT excludes the linked disk
+SWAP candidate but does not reduce installed noaux residency.
+
+At 512-word RAW prefixes, five packed children save 2560 owner
+words gross, less than PURE's 3879 installed words. Eight such
+owners are required just to offset the module, excluding
+transient restore allocation. The correctness tests are not
+a demonstration of net RAM savings. Keep RAW/mode3 default OFF.
+
+Evidence: $TMPDIR/k09-budget64-v1951.d5Qr6j. The independent
+verifier reconciles actual physical MM with linked package sizes;
+four altered snapshot controls reject bad root, resident count,
+service target and overlapping extents. Not live injected faults.
+
 ## 2026-11-26 v1950: AUTO DSK AUXSTORE selection
 
 The v1948 FULL AUTO/DSK root-selection failure is corrected
