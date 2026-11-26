@@ -8,6 +8,14 @@ pdp10-ka. Sources: `system/kernel/drivers`, `modules/module_io.s`,
 and simulator `PDP10` device implementations at abb7ee6. This is a
 source-level ownership audit, not functional qualification of every device.
 
+## Native RM10 use (v1970)
+
+RM10 now exclusively owns pair 150/151 during active transfers.
+Pair 152/153 remains unallocated; native probes and full D6FS
+drum-backed swap preserve it. Fixed KCORE unchanged. See
+`RM10-V1970.MD` for current driver/boot/swap acceptance.
+Concurrent independent channels remain unqualified.
+
 ## Current layout update (v1969)
 
 The approved generic channel workspace is now four words, comprising

@@ -1,3 +1,15 @@
+## Current K17 boundary (2026-11-26 v1970)
+
+K01-K09 functional PDP-6 acceptance CLOSED v1959.
+KA10 0.9 K17 is active, not on architecture hold. All four
+native root/RM10 configurations reach INIT; D6FS+RM10 actual
+six-child swap/WAIT and native RM10 error/peer recovery PASS.
+See KERNEL/RM10-V1970.MD and DAIMOS kcore-todo.md.
+TSFS+RM10 swap, interactive shell and broader native process,
+protection/PI and controller fault qualification remain OPEN.
+Full KA10 architecture, optional features and size tuning
+remain separately deferred. RAW PURE/mode3 OFF.
+
 ## Current accepted boundary and historical index (2026-11-23)
 
 KCORE K01-K04 are CLOSED under their specific accepted contracts:
