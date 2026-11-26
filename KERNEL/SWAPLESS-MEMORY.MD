@@ -1,3 +1,23 @@
+## 2026-11-26 v1955: active disk-backed swap
+
+Current KCC 64K D6FS lowmem disk root, v1954 SIMH. PID1
+enables swap through STORAGECTL, six native non-PURE children
+grow to 8192-word APRs and block on a coordination pipe.
+Actual A/B/C MM9/20/8, free43663/1119/43677. Slot2 DISK
+run0..63 exactly matches 64 live bitmap bits and counters.
+Disk reads50/129/193, writes1/65/65, errors0. All six
+children validate PID-specific canaries at 02500 and 017000,
+release token and exact EXIT/WAIT status. Final bitmap0,
+same parent APR/u-area and stable non-cache/non-pipe owners,
+no child/pipe owner or reservation, idle-stack pin only.
+Harness intentionally terminates sleeping PID1 after marker,
+not a guest HALT. First run retained PID1 pipe; revised
+fixture closes both parent FDs and passes the exact oracle.
+No production change. Testkit a762a86, evidence
+$TMPDIR/k09-disk-swap-v1955.MbLEZM/physical-final.
+This accepts ordinary active DISK restoration, not provider
+loss or interrupted WRITE recovery.
+
 ## 2026-11-26 v1953: organic descriptor exhaustion
 
 48K KCC GENERAL noaux with v1950 SIMH. Four native children
