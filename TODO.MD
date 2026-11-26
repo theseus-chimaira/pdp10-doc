@@ -1,3 +1,15 @@
+## v1974 K17 functional closure
+
+K17 basic native 64K KA10 ONESEG 0.9 scope CLOSED.
+All four usable root/terminal profiles, direct Type270
+and both RM10-backed swap workloads, representative
+critical RM10 loss, active DCS/PI2 hardware overlap and
+actual swapped-reader wake, native process/preemption/
+protection/fault cleanup and matched PDP6 regressions
+PASS. See KERNEL/KA10-V1974.MD. Full KA10 architecture
+and hardware qualification remain separate. RAW/mode3 OFF;
+K10-K16 optional, subject to net RAM benefit.
+
 ## v1972 K17 update
 
 Native DCS enabled and both D6FS CTY/DCS0 simultaneous
