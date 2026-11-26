@@ -2705,6 +2705,33 @@ source-built package integration and actual scheduler/PI6, RUN/EXEC,
 EXIT/WAIT and complete finalizer stack exclusion. K16 deferred recovery,
 physical/latency/stack and net RAM acceptance remain open. Default OFF.
 
+## 2026-11-26 v1983: experimental source-built directory PURE MRES
+
+DAIMOS_PBM_DIRECTORY_V1983=1 selects the directory DROP, bounded FULL,
+terminal and staged VM destruction chain as one source-built package.
+Requires strict swapless TSFS PURE, excludes historical v1667 and
+retains the existing KA10 optional PURE boot guard. Default OFF.
+Existing three-export MRES ABI unchanged; all codec/MM leaves remain
+MRES-only. Mode stamps invalidate generated code and fold plan on
+representation changes. GCC/KCC directory->RAW->directory switches
+in the same build directory reproduce identical images and package.
+Incompatible historical format/non-strict builds refused.
+
+Actual linked resident PURE MRES GCC3258->5359, KCC3885->6401 words,
+zero BSS. Fixed KCORE -8 words both; net additional2093/2508 words.
+No per-process storage growth. Native PI6 fault, restore reply, EXEC
+handover and stack-lifetime regressions PASS. Testkit4e6dc7d,
+DAIMOSa3de5036, see design/kcore-k15-package-v1983.md.
+
+Physical diagnostic: actual 64K source-built TSFS image, unmarked INIT
+and independently linked marked compressed child, three root members
+validated. Bounded replay installed PURE and admitted three children
+(first unmarked, two marked compressed), then timed out before the
+pressure checkpoint. No verified mode3 restore or full lifecycle
+trace. Package subgate accepted; actual scheduler/PI6, RUN/EXEC/EXIT/
+WAIT/finalizer and K16 dirty recovery, latency, stack/net RAM and
+physical acceptance remain open. No production qualification.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
