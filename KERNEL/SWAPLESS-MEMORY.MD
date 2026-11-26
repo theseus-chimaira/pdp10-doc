@@ -1,3 +1,30 @@
+## 2026-11-26 v1953: 64K active KCC lifecycle acceptance
+
+The unmodified v1951 64K nine-child mixed executable builds
+were executed with the v1950 simulator. Both GENERAL and STRICT
+complete actual RAW packing of nine children and refuse the
+tenth RUN despite 5072 free words (largest extent 847).
+MM26 at both stable pressure gates. Actual FULL entry 042435
+has opcode 200000000004; slot0 operates on child3 PACKED
+151000..160000 and PROCESS160000..170000, both pinned once.
+FULL free4695, pinned7936 including the 256-word idle stack.
+Nine exact PID/status WAITs, child and parent data checks,
+no reservation or child/pipe owner, stable parent VM/u-area,
+high slot2, MM8, free39589 in one extent and normal HALT.
+Both traces pass the original and independent conservation
+verifiers. Four modified-observation controls per trace reject
+unretired slots, lost parent ownership, leaked pins and live
+reservations. These controls are not live fault injection.
+
+The unchanged native MM exhaustion regression also distinguishes
+-1 total shortage, -2 fragmentation and -3 descriptor exhaustion,
+recovers after freeing a descriptor, and rejects both wrong
+error-handling implementations. No production kernel change.
+
+Functional acceptance is separate from optimization. Per v1952,
+the 16K target and size tuning are deferred; neither is a K09
+closure gate. RAW/mode3 remain OFF by default.
+
 ## 2026-11-26 v1951: physical KCC resident budget
 
 Matched 64K lowmem KCC TSFS boots without AUXSTORE, using the
