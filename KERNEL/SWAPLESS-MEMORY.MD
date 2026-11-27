@@ -1,3 +1,141 @@
+## 2026-11-27 v2000: runtime stack acceptance policy
+
+Representative written-stack watermarks and overflow/bounds regressions
+remain mandatory for substantial kernel changes. Investigate near-capacity
+results and substantial increases. Exhaustive worst-case AC17 analysis
+and stack reservation sizing follow feature stabilization; neither is a
+K15 acceptance gate. Retain the current private and idle reservations
+and keep diagnostic code out of production builds.
+
+## 2026-11-27 v1999: written-stack and preliminary DROP PI measurements
+
+The test-only stack watermark scans downward from the last legal
+push word instead of stopping at the first untouched canary.
+Native sparse, empty, monotonic and bounds tests pass PDP6/KA10;
+old bounds and backing/BRK regressions pass. Mode stamps ensure
+same-tree diagnostic flag changes regenerate native assembly and C
+canary initialization. Default OFF process object byte-identical.
+Test-only private EXIT and idle FULL scan boundaries added.
+
+Actual 48K GCC strict directory DSH, diagnostic build:
+private written maximum113 of205 words, idle110 of255 usable
+words (256-word reservation includes empty base). Idle10 before
+DROP and110 after FULL. Independent physical canary checks,
+bitmap242/raw3200, FULL16384, stable shell variable/identity,
+two typed WAIT57s, normal HALT and unchanged tapes/images PASS.
+Instrumented fixed image +39 words, BSS+2; MRES length unchanged.
+This is a written watermark, not exhaustive AC17 tracking or a
+universal upper bound. No stack shrink or production growth.
+
+Separate original uninstrumented v1996 image, actual source-bound
+DROP, global PI states1/0/0/1, saved CONI0276 unchanged, RT owner0.
+SIMH SHOW TIME inner369029 and outer369318 simulation units;
+four corrupted replays reject. Full lifecycle and hashes PASS.
+No conversion to hardware time or RT deadline claim. FULL latency,
+RT-active workload, and worst-case stack remain open. Default OFF.
+DAIMOS c31405a4/1902b5a, testkit 5ef56a3.
+
+## 2026-11-27 v1998: continuous real DSH MM high-water
+
+Repeated the accepted v1997 48K direct DSH workload using unchanged
+v1996 GCC PDP6 KCORE/MRES and private TSFS tapes. All 71 physical MM
+word watches armed at the first prompt; 103 writes through normal
+HALT, 21 stable states including initial. Exact native writer objects
+reassembled byte-identically and matched their physical PCs.
+Intermediate descriptor shifts are replayed but not counted as
+allocations. Independent held/restored tables agree; final replay
+MM8 is not a separate post-HALT snapshot. Eight negative controls
+reject. Actual committed ownership and fixed/unavailable RAM:
+
+| Stage | Occupied/reserved | Free words |
+|---|---:|---:|
+| Initial prompt | 40880 | 8272 |
+| After BRK | 41904 | 7248 |
+| Before DROP commit | 41789 | 7363 |
+| DROP committed | 25647 | 23505 |
+| Pressure child admitted | 36280 | 12872 |
+| FULL peak | 42402 | 6750 |
+| Restored | 41904 | 7248 |
+| Final replay | 25256 | 23896 |
+
+FULL retains pinned bitmap242 and pinned destination16384 plus
+256-word loader workspace (498 extra words vs restored state).
+Max MM13/32. The disjoint DROP destination adds at most242 words to
+the precommit total while copying from the original pinned APR,
+giving conservative bound42031 below FULL peak. No production RAM
+or code change. Accepted for this workload, not universal capacity
+or timing; stock foreground workload, RT latency and stack remain
+open. Default OFF. DAIMOS 0650383, testkit f822d57.
+
+## 2026-11-27 v1997: controlled real DSH terminal wake
+
+Actual 48K GCC PDP6 strict swapless directory v1996 package.
+Real DSH payload unchanged; test-only PURE and mutable DXR flags.
+Compact TSFS test media independently verified against stock
+formatter. Test INIT establishes normal controlling CTY and
+independently creates pressure; no production changes.
+
+DSH slot2/uarea055250 APR15360 grows to16384 after SET.
+A separate pressure child APR10240 is admitted while DSH sleeps
+in mode3, exact unpinned bitmap owner056000/242 words versus
+RAW suffix3200. Independent canonical decode contains the SIXBIT
+variable. After typed pressure-child WAIT57, actual terminal wake
+restores APR16384 at074000 with identical slot/uarea/backing/
+credential, opcode signatures and variable; escrow cleared.
+Shell WAIT57, HALT and unchanged root/source hashes pass.
+MM descriptor checkpoints10/13/10; six corrupted replay controls
+reject. Inactive APR saving16142 words, suffix saving2958
+(92.4%), not whole-system peak saving.
+
+Controlled real DSH compressed wake subgate accepted. Stock
+ordinary/marked INIT/LOGIN/DSH SET pass, both external ECHO
+time out before child publication, without mode3; stock foreground
+workload remains separate. Continuous high-water, RT latency/stack
+and failure recovery remain open. Default OFF.
+DAIMOS d683816, testkit d5c88a6.
+
+## 2026-11-27 v1996: bidirectional directory placement
+
+The optional directory DROP transaction can now use a higher disjoint
+sector-aligned gap when its entire bitmap fits before the next APR
+boundary, without consuming an otherwise usable full APR. Existing
+lower placement and exact pinned original identity are preserved.
+The validated MM table is reordered in either direction, without an
+extra descriptor, allocation, owner, persistent word or recovery tag.
+GCC/KCC MRES5493/6540 (+33/+36), BSS0, fixed KCORE unchanged.
+Both compiler package switches and native PDP6/KA10 placement,
+FULL/terminal, dirty DROP recovery regressions and mutants pass.
+Matched physical 48K RAW/lower/bidirectional workloads have identical
+INIT/COMP/POST bytes, admit 5/5/8 children, free4950/16088/6691,
+MM18/18/25, largest aligned spans2560/3584/3584. Five251-word bitmap
+owners consolidate into two groups; one RAW and two resident children.
+All8 waits, four compressed TERM, restored EXEC4096->2048, final
+MM/HALT and root integrity pass; eleven corrupted traces rejected.
+Physical64K retains12-child fixture ceiling, exact lifecycle,
+MM33/free1758/aligned512, eleven trace mutants reject. 48K capacity
+improvement accepted, not maximum capacity. Real DSH mode3,
+continuous peak RAM, RT latency/stack, remaining K16 and default
+activation remain separate. DAIMOS1f973524, testkit a3bf12a.
+
+## 2026-11-27 v1995: healthy 48K directory lifecycle acceptance
+
+Matched fresh GCC PDP6 strict swapless TSFS images, RAW and
+bitmap directory, both admit five v1987 workload children and
+pass typed WAIT, exact final MM, HALT and unchanged root media.
+Directory three stopped compressed children terminate without
+restore; slot3 actual FULL then marked-to-unmarked EXEC changes
+4096-word APR to 2048 while preserving slot/u-area. Eleven
+corrupted directory traces reject. Both pressure tables have
+18 extents. RAW retains five3584-word spans; directory four251
+and one3584. Free RAM4950->16088 (+11138), largest aligned
+span2560->3584, usable rounded APR2048->3072. No sixth child:
+the existing lower-only placement can fragment physical RAM
+even with ample total free words. MRES3258->5460 and fixed
+KCORE -8, no new production change. This accepts the healthy
+48K lifecycle only, not a capacity increase, real DSH mode3,
+RT latency/stack, failure recovery or default enablement.
+Testkit036d92c (v1995 topic branch).
+
 ## 2026-11-26 v1959: K09 functional integration CLOSED
 
 Current KCC GENERAL/STRICT v1959 images, v1954 SIMH:
