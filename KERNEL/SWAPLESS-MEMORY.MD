@@ -3025,6 +3025,41 @@ source loss/corruption, RT latency/stack, real DSH/48K and optional
 KA10 boot still open. Default OFF. DAIMOS18a44866, testkit4748e68.
 See design/kcore-k16-physical-full-v1991.md in DAIMOS.
 
+## 2026-11-27 v1992: physical directory FULL FREE/SOURCE rollback
+
+Known-pin FULL rollback in all three authorized phases is now
+physically qualified in the strict experimental 64K PDP6 GCC profile:
+v1991 PAIR, v1992 FREE and SOURCE. The v1992 test rebuilds the v1987
+guest sources and current image; historical temporary artifacts are
+unavailable, so no historical binary identity claim. PURE MRES5917
+words/BSS0, no production changes. At pressure12 children (fixture
+ceiling), four bitmap251, one RAW3584, seven resident4096, 33
+descriptors, free1334 and largest aligned gap512.
+
+Actual FULL finish refused, then target FREE refused twice after
+target unpin. Real target FREE commits on second deferred retry;
+source UNPIN is refused twice, with target field zero and exact
+source pin1. Fourth idle retry completes. Original clock deadlines
+6362/6394/6458/6586, delay16->32->64->128->256. Five scoped original
+leaf entry substitutions restored at actual stack return PCs. No
+artificial owner, scheduler, clock or payload state. Exact whole MM
+table, source bytes, backing/credential/PC, BRK escrow and inactive
+mode3 until rollback succeeds. Original heap restored, no READY,
+pending retry cleared before normal FULL. Restored EXEC, all12
+typed waits, final MM/HALT, unchanged tapes PASS. Independent audit
+and15 corrupted trace controls pass.
+
+Source-built DAIMOS-specific mkauxstore and mkdtfs used for test
+media (installed standalone CLI incompatible/missing respectively).
+No shared tool replacement or new demonstrated compiler/assembler
+defect. No net RAM saving inferred from the two-word difference in
+free memory versus historical v1991. Dirty DROP, ambiguous owner
+physical tests, irrecoverable source loss/corruption, RT latency/
+stack, real DSH/48K and optional KA10 boot remain open. Default OFF.
+Controller loss/return design discussion is deferred until K16
+completion. DAIMOS ca107f7e, testkit8e320f4.
+See design/kcore-k16-physical-full-v1992.md in DAIMOS.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
