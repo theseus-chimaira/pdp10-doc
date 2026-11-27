@@ -2993,6 +2993,38 @@ source loss, real DSH/48K and latency/stack still require acceptance.
 DAIMOS ff8bd0c0, testkit09d4935. See
 design/kcore-k16-idle-recovery-v1990.md in DAIMOS.
 
+## 2026-11-27 v1991: physical directory FULL known-pin rollback
+
+Actual source-built strict TSFS 64K PDP6 GCC image with v1990 idle
+recovery. Original v1987 INIT/COMP/POST DXR bytes and fixed KCORE
+identical; linked PURE MRES5917 words. Both matched workloads
+admit12 children (fixture ceiling): four bitmap251, one RAW3584,
+seven resident4096. 33 descriptors, free1789->1332 (-457 exactly
+the additional MRES cost), largest APR-aligned gap512 unchanged.
+
+Actual slot3 source062400/251, provisional APR160000/4096, both
+pin1. Three scoped test-only instruction replacements refuse
+atomic finish, initial target unpin, and first deferred target
+unpin. Each original instruction restored at the actual stack
+return PC with AC1=-1. No artificial process/owner/pin/clock/
+scheduler/payload state; controlled refusal, not hardware failure.
+
+Original fixed armer and real idle retry ticks21375/21407,
+delay16->32->64. Exact original MM table, payload, backing,
+credential, saved PC and heap escrow retained until recovery.
+Second recovery retires exact provisional APR and owned source
+pin, restores original BRK010000,,010000, clears escrow and
+TRANSITION, no READY. Retry clock clears before real ordinary
+FULL retry. Subsequent marked-to-unmarked EXEC retains slot and
+u-area, all12 typed EXIT waits, final MM/HALT PC0, unchanged tapes.
+Independent full audit and11 corrupted trace controls pass.
+
+No production growth. Physical known-pin PAIR acceptance;
+FREE/SOURCE faults remain native-only. Dirty DROP, irrecoverable
+source loss/corruption, RT latency/stack, real DSH/48K and optional
+KA10 boot still open. Default OFF. DAIMOS18a44866, testkit4748e68.
+See design/kcore-k16-physical-full-v1991.md in DAIMOS.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
