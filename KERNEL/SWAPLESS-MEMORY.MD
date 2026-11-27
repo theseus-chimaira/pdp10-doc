@@ -3060,6 +3060,48 @@ Controller loss/return design discussion is deferred until K16
 completion. DAIMOS ca107f7e, testkit8e320f4.
 See design/kcore-k16-physical-full-v1992.md in DAIMOS.
 
+## 2026-11-27 v1993: exact directory dirty DROP recovery
+
+The experimental DAIMOS_PBM_DIRTY_DROP_V1993 option requires the
+directory idle recovery profile and defaults OFF. Capture the original
+four-word synchronous lease before encoding into the disjoint PURE
+prefix. A bounded write-pass failure or refused candidate commit may
+discard dirty text by rebasing to the original untouched RAW suffix.
+Never make a dirty resident image runnable. Arbitrary physical
+corruption outside the codec store contract is not covered.
+
+Original u-area backing and word067 preserve the suffix sector, full
+APR length /02000, and executable credential. REBASE and UNPIN
+authorize only the original transaction pin. HOLD has no retry
+authority. RH marker0600000 excludes valid FULL phases and directory
+candidate lengths even if the storage map is inconsistent. Revoke
+authority before MM operations, revalidate the exact identity and
+owner afterward. Publish mode2/base0 only after exact RAW rebase;
+retire only the original suffix pin. Exact unpinned RAW clears
+escrow/TRANSITION. Original shared idle clock and backoff; no READY,
+new pin, allocation, I/O, BRK borrowing or added per-process words.
+Legacy RAW unlock must reject dirty HOLD. Uncertain witnesses refuse
+rather than adopting another owner.
+
+Native GCC/KCC PDP6/KA10 each25 counted DROP calls plus actual reclaim,
+real MM and original idle service; controlled outer interrupt handoff.
+Repeated rebase/unpin refusal, lost replies, partial prefix store,
+changed owner/geometry/pin/credential, post-call identity loss,
+wake SRUN, absent mount, healthy directory and legacy RAW pass.
+Six unsafe mutants per compiler reject. The initial single-bit
+marker collision was reproduced and corrected; final regression
+passes. Original v1990 KCC OFF regression passes.
+Linked MRES GCC5917->6377 (+460), KCC7055->7620 (+565), BSS0.
+Actual OFF/ON/OFF/ON packages repeatable, fixed KCORE unchanged;
+GCC OFF matches v1992 physical build. Invalid modes refuse.
+
+Native and linked staging accepted, not physical dirty DROP replay.
+Ambiguous physical ownership, irrecoverable source-loss/corruption,
+latency/stack, real DSH/48K and optional KA10 boot remain open.
+Controller loss/return discussion deferred until K16 completion.
+DAIMOS af048d25, testkit90ee89c.
+See design/kcore-k16-dirty-drop-v1993.md in DAIMOS.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
