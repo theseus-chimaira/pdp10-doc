@@ -2957,6 +2957,42 @@ source loss/corruption policy and real DSH/48K/latency/stack remain
 open. Default OFF. DAIMOS390ac172, testkit96addb4. See
 design/kcore-k16-full-escrow-v1989.md in DAIMOS.
 
+## 2026-11-27 v1990: directory FULL rollback in the idle service
+
+Optional DAIMOS_PBM_IDLE_RECOVER_V1990 requires the strict experimental
+directory profile, default OFF. Word067 bit32 is now set only for
+authorized PAIR/FREE/SOURCE phases; HOLD clears it while retaining
+the exact source, count, destination and original heap escrow. The
+existing reaper skips HOLD even during an unrelated retry scan.
+Standalone v1989 format is unchanged with the new option disabled.
+
+Only a new synchronous FULL refusal can arm the shared retry clock,
+after the exact saved identity and MM owner/pin proof. The original
+armer temporarily replaces word067; restore its escrow under PI
+exclusion. Deferred retries do not reset backoff. Tagged service
+commands route mode3 to exact directory rollback, other modes to
+the original RAW handler. Successful rollback restores the original
+heap and inactive unpinned mode3, never READY or resident APR; the
+ordinary later FULL can reload and dispatch. Ambiguous MM revokes
+authority to HOLD; malformed preflight remains untouched and may
+keep retry polling without authorizing MM mutation.
+
+Native GCC/KCC PDP6/KA10 each82 FULL,80 explicit rollback and127
+service/deadline calls using original armer, deadline, reaper and
+backoff instructions. Real MM, codec, bounded loader and service;
+outer interrupt handoff controlled. Delay16..512, cap, clock wrap,
+early refusal, HOLD exclusion, cursor preservation and mixed RAW/
+directory scan accepted. Eight unsafe variants per compiler reject.
+Standalone v1989 OFF regression passes. Host16,777,216 round trips.
+
+Actual linked package OFF/ON/OFF/ON reproducible on both compilers.
+GCC5460->5917 resident words (+457); KCC6504->7055 (+551); BSS0.
+Fixed KCORE DXR unchanged between modes, no new per-process word.
+Physical FULL fault/clock/recovery, matched capacity, dirty DROP,
+source loss, real DSH/48K and latency/stack still require acceptance.
+DAIMOS ff8bd0c0, testkit09d4935. See
+design/kcore-k16-idle-recovery-v1990.md in DAIMOS.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
