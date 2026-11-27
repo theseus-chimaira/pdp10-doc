@@ -2889,6 +2889,36 @@ pure-directory-lifecycle-physical-v1987.JkKVum,
 verified-final-v1987.txt, trace-controls-v1987.log.
 See design/kcore-k15-lifecycle-v1987.md in DAIMOS.
 
+## 2026-11-27 v1988: complete directory finalizer and physical PREVM retry
+
+Validation only; original v1985/v1987 kernel, MRES and KINIT unchanged.
+The full original native finalizer/reaper, backoff, parent eligibility,
+u-area release, executive-stack guard, relocated mode3 DROP, common
+detach and MM pin/unpin/free execute together. GCC/KCC PDP6/KA10
+each21 calls, eight unsafe mutants per compiler reject. Exact original
+span and payload, repeated refusal, lost successful free, one ZOMB,
+no second HUP, source and u-area retirement, cleared retry word.
+Outer session/TTY/notification/adoption services are controlled fixtures.
+
+Actual 64K v1987 physical workload:12 children, first stopped bitmap
+terminal slot4 source063000/251. One external test-owned MM pin
+introduced at actual terminal entry. Real idle backoff/retry ticks
+8042/8074, delay16->32->64. Exact original span, status0400001,
+payload, MM table, backing, credential, saved PC and u-area retained.
+Only external test pin removed at second idle terminal entry.
+Original kernel retires owner and completes typed WAIT. All10 stopped
+TERM waits, restored slot3 EXEC, all12 EXIT waits, exact final MM and
+normal HALT, unchanged root tapes. Independent verifier and11 corrupted
+trace controls PASS. Private retry word after successful scan is
+verified natively, not sampled in the physical trace. No production
+growth. Known-pin physical PREVM gate accepted.
+
+K16 dirty FULL/DROP recovery, source loss, physical FULL faults,
+latency/stack and real DSH/48K remain open; default OFF.
+DAIMOS b5a5552d, testkit b93f4f6. Evidence relative TMPDIR:
+pure-directory-prevm-physical-v1988.IuWoyT (physical.clean,
+audit-v1988.log). See DAIMOS design/kcore-k15-prevm-v1988.md.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
