@@ -2849,6 +2849,46 @@ Evidence relative TMPDIR: pure-directory-pi6-v1986.aHbEE0,
 verified-final-v1986.txt and trace-controls-v1986.log.
 See design/kcore-k15-pi6-v1986.md in DAIMOS.
 
+## 2026-11-27 v1987: actual nonresident terminal and restored EXEC
+
+Validation only, unchanged source-built GCC 64K PDP-6 kernel/MRES/
+KINIT from v1985. Repack user fixtures and private TSFS root tapes,
+no added kernel instructions, state or test hooks.
+
+The physical guest creates two PIPE children and user-mode spinners.
+Authorized TSTP and exact STOPPED waits establish stopped owners
+with saved user-mode PCs and no returning executive wait class.
+Pressure admits12 children: slot2 RAW3584, slots3..6 bitmap251 each,
+slots7..13 resident4096. Actual foreign TERM of stopped mode3
+slots4/5/6 at octal063000/064200/065400 retires original251-word
+bitmap owners without restoration, with no live FILE or reservation.
+All10 stopped children complete exact TERM/WAIT. Mode map, user
+extents and u-area owners retired.
+
+The remaining marked slot3 restores061600/251 to160000/4096,
+checks sparse data and executes distinct unmarked PURE POST.
+Actual EXEC entry000147 and proc_exec_enter024311 witness a
+new2048-word APR, same slot/u-area, changed backing record,
+cleared mutable eligibility/escrow and no EXEC reservation.
+All12 exact exit waits, final MM/modes and normal HALT. All three
+root tapes unchanged. Independent full verifier and eleven
+corrupted physical trace controls pass. Historical native v1934,
+v1982, v1985 and refreshed v1681 finalizer regression pass;
+v1681 now links actual v1937 stack reservation guard and rejects
+its bypass as a fifth unsafe native mutation.
+
+Healthy 64K foreign mode3 TERM and post-restore EXEC accepted.
+Physical PREVM refusal/retry and fault-boundary integration,
+uncertain recovery, RT latency/stack, real DSH/48K remain open.
+Do not infer physical failure acceptance from native controls.
+Default OFF.
+
+DAIMOS89d0255d, testkit1b0942c.
+Evidence relative TMPDIR: pure-directory-lifecycle-build-v1987.Qwey5T,
+pure-directory-lifecycle-physical-v1987.JkKVum,
+verified-final-v1987.txt, trace-controls-v1987.log.
+See design/kcore-k15-lifecycle-v1987.md in DAIMOS.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
