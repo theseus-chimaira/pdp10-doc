@@ -2919,6 +2919,44 @@ DAIMOS b5a5552d, testkit b93f4f6. Evidence relative TMPDIR:
 pure-directory-prevm-physical-v1988.IuWoyT (physical.clean,
 audit-v1988.log). See DAIMOS design/kcore-k15-prevm-v1988.md.
 
+## 2026-11-27 v1989: staged exact directory FULL escrow and rollback
+
+Directory encoded length is not derivable from VM geometry. The new
+staged FULL transaction retains it in word067 RH (15 bits, with
+three phase bits), original source sector and kind/retry tag in LH.
+The aligned original BRK floor in word0407 LH lends ten low bits:
+version, reserved poison bit, and eight-bit destination APR index.
+The original high floor bits and every current-BRK bit are retained.
+Require positive aligned floor, floor <= current <= VM words and
+current > words-02000 before borrowing these bits. An invalid target
+address poisons the field rather than being interpreted as absent.
+
+HOLD has no deferred authority. PAIR authorizes exact original target
+unpin (source1/target1), FREE exact target retirement (source1/
+target0), SOURCE exact original bitmap unpin after proven target
+absence. Revoke authority before MM mutation, rearm only upon exact
+unchanged ownership, and recheck stable identity after each operation.
+Clear borrowed BRK bits before publishing or unlocking. Explicit
+slot-zero rollback has no allocation, backing I/O, decode, or
+deferred FULL publication. Uncertain or source-loss cases remain
+quarantined. Trusted stable metadata and continuity of owned pins are
+required; the encoding is not an allocation generation or content
+authentication scheme.
+
+Host original helper oracle passes16,777,216 arithmetic round trips.
+Native GCC/KCC PDP6/KA10 each82 FULL attempts/80 explicit recoveries,
+including relocated bitmap and controlled grown VM with unaligned
+BRK. Nine unsafe source variants per compiler reject. Historical
+v1985/v1988 regressions PASS. Staged FULL TEXT GCC1801->2178 (+377),
+KCC2240->2698 (+458); DATA/BSS0, no fixed/per-slot permanent words.
+Both OFF directory and RAW-only objects byte-identical to v1988.
+
+Native staging only; not selected in installed profile. Actual idle
+arming/backoff, physical FULL fault replay, dirty DROP, irrecoverable
+source loss/corruption policy and real DSH/48K/latency/stack remain
+open. Default OFF. DAIMOS390ac172, testkit96addb4. See
+design/kcore-k16-full-escrow-v1989.md in DAIMOS.
+
 ## 2026-11-16 v1622: optional mutable bitmap compression contract (historical design)
 
 The native v1451 zero-presence bitmap encoder/decoder (30 TEXT
