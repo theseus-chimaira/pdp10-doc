@@ -6,6 +6,12 @@ All five SIMH PDP10 targets built from abb7ee6 with
 make GCC=clang pdp6 pdp10-ka pdp10-ki pdp10-kl pdp10-ks.
 All register sanity checks and installed p10run C guest smoke tests pass.
 
+Update v20261127-4: SIMS cf52e6c, all eleven PDP-6/PDP-10 and IBM 7000
+targets rebuilt with -Werror and PCRE2 10.49. Built-in diagnostic scripts
+completed successfully. Installed binaries under $PDP10_PREFIX/bin match
+the rebuilt files; all eleven installed register sanity checks pass.
+The earlier p10run guest smoke results refer to abb7ee6.
+
 Original PDP6 b60b1e4: build in emu with CC=clang and
 CFLAGS="-std=gnu99 -O2 -Wall -Wno-parentheses", targets
 pdp6, pdp6_s, pdp6_n, pdp6_headless_v1.
