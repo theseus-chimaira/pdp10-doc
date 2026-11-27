@@ -1,3 +1,12 @@
+## 2026-11-27 v2000: runtime stack acceptance policy
+
+Representative written-stack watermarks and overflow/bounds regressions
+remain mandatory for substantial kernel changes. Investigate near-capacity
+results and substantial increases. Exhaustive worst-case AC17 analysis
+and stack reservation sizing follow feature stabilization; neither is a
+K15 acceptance gate. Retain the current private and idle reservations
+and keep diagnostic code out of production builds.
+
 ## 2026-11-27 v1999: written-stack and preliminary DROP PI measurements
 
 The test-only stack watermark scans downward from the last legal
