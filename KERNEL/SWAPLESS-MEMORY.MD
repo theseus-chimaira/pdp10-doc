@@ -1,3 +1,30 @@
+## 2026-11-27 v1997: controlled real DSH terminal wake
+
+Actual 48K GCC PDP6 strict swapless directory v1996 package.
+Real DSH payload unchanged; test-only PURE and mutable DXR flags.
+Compact TSFS test media independently verified against stock
+formatter. Test INIT establishes normal controlling CTY and
+independently creates pressure; no production changes.
+
+DSH slot2/uarea055250 APR15360 grows to16384 after SET.
+A separate pressure child APR10240 is admitted while DSH sleeps
+in mode3, exact unpinned bitmap owner056000/242 words versus
+RAW suffix3200. Independent canonical decode contains the SIXBIT
+variable. After typed pressure-child WAIT57, actual terminal wake
+restores APR16384 at074000 with identical slot/uarea/backing/
+credential, opcode signatures and variable; escrow cleared.
+Shell WAIT57, HALT and unchanged root/source hashes pass.
+MM descriptor checkpoints10/13/10; six corrupted replay controls
+reject. Inactive APR saving16142 words, suffix saving2958
+(92.4%), not whole-system peak saving.
+
+Controlled real DSH compressed wake subgate accepted. Stock
+ordinary/marked INIT/LOGIN/DSH SET pass, both external ECHO
+time out before child publication, without mode3; stock foreground
+workload remains separate. Continuous high-water, RT latency/stack
+and failure recovery remain open. Default OFF.
+DAIMOS d683816, testkit d5c88a6.
+
 ## 2026-11-27 v1996: bidirectional directory placement
 
 The optional directory DROP transaction can now use a higher disjoint
