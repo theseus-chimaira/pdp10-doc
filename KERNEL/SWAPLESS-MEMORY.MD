@@ -1,3 +1,31 @@
+## 2026-11-27 v1999: written-stack and preliminary DROP PI measurements
+
+The test-only stack watermark scans downward from the last legal
+push word instead of stopping at the first untouched canary.
+Native sparse, empty, monotonic and bounds tests pass PDP6/KA10;
+old bounds and backing/BRK regressions pass. Mode stamps ensure
+same-tree diagnostic flag changes regenerate native assembly and C
+canary initialization. Default OFF process object byte-identical.
+Test-only private EXIT and idle FULL scan boundaries added.
+
+Actual 48K GCC strict directory DSH, diagnostic build:
+private written maximum113 of205 words, idle110 of255 usable
+words (256-word reservation includes empty base). Idle10 before
+DROP and110 after FULL. Independent physical canary checks,
+bitmap242/raw3200, FULL16384, stable shell variable/identity,
+two typed WAIT57s, normal HALT and unchanged tapes/images PASS.
+Instrumented fixed image +39 words, BSS+2; MRES length unchanged.
+This is a written watermark, not exhaustive AC17 tracking or a
+universal upper bound. No stack shrink or production growth.
+
+Separate original uninstrumented v1996 image, actual source-bound
+DROP, global PI states1/0/0/1, saved CONI0276 unchanged, RT owner0.
+SIMH SHOW TIME inner369029 and outer369318 simulation units;
+four corrupted replays reject. Full lifecycle and hashes PASS.
+No conversion to hardware time or RT deadline claim. FULL latency,
+RT-active workload, and worst-case stack remain open. Default OFF.
+DAIMOS c31405a4/1902b5a, testkit 5ef56a3.
+
 ## 2026-11-27 v1998: continuous real DSH MM high-water
 
 Repeated the accepted v1997 48K direct DSH workload using unchanged
