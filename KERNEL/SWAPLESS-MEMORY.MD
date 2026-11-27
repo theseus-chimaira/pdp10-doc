@@ -1,3 +1,26 @@
+## 2026-11-27 v1996: bidirectional directory placement
+
+The optional directory DROP transaction can now use a higher disjoint
+sector-aligned gap when its entire bitmap fits before the next APR
+boundary, without consuming an otherwise usable full APR. Existing
+lower placement and exact pinned original identity are preserved.
+The validated MM table is reordered in either direction, without an
+extra descriptor, allocation, owner, persistent word or recovery tag.
+GCC/KCC MRES5493/6540 (+33/+36), BSS0, fixed KCORE unchanged.
+Both compiler package switches and native PDP6/KA10 placement,
+FULL/terminal, dirty DROP recovery regressions and mutants pass.
+Matched physical 48K RAW/lower/bidirectional workloads have identical
+INIT/COMP/POST bytes, admit 5/5/8 children, free4950/16088/6691,
+MM18/18/25, largest aligned spans2560/3584/3584. Five251-word bitmap
+owners consolidate into two groups; one RAW and two resident children.
+All8 waits, four compressed TERM, restored EXEC4096->2048, final
+MM/HALT and root integrity pass; eleven corrupted traces rejected.
+Physical64K retains12-child fixture ceiling, exact lifecycle,
+MM33/free1758/aligned512, eleven trace mutants reject. 48K capacity
+improvement accepted, not maximum capacity. Real DSH mode3,
+continuous peak RAM, RT latency/stack, remaining K16 and default
+activation remain separate. DAIMOS1f973524, testkit a3bf12a.
+
 ## 2026-11-27 v1995: healthy 48K directory lifecycle acceptance
 
 Matched fresh GCC PDP6 strict swapless TSFS images, RAW and
