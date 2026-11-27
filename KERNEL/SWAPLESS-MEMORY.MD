@@ -1,3 +1,35 @@
+## 2026-11-27 v1998: continuous real DSH MM high-water
+
+Repeated the accepted v1997 48K direct DSH workload using unchanged
+v1996 GCC PDP6 KCORE/MRES and private TSFS tapes. All 71 physical MM
+word watches armed at the first prompt; 103 writes through normal
+HALT, 21 stable states including initial. Exact native writer objects
+reassembled byte-identically and matched their physical PCs.
+Intermediate descriptor shifts are replayed but not counted as
+allocations. Independent held/restored tables agree; final replay
+MM8 is not a separate post-HALT snapshot. Eight negative controls
+reject. Actual committed ownership and fixed/unavailable RAM:
+
+| Stage | Occupied/reserved | Free words |
+|---|---:|---:|
+| Initial prompt | 40880 | 8272 |
+| After BRK | 41904 | 7248 |
+| Before DROP commit | 41789 | 7363 |
+| DROP committed | 25647 | 23505 |
+| Pressure child admitted | 36280 | 12872 |
+| FULL peak | 42402 | 6750 |
+| Restored | 41904 | 7248 |
+| Final replay | 25256 | 23896 |
+
+FULL retains pinned bitmap242 and pinned destination16384 plus
+256-word loader workspace (498 extra words vs restored state).
+Max MM13/32. The disjoint DROP destination adds at most242 words to
+the precommit total while copying from the original pinned APR,
+giving conservative bound42031 below FULL peak. No production RAM
+or code change. Accepted for this workload, not universal capacity
+or timing; stock foreground workload, RT latency and stack remain
+open. Default OFF. DAIMOS 0650383, testkit f822d57.
+
 ## 2026-11-27 v1997: controlled real DSH terminal wake
 
 Actual 48K GCC PDP6 strict swapless directory v1996 package.
