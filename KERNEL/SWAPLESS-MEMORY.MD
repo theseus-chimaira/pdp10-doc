@@ -1,3 +1,22 @@
+## 2026-11-27 v1995: healthy 48K directory lifecycle acceptance
+
+Matched fresh GCC PDP6 strict swapless TSFS images, RAW and
+bitmap directory, both admit five v1987 workload children and
+pass typed WAIT, exact final MM, HALT and unchanged root media.
+Directory three stopped compressed children terminate without
+restore; slot3 actual FULL then marked-to-unmarked EXEC changes
+4096-word APR to 2048 while preserving slot/u-area. Eleven
+corrupted directory traces reject. Both pressure tables have
+18 extents. RAW retains five3584-word spans; directory four251
+and one3584. Free RAM4950->16088 (+11138), largest aligned
+span2560->3584, usable rounded APR2048->3072. No sixth child:
+the existing lower-only placement can fragment physical RAM
+even with ample total free words. MRES3258->5460 and fixed
+KCORE -8, no new production change. This accepts the healthy
+48K lifecycle only, not a capacity increase, real DSH mode3,
+RT latency/stack, failure recovery or default enablement.
+Testkit036d92c (v1995 topic branch).
+
 ## 2026-11-26 v1959: K09 functional integration CLOSED
 
 Current KCC GENERAL/STRICT v1959 images, v1954 SIMH:
