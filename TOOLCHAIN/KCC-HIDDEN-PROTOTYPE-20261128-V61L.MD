@@ -34,8 +34,8 @@ The broader replay exposes an integration defect already present in
 v61k: support/kcc/insns.h defines __builtin_va_list and old variadic
 macros despite KCC v61j providing native builtins. The duplicate
 typedef causes 54 compile failures (argument-offset, function-pointer,
-varargs). The stale compatibility shim must be reconciled with native
-builtins and tested separately. The other two failures are unresolved
+varargs). The stale compatibility shim was reconciled with native builtins
+in v61m; see KCC-NATIVE-VA-INTEGRATION-20261128-V61M.MD. The other two failures are unresolved
 vprintf linkage in va-arg-21.c. None was excluded or reclassified.
 
 ## Native footprint and installation
