@@ -31,7 +31,10 @@ Evidence under TMPDIR: kcc-wide-fields-v61i.d1bbZx. Final candidate-v4.
 - Four target-specific preexisting wide-field oracles: 88/88 pass.
 - kcc-wide-field-boundaries-v61i: 22/22 pass. Independent raw words,
   signed and unsigned boundaries, returned two/three-word aggregates,
-  GNU narrow precision, side-effecting assignments and packed arrays.
+  GNU narrow precision and side-effecting assignments. The packed-array
+  assertion originally used an ignored prefix attribute; genuine packed
+  layout coverage was corrected and replayed in v61j. See
+  KCC-VARIADIC-AND-PACKED-TAGS-20261128-V61J.MD.
 - kcc-raw-pair-abi-v61i: baseline 0/22, candidate 22/22 pass.
 - Five negative sources (including revised v60m width limit): 110/110.
 - Existing v61h native fragment generation guard: 8/8 pass.
