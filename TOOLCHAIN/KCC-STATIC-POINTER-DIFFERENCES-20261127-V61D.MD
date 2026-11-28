@@ -37,7 +37,9 @@ member-derived offsetof-style difference. A nonzero raw pointer,
 loaded pointer value, unrelated object, bitfield, packed/ambiguous
 pointer representation, VLA or non-evenly-dividing native byte
 size is not folded by this path. GNU label differences and
-separate string literal identities remain open. No new permanent
+separate string literal identities were open in v61d. Identical literal
+payloads and exact coordinates are supported as of v61k (see
+KCC-LITERAL-DIFFERENCES-20261128-V61K.MD). No new permanent
 compiler table, type field or node field.
 
 A new semantic regression compares independent literal offsets
@@ -59,7 +61,8 @@ executed, 694 PASS, 348 compile_fail; all 606 prior passes retained,
 Recovered originals (each 22): 920928-1.c, 920928-4.c,
 920928-6.c, 930326-1.c. Remaining constant initializer cases:
 20001116-1.c (literal difference), labels-3.c (label difference).
-Neither was marked unsupported.
+Neither was marked unsupported. v61k recovered 20001116-1.c;
+labels-3.c remains open.
 
 ## Native footprint and remaining work
 
