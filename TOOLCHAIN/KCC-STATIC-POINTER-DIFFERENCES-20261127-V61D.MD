@@ -62,7 +62,8 @@ Recovered originals (each 22): 920928-1.c, 920928-4.c,
 920928-6.c, 930326-1.c. Remaining constant initializer cases:
 20001116-1.c (literal difference), labels-3.c (label difference).
 Neither was marked unsupported. v61k recovered 20001116-1.c;
-labels-3.c remains open.
+labels-3.c was recovered in v61o using assembler-resolved same-function
+label differences; see KCC-STATIC-LABEL-DIFFERENCES-20261128-V61O.MD.
 
 ## Native footprint and remaining work
 

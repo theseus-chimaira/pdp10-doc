@@ -62,8 +62,8 @@ relocations do not propagate carry/borrow between halves; emitting
 an RH18 address relocation for a 36-bit integer addend would be
 incorrect. Full-word relocation support requires separate design and
 validation across the assembler/linker and native object consumers.
-Do not confuse it with pointer coordinate folding. Different-label
-static differences also remain open. No assembler, GCC or DAIMOS
+Do not confuse it with pointer coordinate folding. Different-label static differences were recovered in v61o; see
+KCC-STATIC-LABEL-DIFFERENCES-20261128-V61O.MD. No assembler, GCC or DAIMOS
 source changes were made.
 
 ## Installation
