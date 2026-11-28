@@ -162,8 +162,10 @@ Compiler attribute macros now reside in `test-compiler-compat.h`.
 
 Value width does not imply identical object layout or address units.
 KCC char16 has sizeof 1, whereas GCC's size(16) scalar has sizeof 2
-in nine-bit C units. The exact-width stride regression retains distinct
-size expectations. Cross-compiler ABI boundaries must continue to use
+in nine-bit C units. As of KCC v61n, the GNU size(16) spelling also
+uses two C units, while the legacy _KCCtype_char16 spelling retains
+its one-unit sizeof. See KCC-SCALAR-SIZE-ATTRIBUTE-20261128-V61N.MD.
+The exact-width stride regression retains distinct legacy size expectations. Cross-compiler ABI boundaries must continue to use
 explicit word adapters rather than incompatible narrow-object pointers.
 
 Twenty ported test sources now use the common type names. Installed
